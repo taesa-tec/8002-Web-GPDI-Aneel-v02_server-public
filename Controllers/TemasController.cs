@@ -9,33 +9,33 @@ namespace APIGestor.Controllers
     [Route("api/projeto/")]
     [ApiController]
     [Authorize("Bearer")]
-    public class EmpresasController : ControllerBase
+    public class TemasController : ControllerBase
     {
-        private EmpresaService _service;
+        private TemaService _service;
 
-        public EmpresasController(EmpresaService service)
+        public TemasController(TemaService service)
         {
             _service = service;
         }
 
-        [HttpGet("{projetoId}/Empresas")]
-        public IEnumerable<Empresa> Get(int projetoId)
+        [HttpGet("{projetoId}/Temas")]
+        public ActionResult<Tema> Get(int projetoId)
         {
-            return _service.ListarTodos(projetoId);
+            return _service.ListarTema(projetoId);
         }
 
         [Route("[controller]")]
         [HttpPost]
-        public Resultado Post([FromBody]Empresa Empresa)
+        public Resultado Post([FromBody]Tema Tema)
         {
-            return _service.Incluir(Empresa);
+            return _service.Incluir(Tema);
         }
 
         [Route("[controller]")]
         [HttpPut]
-        public Resultado Put([FromBody]Empresa Empresa)
+        public Resultado Put([FromBody]Tema Tema)
         {
-            return _service.Atualizar(Empresa);
+            return _service.Atualizar(Tema);
         }
 
         [HttpDelete("[controller]/{Id}")]

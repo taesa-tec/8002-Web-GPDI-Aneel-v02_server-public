@@ -14,7 +14,7 @@ namespace APIGestor.Security
         private SignInManager<ApplicationUser> _signInManager;
         private SigningConfigurations _signingConfigurations;
         private TokenConfigurations _tokenConfigurations;
-
+    
         public AccessManager(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -26,16 +26,15 @@ namespace APIGestor.Security
             _signingConfigurations = signingConfigurations;
             _tokenConfigurations = tokenConfigurations;
         }
-
-        public bool ValidateCredentials(User user)
+        public bool ValidateCredentials(Login user)
         {
             bool credenciaisValidas = false;
-            if (user != null && !String.IsNullOrWhiteSpace(user.UserID))
+            if (user != null && !String.IsNullOrWhiteSpace(user.Email))
             {
                 // Verifica a existência do usuário nas tabelas do
                 // ASP.NET Core Identity
                 var userIdentity = _userManager
-                    .FindByNameAsync(user.UserID).Result;
+                    .FindByEmailAsync(user.Email).Result;
                 if (userIdentity != null)
                 {
                     // Efetua o login com base no Id do usuário e sua senha
@@ -46,8 +45,9 @@ namespace APIGestor.Security
                     {
                         // Verifica se o usuário em questão possui
                         // a role Acesso-APIGestor
-                        credenciaisValidas = _userManager.IsInRoleAsync(
-                            userIdentity, Roles.ROLE_API_GESTOR).Result;
+                        // credenciaisValidas = _userManager.IsInRoleAsync(
+                        //     userIdentity, Roles.ROLE_ADMIN_GESTOR).Result;
+                        credenciaisValidas = true;
                     }
                 }
             }
@@ -55,13 +55,16 @@ namespace APIGestor.Security
             return credenciaisValidas;
         }
 
-        public Token GenerateToken(User user)
+        public Token GenerateToken(Login user)
         {
+            var userIdentity = _userManager
+                    .FindByEmailAsync(user.Email).Result;
+
             ClaimsIdentity identity = new ClaimsIdentity(
-                new GenericIdentity(user.UserID, "Login"),
+                new GenericIdentity(user.Email, "Login"),
                 new[] {
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
-                        new Claim(JwtRegisteredClaimNames.UniqueName, user.UserID)
+                        new Claim(JwtRegisteredClaimNames.Jti, userIdentity.Id),                      
+                        new Claim(JwtRegisteredClaimNames.UniqueName, user.Email)
                 }
             );
 

@@ -1,14 +1,23 @@
 ﻿namespace APIGestor.Security
 {
+    public class Login
+    {
+        public string Password { get; set; }
+        public string Email { get; set; }
+    }
     public class User
     {
         public string UserID { get; set; }
         public string Password { get; set; }
+        public string Email { get; set; }
+        public string Role { get; set; }
+        public string NomeCompleto { get; set; }
     }
 
     public static class Roles
     {
-        public const string ROLE_API_GESTOR = "Acesso-APIGestor";
+        public const string ROLE_ADMIN_GESTOR = "Admin-APIGestor";
+        public const string ROLE_USER_GESTOR = "User-APIGestor";
     }
 
     public class TokenConfigurations

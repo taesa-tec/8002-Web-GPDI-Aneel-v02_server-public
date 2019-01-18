@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Collections.Generic;
 using APIGestor.Data;
 using APIGestor.Models;
 
@@ -19,8 +20,21 @@ namespace APIGestor.Business
         {
             if (id>0)
             {
-                return _context.Projetos.Where(
-                    p => p.Id == id).FirstOrDefault();
+                return _context.Projetos
+                    .Include(p => p.UsersProjeto)
+                    .Include(p => p.CatalogEmpresa)
+                    .Include(p => p.CatalogStatus)
+                    .Include(p => p.CatalogSegmento)
+                    .Include(p => p.Tema)
+                    .Include(p => p.Produtos)
+                    .Include(p => p.Etapas)
+                    .Include(p => p.Empresas)
+                    .Include(p => p.RecursosHumanos)
+                    .Include(p => p.AlocacoesRh)
+                    .Include(p => p.RecursosMateriais)
+                    .Include(p => p.AlocacoesRm)
+                    .Where(
+                        p => p.Id == id).FirstOrDefault();
             }
             else
                 return null;
@@ -28,8 +42,20 @@ namespace APIGestor.Business
 
         public IEnumerable<Projeto> ListarTodos()
         {
-            return _context.Projetos
-                .OrderBy(p => p.Titulo).ToList();
+            var Projetos = _context.Projetos
+                .OrderBy(p => p.Titulo)
+                .ToList();
+            return Projetos;
+        }
+
+        public IEnumerable<UserProjeto> ObterUsuarios(int Id)
+        {
+            var UserProjetos = _context.UserProjetos
+                .Include("ApplicationUser")
+                .Include("CatalogUserPermissao")
+                .Where(p => p.ProjetoId == Id)
+                .ToList();
+            return UserProjetos;
         }
 
         public Resultado Incluir(Projeto dadosProjeto)
@@ -69,12 +95,20 @@ namespace APIGestor.Business
                     resultado.Inconsistencias.Add(
                         "Projeto não encontrado");
                 }
+                CatalogStatus Status = _context.CatalogStatus.Where(
+                    p => p.Id == dadosProjeto.CatalogStatusId).FirstOrDefault();
+
+                if (Status == null)
+                {
+                    resultado.Inconsistencias.Add(
+                        "Status não encontrado");
+                }
                 else
                 {
                     Projeto.Titulo = dadosProjeto.Titulo;
                     Projeto.TituloDesc = dadosProjeto.TituloDesc;
                     Projeto.Numero = dadosProjeto.Numero;
-                    Projeto.EmpresaProponente = dadosProjeto.EmpresaProponente;
+                    Projeto.CatalogEmpresa.Id = dadosProjeto.CatalogEmpresa.Id;
                     _context.SaveChanges();
                 }
             }

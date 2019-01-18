@@ -28,19 +28,21 @@ namespace APIGestor
             // Configurando o acesso a dados de projetos
             services.AddDbContext<GestorDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
+            services.AddScoped<CatalogService>();
+            services.AddScoped<UserService>();
             services.AddScoped<ProjetoService>();
+            services.AddScoped<TemaService>();
             services.AddScoped<EmpresaService>();
-
-            // Configurando o uso da classe de contexto para
-            // acesso às tabelas do ASP.NET Identity Core
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("BaseIdentity")));
+            services.AddScoped<ProdutoService>();
+            services.AddScoped<EtapaService>();
 
             // Ativando a utilização do ASP.NET Identity, a fim de
             // permitir a recuperação de seus objetos via injeção de
             // dependências
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+/";
+                })
+                .AddEntityFrameworkStores<GestorDbContext>()
                 .AddDefaultTokenProviders();
 
             // Configurando a dependência para a classe de validação
@@ -60,7 +62,8 @@ namespace APIGestor
             // autenticação e autorização via tokens
             services.AddJwtSecurity(
                 signingConfigurations, tokenConfigurations);
-
+            
+            services.AddCors();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerGen(c => {
@@ -81,7 +84,7 @@ namespace APIGestor
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
-            ApplicationDbContext context,
+            GestorDbContext context,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager)
         {
@@ -105,6 +108,10 @@ namespace APIGestor
             app.UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
             });
+            app.UseCors(builder => builder.AllowAnyMethod()
+                                          .AllowAnyOrigin()
+                                          .AllowAnyHeader()
+                                          .AllowCredentials());
             app.UseHttpsRedirection();
             app.UseMvc();
         }

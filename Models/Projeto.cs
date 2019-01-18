@@ -26,15 +26,12 @@ namespace APIGestor.Models
         }
         public string TituloDesc { get; set; }
         public string Numero { get;set;}
-        private int _empresaProponente;
-        public int EmpresaProponente
-        {
-            get => _empresaProponente;
-            set => _empresaProponente = value;
-        }
-
-        public string Status { get; set; }
-        public int SegmentoId { get; set; }
+        public int? CatalogEmpresaId { get; set; }
+        public CatalogEmpresa CatalogEmpresa { get; set; }
+        public int? CatalogStatusId { get; set; }
+        public CatalogStatus CatalogStatus { get; set; }
+        public int? CatalogSegmentoId { get; set; }
+        public CatalogSegmento CatalogSegmento { get; set; }
         public string AvaliacaoInicial { get; set; }
         public string CompartResultados { get; set; }
         public string Motivacao { get; set; }
@@ -43,8 +40,15 @@ namespace APIGestor.Models
         public string Relevancia { get; set; }
         public string Razoabilidade { get; set; }
         public string Pesquisas { get; set; }
-
         public List<Produto> Produtos { get; set; }
-
+        public List<RecursoHumano> RecursosHumanos { get; set; }
+        public List<AlocacaoRh> AlocacoesRh { get; set; }
+        public List<RecursoMaterial> RecursosMateriais { get; set; }
+        public List<AlocacaoRm> AlocacoesRm { get; set; }
+        public List<Etapa> Etapas { get; set; }
+        public int? TemaId { get; set; }
+        public Tema Tema { get; set; }
+        public List<UserProjeto> UsersProjeto { get; set; }
+        public List<Empresa> Empresas { get; set; }
     }
 }

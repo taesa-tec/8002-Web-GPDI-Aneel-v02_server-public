@@ -4,14 +4,16 @@ using APIGestor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIGestor.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190116201914_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,21 +186,6 @@ namespace APIGestor.Migrations
                     b.ToTable("CatalogEmpresas");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogEstado", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Nome");
-
-                    b.Property<string>("Valor");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CatalogEstados");
-                });
-
             modelBuilder.Entity("APIGestor.Models.CatalogSegmento", b =>
                 {
                     b.Property<int>("Id")
@@ -231,7 +218,7 @@ namespace APIGestor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CatalogTemaId");
+                    b.Property<int?>("CatalogTemaId");
 
                     b.Property<string>("Nome");
 
@@ -282,8 +269,6 @@ namespace APIGestor.Migrations
 
                     b.Property<int?>("CatalogEmpresaId");
 
-                    b.Property<int?>("CatalogEstadoId");
-
                     b.Property<int>("Classificacao");
 
                     b.Property<string>("Cnpj");
@@ -292,11 +277,11 @@ namespace APIGestor.Migrations
 
                     b.Property<string>("RazaoSocial");
 
+                    b.Property<string>("Uf");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CatalogEmpresaId");
-
-                    b.HasIndex("CatalogEstadoId");
 
                     b.HasIndex("ProjetoId");
 
@@ -309,11 +294,9 @@ namespace APIGestor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("DataFim")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("DataFim");
 
-                    b.Property<DateTime>("DataInicio")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("DataInicio");
 
                     b.Property<string>("Desc");
 
@@ -324,50 +307,6 @@ namespace APIGestor.Migrations
                     b.HasIndex("ProjetoId");
 
                     b.ToTable("Etapas");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.EtapaProduto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("EtapaId");
-
-                    b.Property<int?>("ProdutoId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EtapaId");
-
-                    b.HasIndex("ProdutoId");
-
-                    b.ToTable("EtapaProdutos");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.LogProjeto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Created")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("getdate()");
-
-                    b.Property<int>("ProjetoId");
-
-                    b.Property<string>("StatusAnterior");
-
-                    b.Property<string>("StatusNovo");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("LogProjetos");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Produto", b =>
@@ -384,6 +323,8 @@ namespace APIGestor.Migrations
 
                     b.Property<string>("Desc");
 
+                    b.Property<int?>("EtapaId");
+
                     b.Property<int>("FaseCadeia");
 
                     b.Property<int>("ProjetoId");
@@ -393,6 +334,8 @@ namespace APIGestor.Migrations
                     b.Property<string>("Titulo");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EtapaId");
 
                     b.HasIndex("ProjetoId");
 
@@ -541,6 +484,8 @@ namespace APIGestor.Migrations
 
                     b.Property<int>("CatalogSubTemaId");
 
+                    b.Property<int>("CatalogTemaId");
+
                     b.Property<string>("OutroDesc");
 
                     b.Property<int?>("TemaId");
@@ -548,6 +493,8 @@ namespace APIGestor.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CatalogSubTemaId");
+
+                    b.HasIndex("CatalogTemaId");
 
                     b.HasIndex("TemaId");
 
@@ -569,8 +516,6 @@ namespace APIGestor.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CatalogUserPermissaoId");
-
-                    b.HasIndex("ProjetoId");
 
                     b.HasIndex("UserId");
 
@@ -738,10 +683,9 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("APIGestor.Models.CatalogSubTema", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogTema")
+                    b.HasOne("APIGestor.Models.CatalogTema", "CatalogTema")
                         .WithMany("SubTemas")
-                        .HasForeignKey("CatalogTemaId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CatalogTemaId");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Empresa", b =>
@@ -749,10 +693,6 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.CatalogEmpresa", "CatalogEmpresa")
                         .WithMany()
                         .HasForeignKey("CatalogEmpresaId");
-
-                    b.HasOne("APIGestor.Models.CatalogEstado", "Estado")
-                        .WithMany()
-                        .HasForeignKey("CatalogEstadoId");
 
                     b.HasOne("APIGestor.Models.Projeto")
                         .WithMany("Empresas")
@@ -768,27 +708,12 @@ namespace APIGestor.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("APIGestor.Models.EtapaProduto", b =>
-                {
-                    b.HasOne("APIGestor.Models.Etapa")
-                        .WithMany("EtapaProdutos")
-                        .HasForeignKey("EtapaId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("APIGestor.Models.Produto")
-                        .WithMany("EtapaProduto")
-                        .HasForeignKey("ProdutoId");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.LogProjeto", b =>
-                {
-                    b.HasOne("APIGestor.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("APIGestor.Models.Produto", b =>
                 {
+                    b.HasOne("APIGestor.Models.Etapa")
+                        .WithMany("Produtos")
+                        .HasForeignKey("EtapaId");
+
                     b.HasOne("APIGestor.Models.Projeto")
                         .WithMany("Produtos")
                         .HasForeignKey("ProjetoId")
@@ -848,6 +773,11 @@ namespace APIGestor.Migrations
                         .HasForeignKey("CatalogSubTemaId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("APIGestor.Models.CatalogTema", "CatalogTema")
+                        .WithMany()
+                        .HasForeignKey("CatalogTemaId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("APIGestor.Models.Tema")
                         .WithMany("SubTemas")
                         .HasForeignKey("TemaId");
@@ -858,11 +788,6 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.CatalogUserPermissao", "CatalogUserPermissao")
                         .WithMany()
                         .HasForeignKey("CatalogUserPermissaoId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("UsersProjeto")
-                        .HasForeignKey("ProjetoId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("APIGestor.Models.ApplicationUser", "ApplicationUser")

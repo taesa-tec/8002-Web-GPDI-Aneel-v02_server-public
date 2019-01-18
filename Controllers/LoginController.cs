@@ -10,12 +10,12 @@ namespace APIGestor.Controllers
         [AllowAnonymous]
         [HttpPost]
         public object Post(
-            [FromBody]User usuario,
+            [FromBody]Login user,
             [FromServices]AccessManager accessManager)
         {
-            if (accessManager.ValidateCredentials(usuario))
+            if (accessManager.ValidateCredentials(user))
             {
-                return accessManager.GenerateToken(usuario);
+                return accessManager.GenerateToken(user);
             }
             else
             {

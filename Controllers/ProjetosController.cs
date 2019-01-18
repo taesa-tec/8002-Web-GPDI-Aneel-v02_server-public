@@ -33,6 +33,12 @@ namespace APIGestor.Controllers
             else
                 return NotFound();
         }
+        
+        [HttpGet("{id}/Usuarios")]
+        public IEnumerable<UserProjeto> GetA(int id)
+        {
+            return _service.ObterUsuarios(id);
+        }
 
         [HttpPost]
         public Resultado Post([FromBody]Projeto Projeto)
