@@ -42,14 +42,7 @@ namespace APIGestor.Business
                     resultado.Inconsistencias.Add("Projeto não localizado");
                 }
             }
-            Empresa Empresa = _context.Empresas.Where(
-                p => p.Cnpj == dados.Cnpj).FirstOrDefault();
-
-            if (Empresa != null)
-            {
-                resultado.Inconsistencias.Add(
-                    "Empresa já cadastrada para esse projeto. Remova ou Atualize.");
-            }
+            
             if (resultado.Inconsistencias.Count == 0)
             {
                 var etapa = new Empresa
@@ -75,7 +68,7 @@ namespace APIGestor.Business
             {
                 Empresa Empresa = _context.Empresas.Where(
                     p => p.Id == dados.Id).FirstOrDefault();
-
+                
                 if (Empresa == null)
                 {
                     resultado.Inconsistencias.Add(
@@ -118,7 +111,13 @@ namespace APIGestor.Business
 
                             if (CatalogEmpresa == null)
                             {
-                                resultado.Inconsistencias.Add("CatalogEmpresa não localizada ou não relacionados");
+                                resultado.Inconsistencias.Add("CatalogEmpresa não localizado");
+                            }
+                            if ((!String.IsNullOrEmpty(dados.Cnpj))
+                                ||(!String.IsNullOrEmpty(dados.RazaoSocial))
+                                ||(dados.CatalogEstadoId>0))
+                            {
+                                resultado.Inconsistencias.Add("Não permitido adicionar o CNPJ, Razão Social e Estado para empresas de Ernergia");
                             }
                         }
                         else
@@ -126,7 +125,7 @@ namespace APIGestor.Business
                             resultado.Inconsistencias.Add("Preencha o CatalogEmpresa para classificação Energia");
                         }
                     }
-                    else if (dados.Classificacao.ToString() == "Executora")
+                    if (dados.Classificacao.ToString() == "Executora")
                     {
 
                         if (dados.CatalogEstadoId > 0)
@@ -144,15 +143,46 @@ namespace APIGestor.Business
                             resultado.Inconsistencias.Add("Preencha o CatalogEstado para classificação Executora");
                         }
                     }
-                    else if (dados.Classificacao.ToString() == "Executora" || dados.Classificacao.ToString() == "Parceira")
+                    if (dados.Classificacao.ToString() == "Executora" || dados.Classificacao.ToString() == "Parceira")
                     {
-                        if (String.IsNullOrEmpty(dados.Cnpj))
-                        {
-                            resultado.Inconsistencias.Add("Preencha o CNPJ da Empresa");
+                        if (dados.CatalogEmpresaId>0){
+                            resultado.Inconsistencias.Add("Não permitido adicionar uma Empreasa Catalogo para essa Classificação");
                         }
-                        if (String.IsNullOrEmpty(dados.RazaoSocial))
-                        {
-                            resultado.Inconsistencias.Add("Preencha a Razão Social da Empresa");
+                        else{
+                            if (String.IsNullOrEmpty(dados.Cnpj))
+                            {
+                                resultado.Inconsistencias.Add("Preencha o CNPJ da Empresa");
+                            }else{
+                                if (dados.ProjetoId > 0){
+                                    Empresa Empresa = _context.Empresas
+                                        .Where(p => p.ProjetoId == dados.ProjetoId)
+                                        .Where(p => p.Classificacao == dados.Classificacao)
+                                        .Where(p => p.Cnpj == dados.Cnpj).FirstOrDefault();
+
+                                    if (Empresa != null)
+                                    {
+                                        resultado.Inconsistencias.Add(
+                                            "Cnpj já cadastrada para esse projeto. Remova ou Atualize.");
+                                    }
+                                }
+                            }
+                            if (String.IsNullOrEmpty(dados.RazaoSocial))
+                            {
+                                resultado.Inconsistencias.Add("Preencha a Razão Social da Empresa");
+                            }else{
+                                if (dados.ProjetoId > 0){
+                                    Empresa Empresa = _context.Empresas
+                                        .Where(p => p.ProjetoId == dados.ProjetoId)
+                                        .Where(p => p.Classificacao == dados.Classificacao)
+                                        .Where(p => p.RazaoSocial == dados.RazaoSocial).FirstOrDefault();
+
+                                    if (Empresa != null)
+                                    {
+                                        resultado.Inconsistencias.Add(
+                                            "RazaoSocial já cadastrada para esse projeto. Remova ou Atualize.");
+                                    }
+                                }
+                            }
                         }
                     }
                 }

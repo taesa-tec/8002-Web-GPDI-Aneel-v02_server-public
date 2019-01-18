@@ -27,7 +27,7 @@ namespace APIGestor.Data
         public DbSet<TemaSubTema> TemaSubTemas { get; set; }
         public DbSet<RecursoHumano> RecursoHumanos { get; set; }
         public DbSet<AlocacaoRh> AlocacoesRh { get; set; }
-        public DbSet<RecursoMaterial> RecursoMaterais { get; set; }
+        public DbSet<RecursoMaterial> RecursoMateriais { get; set; }
         public DbSet<AlocacaoRm> AlocacoesRm { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,8 +44,8 @@ namespace APIGestor.Data
                 .HasOne(p => p.CatalogSegmento);
             modelBuilder.Entity<Projeto>()
                 .HasOne(p => p.CatalogEmpresa);
-            modelBuilder.Entity<Projeto>()
-                .HasOne(p => p.Tema);
+            //modelBuilder.Entity<Projeto>()
+              //  .HasOne(p => p.Tema);
             modelBuilder.Entity<Projeto>()
                 .Property(b => b.Created)
                 .HasDefaultValueSql("getdate()");
@@ -77,6 +77,10 @@ namespace APIGestor.Data
                 .HasMany(p => p.SubTemas);
 
             modelBuilder.Entity<Produto>()
+                .Property(b => b.Created)
+                .HasDefaultValueSql("getdate()");
+
+            modelBuilder.Entity<LogProjeto>()
                 .Property(b => b.Created)
                 .HasDefaultValueSql("getdate()");
 

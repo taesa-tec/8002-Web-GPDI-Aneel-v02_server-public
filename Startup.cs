@@ -31,10 +31,16 @@ namespace APIGestor
             services.AddScoped<CatalogService>();
             services.AddScoped<UserService>();
             services.AddScoped<ProjetoService>();
+            services.AddScoped<UserProjetoService>();
             services.AddScoped<TemaService>();
             services.AddScoped<EmpresaService>();
+            services.AddScoped<RecursoHumanoService>();
+            services.AddScoped<AlocacaoRhService>();
+            services.AddScoped<RecursoMaterialService>();
+            services.AddScoped<AlocacaoRmService>();
             services.AddScoped<ProdutoService>();
             services.AddScoped<EtapaService>();
+            services.AddScoped<LogProjetoService>();
 
             // Ativando a utilização do ASP.NET Identity, a fim de
             // permitir a recuperação de seus objetos via injeção de

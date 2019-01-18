@@ -4,14 +4,16 @@ using APIGestor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIGestor.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190118161255_RmEtapaIdProjeto")]
+    partial class RmEtapaIdProjeto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -351,8 +353,6 @@ namespace APIGestor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Acao");
-
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("getdate()");
@@ -363,13 +363,9 @@ namespace APIGestor.Migrations
 
                     b.Property<string>("StatusNovo");
 
-                    b.Property<string>("Tela");
-
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjetoId");
 
                     b.HasIndex("UserId");
 
@@ -784,11 +780,6 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("APIGestor.Models.LogProjeto", b =>
                 {
-                    b.HasOne("APIGestor.Models.Projeto", "Projeto")
-                        .WithMany()
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("APIGestor.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId");

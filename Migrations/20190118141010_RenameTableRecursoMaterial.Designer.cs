@@ -4,14 +4,16 @@ using APIGestor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIGestor.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190118141010_RenameTableRecursoMaterial")]
+    partial class RenameTableRecursoMaterial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -351,8 +353,6 @@ namespace APIGestor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Acao");
-
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("getdate()");
@@ -363,13 +363,9 @@ namespace APIGestor.Migrations
 
                     b.Property<string>("StatusNovo");
 
-                    b.Property<string>("Tela");
-
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjetoId");
 
                     b.HasIndex("UserId");
 
@@ -439,6 +435,10 @@ namespace APIGestor.Migrations
 
                     b.Property<string>("Relevancia");
 
+                    b.Property<int?>("TemaId");
+
+                    b.Property<int?>("TemaId1");
+
                     b.Property<string>("Titulo");
 
                     b.Property<string>("TituloDesc");
@@ -450,6 +450,8 @@ namespace APIGestor.Migrations
                     b.HasIndex("CatalogSegmentoId");
 
                     b.HasIndex("CatalogStatusId");
+
+                    b.HasIndex("TemaId1");
 
                     b.ToTable("Projetos");
                 });
@@ -529,8 +531,6 @@ namespace APIGestor.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CatalogTemaId");
-
-                    b.HasIndex("ProjetoId");
 
                     b.ToTable("Temas");
                 });
@@ -784,11 +784,6 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("APIGestor.Models.LogProjeto", b =>
                 {
-                    b.HasOne("APIGestor.Models.Projeto", "Projeto")
-                        .WithMany()
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("APIGestor.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId");
@@ -815,6 +810,10 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.CatalogStatus", "CatalogStatus")
                         .WithMany()
                         .HasForeignKey("CatalogStatusId");
+
+                    b.HasOne("APIGestor.Models.Tema", "Tema")
+                        .WithMany()
+                        .HasForeignKey("TemaId1");
                 });
 
             modelBuilder.Entity("APIGestor.Models.RecursoHumano", b =>
@@ -841,11 +840,6 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.CatalogTema", "CatalogTema")
                         .WithMany()
                         .HasForeignKey("CatalogTemaId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("Tema")
-                        .HasForeignKey("ProjetoId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

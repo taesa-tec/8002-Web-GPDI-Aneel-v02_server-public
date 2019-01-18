@@ -46,8 +46,7 @@ namespace APIGestor.Models
         public List<RecursoMaterial> RecursosMateriais { get; set; }
         public List<AlocacaoRm> AlocacoesRm { get; set; }
         public List<Etapa> Etapas { get; set; }
-        public int? TemaId { get; set; }
-        public Tema Tema { get; set; }
+        public ICollection<Tema> Tema { get; set; }
         public List<UserProjeto> UsersProjeto { get; set; }
         public List<Empresa> Empresas { get; set; }
     }

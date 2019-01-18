@@ -4,14 +4,16 @@ using APIGestor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIGestor.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190118163449_AddChangesLogs")]
+    partial class AddChangesLogs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -368,8 +370,6 @@ namespace APIGestor.Migrations
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjetoId");
 
                     b.HasIndex("UserId");
 
@@ -784,11 +784,6 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("APIGestor.Models.LogProjeto", b =>
                 {
-                    b.HasOne("APIGestor.Models.Projeto", "Projeto")
-                        .WithMany()
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("APIGestor.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId");

@@ -16,11 +16,13 @@ namespace APIGestor.Models
             set => _id = value;
         }
         public int ProjetoId { get; set; }
+        [ForeignKey("ProjetoId")]
+        public Projeto Projeto { get; set; } 
         public string UserId { get; set; }
         [ForeignKey("UserId")]
         public ApplicationUser ApplicationUser { get; set; } 
-        private string Tela { get; set; }
-        private string Acao { get; set; }
+        public string Tela { get; set; }
+        public string Acao { get; set; }
         public string StatusAnterior { get; set; }
         public string StatusNovo { get; set; }
         public DateTime Created { get; set; }
