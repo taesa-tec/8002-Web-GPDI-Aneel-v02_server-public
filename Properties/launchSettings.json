@@ -14,16 +14,26 @@
       "launchBrowser": true,
       "launchUrl": "api/projetos",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT_T": "Test"
+      }
+    },
+    "IIS Express (Stage)": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "api/projetos",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT_S": "Stage"
       }
     },
     "APIGestor": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/projetos",
-      "applicationUrl": "https://localhost:8081;http://localhost:8080;https://192.168.0.3:8081;http://192.168.0.3:8080;http://xerminada.hopto.org:8080;",
+      "applicationUrl": "https://localhost:8080",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT_T": "Test"
       }
     }
   }
