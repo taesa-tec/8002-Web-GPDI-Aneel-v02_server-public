@@ -23,7 +23,7 @@
       "launchBrowser": true,
       "launchUrl": "api/projetos",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT_S": "Stage"
+        "ASPNETCORE_ENVIRONMENT": "Stage"
       }
     },
     "APIGestor": {
@@ -32,8 +32,7 @@
       "launchUrl": "api/projetos",
       "applicationUrl": "https://localhost:8080",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_ENVIRONMENT_T": "Test"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }

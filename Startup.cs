@@ -28,10 +28,10 @@ namespace APIGestor
             // Configurando o acesso a dados de projetos
             if(System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Stage")
                 services.AddDbContext<GestorDbContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
+                    options.UseSqlServer(Configuration.GetConnectionString("TaesaGestor")));
             else
                 services.AddDbContext<GestorDbContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("TaesaGestor")));
+                    options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
             services.AddScoped<CatalogService>();
             services.AddScoped<UserService>();
             services.AddScoped<ProjetoService>();
