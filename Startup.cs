@@ -31,7 +31,7 @@ namespace APIGestor
                     options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
             else
                 services.AddDbContext<GestorDbContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
+                    options.UseSqlServer(Configuration.GetConnectionString("TaesaGestor")));
             services.AddScoped<CatalogService>();
             services.AddScoped<UserService>();
             services.AddScoped<ProjetoService>();
