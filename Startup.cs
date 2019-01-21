@@ -26,7 +26,7 @@ namespace APIGestor
         public void ConfigureServices(IServiceCollection services)
         {
             // Configurando o acesso a dados de projetos
-            if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Stage")
+            if(System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Stage")
                 services.AddDbContext<GestorDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
             else
