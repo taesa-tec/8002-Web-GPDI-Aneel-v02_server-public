@@ -109,7 +109,7 @@ namespace APIGestor.Security
         private string createEmailBody(ApplicationUser user)  
         {  
             string body = string.Empty;  
-            using(StreamReader reader = new StreamReader(Path.Combine(_hostingEnvironment.ContentRootPath,"MailTemplates/redefinir-senha.html")))  
+            using(StreamReader reader = new StreamReader(Path.Combine(_hostingEnvironment.WebRootPath,"MailTemplates/redefinir-senha.html")))  
             {  
                 body = reader.ReadToEnd();  
             }  
