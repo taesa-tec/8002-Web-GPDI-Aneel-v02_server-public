@@ -47,9 +47,6 @@ namespace APIGestor.Models
         public RecursoHumano RecursoHumano { get; set; }
         public int? EmpresaId { get; set; }
         public Empresa Empresa { get; set; }
-
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal ValorHora { get; set; }
         public int HrsMes1 { get; set;}
         public int HrsMes2 { get; set;}
         public int HrsMes3 { get; set;}

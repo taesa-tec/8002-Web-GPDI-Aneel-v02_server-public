@@ -19,11 +19,28 @@ namespace APIGestor.Business
         }
         public IEnumerable<Etapa> ListarTodos(int projetoId)
         {
-            var Etapa = _context.Etapas
+            var Etapas = _context.Etapas
                 .Include("EtapaProdutos")
                 .Where(p => p.ProjetoId == projetoId)
+                .OrderBy(p => p.Id)
                 .ToList();
-            return Etapa;
+                
+            return AddDataEtapas(Etapas);
+        }
+        private List<Etapa> AddDataEtapas(List<Etapa> etapas){
+            Projeto projeto = _context.Projetos
+                                .Where(p=>p.Id==etapas.FirstOrDefault().ProjetoId)
+                                .Where(p=>p.DataInicio!=null)
+                                .FirstOrDefault();
+            if (projeto!=null){
+                DateTime dataInicio = projeto.DataInicio;
+                foreach(Etapa etapa in etapas){
+                    etapa.DataInicio = dataInicio;
+                    dataInicio = dataInicio.AddMonths(6);
+                    etapa.DataFim = dataInicio;
+                }
+            }
+            return etapas;
         }
         private List<EtapaProduto> MontEtapaProdutos(Etapa dados)
         {
@@ -63,8 +80,6 @@ namespace APIGestor.Business
                 {
                     ProjetoId = dados.ProjetoId,
                     Desc = dados.Desc,
-                    DataInicio = dados.DataInicio,
-                    DataFim = dados.DataFim,
                     EtapaProdutos = this.MontEtapaProdutos(dados)
                 };
                 _context.Etapas.Add(etapa);
@@ -90,8 +105,6 @@ namespace APIGestor.Business
                 else
                 {
                     _context.EtapaProdutos.RemoveRange(_context.EtapaProdutos.Where(p => p.EtapaId == dados.Id));
-                    Etapa.DataInicio = dados.DataInicio;
-                    Etapa.DataFim = dados.DataFim;
                     Etapa.Desc = dados.Desc;
                     Etapa.EtapaProdutos = this.MontEtapaProdutos(dados);
                     _context.SaveChanges();
@@ -108,20 +121,7 @@ namespace APIGestor.Business
                 resultado.Inconsistencias.Add("Preencha os Dados do Etapa");
             }
             else
-            {   
-                DateTime DataInicio;
-                if (!DateTime.TryParse(dados.DataInicio.ToString(), out DataInicio))
-                {
-                    resultado.Inconsistencias.Add(
-                        "Preencha a data de Início do Projeto");
-                }
-                DateTime DataFim;
-                if (!DateTime.TryParse(dados.DataInicio.ToString(), out DataFim))
-                {
-                    resultado.Inconsistencias.Add(
-                        "Preencha a data de Fim do Projeto");
-                }
- 
+            {    
                 if (String.IsNullOrEmpty(dados.Desc))
                 {
                     resultado.Inconsistencias.Add(

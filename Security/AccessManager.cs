@@ -4,7 +4,17 @@ using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Collections.Generic;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using APIGestor.Data;
 using APIGestor.Models;
+using APIGestor.Security;
 
 namespace APIGestor.Security
 {
@@ -14,16 +24,19 @@ namespace APIGestor.Security
         private SignInManager<ApplicationUser> _signInManager;
         private SigningConfigurations _signingConfigurations;
         private TokenConfigurations _tokenConfigurations;
-    
+        private IHostingEnvironment _hostingEnvironment;
+
         public AccessManager(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             SigningConfigurations signingConfigurations,
+            IHostingEnvironment hostingEnvironment,
             TokenConfigurations tokenConfigurations)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _signingConfigurations = signingConfigurations;
+            _hostingEnvironment = hostingEnvironment;
             _tokenConfigurations = tokenConfigurations;
         }
         public bool ValidateCredentials(Login user)
@@ -93,5 +106,90 @@ namespace APIGestor.Security
                 Message = "OK"
             };
         }
+        private string createEmailBody(ApplicationUser user)  
+        {  
+            string body = string.Empty;  
+            using(StreamReader reader = new StreamReader(Path.Combine(_hostingEnvironment.ContentRootPath,"MailTemplates/redefinir-senha.html")))  
+            {  
+                body = reader.ReadToEnd();  
+            }  
+            var ResetToken = _userManager.GeneratePasswordResetTokenAsync(user).Result;
+            body = body.Replace("{{USER_EMAIL}}", user.Email);
+            body = body.Replace("{{USER_TOKEN}}", ResetToken);
+            return body;  
+        }
+        public Resultado RecuperarSenha(Login user)
+        {
+            Resultado resultado = new Resultado();
+            resultado.Acao = "Recuperação de senha de User";
+
+            if (String.IsNullOrWhiteSpace(user.Email))
+            {
+                resultado.Inconsistencias.Add(
+                        "Preencha o E-mail do Usuário");
+            }
+            var User = _userManager
+                    .FindByEmailAsync(user.Email).Result;
+            if (User == null)
+            {
+                resultado.Inconsistencias.Add(
+                    "E-mail não cadastrado");
+            }
+
+            if (resultado.Inconsistencias.Count == 0)
+            {
+                var apiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
+                if(apiKey==null){
+                    apiKey = "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";
+                }
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress("ti.sistemas@taesa.com.br", "Taesa Gestor P&D");
+                var subject = "Redefinição de Senha - Gestor P&D";
+                var to = new EmailAddress(User.Email, User.NomeCompleto);
+                var plainTextContent = "";
+                var htmlContent = this.createEmailBody(User);  
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                var response = client.SendEmailAsync(msg);
+            }
+
+            return resultado;
+        }
+        public Resultado NovaSenha(User user)
+        {
+            Resultado resultado = new Resultado();
+            resultado.Acao = "Recuperação de senha de User";
+
+            if (String.IsNullOrWhiteSpace(user.Email))
+            {
+                resultado.Inconsistencias.Add(
+                        "Preencha o E-mail do Usuário");
+            }
+            if (String.IsNullOrWhiteSpace(user.NewPassword))
+            {
+                resultado.Inconsistencias.Add(
+                        "Preencha a nova senha do Usuário");
+            }
+            var User = _userManager.Users
+                    .Where(u => u.Email == user.Email)
+                    .FirstOrDefault();
+            if (User == null)
+            {
+                resultado.Inconsistencias.Add(
+                    "usuário não localizado");
+            }
+
+            if (resultado.Inconsistencias.Count == 0)
+            {
+                var result = _userManager.ResetPasswordAsync(User, user.ResetToken, user.NewPassword).Result;
+                if (result.Errors.Count()>0){
+                    foreach(var error in result.Errors){
+                        resultado.Inconsistencias.Add(error.Description);
+                    }
+                }
+            }
+
+            return resultado;
+        }
+
     }
 }

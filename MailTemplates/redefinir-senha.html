@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<table align="center" width="600" border="0" style="font-family: Roboto, Arial, sans-serif; color:#989898" cellspacing="0" cellpadding="0">
+    <tr>
+        <td width="36"></td>
+        <td width="528">
+            <table width="100%" style="border: solid 1px #CCC;" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td height="104" colspan="3">
+                        <img style="display: block;" width="528" src="images/email-header.jpg" alt="Taesa">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="48">&nbsp;</td>
+                    <td>
+                        <center>
+                            <h3 style="color:#042769; font-weight: 500;">
+                                Instruções para redefinição de senha
+                                <br>
+                                do Aplicativo Portal Taesa
+                            </h3>
+                        </center>
+                    </td>
+                    <td width="48">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="48">&nbsp;</td>
+                    <td>
+                        <center>
+                            <p>
+                                Alguém solicitou que a senha fosse redefinida para a seguinte conta:
+                            </p>
+                            <p>
+                                <span style="color: #042769">Usuário: {{USER_EMAIL}}</span>
+                            </p>
+                            <p>
+                                Se isso foi um engano, apenas ignore este e-mail e nada acontecerá.
+                            </p>
+
+                            <p>
+                                Para redefinir sua senha, clique no botão abaixo:
+                            </p>
+                        </center>
+                    </td>
+                    <td width="48">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3" height="32">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="48">&nbsp;</td>
+                    <td>
+                        <center>
+                            <a href="http://sistema-ped.taesa.com.br/nova-senha/?email={{USER_EMAIL}}&token={{USER_TOKEN}}">
+                                <img src="images/gerar-senha.png" alt="Taesa">
+                            </a>
+                        </center>
+                    </td>
+                    <td width="48">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3" height="32">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="48">&nbsp;</td>
+                    <td>
+                        <center>
+                            Em caso de dúvidas, por favor entrar em contato com <a style="color:#989898" href="mailto:ti.sistemas@taesa.com.br">ti.sistemas@taesa.com.br</a> ou com a área de Governança
+                            Corporativa.
+                        </center>
+                    </td>
+                    <td width="48">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3" height="28">&nbsp;</td>
+                </tr>
+            </table>
+        </td>
+        <td width="36"></td>
+    </tr>
+</table>
+</body>
+</html>

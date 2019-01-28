@@ -102,6 +102,9 @@ namespace APIGestor.Business
                 }
                 else
                 {
+                    if (dados.Classificacao.ToString() == "Proponente"){
+                        resultado.Inconsistencias.Add("Operação não permitida");
+                    }
                     if (dados.Classificacao.ToString() == "Energia")
                     {
                         if (dados.CatalogEmpresaId > 0)

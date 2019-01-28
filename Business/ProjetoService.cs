@@ -73,13 +73,24 @@ namespace APIGestor.Business
 
             if (resultado.Inconsistencias.Count == 0)
             {
+                dadosProjeto.Tipo = obterTipoProjeto(dadosProjeto.Numero.ToString());
+
+                dadosProjeto.Empresas = new List<Empresa>{new Empresa { CatalogEmpresaId = dadosProjeto.CatalogEmpresaId }};
+                
                 _context.Projetos.Add(dadosProjeto);
+                
                 _context.SaveChanges();
+                
             }
 
             return resultado;
         }
-
+        private TipoProjeto obterTipoProjeto(string Numero){
+            TipoProjeto Tipo = (TipoProjeto)1;
+            if (Numero.TrimStart('0').Substring(0,1)=="9")
+                Tipo = (TipoProjeto)2;
+            return Tipo;
+        }
         public Resultado Atualizar(Projeto dadosProjeto)
         {
             Resultado resultado = DadosValidos(dadosProjeto);
@@ -105,10 +116,19 @@ namespace APIGestor.Business
                 }
                 else
                 {
+                    Projeto.Tipo = obterTipoProjeto(dadosProjeto.Numero.ToString());
                     Projeto.Titulo = dadosProjeto.Titulo;
                     Projeto.TituloDesc = dadosProjeto.TituloDesc;
                     Projeto.Numero = dadosProjeto.Numero;
-                    Projeto.CatalogEmpresa.Id = dadosProjeto.CatalogEmpresa.Id;
+                    Projeto.CatalogEmpresaId = dadosProjeto.CatalogEmpresaId;
+                    
+                    Empresa empresa = _context.Empresas.Where(e=>e.ProjetoId==dadosProjeto.Id)
+                                                .Where(e=>e.Classificacao==0).FirstOrDefault();
+                    if (empresa!=null){
+                        empresa.CatalogEmpresaId = dadosProjeto.CatalogEmpresaId;
+                    }else{
+                        Projeto.Empresas = new List<Empresa>{new Empresa { CatalogEmpresaId = dadosProjeto.CatalogEmpresaId }};
+                    }
                     _context.SaveChanges();
                 }
             }
@@ -146,6 +166,20 @@ namespace APIGestor.Business
             }
             else
             {
+                if (Projeto.CatalogEmpresaId<=0)
+                {
+                    resultado.Inconsistencias.Add(
+                        "Preencha a empresa Proponente do Projeto");
+                }
+                else{
+                    CatalogEmpresa catalogEmpresa = _context.CatalogEmpresas
+                                        .Where(e=>e.Id==Projeto.CatalogEmpresaId)
+                                        .FirstOrDefault();
+                    if (catalogEmpresa==null){
+                        resultado.Inconsistencias.Add(
+                        "CatalogEmpresaId não localizado");
+                    }
+                }
                 if (String.IsNullOrWhiteSpace(Projeto.Titulo))
                 {
                     resultado.Inconsistencias.Add(
@@ -159,11 +193,73 @@ namespace APIGestor.Business
                 if (String.IsNullOrWhiteSpace(Projeto.Numero))
                 {
                     resultado.Inconsistencias.Add(
-                        "Preencha o Número descrição do Projeto");
+                        "Preencha o Número do Projeto");
+                }
+                if (Projeto.Numero.Length>5){
+                    resultado.Inconsistencias.Add(
+                        "Maximo de 5 digitos campo Número do Projeto");
                 }
             }
 
             return resultado;
+        }
+        public Resultado ValidaDadosData(Projeto dadosProjeto)
+        {
+            var resultado = new Resultado();
+
+            if (dadosProjeto == null)
+            {
+                resultado.Inconsistencias.Add(
+                    "Preencha os Dados do Projeto");
+            }
+            else{
+                if (dadosProjeto.Id<=0)
+                {
+                    resultado.Inconsistencias.Add(
+                        "Preencha o Id do Projeto");
+                }
+                DateTime DataInicio;
+                if (!DateTime.TryParse(dadosProjeto.DataInicio.ToString(), out DataInicio))
+                {
+                    resultado.Inconsistencias.Add(
+                        "Preencha a data de Início do Projeto");
+                }
+            }
+            return resultado;
+        }
+        public Resultado AtualizaDataInicio(Projeto dadosProjeto)
+        {
+            Resultado resultado = ValidaDadosData(dadosProjeto);
+            resultado.Acao = "Atualização de Data Início do Projeto";
+
+            if (resultado.Inconsistencias.Count == 0)
+            {
+                Projeto Projeto = _context.Projetos
+                        .Include("CatalogEmpresa")
+                        .Where( p => p.Id == dadosProjeto.Id).FirstOrDefault();
+
+                if (Projeto == null)
+                {
+                    resultado.Inconsistencias.Add(
+                        "Projeto não encontrado");
+                }
+                else
+                {
+                    Projeto.DataInicio = dadosProjeto.DataInicio;
+                    var codigo = GerarCodigoProjeto(Projeto);
+                    Projeto.Codigo = codigo;
+                    _context.SaveChanges();
+                }
+            }
+
+            return resultado;
+        }
+        public string GerarCodigoProjeto(Projeto projeto){
+            var codigo = Enum.GetName(typeof(TipoProjeto),projeto.Tipo).ToString() + "-";
+                codigo += projeto.CatalogEmpresa.Valor.ToString() + "-";
+                codigo += projeto.Numero.ToString() + "/";
+                codigo += projeto.DataInicio.Year.ToString();
+            return codigo;
         }
     }
 }

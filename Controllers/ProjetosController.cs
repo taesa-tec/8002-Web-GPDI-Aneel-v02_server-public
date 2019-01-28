@@ -57,5 +57,11 @@ namespace APIGestor.Controllers
         {
             return _service.Excluir(id);
         }
+
+        [HttpPut("dataInicio")]
+        public Resultado PutA([FromBody]Projeto Projeto)
+        {
+            return _service.AtualizaDataInicio(Projeto);
+        }
     }
 }

@@ -27,6 +27,6 @@ namespace APIGestor.Models
     }
     public enum EmpresaClassificacao
     {   
-        Energia, Executora, Parceira
+        Proponente, Energia, Executora, Parceira
     }
 }

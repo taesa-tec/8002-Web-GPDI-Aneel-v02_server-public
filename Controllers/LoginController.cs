@@ -26,5 +26,19 @@ namespace APIGestor.Controllers
                 };
             }
         }
+        [HttpPost("recuperar-senha")]
+        public object PostA(
+            [FromBody]Login user,
+            [FromServices]AccessManager accessManager)
+        {
+            return accessManager.RecuperarSenha(user);
+        }
+        [HttpPost("nova-senha")]
+        public object PostB(
+            [FromBody]User user,
+            [FromServices]AccessManager accessManager)
+        {
+            return accessManager.NovaSenha(user);
+        }
     }
 }

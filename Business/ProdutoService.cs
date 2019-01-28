@@ -49,7 +49,18 @@ namespace APIGestor.Business
         {
             Resultado resultado = DadosValidos(dadosProduto);
             resultado.Acao = "Inclusão de Produto";
+             
+            if (dadosProduto.Classificacao.ToString()=="Final"){
+                Produto Produto = _context.Produtos.Where(
+                        p => p.ProjetoId == dadosProduto.ProjetoId).Where(
+                        p => p.Classificacao == dadosProduto.Classificacao).FirstOrDefault();
 
+                if (Produto != null)
+                {
+                    resultado.Inconsistencias.Add("Já existe um produto com classificação final para o projeto. Remova-o ou atualize.");
+                }
+            }
+            
             if (resultado.Inconsistencias.Count == 0)
             {
                 _context.Produtos.Add(dadosProduto);

@@ -52,7 +52,6 @@ namespace APIGestor.Business
                     EmpresaId = dados.EmpresaId,
                     RecursoHumanoId = dados.RecursoHumanoId,
                     Justificativa = dados.Justificativa,
-                    ValorHora = dados.ValorHora,
                     HrsMes1 = dados.HrsMes1,
                     HrsMes2 = dados.HrsMes2,
                     HrsMes3 = dados.HrsMes3,
@@ -87,7 +86,6 @@ namespace APIGestor.Business
                     AlocacaoRh.EmpresaId = dados.EmpresaId;
                     AlocacaoRh.RecursoHumanoId = dados.RecursoHumanoId;
                     AlocacaoRh.Justificativa = dados.Justificativa;
-                    AlocacaoRh.ValorHora = dados.ValorHora;
                     AlocacaoRh.HrsMes1 = dados.HrsMes1;
                     AlocacaoRh.HrsMes2 = dados.HrsMes2;
                     AlocacaoRh.HrsMes3 = dados.HrsMes3;
@@ -156,10 +154,6 @@ namespace APIGestor.Business
                     {
                         resultado.Inconsistencias.Add("EmpresaId não cadastrada ou não associada ao projeto.");
                     }
-                }
-                if (String.IsNullOrEmpty(dados.ValorHora.ToString()))
-                {
-                    resultado.Inconsistencias.Add("Preencha o Valor Hora do Recurso Humano alocado");
                 }
                 if (String.IsNullOrEmpty(dados.Justificativa))
                 {

@@ -24,6 +24,9 @@ namespace APIGestor.Models
             get => _titulo;
             set => _titulo = value?.Trim();
         }
+        public TipoProjeto Tipo { get; set; }
+        public DateTime DataInicio { get; set; }
+        public string Codigo { get; set; }
         public string TituloDesc { get; set; }
         public string Numero { get;set;}
         public int? CatalogEmpresaId { get; set; }
@@ -49,5 +52,10 @@ namespace APIGestor.Models
         public ICollection<Tema> Tema { get; set; }
         public List<UserProjeto> UsersProjeto { get; set; }
         public List<Empresa> Empresas { get; set; }
+    }
+    public enum TipoProjeto
+    {
+        PD = 1,
+        PG = 2
     }
 }

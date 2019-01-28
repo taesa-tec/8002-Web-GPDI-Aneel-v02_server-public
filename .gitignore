@@ -1,4 +1,5 @@
 /.project
+wwwroot/Uploads
 *.swp
 *.*~
 project.lock.json

@@ -14,6 +14,7 @@ namespace APIGestor.Models
         public CatalogTema CatalogTema { get; set; }
         public string OutroDesc { get; set; }
         public ICollection<TemaSubTema> SubTemas { get; set; }
+        public ICollection<Upload> Uploads { get; set; }
     }
     public class TemaSubTema
     {

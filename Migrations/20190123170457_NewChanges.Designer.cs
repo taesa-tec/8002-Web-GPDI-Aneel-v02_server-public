@@ -4,14 +4,16 @@ using APIGestor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIGestor.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190123170457_NewChanges")]
+    partial class NewChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -517,98 +519,6 @@ namespace APIGestor.Migrations
                     b.ToTable("RecursoMateriais");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.RegistroFinanceiro", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AtividadeRealizada");
-
-                    b.Property<string>("Beneficiado");
-
-                    b.Property<int>("CategoriaContabil");
-
-                    b.Property<string>("CnpjBeneficiado");
-
-                    b.Property<DateTime>("DataDocumento")
-                        .HasColumnType("date");
-
-                    b.Property<int?>("EmpresaFinanciadoraId");
-
-                    b.Property<int?>("EmpresaRecebedoraId");
-
-                    b.Property<bool>("EquiparLabExistente");
-
-                    b.Property<bool>("EquiparLabNovo");
-
-                    b.Property<string>("EspecificacaoTecnica");
-
-                    b.Property<string>("FuncaoRecurso");
-
-                    b.Property<bool>("ItemNacional");
-
-                    b.Property<string>("Mes");
-
-                    b.Property<string>("NomeItem");
-
-                    b.Property<string>("NumeroDocumento");
-
-                    b.Property<int?>("ProjetoId");
-
-                    b.Property<string>("QtdHrs");
-
-                    b.Property<int>("QtdItens");
-
-                    b.Property<int?>("RecursoHumanoId");
-
-                    b.Property<int?>("RecursoMaterialId");
-
-                    b.Property<int>("Status");
-
-                    b.Property<int>("Tipo");
-
-                    b.Property<string>("TipoDocumento");
-
-                    b.Property<decimal>("ValorUnitario")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmpresaFinanciadoraId");
-
-                    b.HasIndex("EmpresaRecebedoraId");
-
-                    b.HasIndex("RecursoHumanoId");
-
-                    b.HasIndex("RecursoMaterialId");
-
-                    b.ToTable("RegistrosFinanceiros");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.RegistroObs", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("DataCriacao");
-
-                    b.Property<int?>("RegistroFinanceiroId");
-
-                    b.Property<string>("Texto");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RegistroFinanceiroId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RegistroObs");
-                });
-
             modelBuilder.Entity("APIGestor.Models.Tema", b =>
                 {
                     b.Property<int>("Id")
@@ -649,43 +559,6 @@ namespace APIGestor.Migrations
                     b.HasIndex("TemaId");
 
                     b.ToTable("TemaSubTemas");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.Upload", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Categoria");
-
-                    b.Property<DateTime>("Created")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("getdate()");
-
-                    b.Property<string>("NomeArquivo");
-
-                    b.Property<int?>("ProjetoId");
-
-                    b.Property<int?>("RegistroFinanceiroId");
-
-                    b.Property<int?>("TemaId");
-
-                    b.Property<string>("Url");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetoId");
-
-                    b.HasIndex("RegistroFinanceiroId");
-
-                    b.HasIndex("TemaId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Uploads");
                 });
 
             modelBuilder.Entity("APIGestor.Models.UserProjeto", b =>
@@ -968,36 +841,6 @@ namespace APIGestor.Migrations
                         .HasForeignKey("ProjetoId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.RegistroFinanceiro", b =>
-                {
-                    b.HasOne("APIGestor.Models.Empresa", "EmpresaFinanciadora")
-                        .WithMany()
-                        .HasForeignKey("EmpresaFinanciadoraId");
-
-                    b.HasOne("APIGestor.Models.Empresa", "EmpresaRecebedora")
-                        .WithMany()
-                        .HasForeignKey("EmpresaRecebedoraId");
-
-                    b.HasOne("APIGestor.Models.RecursoHumano", "RecursoHumano")
-                        .WithMany()
-                        .HasForeignKey("RecursoHumanoId");
-
-                    b.HasOne("APIGestor.Models.RecursoMaterial", "RecursoMaterial")
-                        .WithMany()
-                        .HasForeignKey("RecursoMaterialId");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.RegistroObs", b =>
-                {
-                    b.HasOne("APIGestor.Models.RegistroFinanceiro")
-                        .WithMany("ObsIternas")
-                        .HasForeignKey("RegistroFinanceiroId");
-
-                    b.HasOne("APIGestor.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("APIGestor.Models.Tema", b =>
                 {
                     b.HasOne("APIGestor.Models.CatalogTema", "CatalogTema")
@@ -1021,25 +864,6 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.Tema")
                         .WithMany("SubTemas")
                         .HasForeignKey("TemaId");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.Upload", b =>
-                {
-                    b.HasOne("APIGestor.Models.Projeto", "Projeto")
-                        .WithMany()
-                        .HasForeignKey("ProjetoId");
-
-                    b.HasOne("APIGestor.Models.RegistroFinanceiro", "RegistroFinanceiro")
-                        .WithMany()
-                        .HasForeignKey("RegistroFinanceiroId");
-
-                    b.HasOne("APIGestor.Models.Tema", "Tema")
-                        .WithMany()
-                        .HasForeignKey("TemaId");
-
-                    b.HasOne("APIGestor.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("APIGestor.Models.UserProjeto", b =>

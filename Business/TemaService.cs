@@ -22,6 +22,7 @@ namespace APIGestor.Business
             var Tema = _context.Temas
                 .Include("CatalogTema")
                 .Include("SubTemas.CatalogSubTema")
+                .Include("Uploads")
                 .Where(p => p.ProjetoId == projetoId)
                 .FirstOrDefault();
             return Tema;

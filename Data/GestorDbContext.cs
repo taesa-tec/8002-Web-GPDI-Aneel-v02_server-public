@@ -10,6 +10,7 @@ namespace APIGestor.Data
             DbContextOptions<GestorDbContext> options) : base(options)
         { }
         public DbSet<LogProjeto> LogProjetos { get; set; }
+        public DbSet<Upload> Uploads { get; set; }
         public DbSet<CatalogUserPermissao> CatalogUserPermissoes { get; set; }
         public DbSet<CatalogStatus> CatalogStatus { get; set; }
         public DbSet<CatalogSegmento> CatalogSegmentos { get; set; }
@@ -29,8 +30,13 @@ namespace APIGestor.Data
         public DbSet<AlocacaoRh> AlocacoesRh { get; set; }
         public DbSet<RecursoMaterial> RecursoMateriais { get; set; }
         public DbSet<AlocacaoRm> AlocacoesRm { get; set; }
+        public DbSet<RegistroFinanceiro> RegistrosFinanceiros { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //Upload
+            modelBuilder.Entity<Upload>()
+                .Property(b => b.Created)
+                .HasDefaultValueSql("getdate()");
             //Log Projeto
             modelBuilder.Entity<LogProjeto>()
                 .Property(b => b.Created)
