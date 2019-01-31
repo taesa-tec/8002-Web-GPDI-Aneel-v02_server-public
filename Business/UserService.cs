@@ -12,17 +12,20 @@ namespace APIGestor.Business
     public class UserService
     {
         private GestorDbContext _context;
+        private MailService _mailService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
         public UserService(
             GestorDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            MailService mailService)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _mailService = mailService;
         }
 
         public ApplicationUser Obter(string userId)
@@ -45,7 +48,7 @@ namespace APIGestor.Business
             return Users;
         }
 
-        public Resultado Incluir(User dadosUser)
+        public Resultado Incluir(ApplicationUser dadosUser)
         {
             Resultado resultado = DadosValidos(dadosUser);
             resultado.Acao = "Inclusão de User";
@@ -60,12 +63,24 @@ namespace APIGestor.Business
 
             if (resultado.Inconsistencias.Count == 0)
             {
-                resultado = CreateUser(
-                    new ApplicationUser()
+                string Password = "ApiTaesa@2019";
+                var User = new ApplicationUser()
                     {
                         Email = dadosUser.Email,
-                        EmailConfirmed = true
-                    }, dadosUser.Password, dadosUser.Role);
+                        EmailConfirmed = true,
+                        NomeCompleto = dadosUser.NomeCompleto,
+                        CPF = dadosUser.CPF,
+                        Status = dadosUser.Status,
+                        RazaoSocial = dadosUser.RazaoSocial,
+                        FotoPerfil = dadosUser.FotoPerfil,
+                        CatalogEmpresaId = dadosUser.CatalogEmpresaId,
+                        DataCadastro = DateTime.Now
+                    };
+                resultado = CreateUser(User, Password, dadosUser.Role);
+                if (resultado.Inconsistencias.Count == 0)
+                {
+                    resultado = _mailService.SendMail(User, "Seja bem-vindo ao Gestor P&D", "mail-cadastro");
+                }
                 
             }
 
@@ -85,16 +100,7 @@ namespace APIGestor.Business
                     resultado.Inconsistencias.Add(
                         "User não encontrado");
                 }
-
-                CatalogEmpresa Empresa = _context.CatalogEmpresas.Where(
-                    e => e.Id == dadosUser.CatalogEmpresaId).FirstOrDefault();
-
-                if (Empresa == null)
-                {
-                    resultado.Inconsistencias.Add(
-                        "Empresa não encontrada");
-                }
-                else
+                if (resultado.Inconsistencias.Count == 0)
                 {
                     User.Status = dadosUser.Status;
                     User.NomeCompleto = dadosUser.NomeCompleto;
@@ -128,7 +134,7 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        private Resultado DadosValidos(User User)
+        private Resultado DadosValidos(ApplicationUser User)
         {
             var resultado = new Resultado();
             if (User == null)
@@ -148,15 +154,23 @@ namespace APIGestor.Business
                     resultado.Inconsistencias.Add(
                         "Preencha o Nome Completo do Usuário");
                 }
-                if (String.IsNullOrWhiteSpace(User.Password))
-                {
-                    resultado.Inconsistencias.Add(
-                        "Preencha a senha do usuário");
-                }
                 if (String.IsNullOrWhiteSpace(User.Role))
                 {
                     resultado.Inconsistencias.Add(
                         "Preencha a Role do usuário");
+                }else{
+                    if (User.Role!=Roles.ROLE_ADMIN_GESTOR & User.Role!=Roles.ROLE_USER_GESTOR){
+                        resultado.Inconsistencias.Add(
+                        "Role do usuário não identificada.");
+                    }
+                }
+                if (User.CatalogEmpresaId>0){
+                    CatalogEmpresa Empresa = _context.CatalogEmpresas.Where(
+                        e => e.Id == User.CatalogEmpresaId).FirstOrDefault();
+                    if (Empresa == null)
+                    {
+                        resultado.Inconsistencias.Add("Empresa não encontrada");
+                    }
                 }
             }
 

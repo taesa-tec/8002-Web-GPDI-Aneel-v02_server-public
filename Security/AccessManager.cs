@@ -15,6 +15,7 @@ using System.IO;
 using APIGestor.Data;
 using APIGestor.Models;
 using APIGestor.Security;
+using APIGestor.Business;
 
 namespace APIGestor.Security
 {
@@ -25,19 +26,22 @@ namespace APIGestor.Security
         private SigningConfigurations _signingConfigurations;
         private TokenConfigurations _tokenConfigurations;
         private IHostingEnvironment _hostingEnvironment;
+        private MailService _mailService;
 
         public AccessManager(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             SigningConfigurations signingConfigurations,
             IHostingEnvironment hostingEnvironment,
-            TokenConfigurations tokenConfigurations)
+            TokenConfigurations tokenConfigurations,
+            MailService mailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _signingConfigurations = signingConfigurations;
             _hostingEnvironment = hostingEnvironment;
             _tokenConfigurations = tokenConfigurations;
+            _mailService = mailService;
         }
         public bool ValidateCredentials(Login user)
         {
@@ -138,18 +142,7 @@ namespace APIGestor.Security
 
             if (resultado.Inconsistencias.Count == 0)
             {
-                var apiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
-                if(apiKey==null){
-                    apiKey = "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";
-                }
-                var client = new SendGridClient(apiKey);
-                var from = new EmailAddress("ti.sistemas@taesa.com.br", "Taesa Gestor P&D");
-                var subject = "Redefinição de Senha - Gestor P&D";
-                var to = new EmailAddress(User.Email, User.NomeCompleto);
-                var plainTextContent = "";
-                var htmlContent = this.createEmailBody(User);  
-                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-                var response = client.SendEmailAsync(msg);
+                resultado = _mailService.SendMail(User, "Redefinição de Senha - Gestor P&D", "redefinir-senha");
             }
 
             return resultado;

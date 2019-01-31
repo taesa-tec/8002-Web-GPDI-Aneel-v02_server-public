@@ -24,7 +24,7 @@ namespace APIGestor.Models
         public string TipoDocumento { get; set; }
         public string NumeroDocumento { get; set; }
         [Column(TypeName="date")]
-        public DateTime DataDocumento { get; set; }
+        public DateTime? DataDocumento { get; set; }
         public string AtividadeRealizada { get; set; }
         public ICollection<RegistroObs> ObsIternas { get; set; }
         public string NomeItem { get; set; }
@@ -60,7 +60,7 @@ namespace APIGestor.Models
         [Key]
         public int Id { get; set; }
         public int? RegistroFinanceiroId { get; set; }
-        public DateTime DataCriacao { get; set; }
+        public DateTime Created { get; set; }
         public string UserId{ get; set; }
         [ForeignKey("UserId")]
         public ApplicationUser ApplicationUser { get; set; }

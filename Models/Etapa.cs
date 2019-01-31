@@ -18,9 +18,9 @@ namespace APIGestor.Models
         public int ProjetoId { get;set; }
         public string Desc { get; set; }
         [Column(TypeName="date")]
-        public DateTime DataInicio { get; set; }
+        public DateTime? DataInicio { get; set; }
         [Column(TypeName="date")]
-        public DateTime DataFim { get; set; }
+        public DateTime? DataFim { get; set; }
         public List<EtapaProduto> EtapaProdutos { get; set; }
 
     }

@@ -33,10 +33,10 @@ namespace APIGestor.Business
                                 .Where(p=>p.DataInicio!=null)
                                 .FirstOrDefault();
             if (projeto!=null){
-                DateTime dataInicio = projeto.DataInicio;
+                DateTime? dataInicio = projeto.DataInicio;
                 foreach(Etapa etapa in etapas){
                     etapa.DataInicio = dataInicio;
-                    dataInicio = dataInicio.AddMonths(6);
+                    dataInicio = dataInicio.Value.AddMonths(6);
                     etapa.DataFim = dataInicio;
                 }
             }

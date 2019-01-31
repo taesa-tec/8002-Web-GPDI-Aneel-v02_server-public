@@ -258,7 +258,7 @@ namespace APIGestor.Business
             var codigo = Enum.GetName(typeof(TipoProjeto),projeto.Tipo).ToString() + "-";
                 codigo += projeto.CatalogEmpresa.Valor.ToString() + "-";
                 codigo += projeto.Numero.ToString() + "/";
-                codigo += projeto.DataInicio.Year.ToString();
+                codigo += projeto.DataInicio.HasValue ? projeto.DataInicio.Value.Year.ToString() : null;
             return codigo;
         }
     }

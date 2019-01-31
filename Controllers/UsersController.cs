@@ -47,7 +47,7 @@ namespace APIGestor.Controllers
         }
 
         [HttpPost]
-        public Resultado Post([FromBody]User User)
+        public Resultado Post([FromBody]ApplicationUser User)
         {
             return _service.Incluir(User);
         }

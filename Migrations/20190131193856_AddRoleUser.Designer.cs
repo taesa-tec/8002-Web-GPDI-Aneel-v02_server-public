@@ -4,14 +4,16 @@ using APIGestor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIGestor.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190131193856_AddRoleUser")]
+    partial class AddRoleUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,7 +111,7 @@ namespace APIGestor.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
-                    b.Property<DateTime?>("DataAtualizacao");
+                    b.Property<DateTime>("DataAtualizacao");
 
                     b.Property<DateTime>("DataCadastro");
 
@@ -148,7 +150,7 @@ namespace APIGestor.Migrations
 
                     b.Property<bool>("TwoFactorEnabled");
 
-                    b.Property<DateTime?>("UltimoLogin");
+                    b.Property<DateTime>("UltimoLogin");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256);
@@ -308,10 +310,10 @@ namespace APIGestor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("DataFim")
+                    b.Property<DateTime>("DataFim")
                         .HasColumnType("date");
 
-                    b.Property<DateTime?>("DataInicio")
+                    b.Property<DateTime>("DataInicio")
                         .HasColumnType("date");
 
                     b.Property<string>("Desc");
@@ -428,7 +430,7 @@ namespace APIGestor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<DateTime?>("DataInicio");
+                    b.Property<DateTime>("DataInicio");
 
                     b.Property<string>("Motivacao");
 
@@ -533,7 +535,7 @@ namespace APIGestor.Migrations
 
                     b.Property<string>("CnpjBeneficiado");
 
-                    b.Property<DateTime?>("DataDocumento")
+                    b.Property<DateTime>("DataDocumento")
                         .HasColumnType("date");
 
                     b.Property<int?>("EmpresaFinanciadoraId");
@@ -594,7 +596,7 @@ namespace APIGestor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("DataCriacao");
 
                     b.Property<int?>("RegistroFinanceiroId");
 

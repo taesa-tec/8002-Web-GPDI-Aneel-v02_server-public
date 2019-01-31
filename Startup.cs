@@ -33,6 +33,7 @@ namespace APIGestor
                 services.AddDbContext<GestorDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
             services.AddScoped<CatalogService>();
+            services.AddScoped<MailService>();
             services.AddScoped<UserService>();
             services.AddScoped<ProjetoService>();
             services.AddScoped<UserProjetoService>();
@@ -97,7 +98,8 @@ namespace APIGestor
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
             GestorDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            MailService mailService)
         {
             if (env.IsDevelopment())
             {
@@ -111,7 +113,7 @@ namespace APIGestor
             // Criação de estruturas, usuários e permissões
             // na base do ASP.NET Identity Core (caso ainda não
             // existam)
-            new IdentityInitializer(context, userManager, roleManager)
+            new IdentityInitializer(context, userManager, roleManager, mailService)
                 .Initialize();
 
             // Ativando middlewares para uso do Swagger

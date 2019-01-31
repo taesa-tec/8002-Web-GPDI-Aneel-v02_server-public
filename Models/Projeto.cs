@@ -25,7 +25,7 @@ namespace APIGestor.Models
             set => _titulo = value?.Trim();
         }
         public TipoProjeto Tipo { get; set; }
-        public DateTime DataInicio { get; set; }
+        public DateTime? DataInicio { get; set; }
         public string Codigo { get; set; }
         public string TituloDesc { get; set; }
         public string Numero { get;set;}
