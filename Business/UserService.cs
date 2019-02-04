@@ -71,6 +71,7 @@ namespace APIGestor.Business
                         NomeCompleto = dadosUser.NomeCompleto,
                         CPF = dadosUser.CPF,
                         Status = dadosUser.Status,
+                        Role = dadosUser.Role,
                         RazaoSocial = dadosUser.RazaoSocial,
                         FotoPerfil = dadosUser.FotoPerfil,
                         CatalogEmpresaId = dadosUser.CatalogEmpresaId,
@@ -107,6 +108,7 @@ namespace APIGestor.Business
                     User.CatalogEmpresaId = dadosUser.CatalogEmpresaId;
                     User.RazaoSocial = dadosUser.RazaoSocial;
                     User.FotoPerfil = dadosUser.FotoPerfil;
+                    User.Role = dadosUser.Role;
                     User.CPF = dadosUser.CPF;
                     User.DataAtualizacao = DateTime.Now;
                     _context.SaveChanges();
