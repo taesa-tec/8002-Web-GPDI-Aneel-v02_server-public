@@ -24,6 +24,12 @@ namespace APIGestor.Controllers
             return _service.ListarTodos(projetoId);
         }
 
+        [HttpGet("{projetoId}/ExtratoEmpresas")]
+        public RelatorioEmpresa GetA(int projetoId)
+        {
+            return _service.ExtratoFinanceiro(projetoId);
+        }
+
         [Route("[controller]")]
         [HttpPost]
         public Resultado Post([FromBody]Empresa Empresa)
