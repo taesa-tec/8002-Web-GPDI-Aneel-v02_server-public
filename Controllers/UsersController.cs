@@ -58,6 +58,13 @@ namespace APIGestor.Controllers
             return _service.Atualizar(User);
         }
 
+        [HttpPut("me")]
+         public Resultado PutA([FromBody]ApplicationUser _user)
+        {
+            _user.Id = User.FindFirst(JwtRegisteredClaimNames.Jti).Value.ToString();
+            return _service.Atualizar(_user);
+        }
+
         [HttpDelete("{id}")]
         public Resultado Delete(string id)
         {

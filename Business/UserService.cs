@@ -103,13 +103,14 @@ namespace APIGestor.Business
                 }
                 if (resultado.Inconsistencias.Count == 0)
                 {
-                    User.Status = dadosUser.Status;
-                    User.NomeCompleto = dadosUser.NomeCompleto;
-                    User.CatalogEmpresaId = dadosUser.CatalogEmpresaId;
-                    User.RazaoSocial = dadosUser.RazaoSocial;
-                    User.FotoPerfil = dadosUser.FotoPerfil;
-                    User.Role = dadosUser.Role;
-                    User.CPF = dadosUser.CPF;
+                    User.Status = dadosUser.Status>0 ? dadosUser.Status : User.Status;
+                    User.NomeCompleto = String.IsNullOrWhiteSpace(dadosUser.NomeCompleto) ? User.NomeCompleto : dadosUser.NomeCompleto;
+                    User.CatalogEmpresaId = dadosUser.CatalogEmpresaId>0 ? dadosUser.CatalogEmpresaId : User.CatalogEmpresaId;
+                    User.RazaoSocial = String.IsNullOrWhiteSpace(dadosUser.RazaoSocial) ? User.RazaoSocial : dadosUser.RazaoSocial;
+                    User.FotoPerfil = dadosUser.FotoPerfil==null ? User.FotoPerfil : dadosUser.FotoPerfil;
+                    User.Role = String.IsNullOrWhiteSpace(dadosUser.Role) ? User.Role : dadosUser.Role;
+                    User.CPF = String.IsNullOrWhiteSpace(dadosUser.CPF) ? User.CPF : dadosUser.CPF;
+
                     User.DataAtualizacao = DateTime.Now;
                     _context.SaveChanges();
                 }
