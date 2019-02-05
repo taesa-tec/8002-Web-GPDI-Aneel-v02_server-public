@@ -48,7 +48,7 @@ namespace APIGestor.Business
                         var AlocacoesRh = _context.AlocacoesRh
                             .Where(p=>p.EmpresaId == empresa.Id)
                             .Include("RecursoHumano")
-                            .Include("Etapa")
+                            .Include("Etapa.EtapaProdutos")
                             .ToList();
                         total = AlocacoesRh.Count();
                         if (total>0){
@@ -56,7 +56,9 @@ namespace APIGestor.Business
                                 decimal valor = (a.HrsMes1+a.HrsMes2+a.HrsMes3+a.HrsMes4+a.HrsMes5+a.HrsMes6)*a.RecursoHumano.ValorHora;
                                 data.Add(new RelatorioEmpresaItems
                                     {
+                                        AlocacaoId = a.Id,
                                         Desc = a.RecursoHumano.NomeCompleto,
+                                        Etapa = a.Etapa,
                                         Valor = valor
                                     });
                                 ValorCategoria += valor;
@@ -69,7 +71,7 @@ namespace APIGestor.Business
                         .Where(p=>p.EmpresaFinanciadoraId == empresa.Id)
                         .Include(p=>p.RecursoMaterial)
                         .Where(p=>p.RecursoMaterial.CategoriaContabil==categoria)
-                        .Include("Etapa")
+                        .Include("Etapa.EtapaProdutos")
                         .ToList();
                         total = AlocacoesRm.Count();
                         if (total>0){
@@ -77,7 +79,9 @@ namespace APIGestor.Business
                                 decimal valor = (a.Qtd)*a.RecursoMaterial.ValorUnitario;
                                 data.Add(new RelatorioEmpresaItems
                                     {
+                                        AlocacaoId = a.Id,
                                         Desc = a.RecursoMaterial.Nome,
+                                        Etapa = a.Etapa,
                                         Valor = valor
                                     });
                                 ValorCategoria += valor;

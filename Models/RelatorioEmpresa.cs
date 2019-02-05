@@ -25,7 +25,9 @@ namespace APIGestor.Models
         public decimal Valor { get; set; }
     }
     public class RelatorioEmpresaItems{
+        public int AlocacaoId { get; set; }
         public string Desc { get; set; }
+        public Etapa Etapa { get; set; }
         public decimal Valor { get; set; }
     }
 }
