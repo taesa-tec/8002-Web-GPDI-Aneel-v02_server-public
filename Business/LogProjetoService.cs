@@ -31,16 +31,7 @@ namespace APIGestor.Business
 
             if (resultado.Inconsistencias.Count == 0)
             {
-                var data = new LogProjeto
-                {
-                    ProjetoId = dados.ProjetoId,
-                    UserId = dados.UserId,
-                    Tela = dados.Tela,
-                    Acao = dados.Acao,
-                    StatusAnterior = dados.StatusAnterior,
-                    StatusNovo = dados.StatusNovo
-                };
-                _context.LogProjetos.Add(data);
+                _context.LogProjetos.Add(dados);
                 _context.SaveChanges();
             }
             return resultado;

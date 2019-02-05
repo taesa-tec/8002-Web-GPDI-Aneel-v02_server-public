@@ -45,21 +45,7 @@ namespace APIGestor.Business
 
             if (resultado.Inconsistencias.Count == 0)
             {
-                var data = new AlocacaoRh
-                {
-                    ProjetoId = dados.ProjetoId,
-                    EtapaId = dados.EtapaId,
-                    EmpresaId = dados.EmpresaId,
-                    RecursoHumanoId = dados.RecursoHumanoId,
-                    Justificativa = dados.Justificativa,
-                    HrsMes1 = dados.HrsMes1,
-                    HrsMes2 = dados.HrsMes2,
-                    HrsMes3 = dados.HrsMes3,
-                    HrsMes4 = dados.HrsMes5,
-                    HrsMes5 = dados.HrsMes5,
-                    HrsMes6 = dados.HrsMes6
-                };
-                _context.AlocacoesRh.Add(data);
+                _context.AlocacoesRh.Add(dados);
                 _context.SaveChanges();
             }
             return resultado;
@@ -109,9 +95,8 @@ namespace APIGestor.Business
             {
                 if (dados.ProjetoId == null && dados.Id > 0)
                 {
-                    AlocacaoRh AlocacaoRh = _context.AlocacoesRh.Where(
-                    p => p.Id == dados.Id).FirstOrDefault();
-                    dados.ProjetoId = AlocacaoRh.ProjetoId;
+                    dados.ProjetoId = _context.AlocacoesRh.Where(
+                    p => p.Id == dados.Id).FirstOrDefault().ProjetoId;
                 }
                 if (dados.RecursoHumanoId == null)
                 {

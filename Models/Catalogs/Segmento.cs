@@ -15,6 +15,12 @@ namespace APIGestor.Models
             get => _id;
             set => _id = value;
         }
-        public string Segmento { get; set; }
+        private string _nome;
+        public string Nome
+        {
+            get => _nome;
+            set => _nome = value?.Trim();
+        }
+        public string Valor { get; set;}
     }
 }

@@ -45,20 +45,7 @@ namespace APIGestor.Business
 
             if (resultado.Inconsistencias.Count == 0)
             {
-                var data = new RecursoHumano
-                {
-                    ProjetoId = dados.ProjetoId,
-                    EmpresaId = dados.EmpresaId,
-                    ValorHora = dados.ValorHora,
-                    NomeCompleto = dados.NomeCompleto,
-                    Titulacao = dados.Titulacao,
-                    Funcao = dados.Funcao,
-                    Nacionalidade = dados.Nacionalidade,
-                    CPF = dados.CPF,
-                    Passaporte = dados.Passaporte,
-                    UrlCurriculo = dados.UrlCurriculo
-                };
-                _context.RecursoHumanos.Add(data);
+                _context.RecursoHumanos.Add(dados);
                 _context.SaveChanges();
             }
             return resultado;

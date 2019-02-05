@@ -45,17 +45,7 @@ namespace APIGestor.Business
 
             if (resultado.Inconsistencias.Count == 0)
             {
-                var data = new AlocacaoRm
-                {
-                    ProjetoId = dados.ProjetoId,
-                    EtapaId = dados.EtapaId,
-                    EmpresaFinanciadoraId = dados.EmpresaFinanciadoraId,
-                    EmpresaRecebedoraId = dados.EmpresaRecebedoraId,
-                    RecursoMaterialId = dados.RecursoMaterialId,
-                    Qtd = dados.Qtd,
-                    Justificativa = dados.Justificativa
-                };
-                _context.AlocacoesRm.Add(data);
+                _context.AlocacoesRm.Add(dados);
                 _context.SaveChanges();
             }
             return resultado;

@@ -45,15 +45,7 @@ namespace APIGestor.Business
 
             if (resultado.Inconsistencias.Count == 0)
             {
-                var data = new RecursoMaterial
-                {
-                    ProjetoId = dados.ProjetoId,
-                    Nome = dados.Nome,
-                    CategoriaContabil = dados.CategoriaContabil,
-                    ValorUnitario = dados.ValorUnitario,
-                    Especificacao = dados.Especificacao
-                };
-                _context.RecursoMateriais.Add(data);
+                _context.RecursoMateriais.Add(dados);
                 _context.SaveChanges();
             }
             return resultado;

@@ -142,16 +142,7 @@ namespace APIGestor.Business
             
             if (resultado.Inconsistencias.Count == 0)
             {
-                var etapa = new Empresa
-                {
-                    ProjetoId = dados.ProjetoId,
-                    Classificacao = dados.Classificacao,
-                    CatalogEmpresaId = dados.CatalogEmpresaId,
-                    Cnpj = dados.Cnpj,
-                    CatalogEstadoId = dados.CatalogEstadoId,
-                    RazaoSocial = dados.RazaoSocial
-                };
-                _context.Empresas.Add(etapa);
+                _context.Empresas.Add(dados);
                 _context.SaveChanges();
             }
             return resultado;

@@ -64,23 +64,13 @@ namespace APIGestor.Business
             if (resultado.Inconsistencias.Count == 0)
             {
                 string Password = "ApiTaesa@2019";
-                var User = new ApplicationUser()
-                    {
-                        Email = dadosUser.Email,
-                        EmailConfirmed = true,
-                        NomeCompleto = dadosUser.NomeCompleto,
-                        CPF = dadosUser.CPF,
-                        Status = dadosUser.Status,
-                        Role = dadosUser.Role,
-                        RazaoSocial = dadosUser.RazaoSocial,
-                        FotoPerfil = dadosUser.FotoPerfil,
-                        CatalogEmpresaId = dadosUser.CatalogEmpresaId,
-                        DataCadastro = DateTime.Now
-                    };
-                resultado = CreateUser(User, Password, dadosUser.Role);
+
+                dadosUser.EmailConfirmed = true;
+                dadosUser.DataCadastro = DateTime.Now;
+                resultado = CreateUser(dadosUser, Password, dadosUser.Role);
                 if (resultado.Inconsistencias.Count == 0)
                 {
-                    resultado = _mailService.SendMail(User, "Seja bem-vindo ao Gestor P&D", "mail-cadastro");
+                    resultado = _mailService.SendMail(dadosUser, "Seja bem-vindo ao Gestor P&D", "mail-cadastro");
                 }
                 
             }
@@ -104,12 +94,12 @@ namespace APIGestor.Business
                 if (resultado.Inconsistencias.Count == 0)
                 {
                     User.Status = dadosUser.Status>0 ? dadosUser.Status : User.Status;
-                    User.NomeCompleto = String.IsNullOrWhiteSpace(dadosUser.NomeCompleto) ? User.NomeCompleto : dadosUser.NomeCompleto;
-                    User.CatalogEmpresaId = dadosUser.CatalogEmpresaId>0 ? dadosUser.CatalogEmpresaId : User.CatalogEmpresaId;
-                    User.RazaoSocial = String.IsNullOrWhiteSpace(dadosUser.RazaoSocial) ? User.RazaoSocial : dadosUser.RazaoSocial;
+                    User.NomeCompleto = dadosUser.NomeCompleto==null ? User.NomeCompleto : dadosUser.NomeCompleto;
+                    User.CatalogEmpresaId = dadosUser.CatalogEmpresaId==null ? User.CatalogEmpresaId : dadosUser.CatalogEmpresaId;
+                    User.RazaoSocial = dadosUser.RazaoSocial==null ? User.RazaoSocial : dadosUser.RazaoSocial;
                     User.FotoPerfil = dadosUser.FotoPerfil==null ? User.FotoPerfil : dadosUser.FotoPerfil;
-                    User.Role = String.IsNullOrWhiteSpace(dadosUser.Role) ? User.Role : dadosUser.Role;
-                    User.CPF = String.IsNullOrWhiteSpace(dadosUser.CPF) ? User.CPF : dadosUser.CPF;
+                    User.Role = dadosUser.Role==null ? User.Role : dadosUser.Role;
+                    User.CPF = dadosUser.CPF==null ? User.CPF : dadosUser.CPF;
 
                     User.DataAtualizacao = DateTime.Now;
                     _context.SaveChanges();

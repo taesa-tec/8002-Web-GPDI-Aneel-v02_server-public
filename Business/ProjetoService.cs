@@ -117,10 +117,19 @@ namespace APIGestor.Business
                 else
                 {
                     Projeto.Tipo = obterTipoProjeto(dadosProjeto.Numero.ToString());
-                    Projeto.Titulo = dadosProjeto.Titulo;
-                    Projeto.TituloDesc = dadosProjeto.TituloDesc;
-                    Projeto.Numero = dadosProjeto.Numero;
-                    Projeto.CatalogEmpresaId = dadosProjeto.CatalogEmpresaId;
+                    Projeto.Titulo = dadosProjeto.Titulo==null ? Projeto.Titulo : dadosProjeto.Titulo;
+                    Projeto.TituloDesc = dadosProjeto.TituloDesc==null ? Projeto.TituloDesc : dadosProjeto.TituloDesc;
+                    Projeto.Numero = dadosProjeto.Numero==null ? Projeto.Numero : dadosProjeto.Numero;
+                    Projeto.CatalogEmpresaId = dadosProjeto.CatalogEmpresaId==null ? Projeto.CatalogEmpresaId : dadosProjeto.CatalogEmpresaId;
+                    Projeto.CatalogSegmentoId = dadosProjeto.CatalogSegmentoId==null ? Projeto.CatalogSegmentoId : dadosProjeto.CatalogSegmentoId;
+                    Projeto.AvaliacaoInicial = dadosProjeto.AvaliacaoInicial==null ? Projeto.AvaliacaoInicial : dadosProjeto.AvaliacaoInicial;
+                    Projeto.CompartResultados = dadosProjeto.CompartResultados==null ? Projeto.CompartResultados : dadosProjeto.CompartResultados;
+                    Projeto.Motivacao = dadosProjeto.Motivacao==null ? Projeto.Motivacao : dadosProjeto.Motivacao;
+                    Projeto.Originalidade = dadosProjeto.Originalidade==null ? Projeto.Originalidade : dadosProjeto.Originalidade;
+                    Projeto.Aplicabilidade = dadosProjeto.Aplicabilidade==null ? Projeto.Aplicabilidade : dadosProjeto.Aplicabilidade;
+                    Projeto.Relevancia = dadosProjeto.Relevancia==null ? Projeto.Relevancia : dadosProjeto.Relevancia;
+                    Projeto.Razoabilidade = dadosProjeto.Razoabilidade==null ? Projeto.Razoabilidade : dadosProjeto.Razoabilidade;
+                    Projeto.Pesquisas = dadosProjeto.Pesquisas==null ? Projeto.Pesquisas : dadosProjeto.Pesquisas;
                     
                     Empresa empresa = _context.Empresas.Where(e=>e.ProjetoId==dadosProjeto.Id)
                                                 .Where(e=>e.Classificacao==0).FirstOrDefault();

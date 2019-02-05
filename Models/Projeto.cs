@@ -35,8 +35,8 @@ namespace APIGestor.Models
         public CatalogStatus CatalogStatus { get; set; }
         public int? CatalogSegmentoId { get; set; }
         public CatalogSegmento CatalogSegmento { get; set; }
-        public string AvaliacaoInicial { get; set; }
-        public string CompartResultados { get; set; }
+        public bool? AvaliacaoInicial { get; set; }
+        public CompartResultados? CompartResultados { get; set; }
         public string Motivacao { get; set; }
         public string Originalidade { get; set; }
         public string Aplicabilidade { get; set; }
@@ -57,5 +57,12 @@ namespace APIGestor.Models
     {
         PD = 1,
         PG = 2
+    }
+    public enum CompartResultados
+    {
+        DP = 1,
+        EE = 2,
+        EX = 3,
+        CE = 4
     }
 }
