@@ -20,7 +20,9 @@ namespace APIGestor.Models
         public int? ProjetoId { get; set; }
         public int? TemaId { get; set; }
         public int? RegistroFinanceiroId { get; set; }
-        public CategoriaUpload Categoria { get; set; }        
+        public CategoriaUpload Categoria { get; set; }   
+        [NotMapped]
+        public string CategoriaValor { get => Enum.GetName(typeof(CategoriaUpload),Categoria); }     
         public string UserId { get; set; }
         public DateTime Created { get; set; }
     }

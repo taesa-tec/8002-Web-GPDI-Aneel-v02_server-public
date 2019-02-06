@@ -1,5 +1,5 @@
-﻿
-
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,6 +12,8 @@ namespace APIGestor.Models
         public int? ProjetoId { get; set; }
         public string Nome { get; set;}
         public CategoriaContabil CategoriaContabil { get; set; }
+        [NotMapped]
+        public string CategoriaContabilValor { get => Enum.GetName(typeof(CategoriaContabil),CategoriaContabil); }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal ValorUnitario { get; set; }

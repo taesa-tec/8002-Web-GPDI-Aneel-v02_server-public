@@ -13,7 +13,11 @@ namespace APIGestor.Models
         public int Id { get; set; }
         public int? ProjetoId { get; set; }
         public TipoRegistro Tipo { get; set; }
+        [NotMapped]
+        public string TipoValor { get => Enum.GetName(typeof(TipoRegistro),Tipo); }
         public StatusRegistro Status { get; set; }
+        [NotMapped]
+        public string StatusValor { get => Enum.GetName(typeof(StatusRegistro),Status); }
         public int? RecursoHumanoId { get; set; }
         public RecursoHumano RecursoHumano { get; set; }
         public string Mes { get; set; }

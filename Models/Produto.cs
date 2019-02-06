@@ -26,8 +26,14 @@ namespace APIGestor.Models
         }
         public string Desc { get; set; }
         public ProdutoClassificacao Classificacao { get; set; }   
+        [NotMapped]
+        public string ClassificacaoValor { get => Enum.GetName(typeof(ProdutoClassificacao),Classificacao); }
         public ProdutoTipo Tipo { get; set; }
+        [NotMapped]
+        public string TipoValor { get => Enum.GetName(typeof(ProdutoTipo),Tipo); }
         public ProdutoFaseCadeia FaseCadeia { get; set; }
+        [NotMapped]
+        public string FaseCadeiaValor { get => Enum.GetName(typeof(ProdutoFaseCadeia),FaseCadeia); }
         public List<EtapaProduto> EtapaProduto { get; set; }
     }
     public enum ProdutoClassificacao

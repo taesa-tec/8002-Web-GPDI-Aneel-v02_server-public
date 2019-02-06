@@ -1,5 +1,5 @@
-﻿
-
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,8 +17,14 @@ namespace APIGestor.Models
         public decimal ValorHora { get; set; }
         public string NomeCompleto { get; set;}
         public RecursoHumanoTitulacao Titulacao { get; set;}
+        [NotMapped]
+        public string TitulacaoValor { get => Enum.GetName(typeof(RecursoHumanoTitulacao),Titulacao); }
         public RecursoHumanoFuncao Funcao { get; set;}
+        [NotMapped]
+        public string FuncaoValor { get => Enum.GetName(typeof(RecursoHumanoFuncao),Funcao); }
         public RecursoHumanoNacionalidade Nacionalidade { get; set;}
+        [NotMapped]
+        public string NacionalidadeValor { get => Enum.GetName(typeof(RecursoHumanoNacionalidade),Nacionalidade); }
         public string CPF { get; set; }
         public string Passaporte { get; set; }
         public string UrlCurriculo { get; set; }

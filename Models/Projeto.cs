@@ -25,6 +25,8 @@ namespace APIGestor.Models
             set => _titulo = value?.Trim();
         }
         public TipoProjeto Tipo { get; set; }
+        [NotMapped]
+        public string TipoValor { get => Enum.GetName(typeof(TipoProjeto),Tipo); }
         public DateTime? DataInicio { get; set; }
         public string Codigo { get; set; }
         public string TituloDesc { get; set; }
@@ -37,6 +39,8 @@ namespace APIGestor.Models
         public CatalogSegmento CatalogSegmento { get; set; }
         public bool? AvaliacaoInicial { get; set; }
         public CompartResultados? CompartResultados { get; set; }
+        [NotMapped]
+        public string CompartResultadosValor { get => Enum.GetName(typeof(CompartResultados),CompartResultados); }
         public string Motivacao { get; set; }
         public string Originalidade { get; set; }
         public string Aplicabilidade { get; set; }
