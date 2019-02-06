@@ -39,13 +39,10 @@ namespace APIGestor.Models
         public CatalogSegmento CatalogSegmento { get; set; }
         public bool? AvaliacaoInicial { get; set; }
         public CompartResultados? CompartResultados { get; set; }
-        // [NotMapped]
-        // public string CompartResultadosValor { get {
-        //     if (Enum.GetName(typeof(CompartResultados),CompartResultados)!=null)
-        //         return Enum.GetName(typeof(CompartResultados),CompartResultados);
-        //     return "DP"; 
-        //     }
-        // }
+        [NotMapped]
+        public string CompartResultadosValor { 
+            get => CompartResultados == null ? null : Enum.GetName(typeof(CompartResultados),CompartResultados);
+        }
         public string Motivacao { get; set; }
         public string Originalidade { get; set; }
         public string Aplicabilidade { get; set; }
