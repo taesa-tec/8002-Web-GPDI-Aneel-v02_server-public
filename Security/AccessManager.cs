@@ -60,11 +60,13 @@ namespace APIGestor.Security
                         .Result;
                     if (resultadoLogin.Succeeded)
                     {
+                        
                         // Verifica se o usuário em questão possui
                         // a role Acesso-APIGestor
                         // credenciaisValidas = _userManager.IsInRoleAsync(
                         //     userIdentity, Roles.ROLE_ADMIN_GESTOR).Result;
-                        credenciaisValidas = true;
+                        //Verifica se o usuário está Ativo
+                        credenciaisValidas = (userIdentity.Status>0)?true:false;
                     }
                 }
             }

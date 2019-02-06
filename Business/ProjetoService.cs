@@ -58,14 +58,14 @@ namespace APIGestor.Business
             return UserProjetos;
         }
 
-        public Resultado Incluir(Projeto dadosProjeto)
+        public Resultado Incluir(Projeto dados)
         {
-            Resultado resultado = DadosValidos(dadosProjeto);
+            Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de Projeto";
 
             if (resultado.Inconsistencias.Count == 0 &&
                 _context.Projetos.Where(
-                p => p.Numero == dadosProjeto.Numero).Count() > 0)
+                p => p.Numero == dados.Numero).Count() > 0)
             {
                 resultado.Inconsistencias.Add(
                     "Projeto com Número já cadastrado");
@@ -73,11 +73,11 @@ namespace APIGestor.Business
 
             if (resultado.Inconsistencias.Count == 0)
             {
-                dadosProjeto.Tipo = obterTipoProjeto(dadosProjeto.Numero.ToString());
+                dados.Tipo = obterTipoProjeto(dados.Numero.ToString());
 
-                dadosProjeto.Empresas = new List<Empresa>{new Empresa { CatalogEmpresaId = dadosProjeto.CatalogEmpresaId }};
+                dados.Empresas = new List<Empresa>{new Empresa { CatalogEmpresaId = dados.CatalogEmpresaId }};
                 
-                _context.Projetos.Add(dadosProjeto);
+                _context.Projetos.Add(dados);
                 
                 _context.SaveChanges();
                 
@@ -87,19 +87,19 @@ namespace APIGestor.Business
         }
         private TipoProjeto obterTipoProjeto(string Numero){
             TipoProjeto Tipo = (TipoProjeto)1;
-            if (Numero.TrimStart('0').Substring(0,1)=="9")
+            if (Convert.ToInt32(Numero.Substring(0,4))>8999)
                 Tipo = (TipoProjeto)2;
             return Tipo;
         }
-        public Resultado Atualizar(Projeto dadosProjeto)
+        public Resultado Atualizar(Projeto dados)
         {
-            Resultado resultado = DadosValidos(dadosProjeto);
+            Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Atualização de Projeto";
 
             if (resultado.Inconsistencias.Count == 0)
             {
                 Projeto Projeto = _context.Projetos.Where(
-                    p => p.Id == dadosProjeto.Id).FirstOrDefault();
+                    p => p.Id == dados.Id).FirstOrDefault();
 
                 if (Projeto == null)
                 {
@@ -107,7 +107,7 @@ namespace APIGestor.Business
                         "Projeto não encontrado");
                 }
                 CatalogStatus Status = _context.CatalogStatus.Where(
-                    p => p.Id == dadosProjeto.CatalogStatusId).FirstOrDefault();
+                    p => p.Id == dados.CatalogStatusId).FirstOrDefault();
 
                 if (Status == null)
                 {
@@ -116,27 +116,27 @@ namespace APIGestor.Business
                 }
                 else
                 {
-                    Projeto.Tipo = obterTipoProjeto(dadosProjeto.Numero.ToString());
-                    Projeto.Titulo = dadosProjeto.Titulo==null ? Projeto.Titulo : dadosProjeto.Titulo;
-                    Projeto.TituloDesc = dadosProjeto.TituloDesc==null ? Projeto.TituloDesc : dadosProjeto.TituloDesc;
-                    Projeto.Numero = dadosProjeto.Numero==null ? Projeto.Numero : dadosProjeto.Numero;
-                    Projeto.CatalogEmpresaId = dadosProjeto.CatalogEmpresaId==null ? Projeto.CatalogEmpresaId : dadosProjeto.CatalogEmpresaId;
-                    Projeto.CatalogSegmentoId = dadosProjeto.CatalogSegmentoId==null ? Projeto.CatalogSegmentoId : dadosProjeto.CatalogSegmentoId;
-                    Projeto.AvaliacaoInicial = dadosProjeto.AvaliacaoInicial==null ? Projeto.AvaliacaoInicial : dadosProjeto.AvaliacaoInicial;
-                    Projeto.CompartResultados = dadosProjeto.CompartResultados==null ? Projeto.CompartResultados : dadosProjeto.CompartResultados;
-                    Projeto.Motivacao = dadosProjeto.Motivacao==null ? Projeto.Motivacao : dadosProjeto.Motivacao;
-                    Projeto.Originalidade = dadosProjeto.Originalidade==null ? Projeto.Originalidade : dadosProjeto.Originalidade;
-                    Projeto.Aplicabilidade = dadosProjeto.Aplicabilidade==null ? Projeto.Aplicabilidade : dadosProjeto.Aplicabilidade;
-                    Projeto.Relevancia = dadosProjeto.Relevancia==null ? Projeto.Relevancia : dadosProjeto.Relevancia;
-                    Projeto.Razoabilidade = dadosProjeto.Razoabilidade==null ? Projeto.Razoabilidade : dadosProjeto.Razoabilidade;
-                    Projeto.Pesquisas = dadosProjeto.Pesquisas==null ? Projeto.Pesquisas : dadosProjeto.Pesquisas;
+                    Projeto.Tipo = obterTipoProjeto(dados.Numero.ToString());
+                    Projeto.Titulo = dados.Titulo==null ? Projeto.Titulo : dados.Titulo;
+                    Projeto.TituloDesc = dados.TituloDesc==null ? Projeto.TituloDesc : dados.TituloDesc;
+                    Projeto.Numero = dados.Numero==null ? Projeto.Numero : dados.Numero;
+                    Projeto.CatalogEmpresaId = dados.CatalogEmpresaId==null ? Projeto.CatalogEmpresaId : dados.CatalogEmpresaId;
+                    Projeto.CatalogSegmentoId = dados.CatalogSegmentoId==null ? Projeto.CatalogSegmentoId : dados.CatalogSegmentoId;
+                    Projeto.AvaliacaoInicial = dados.AvaliacaoInicial==null ? Projeto.AvaliacaoInicial : dados.AvaliacaoInicial;
+                    Projeto.CompartResultados = Enum.IsDefined(typeof(CompartResultados), dados.CompartResultados)? Projeto.CompartResultados : dados.CompartResultados;
+                    Projeto.Motivacao = dados.Motivacao==null ? Projeto.Motivacao : dados.Motivacao;
+                    Projeto.Originalidade = dados.Originalidade==null ? Projeto.Originalidade : dados.Originalidade;
+                    Projeto.Aplicabilidade = dados.Aplicabilidade==null ? Projeto.Aplicabilidade : dados.Aplicabilidade;
+                    Projeto.Relevancia = dados.Relevancia==null ? Projeto.Relevancia : dados.Relevancia;
+                    Projeto.Razoabilidade = dados.Razoabilidade==null ? Projeto.Razoabilidade : dados.Razoabilidade;
+                    Projeto.Pesquisas = dados.Pesquisas==null ? Projeto.Pesquisas : dados.Pesquisas;
                     
-                    Empresa empresa = _context.Empresas.Where(e=>e.ProjetoId==dadosProjeto.Id)
+                    Empresa empresa = _context.Empresas.Where(e=>e.ProjetoId==dados.Id)
                                                 .Where(e=>e.Classificacao==0).FirstOrDefault();
                     if (empresa!=null){
-                        empresa.CatalogEmpresaId = dadosProjeto.CatalogEmpresaId;
+                        empresa.CatalogEmpresaId = dados.CatalogEmpresaId;
                     }else{
-                        Projeto.Empresas = new List<Empresa>{new Empresa { CatalogEmpresaId = dadosProjeto.CatalogEmpresaId }};
+                        Projeto.Empresas = new List<Empresa>{new Empresa { CatalogEmpresaId = dados.CatalogEmpresaId }};
                     }
                     _context.SaveChanges();
                 }
@@ -212,23 +212,23 @@ namespace APIGestor.Business
 
             return resultado;
         }
-        public Resultado ValidaDadosData(Projeto dadosProjeto)
+        public Resultado ValidaDadosData(Projeto dados)
         {
             var resultado = new Resultado();
 
-            if (dadosProjeto == null)
+            if (dados == null)
             {
                 resultado.Inconsistencias.Add(
                     "Preencha os Dados do Projeto");
             }
             else{
-                if (dadosProjeto.Id<=0)
+                if (dados.Id<=0)
                 {
                     resultado.Inconsistencias.Add(
                         "Preencha o Id do Projeto");
                 }
                 DateTime DataInicio;
-                if (!DateTime.TryParse(dadosProjeto.DataInicio.ToString(), out DataInicio))
+                if (!DateTime.TryParse(dados.DataInicio.ToString(), out DataInicio))
                 {
                     resultado.Inconsistencias.Add(
                         "Preencha a data de Início do Projeto");
@@ -236,16 +236,16 @@ namespace APIGestor.Business
             }
             return resultado;
         }
-        public Resultado AtualizaDataInicio(Projeto dadosProjeto)
+        public Resultado AtualizaDataInicio(Projeto dados)
         {
-            Resultado resultado = ValidaDadosData(dadosProjeto);
+            Resultado resultado = ValidaDadosData(dados);
             resultado.Acao = "Atualização de Data Início do Projeto";
 
             if (resultado.Inconsistencias.Count == 0)
             {
                 Projeto Projeto = _context.Projetos
                         .Include("CatalogEmpresa")
-                        .Where( p => p.Id == dadosProjeto.Id).FirstOrDefault();
+                        .Where( p => p.Id == dados.Id).FirstOrDefault();
 
                 if (Projeto == null)
                 {
@@ -254,7 +254,7 @@ namespace APIGestor.Business
                 }
                 else
                 {
-                    Projeto.DataInicio = dadosProjeto.DataInicio;
+                    Projeto.DataInicio = dados.DataInicio;
                     var codigo = GerarCodigoProjeto(Projeto);
                     Projeto.Codigo = codigo;
                     _context.SaveChanges();
