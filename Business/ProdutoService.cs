@@ -65,6 +65,7 @@ namespace APIGestor.Business
             {
                 _context.Produtos.Add(dadosProduto);
                 _context.SaveChanges();
+                resultado.Id = dadosProduto.Id;
             }
 
             return resultado;

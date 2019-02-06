@@ -10,7 +10,7 @@ namespace APIGestor.Models
         {
             get { return Inconsistencias == null || Inconsistencias.Count == 0; }
         }
-
+        public int? Id { get; set; }
         public List<string> Inconsistencias { get; } = new List<string>();
     }
 }

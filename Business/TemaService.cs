@@ -70,6 +70,7 @@ namespace APIGestor.Business
                 };
                 _context.Temas.Add(tema);
                 _context.SaveChanges();
+                resultado.Id = tema.Id;
             }
             return resultado;
         }

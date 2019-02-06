@@ -62,6 +62,7 @@ namespace APIGestor.Business
             {
                 _context.UserProjetos.Add(dadosUserProjeto);
                 _context.SaveChanges();
+                resultado.Id = dadosUserProjeto.Id;
             }
 
             return resultado;
