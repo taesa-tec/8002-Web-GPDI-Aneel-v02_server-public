@@ -84,7 +84,7 @@ namespace APIGestor.Business
                 };
                 _context.Etapas.Add(etapa);
                 _context.SaveChanges();
-                resultado.Id = etapa.Id;
+                resultado.Id = etapa.Id.ToString();
             }
             return resultado;
         }

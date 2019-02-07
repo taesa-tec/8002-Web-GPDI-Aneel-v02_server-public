@@ -48,7 +48,7 @@ namespace APIGestor.Business
             {
                 _context.Empresas.Add(dados);
                 _context.SaveChanges();
-                resultado.Id = dados.Id;
+                resultado.Id = dados.Id.ToString();
             }
             return resultado;
         }

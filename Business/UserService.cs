@@ -64,13 +64,14 @@ namespace APIGestor.Business
             if (resultado.Inconsistencias.Count == 0)
             {
                 string Password = "ApiTaesa@2019";
-
                 dadosUser.EmailConfirmed = true;
                 dadosUser.DataCadastro = DateTime.Now;
                 resultado = CreateUser(dadosUser, Password, dadosUser.Role);
+                string UserId = resultado.Id;
                 if (resultado.Inconsistencias.Count == 0)
                 {
                     resultado = _mailService.SendMail(dadosUser, "Seja bem-vindo ao Gestor P&D", "mail-cadastro");
+                    resultado.Id = UserId;
                 }
                 
             }
@@ -186,6 +187,7 @@ namespace APIGestor.Business
                 if (result.Succeeded &&
                     !String.IsNullOrWhiteSpace(initialRole))
                 {
+                    resultado.Id = user.Id;
                     _userManager.AddToRoleAsync(user, initialRole).Wait();
                 }
                 if (result.Errors.Count()>0){

@@ -11,7 +11,7 @@ namespace APIGestor.Models
     }
     public class RelatorioEtapas
     {
-        // public string Nome { get; set; }
+        public string Nome { get; set; }
         public Etapa Etapa { get; set; }
         public List<RelatorioEtapaEmpresas> Empresas { get; set; }
         public int Total { get; set; }
@@ -29,7 +29,6 @@ namespace APIGestor.Models
         public int AlocacaoId { get; set; }
         public string Desc { get; set; }
         public CategoriaContabil CategoriaContabil { get; set; }
-        public Empresa Empresa { get; set; }
         public decimal Valor { get; set; }
     }
 }

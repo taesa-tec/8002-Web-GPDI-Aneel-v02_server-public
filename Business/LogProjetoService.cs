@@ -33,7 +33,7 @@ namespace APIGestor.Business
             {
                 _context.LogProjetos.Add(dados);
                 _context.SaveChanges();
-                resultado.Id = dados.Id;
+                resultado.Id = dados.Id.ToString();
             }
             return resultado;
         }

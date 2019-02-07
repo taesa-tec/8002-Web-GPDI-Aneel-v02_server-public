@@ -81,7 +81,7 @@ namespace APIGestor.Business
                 
                 _context.SaveChanges();
                 
-                resultado.Id = dados.Id;
+                resultado.Id = dados.Id.ToString();
                 
             }
 

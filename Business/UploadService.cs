@@ -72,7 +72,7 @@ namespace APIGestor.Business
                             };   
                             _context.Uploads.Add(upload);
                             _context.SaveChanges();
-                            resultado.Id = upload.Id;
+                            resultado.Id = upload.Id.ToString();
                             string fullPath = Path.Combine(newPath, upload.Id.ToString());
                             using (var stream = new FileStream(fullPath, FileMode.Create))
                             {
