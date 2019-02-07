@@ -21,6 +21,7 @@ namespace APIGestor.Models
         [ForeignKey("UserId")]
         public ApplicationUser ApplicationUser { get; set; }
         public int ProjetoId { get; set; }
+        public Projeto Projeto {get; set;}
         public int CatalogUserPermissaoId { get; set; }
         public CatalogUserPermissao CatalogUserPermissao { get; set; }
 

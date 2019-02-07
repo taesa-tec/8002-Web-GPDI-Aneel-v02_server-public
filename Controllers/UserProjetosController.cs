@@ -27,7 +27,7 @@ namespace APIGestor.Controllers
 
 
         [HttpGet("me")]
-        public IEnumerable<Projeto> Get()
+        public IEnumerable<UserProjeto> Get()
         {
             var user = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
 
@@ -38,7 +38,7 @@ namespace APIGestor.Controllers
         }
 
         [HttpGet("{userId}")]
-        public IEnumerable<Projeto> GetA(string userId)
+        public IEnumerable<UserProjeto> GetA(string userId)
         {
             if (userId != null)
                 return _service.ListarTodos(userId);
@@ -47,7 +47,7 @@ namespace APIGestor.Controllers
         }
 
         [HttpPost]
-        public Resultado Post([FromBody]UserProjeto UserProjeto)
+        public Resultado Post([FromBody]List<UserProjeto> UserProjeto)
         {
             return _service.Incluir(UserProjeto);
         }

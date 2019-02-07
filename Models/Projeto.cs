@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace APIGestor.Models
 {
@@ -56,6 +57,7 @@ namespace APIGestor.Models
         public List<AlocacaoRm> AlocacoesRm { get; set; }
         public List<Etapa> Etapas { get; set; }
         public ICollection<Tema> Tema { get; set; }
+        [JsonIgnore]
         public List<UserProjeto> UsersProjeto { get; set; }
         public List<Empresa> Empresas { get; set; }
     }
