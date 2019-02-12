@@ -36,7 +36,7 @@ namespace APIGestor.Business
                 DateTime? dataInicio = projeto.DataInicio;
                 foreach(Etapa etapa in etapas){
                     etapa.DataInicio = dataInicio;
-                    dataInicio = dataInicio.Value.AddMonths(6);
+                    dataInicio = dataInicio.Value.AddMonths(etapa.Duracao);
                     etapa.DataFim = dataInicio;
                 }
             }
@@ -80,6 +80,7 @@ namespace APIGestor.Business
                 {
                     ProjetoId = dados.ProjetoId,
                     Desc = dados.Desc,
+                    Duracao = 6,
                     EtapaProdutos = this.MontEtapaProdutos(dados)
                 };
                 _context.Etapas.Add(etapa);

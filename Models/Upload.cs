@@ -30,12 +30,9 @@ namespace APIGestor.Models
     }
     public enum CategoriaUpload
     {
-        UsuarioPerfil = 1,
-        Tema = 2,
-        RegistroFinanceiro = 3,
-        RelatorioFinalAnual = 4,
-        RelatorioFinalAuditoria = 5,
-        XmlGerado = 6,
-        LogDuto = 7
+        RelatorioFinalAnual = 1,
+        RelatorioFinalAuditoria = 2,
+        XmlGerado = 3,
+        LogDuto = 4
     }
 }

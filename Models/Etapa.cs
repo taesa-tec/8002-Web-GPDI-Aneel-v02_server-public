@@ -16,6 +16,7 @@ namespace APIGestor.Models
             set => _id = value;
         }
         public int ProjetoId { get;set; }
+        public int Duracao { get; set; }
         public string Desc { get; set; }
         [Column(TypeName="date")]
         public DateTime? DataInicio { get; set; }

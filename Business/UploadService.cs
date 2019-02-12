@@ -72,7 +72,7 @@ namespace APIGestor.Business
                             var upload = new Upload{
                                 NomeArquivo = fileName,
                                 UserId = UserId,
-                                Url = newPath,
+                                Url = "wwwroot/"+folderName,
                                 ProjetoId = Upload.ProjetoId,
                                 TemaId = Upload.TemaId,
                                 RegistroFinanceiroId = Upload.RegistroFinanceiroId,

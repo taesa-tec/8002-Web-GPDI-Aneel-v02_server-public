@@ -20,40 +20,42 @@ namespace APIGestor.Controllers
             _service = service;
         }
 
+        // [HttpGet("{projetoId}/XmlInteresseExecucao/{versao}")]
+        // public ContentResult GetA(int projetoId, string versao)
+        // {
+        //     var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
+        //     return new ContentResult
+        //     {
+        //         Content = _service.GerarXmlInteresseExec(projetoId, versao, userId).ToString(),
+        //         ContentType = "text/xml",
+        //         StatusCode = 200
+        //     };
+        // }
         [HttpGet("{projetoId}/XmlProjetoPed/{versao}")]
-        public ContentResult Get(int projetoId, string versao)
+        public Resultado Get(int projetoId, string versao)
         {
             var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return new ContentResult
-            {
-                Content = _service.GerarXmlProjetoPed(projetoId, versao, userId).ToString(),
-                ContentType = "text/xml",
-                StatusCode = 200
-            };
+            return _service.GerarXmlProjetoPed(projetoId, versao, userId);
         }
 
         [HttpGet("{projetoId}/XmlInteresseExecucao/{versao}")]
-        public ContentResult GetA(int projetoId, string versao)
+        public Resultado GetA(int projetoId, string versao)
         {
             var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return new ContentResult
-            {
-                Content = _service.GerarXmlInteresseExec(projetoId, versao, userId).ToString(),
-                ContentType = "text/xml",
-                StatusCode = 200
-            };
+            return _service.GerarXmlInteresseExec(projetoId, versao, userId);
         }
         
         [HttpGet("{projetoId}/XmlInicioExecucao/{versao}")]
-        public ContentResult GetB(int projetoId, string versao)
+        public Resultado GetB(int projetoId, string versao)
         {
             var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return new ContentResult
-            {
-                Content = _service.GerarXmlInicioExec(projetoId, versao, userId).ToString(),
-                ContentType = "text/xml",
-                StatusCode = 200
-            };
+            return _service.GerarXmlInicioExec(projetoId, versao, userId);
+        }
+        [HttpGet("{projetoId}/XmlProrrogacao/{versao}")]
+        public Resultado GetC(int projetoId, string versao)
+        {
+            var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
+            return _service.GerarXmlProrrogacao(projetoId, versao, userId);
         }
 
         [HttpGet("{projetoId}/ObterXmls")]
@@ -61,11 +63,5 @@ namespace APIGestor.Controllers
         {
             return _service.ObterXmls(projetoId);
         }
-        // [HttpGet("{projetoId}/XmlInteresse/{versao}")]
-        // public ActionResult<Tema> Get(int projetoId, string versao)
-        // {
-        //     return _service.GerarXmlInteresse(projetoId, versao);
-        // }
-
     }
 }
