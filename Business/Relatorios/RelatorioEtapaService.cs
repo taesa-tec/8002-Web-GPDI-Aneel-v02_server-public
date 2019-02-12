@@ -119,15 +119,15 @@ namespace APIGestor.Business
                         }   
                     }
                     if (data.Count()>0){
-                            RelatorioEtapaEmpresas.Add(new RelatorioEtapaEmpresas{
-                                Desc = nomeEmpresa,
-                                Empresa = empresa.First().Empresa,
-                                Items = data,
-                                Total = data.Count(),
-                                Valor = ValorEmpresa
-                            });
-                        }
-                        ValorEtapa += ValorEmpresa;
+                        RelatorioEtapaEmpresas.Add(new RelatorioEtapaEmpresas{
+                            Desc = nomeEmpresa,
+                            Empresa = empresa.First().Empresa,
+                            Items = data,
+                            Total = data.Count(),
+                            Valor = ValorEmpresa
+                        });
+                    }
+                    ValorEtapa += ValorEmpresa;
                 }
                 //Fim Outros Relatorios
                 relatorio.Etapas.Add(new RelatorioEtapas

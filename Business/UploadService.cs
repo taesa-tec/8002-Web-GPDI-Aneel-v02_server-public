@@ -26,6 +26,14 @@ namespace APIGestor.Business
             _hostingEnvironment = hostingEnvironment;
             _context = context;
         }
+        public IEnumerable<Upload> ObterLogDuto(int projetoId)
+        {
+            var Upload = _context.Uploads
+                .Where(p => p.ProjetoId == projetoId)
+                .Where(p => p.Categoria == (CategoriaUpload)7)
+                .ToList();
+            return Upload;
+        }
         public IEnumerable<Upload> ListarTodos(int projetoId)
         {
             var Upload = _context.Uploads
@@ -72,7 +80,6 @@ namespace APIGestor.Business
                             };   
                             _context.Uploads.Add(upload);
                             _context.SaveChanges();
-                            resultado.Id = upload.Id.ToString();
                             string fullPath = Path.Combine(newPath, upload.Id.ToString());
                             using (var stream = new FileStream(fullPath, FileMode.Create))
                             {

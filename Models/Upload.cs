@@ -24,6 +24,8 @@ namespace APIGestor.Models
         [NotMapped]
         public string CategoriaValor { get => Enum.GetName(typeof(CategoriaUpload),Categoria); }     
         public string UserId { get; set; }
+        [ForeignKey("UserId")]
+        public ApplicationUser User {get; set;}
         public DateTime Created { get; set; }
     }
     public enum CategoriaUpload
@@ -32,6 +34,8 @@ namespace APIGestor.Models
         Tema = 2,
         RegistroFinanceiro = 3,
         RelatorioFinalAnual = 4,
-        RelatorioFinalAuditoria = 5
+        RelatorioFinalAuditoria = 5,
+        XmlGerado = 6,
+        LogDuto = 7
     }
 }

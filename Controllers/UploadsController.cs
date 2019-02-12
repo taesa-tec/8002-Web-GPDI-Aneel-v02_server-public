@@ -20,7 +20,11 @@ namespace APIGestor.Controllers
         {
             _service = service;
         }
-
+        [HttpGet("{projetoId}/ObterLogDuto")]
+        public IEnumerable<Upload> GetA(int projetoId)
+        {
+            return _service.ObterLogDuto(projetoId);
+        }
         [HttpGet("download/{Id}")]
         public FileResult Download(int id)  
         {  
