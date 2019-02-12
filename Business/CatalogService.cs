@@ -18,48 +18,36 @@ namespace APIGestor.Business
             _context = context;
         }
 
-        public IEnumerable<CatalogTema> ListarCatalogTema()
-        {
-            var Catalog = _context.CatalogTema
+        public IEnumerable<CatalogTema> ListarCatalogTema()=>
+            _context.CatalogTema
                 .Include("SubTemas")
+                .Select(st=>new CatalogTema{
+                    Id = st.Id,
+                    Nome = st.Nome,
+                    Valor = st.Valor,
+                    SubTemas = st.SubTemas.OrderBy(sb=>sb.Order).OrderBy(sb=>sb.Valor).ToList()
+                })
+                .OrderBy(q => q.Order)
+                .ToList();
+        public IEnumerable<CatalogStatus> ListarCatalogStatus()=>
+            _context.CatalogStatus
                 .OrderBy(p => p.Id)
                 .ToList();
-            return Catalog;
-        }
-        public IEnumerable<CatalogStatus> ListarCatalogStatus()
-        {
-            var Catalog = _context.CatalogStatus
+        public IEnumerable<CatalogSegmento> ListarCatalogSegmento()=>
+            _context.CatalogSegmentos
                 .OrderBy(p => p.Id)
                 .ToList();
-            return Catalog;
-        }
-        public IEnumerable<CatalogSegmento> ListarCatalogSegmento()
-        {
-            var Catalog = _context.CatalogSegmentos
+        public IEnumerable<CatalogUserPermissao> ListarCatalogUserPermissao()=>
+            _context.CatalogUserPermissoes
                 .OrderBy(p => p.Id)
                 .ToList();
-            return Catalog;
-        }
-        public IEnumerable<CatalogUserPermissao> ListarCatalogUserPermissao()
-        {
-            var Catalog = _context.CatalogUserPermissoes
+        public IEnumerable<CatalogEmpresa> ListarCatalogEmpresa()=>
+            _context.CatalogEmpresas
                 .OrderBy(p => p.Id)
                 .ToList();
-            return Catalog;
-        }
-        public IEnumerable<CatalogEmpresa> ListarCatalogEmpresa()
-        {
-            var Catalog = _context.CatalogEmpresas
-                .OrderBy(p => p.Id)
-                .ToList();
-            return Catalog;
-        }
-        public IEnumerable<CatalogEstado> ListarCatalogEstados()
-        {
-            var Catalog = _context.CatalogEstados
+        public IEnumerable<CatalogEstado> ListarCatalogEstados()=>
+            _context.CatalogEstados
                 .OrderBy(p => p.Nome)
                 .ToList();
-            return Catalog;
-        }
     }
 }

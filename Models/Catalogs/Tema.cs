@@ -11,6 +11,7 @@ namespace APIGestor.Models
         public string Nome { get; set; }
         public string Valor { get; set; }
         public ICollection<CatalogSubTema> SubTemas { get; set; }
+        public int Order {get; set;}
 
     }
     public class CatalogSubTema
@@ -20,5 +21,6 @@ namespace APIGestor.Models
         public int CatalogTemaId { get; set; }
         public string Nome { get; set; }
         public string Valor { get; set; }
+        public int Order {get; set;}
     }
 }
