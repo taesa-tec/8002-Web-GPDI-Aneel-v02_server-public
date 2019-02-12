@@ -29,7 +29,7 @@ namespace APIGestor.Business
         {
             var Upload = _context.Uploads
                 .Where(p => p.ProjetoId == projetoId)
-                .Where(p => p.Categoria == (CategoriaUpload)6)
+                .Where(p => p.Categoria == (CategoriaUpload)3)
                 .ToList();
             return Upload;
         }
@@ -59,7 +59,7 @@ namespace APIGestor.Business
                 UserId = UserId,
                 Url = "wwwroot/"+folderName,
                 ProjetoId = Projeto.Id,
-                Categoria = (CategoriaUpload)6
+                Categoria = (CategoriaUpload)3
             };
             _context.Uploads.Add(upload);
             _context.SaveChanges();

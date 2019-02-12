@@ -30,7 +30,7 @@ namespace APIGestor.Business
         {
             var Upload = _context.Uploads
                 .Where(p => p.ProjetoId == projetoId)
-                .Where(p => p.Categoria == (CategoriaUpload)7)
+                .Where(p => p.Categoria == (CategoriaUpload)4)
                 .ToList();
             return Upload;
         }
