@@ -68,15 +68,15 @@ namespace APIGestor.Business
                 }
                 else
                 {
-                    RecursoHumano.EmpresaId = dados.EmpresaId;
-                    RecursoHumano.ValorHora = dados.ValorHora;
-                    RecursoHumano.NomeCompleto = dados.NomeCompleto;
-                    RecursoHumano.Titulacao = dados.Titulacao;
-                    RecursoHumano.Funcao = dados.Funcao;
-                    RecursoHumano.Nacionalidade = dados.Nacionalidade;
-                    RecursoHumano.CPF = dados.CPF;
-                    RecursoHumano.Passaporte = dados.Passaporte;
-                    RecursoHumano.UrlCurriculo = dados.UrlCurriculo;
+                    RecursoHumano.EmpresaId = dados.EmpresaId<=0 ? RecursoHumano.EmpresaId : dados.EmpresaId;
+                    RecursoHumano.ValorHora = dados.ValorHora<=0 ? RecursoHumano.ValorHora : dados.ValorHora;;
+                    RecursoHumano.NomeCompleto = dados.NomeCompleto==null ? RecursoHumano.NomeCompleto : dados.NomeCompleto;
+                    RecursoHumano.Titulacao = Enum.IsDefined(typeof(RecursoHumanoTitulacao),dados.Titulacao) ? dados.Titulacao : RecursoHumano.Titulacao;
+                    RecursoHumano.Funcao = Enum.IsDefined(typeof(RecursoHumanoFuncao),dados.Funcao) ? dados.Funcao : RecursoHumano.Funcao;
+                    RecursoHumano.Nacionalidade = Enum.IsDefined(typeof(RecursoHumanoNacionalidade),dados.Nacionalidade) ? dados.Nacionalidade : RecursoHumano.Nacionalidade;
+                    RecursoHumano.CPF = dados.CPF==null ? RecursoHumano.CPF : dados.CPF;;
+                    RecursoHumano.Passaporte = dados.Passaporte==null ? RecursoHumano.Passaporte : dados.Passaporte;;
+                    RecursoHumano.UrlCurriculo = dados.UrlCurriculo==null ? RecursoHumano.UrlCurriculo : dados.UrlCurriculo;;
                     _context.SaveChanges();
                 }
             }
@@ -92,50 +92,52 @@ namespace APIGestor.Business
             }
             else
             {
-                if (String.IsNullOrEmpty(dados.NomeCompleto))
-                {
-                    resultado.Inconsistencias.Add("Preencha o Nome Completo do RecursoHumano");
-                }
-                if (String.IsNullOrEmpty(dados.Titulacao.ToString()))
-                {
-                    resultado.Inconsistencias.Add("Preencha a Titulação do RecursoHumano");
-                }
-                if (String.IsNullOrEmpty(dados.Funcao.ToString()))
-                {
-                    resultado.Inconsistencias.Add("Preencha o Função do RecursoHumano");
-                }
-                if (String.IsNullOrEmpty(dados.Nacionalidade.ToString()))
-                {
-                    resultado.Inconsistencias.Add("Preencha a Nacionalidade do RecursoHumano");
-                }
-                if (dados.Nacionalidade.ToString() == "Brasileiro")
-                {
-                    if (String.IsNullOrEmpty(dados.CPF))
+                if (dados.ProjetoId>0){
+                    if (String.IsNullOrEmpty(dados.NomeCompleto))
                     {
-                        resultado.Inconsistencias.Add("Preencha o CPF do RecursoHumano");
-                    }else{
-                        RecursoHumano RecursoHumano = _context.RecursoHumanos
-                                .Where(p => p.ProjetoId == dados.ProjetoId)
-                                .Where(p => p.CPF == dados.CPF).FirstOrDefault();
-                        if (RecursoHumano != null)
-                        {
-                            resultado.Inconsistencias.Add("CPF já cadastrado como recurso humano para esse projeto. Remova ou Atualize.");
-                        }
+                        resultado.Inconsistencias.Add("Preencha o Nome Completo do RecursoHumano");
                     }
-                }
-                else
-                {
-                    if (String.IsNullOrEmpty(dados.Passaporte))
+                    if (String.IsNullOrEmpty(dados.Titulacao.ToString()))
                     {
-                        resultado.Inconsistencias.Add("Preencha o Passaporte do RecursoHumano");
-                    }else{
-                        if (dados.ProjetoId > 0){
+                        resultado.Inconsistencias.Add("Preencha a Titulação do RecursoHumano");
+                    }
+                    if (String.IsNullOrEmpty(dados.Funcao.ToString()))
+                    {
+                        resultado.Inconsistencias.Add("Preencha o Função do RecursoHumano");
+                    }
+                    if (String.IsNullOrEmpty(dados.Nacionalidade.ToString()))
+                    {
+                        resultado.Inconsistencias.Add("Preencha a Nacionalidade do RecursoHumano");
+                    }
+                    if (dados.Nacionalidade.ToString() == "Brasileiro")
+                    {
+                        if (String.IsNullOrEmpty(dados.CPF))
+                        {
+                            resultado.Inconsistencias.Add("Preencha o CPF do RecursoHumano");
+                        }else{
                             RecursoHumano RecursoHumano = _context.RecursoHumanos
                                     .Where(p => p.ProjetoId == dados.ProjetoId)
-                                    .Where(p => p.Passaporte == dados.Passaporte).FirstOrDefault();
+                                    .Where(p => p.CPF == dados.CPF).FirstOrDefault();
                             if (RecursoHumano != null)
                             {
-                                resultado.Inconsistencias.Add("Passporte já cadastrado como recurso humano para esse projeto. Remova ou Atualize.");
+                                resultado.Inconsistencias.Add("CPF já cadastrado como recurso humano para esse projeto. Remova ou Atualize.");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (String.IsNullOrEmpty(dados.Passaporte))
+                        {
+                            resultado.Inconsistencias.Add("Preencha o Passaporte do RecursoHumano");
+                        }else{
+                            if (dados.ProjetoId > 0){
+                                RecursoHumano RecursoHumano = _context.RecursoHumanos
+                                        .Where(p => p.ProjetoId == dados.ProjetoId)
+                                        .Where(p => p.Passaporte == dados.Passaporte).FirstOrDefault();
+                                if (RecursoHumano != null)
+                                {
+                                    resultado.Inconsistencias.Add("Passporte já cadastrado como recurso humano para esse projeto. Remova ou Atualize.");
+                                }
                             }
                         }
                     }
@@ -167,13 +169,15 @@ namespace APIGestor.Business
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de RecursoHumano";
 
-            RecursoHumano RecursoHumano = _context.RecursoHumanos.First(t => t.Id == id);
+            RecursoHumano RecursoHumano = _context.RecursoHumanos
+                .First(t => t.Id == id);
             if (RecursoHumano == null)
             {
                 resultado.Inconsistencias.Add("RecursoHumano não encontrada");
             }
             else
             {
+                _context.AlocacoesRh.RemoveRange(_context.AlocacoesRh.Where(t=>t.RecursoHumanoId == id));
                 _context.RecursoHumanos.Remove(RecursoHumano);
                 _context.SaveChanges();
             }

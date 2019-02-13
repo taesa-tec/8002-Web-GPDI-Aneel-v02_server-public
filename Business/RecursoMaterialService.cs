@@ -68,10 +68,10 @@ namespace APIGestor.Business
                 }
                 else
                 {
-                    RecursoMaterial.Nome = dados.Nome;
-                    RecursoMaterial.ValorUnitario = dados.ValorUnitario;
-                    RecursoMaterial.CategoriaContabil = dados.CategoriaContabil;
-                    RecursoMaterial.Especificacao = dados.Especificacao;
+                    RecursoMaterial.Nome = dados.Nome==null ? RecursoMaterial.Nome : dados.Nome;
+                    RecursoMaterial.ValorUnitario = dados.ValorUnitario<0 ? RecursoMaterial.ValorUnitario : dados.ValorUnitario;
+                    RecursoMaterial.CategoriaContabil = Enum.IsDefined(typeof(CategoriaContabil),dados.CategoriaContabil)? dados.CategoriaContabil : RecursoMaterial.CategoriaContabil;
+                    RecursoMaterial.Especificacao = dados.Especificacao==null ? RecursoMaterial.Especificacao : dados.Especificacao;
                     _context.SaveChanges();
                 }
             }
@@ -118,6 +118,7 @@ namespace APIGestor.Business
             }
             else
             {
+                _context.AlocacoesRm.RemoveRange(_context.AlocacoesRm.Where(t=>t.RecursoMaterialId == id));
                 _context.RecursoMateriais.Remove(RecursoMaterial);
                 _context.SaveChanges();
             }
