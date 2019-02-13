@@ -20,6 +20,9 @@ namespace APIGestor.Business
         public IEnumerable<AlocacaoRm> ListarTodos(int projetoId)
         {
             var AlocacaoRm = _context.AlocacoesRm
+                .Include("RecursoMaterial")
+                .Include("EmpresaFinanciadora")
+                .Include("EmpresaRecebedora")
                 .Where(p => p.ProjetoId == projetoId)
                 .ToList();
             return AlocacaoRm;
