@@ -242,6 +242,7 @@ namespace APIGestor.Business
                     {
                         var equipeList = new List<EquipeEmpresa>();
                         foreach (RecursoHumano rh in projeto.RecursosHumanos
+                            .Where(p=>p.CPF!=null)
                             .Where(p => p.Empresa == empresa)
                             .ToList())
                         {
