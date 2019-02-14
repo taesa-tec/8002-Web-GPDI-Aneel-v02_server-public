@@ -21,8 +21,8 @@ namespace APIGestor.Business
         {
             var AlocacaoRm = _context.AlocacoesRm
                 .Include("RecursoMaterial")
-                .Include("EmpresaFinanciadora")
-                .Include("EmpresaRecebedora")
+                .Include("EmpresaFinanciadora.CatalogEmpresa")
+                .Include("EmpresaRecebedora.CatalogEmpresa")
                 .Where(p => p.ProjetoId == projetoId)
                 .ToList();
             return AlocacaoRm;

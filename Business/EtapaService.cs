@@ -150,11 +150,17 @@ namespace APIGestor.Business
         {
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de Etapa";
-
+            
             Etapa Etapa = _context.Etapas.First(t => t.Id == id);
+            int Last = _context.Etapas
+                .OrderByDescending(e=>e.Id)
+                .First(e=>e.ProjetoId == Etapa.ProjetoId).Id;
             if (Etapa == null)
             {
                 resultado.Inconsistencias.Add("Etapa não encontrada");
+            }else if (Last != id)
+            {
+                resultado.Inconsistencias.Add("Possível somente excluir a última etapa do projeto");
             }
             else
             {   _context.EtapaProdutos.RemoveRange(_context.EtapaProdutos.Where(t=>t.EtapaId == id));

@@ -28,6 +28,8 @@ namespace APIGestor.Models
     public class RelatorioEtapaItems{
         public int AlocacaoId { get; set; }
         public string Desc { get; set; }
+        public RecursoHumano RecursoHumano{ get; set; }
+        public RecursoMaterial RecursoMaterial{ get; set; }
         public string CategoriaContabil { get; set; }
         public decimal Valor { get; set; }
     }

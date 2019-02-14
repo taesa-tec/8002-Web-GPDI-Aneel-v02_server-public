@@ -21,7 +21,8 @@ namespace APIGestor.Business
         {
             var AlocacaoRh = _context.AlocacoesRh
                 .Include("RecursoHumano")
-                .Include("Empresa")
+                .Include("Empresa.CatalogEmpresa")
+                .Include("Etapa")
                 .Where(p => p.ProjetoId == projetoId)
                 .ToList();
             return AlocacaoRh;
@@ -78,7 +79,7 @@ namespace APIGestor.Business
                     AlocacaoRh.HrsMes1 = dados.HrsMes1;
                     AlocacaoRh.HrsMes2 = dados.HrsMes2;
                     AlocacaoRh.HrsMes3 = dados.HrsMes3;
-                    AlocacaoRh.HrsMes4 = dados.HrsMes5;
+                    AlocacaoRh.HrsMes4 = dados.HrsMes4;
                     AlocacaoRh.HrsMes5 = dados.HrsMes5;
                     AlocacaoRh.HrsMes6 = dados.HrsMes6;
                     _context.SaveChanges();

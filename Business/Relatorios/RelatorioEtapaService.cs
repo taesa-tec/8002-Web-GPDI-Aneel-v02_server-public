@@ -92,6 +92,7 @@ namespace APIGestor.Business
                                     {
                                         AlocacaoId = a.Id,
                                         Desc = a.RecursoHumano.NomeCompleto,
+                                        RecursoHumano = a.RecursoHumano,
                                         CategoriaContabil = categoria.ToString(),
                                         Valor = valor
                                     });
@@ -115,6 +116,7 @@ namespace APIGestor.Business
                                         {
                                             AlocacaoId = a.Id,
                                             Desc = a.RecursoMaterial.Nome,
+                                            RecursoMaterial = a.RecursoMaterial,
                                             CategoriaContabil = categoria.ToString(),
                                             Valor = valor
                                         });
