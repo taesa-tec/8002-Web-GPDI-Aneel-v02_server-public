@@ -20,6 +20,7 @@ namespace APIGestor.Business
         public IEnumerable<Empresa> ListarTodos(int projetoId)
         {
             var Empresas = _context.Empresas
+                .Include("CatalogEmpresa")
                 .Where(p => p.ProjetoId == projetoId)
                 .ToList();
             return Empresas;

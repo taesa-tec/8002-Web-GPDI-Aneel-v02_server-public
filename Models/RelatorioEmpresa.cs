@@ -28,6 +28,8 @@ namespace APIGestor.Models
         public int AlocacaoId { get; set; }
         public string Desc { get; set; }
         public Etapa Etapa { get; set; }
+        public RecursoHumano RecursoHumano { get; set; }
+        public RecursoMaterial RecursoMaterial { get; set; }
         public decimal Valor { get; set; }
     }
 }

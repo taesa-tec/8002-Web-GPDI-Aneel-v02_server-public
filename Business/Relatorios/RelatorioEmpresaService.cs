@@ -72,6 +72,7 @@ namespace APIGestor.Business
                                     AlocacaoId = a.Id,
                                     Desc = a.RecursoHumano.NomeCompleto,
                                     Etapa = a.Etapa,
+                                    RecursoHumano = a.RecursoHumano,
                                     Valor = valor
                                 });
                                 ValorCategoria += valor;
@@ -99,6 +100,7 @@ namespace APIGestor.Business
                                     AlocacaoId = a.Id,
                                     Desc = a.RecursoMaterial.Nome,
                                     Etapa = a.Etapa,
+                                    RecursoMaterial = a.RecursoMaterial,
                                     Valor = valor
                                 });
                                 ValorCategoria += valor;

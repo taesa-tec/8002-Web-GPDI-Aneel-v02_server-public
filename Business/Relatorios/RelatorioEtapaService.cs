@@ -22,19 +22,23 @@ namespace APIGestor.Business
         public RelatorioEtapa ExtratoFinanceiro(int projetoId)
         {
             var AlocacoesRh = _context.AlocacoesRh
+                .Include("CatalogEmpresa")
                 .Where(m => m.ProjetoId == projetoId)
                 .Select(m=>new { 
                         EtapaId = m.EtapaId,
                         Etapa = m.Etapa,
-                        Empresa = m.Empresa
+                        Empresa = m.Empresa,
+                        CatalogEmpresa = m.Empresa.CatalogEmpresa
                         })
                 .ToList();
             var AlocacoesRm = _context.AlocacoesRm
+                .Include("CatalogEmpresa")
                 .Where(m => m.ProjetoId == projetoId)
                 .Select(m=>new { 
                         EtapaId = m.EtapaId,
                         Etapa = m.Etapa,
-                        Empresa = m.EmpresaFinanciadora
+                        Empresa = m.EmpresaFinanciadora,
+                        CatalogEmpresa = m.EmpresaFinanciadora.CatalogEmpresa
                     })
                 .ToList(); 
             var Etapas = AlocacoesRh
@@ -56,7 +60,8 @@ namespace APIGestor.Business
                 string nomeEtapa = "Etapa "+i;
 
                 //var empresas = new List<RelatorioEtapaEmpresas>();
-                var empresas = Etapas.Where(e=>e.EtapaId == Etapa.First().EtapaId)
+                var empresas = Etapas
+                            .Where(e=>e.EtapaId == Etapa.First().EtapaId)
                             .GroupBy(e=>e.Empresa);
 
                 var RelatorioEtapaEmpresas = new List<RelatorioEtapaEmpresas>();
@@ -87,7 +92,7 @@ namespace APIGestor.Business
                                     {
                                         AlocacaoId = a.Id,
                                         Desc = a.RecursoHumano.NomeCompleto,
-                                        //CategoriaContabil = categoria.ToString(),
+                                        CategoriaContabil = categoria.ToString(),
                                         Valor = valor
                                     });
                                 ValorEmpresa += valor;
@@ -110,7 +115,7 @@ namespace APIGestor.Business
                                         {
                                             AlocacaoId = a.Id,
                                             Desc = a.RecursoMaterial.Nome,
-                                        // Etapa = a.Etapa,
+                                            CategoriaContabil = categoria.ToString(),
                                             Valor = valor
                                         });
                                     ValorEmpresa += valor;
