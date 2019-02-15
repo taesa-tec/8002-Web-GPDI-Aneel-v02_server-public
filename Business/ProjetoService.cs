@@ -206,10 +206,9 @@ namespace APIGestor.Business
                     resultado.Inconsistencias.Add(
                         "Preencha o Número do Projeto");
                 }
-                if (Projeto.Numero.Length>5){
-                    resultado.Inconsistencias.Add(
-                        "Maximo de 5 digitos campo Número do Projeto");
-                }
+                if (Projeto.Numero!=null)
+                    if (Projeto.Numero.Length>5)
+                        resultado.Inconsistencias.Add("Maximo de 5 digitos campo Número do Projeto");
             }
 
             return resultado;

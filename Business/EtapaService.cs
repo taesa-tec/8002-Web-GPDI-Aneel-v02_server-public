@@ -24,8 +24,9 @@ namespace APIGestor.Business
                 .Where(p => p.ProjetoId == projetoId)
                 .OrderBy(p => p.Id)
                 .ToList();
-                
-            return AddDataEtapas(Etapas);
+            if (Etapas.Count>0)
+                return AddDataEtapas(Etapas);
+            return null;
         }
         private List<Etapa> AddDataEtapas(List<Etapa> etapas){
             Projeto projeto = _context.Projetos
