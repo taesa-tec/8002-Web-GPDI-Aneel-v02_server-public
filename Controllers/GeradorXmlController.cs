@@ -63,5 +63,19 @@ namespace APIGestor.Controllers
         {
             return _service.ObterXmls(projetoId);
         }
+
+
+        [HttpGet("{projetoId}/XmlProjetoPed/ValidaDados")]
+        public Resultado Get(int projetoId)
+        {
+            Projeto projeto = _service.obterProjeto(projetoId);
+            if (projeto==null){
+                var resultado = new Resultado();
+                resultado.Inconsistencias.Add("Projeto não localizado");
+                return resultado;
+            }else{
+                return _service.ValidaXmlProjetoPed(projeto);
+            }
+        }
     }
 }
