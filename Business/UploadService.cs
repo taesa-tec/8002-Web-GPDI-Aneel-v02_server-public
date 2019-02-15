@@ -56,7 +56,7 @@ namespace APIGestor.Business
             {
                 try
                 {
-                    string folderName = "uploads";
+                    string folderName = "uploads/";
                     string webRootPath = _hostingEnvironment.WebRootPath;
                     string newPath = Path.Combine(webRootPath, folderName);
                     if (!Directory.Exists(newPath))
