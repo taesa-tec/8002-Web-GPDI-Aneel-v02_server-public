@@ -28,9 +28,20 @@ namespace APIGestor.Business
         public IEnumerable<Upload> ObterXmls(int projetoId)
         {
             var Upload = _context.Uploads
-                .Include("ApplicationUser")
+                .Include("User")
                 .Where(p => p.ProjetoId == projetoId)
                 .Where(p => p.Categoria == (CategoriaUpload)3)
+                .Select(p=>new Upload{
+                    Id = p.Id,
+                    NomeArquivo = p.NomeArquivo,
+                    ProjetoId = p.ProjetoId,
+                    TemaId = p.TemaId,
+                    RegistroFinanceiroId = p.RegistroFinanceiroId,
+                    Categoria = p.Categoria,
+                    UserId = p.UserId,
+                    User= new ApplicationUser{ NomeCompleto = p.User.NomeCompleto },
+                    Created = p.Created
+                })
                 .ToList();
             return Upload;
         }
