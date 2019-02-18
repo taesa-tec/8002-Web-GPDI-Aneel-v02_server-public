@@ -992,7 +992,7 @@ namespace APIGestor.Migrations
             modelBuilder.Entity("APIGestor.Models.RegistroObs", b =>
                 {
                     b.HasOne("APIGestor.Models.RegistroFinanceiro")
-                        .WithMany("ObsIternas")
+                        .WithMany("ObsInternas")
                         .HasForeignKey("RegistroFinanceiroId");
 
                     b.HasOne("APIGestor.Models.ApplicationUser", "ApplicationUser")

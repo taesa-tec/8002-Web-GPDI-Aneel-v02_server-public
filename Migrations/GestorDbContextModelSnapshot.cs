@@ -118,7 +118,7 @@ namespace APIGestor.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<byte[]>("FotoPerfil");
+                    b.Property<int?>("FotoPerfilId");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -156,6 +156,8 @@ namespace APIGestor.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CatalogEmpresaId");
+
+                    b.HasIndex("FotoPerfilId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -350,6 +352,21 @@ namespace APIGestor.Migrations
                     b.HasIndex("ProdutoId");
 
                     b.ToTable("EtapaProdutos");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.FotoPerfil", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("File");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FotoPerfil");
                 });
 
             modelBuilder.Entity("APIGestor.Models.LogProjeto", b =>
@@ -548,17 +565,18 @@ namespace APIGestor.Migrations
 
                     b.Property<int?>("EmpresaRecebedoraId");
 
-                    b.Property<bool>("EquiparLabExistente");
+                    b.Property<bool?>("EquiparLabExistente");
 
-                    b.Property<bool>("EquiparLabNovo");
+                    b.Property<bool?>("EquiparLabNovo");
 
                     b.Property<string>("EspecificacaoTecnica");
 
                     b.Property<string>("FuncaoRecurso");
 
-                    b.Property<bool>("ItemNacional");
+                    b.Property<bool?>("ItemNacional");
 
-                    b.Property<string>("Mes");
+                    b.Property<DateTime?>("Mes")
+                        .HasColumnType("date");
 
                     b.Property<string>("NomeItem");
 
@@ -566,9 +584,9 @@ namespace APIGestor.Migrations
 
                     b.Property<int?>("ProjetoId");
 
-                    b.Property<string>("QtdHrs");
+                    b.Property<int?>("QtdHrs");
 
-                    b.Property<int>("QtdItens");
+                    b.Property<int?>("QtdItens");
 
                     b.Property<int?>("RecursoHumanoId");
 
@@ -578,9 +596,9 @@ namespace APIGestor.Migrations
 
                     b.Property<int>("Tipo");
 
-                    b.Property<string>("TipoDocumento");
+                    b.Property<int>("TipoDocumento");
 
-                    b.Property<decimal>("ValorUnitario")
+                    b.Property<decimal?>("ValorUnitario")
                         .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
@@ -604,7 +622,7 @@ namespace APIGestor.Migrations
 
                     b.Property<DateTime>("Created");
 
-                    b.Property<int?>("RegistroFinanceiroId");
+                    b.Property<int>("RegistroFinanceiroId");
 
                     b.Property<string>("Texto");
 
@@ -668,7 +686,7 @@ namespace APIGestor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Categoria");
+                    b.Property<int?>("Categoria");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
@@ -687,6 +705,8 @@ namespace APIGestor.Migrations
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RegistroFinanceiroId");
 
                     b.HasIndex("TemaId");
 
@@ -875,6 +895,10 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.CatalogEmpresa", "CatalogEmpresa")
                         .WithMany()
                         .HasForeignKey("CatalogEmpresaId");
+
+                    b.HasOne("APIGestor.Models.FotoPerfil", "FotoPerfil")
+                        .WithMany()
+                        .HasForeignKey("FotoPerfilId");
                 });
 
             modelBuilder.Entity("APIGestor.Models.CatalogSubTema", b =>
@@ -997,10 +1021,11 @@ namespace APIGestor.Migrations
             modelBuilder.Entity("APIGestor.Models.RegistroObs", b =>
                 {
                     b.HasOne("APIGestor.Models.RegistroFinanceiro")
-                        .WithMany("ObsIternas")
-                        .HasForeignKey("RegistroFinanceiroId");
+                        .WithMany("ObsInternas")
+                        .HasForeignKey("RegistroFinanceiroId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("APIGestor.Models.ApplicationUser", "ApplicationUser")
+                    b.HasOne("APIGestor.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
@@ -1032,6 +1057,10 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("APIGestor.Models.Upload", b =>
                 {
+                    b.HasOne("APIGestor.Models.RegistroFinanceiro")
+                        .WithMany("Uploads")
+                        .HasForeignKey("RegistroFinanceiroId");
+
                     b.HasOne("APIGestor.Models.Tema")
                         .WithMany("Uploads")
                         .HasForeignKey("TemaId");

@@ -51,6 +51,8 @@ namespace APIGestor
             services.AddScoped<RelatorioEtapaService>();
             services.AddScoped<GeradorXmlService>();
 
+            services.AddScoped<RegistroFinanceiroService>();
+
             // Ativando a utilização do ASP.NET Identity, a fim de
             // permitir a recuperação de seus objetos via injeção de
             // dependências

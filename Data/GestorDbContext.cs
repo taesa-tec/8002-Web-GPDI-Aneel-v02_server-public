@@ -9,6 +9,7 @@ namespace APIGestor.Data
         public GestorDbContext(
             DbContextOptions<GestorDbContext> options) : base(options)
         { }
+        public DbSet<FotoPerfil> FotoPerfil { get; set; }
         public DbSet<LogProjeto> LogProjetos { get; set; }
         public DbSet<Upload> Uploads { get; set; }
         public DbSet<CatalogUserPermissao> CatalogUserPermissoes { get; set; }
@@ -31,6 +32,7 @@ namespace APIGestor.Data
         public DbSet<RecursoMaterial> RecursoMateriais { get; set; }
         public DbSet<AlocacaoRm> AlocacoesRm { get; set; }
         public DbSet<RegistroFinanceiro> RegistrosFinanceiros { get; set; }
+        public DbSet<RegistroObs> RegistroObs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Upload

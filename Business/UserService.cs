@@ -32,8 +32,9 @@ namespace APIGestor.Business
         {
             if (!String.IsNullOrWhiteSpace(userId))
             {
-                return _context.Users.Where(
-                    p => p.Id == userId).Include("CatalogEmpresa").FirstOrDefault();
+                return _context.Users
+                    .Include("FotoPerfil")
+                    .Where(p => p.Id == userId).Include("CatalogEmpresa").FirstOrDefault();
             }
             else
                 return null;
@@ -121,6 +122,7 @@ namespace APIGestor.Business
             }
             else
             {
+                _context.FotoPerfil.RemoveRange(_context.FotoPerfil.Where(t=>t.UserId == userId));
                 _context.Users.Remove(User);
                 _context.SaveChanges();
             }
