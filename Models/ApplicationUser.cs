@@ -7,9 +7,9 @@ namespace APIGestor.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public UserStatus Status { get; set; }
+        public UserStatus? Status { get; set; }
         [NotMapped]
-        public string StatusValor { get => Enum.GetName(typeof(UserStatus),Status); }
+        public string StatusValor { get => (Status!=null)? Enum.GetName(typeof(UserStatus),Status) : null; }
         public string NomeCompleto { get; set; }
         public int? CatalogEmpresaId;
         [ForeignKey("CatalogEmpresaId")]

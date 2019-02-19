@@ -95,7 +95,7 @@ namespace APIGestor.Business
                 }
                 if (resultado.Inconsistencias.Count == 0)
                 {
-                    User.Status = Enum.IsDefined(typeof(UserStatus), dadosUser.Status)? dadosUser.Status : User.Status;
+                    User.Status = (dadosUser.Status!=null && Enum.IsDefined(typeof(UserStatus), dadosUser.Status)) ? dadosUser.Status : User.Status;
                     User.NomeCompleto = dadosUser.NomeCompleto==null ? User.NomeCompleto : dadosUser.NomeCompleto;
                     User.CatalogEmpresaId = dadosUser.CatalogEmpresaId==null ? User.CatalogEmpresaId : dadosUser.CatalogEmpresaId;
                     User.RazaoSocial = dadosUser.RazaoSocial==null ? User.RazaoSocial : dadosUser.RazaoSocial;

@@ -22,6 +22,7 @@ namespace APIGestor.Business
             var LogProjeto = _context.LogProjetos
                 .Include("User")
                 .Where(p => p.ProjetoId == projetoId)
+                .OrderByDescending(p=>p.Created)
                 .ToList();
             return LogProjeto;
         }
