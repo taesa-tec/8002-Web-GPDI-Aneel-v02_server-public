@@ -118,6 +118,7 @@ namespace APIGestor.Business
                 }
                 else
                 {
+                    Projeto.CatalogStatusId = dados.CatalogStatusId==null ? Projeto.CatalogStatusId : dados.CatalogStatusId;
                     Projeto.Tipo = obterTipoProjeto(dados.Numero.ToString());
                     Projeto.Titulo = dados.Titulo==null ? Projeto.Titulo : dados.Titulo;
                     Projeto.TituloDesc = dados.TituloDesc==null ? Projeto.TituloDesc : dados.TituloDesc;
