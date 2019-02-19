@@ -20,7 +20,7 @@ namespace APIGestor.Models
         public Projeto Projeto { get; set; } 
         public string UserId { get; set; }
         [ForeignKey("UserId")]
-        public ApplicationUser ApplicationUser { get; set; } 
+        public ApplicationUser User { get; set; } 
         public string Tela { get; set; }
         public string Acao { get; set; }
         public string StatusAnterior { get; set; }

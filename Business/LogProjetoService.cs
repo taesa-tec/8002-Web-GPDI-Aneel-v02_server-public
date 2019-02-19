@@ -20,6 +20,7 @@ namespace APIGestor.Business
         public IEnumerable<LogProjeto> ListarTodos(int projetoId)
         {
             var LogProjeto = _context.LogProjetos
+                .Include("User")
                 .Where(p => p.ProjetoId == projetoId)
                 .ToList();
             return LogProjeto;
@@ -68,14 +69,19 @@ namespace APIGestor.Business
                 if (String.IsNullOrEmpty(dados.Acao))
                 {
                     resultado.Inconsistencias.Add("Preencha a Ação");
-                }
-                if (String.IsNullOrEmpty(dados.StatusAnterior))
-                {
-                    resultado.Inconsistencias.Add("Preencha o StatusAnterior");
-                }
-                if (String.IsNullOrEmpty(dados.StatusNovo))
-                {
-                    resultado.Inconsistencias.Add("Preencha a StatusNovo");
+                }else{
+                    if (dados.Acao.ToString()=="Create"||dados.Acao.ToString()=="Update"){
+                        if (String.IsNullOrEmpty(dados.StatusNovo))
+                        {
+                            resultado.Inconsistencias.Add("Preencha o StatusNovo");
+                        }
+                    }
+                    if (dados.Acao.ToString()=="Update"||dados.Acao.ToString()=="Delete"){
+                        if (String.IsNullOrEmpty(dados.StatusAnterior))
+                        {
+                            resultado.Inconsistencias.Add("Preencha o StatusAnterior");
+                        }
+                    }
                 }
             }
             return resultado;
