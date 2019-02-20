@@ -19,9 +19,9 @@ namespace APIGestor.Controllers
         }
 
         [HttpGet("{projetoId}/log")]
-        public IEnumerable<LogProjeto> Get(int projetoId)
+        public IEnumerable<LogProjeto> Get(int projetoId, Acoes? acao, int pag=1, int size=30)
         {
-            return _service.ListarTodos(projetoId);
+            return _service.ListarTodos(projetoId, acao, pag, size);
         }
 
         [Route("[controller]")]

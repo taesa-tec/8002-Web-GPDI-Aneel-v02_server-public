@@ -17,14 +17,19 @@ namespace APIGestor.Business
         {
             _context = context;
         }
-        public IEnumerable<LogProjeto> ListarTodos(int projetoId)
+        public IEnumerable<LogProjeto> ListarTodos(int projetoId, Acoes? acao, int pag, int size)
         {
             var LogProjeto = _context.LogProjetos
                 .Include("User")
-                .Where(p => p.ProjetoId == projetoId)
+                .Where(p => p.ProjetoId == projetoId);
+            if (acao!=null){
+                LogProjeto = LogProjeto
+                    .Where(p => p.Acao == (Acoes)acao);
+            }
+            return LogProjeto
                 .OrderByDescending(p=>p.Created)
-                .ToList();
-            return LogProjeto;
+                .Skip((pag-1) * size)
+                .Take(size);
         }
         public Resultado Incluir(LogProjeto dados)
         {
@@ -67,7 +72,7 @@ namespace APIGestor.Business
                 {
                     resultado.Inconsistencias.Add("Preencha a Tela");
                 }
-                if (String.IsNullOrEmpty(dados.Acao))
+                if (dados.Acao.ToString()==null)
                 {
                     resultado.Inconsistencias.Add("Preencha a Ação");
                 }else{

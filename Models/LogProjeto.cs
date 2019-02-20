@@ -22,7 +22,9 @@ namespace APIGestor.Models
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; } 
         public string Tela { get; set; }
-        public string Acao { get; set; }
+        public Acoes Acao { get; set; }
+        [NotMapped]
+        public string AcaoValor { get => Enum.GetName(typeof(Acoes),Acao); }
         public string StatusAnterior { get; set; }
         public string StatusNovo { get; set; }
         public DateTime Created { get; set; }

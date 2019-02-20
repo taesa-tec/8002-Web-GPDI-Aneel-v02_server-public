@@ -20,6 +20,7 @@ namespace APIGestor.Business
         public IEnumerable<RecursoHumano> ListarTodos(int projetoId)
         {
             var RecursoHumano = _context.RecursoHumanos
+                .Include("Empresa.CatalogEmpresa")
                 .Where(p => p.ProjetoId == projetoId)
                 .ToList();
             return RecursoHumano;
@@ -115,12 +116,14 @@ namespace APIGestor.Business
                         {
                             resultado.Inconsistencias.Add("Preencha o CPF do RecursoHumano");
                         }else{
-                            RecursoHumano RecursoHumano = _context.RecursoHumanos
-                                    .Where(p => p.ProjetoId == dados.ProjetoId)
-                                    .Where(p => p.CPF == dados.CPF).FirstOrDefault();
-                            if (RecursoHumano != null)
-                            {
-                                resultado.Inconsistencias.Add("CPF já cadastrado como recurso humano para esse projeto. Remova ou Atualize.");
+                            if (dados.Id<=0){
+                                RecursoHumano RecursoHumano = _context.RecursoHumanos
+                                        .Where(p => p.ProjetoId == dados.ProjetoId)
+                                        .Where(p => p.CPF == dados.CPF).FirstOrDefault();
+                                if (RecursoHumano != null)
+                                {
+                                    resultado.Inconsistencias.Add("CPF já cadastrado como recurso humano para esse projeto. Remova ou Atualize.");
+                                }
                             }
                         }
                     }
