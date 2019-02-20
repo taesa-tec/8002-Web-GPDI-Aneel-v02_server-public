@@ -126,7 +126,7 @@ namespace APIGestor.Business
                     Projeto.CatalogEmpresaId = dados.CatalogEmpresaId==null ? Projeto.CatalogEmpresaId : dados.CatalogEmpresaId;
                     Projeto.CatalogSegmentoId = dados.CatalogSegmentoId==null ? Projeto.CatalogSegmentoId : dados.CatalogSegmentoId;
                     Projeto.AvaliacaoInicial = dados.AvaliacaoInicial==null ? Projeto.AvaliacaoInicial : dados.AvaliacaoInicial;
-                    Projeto.CompartResultados = Enum.IsDefined(typeof(CompartResultados), dados.CompartResultados)? dados.CompartResultados : Projeto.CompartResultados;
+                    Projeto.CompartResultados = (dados.CompartResultados!=null && Enum.IsDefined(typeof(CompartResultados), dados.CompartResultados)) ? dados.CompartResultados : Projeto.CompartResultados;
                     Projeto.Motivacao = dados.Motivacao==null ? Projeto.Motivacao : dados.Motivacao;
                     Projeto.Originalidade = dados.Originalidade==null ? Projeto.Originalidade : dados.Originalidade;
                     Projeto.Aplicabilidade = dados.Aplicabilidade==null ? Projeto.Aplicabilidade : dados.Aplicabilidade;

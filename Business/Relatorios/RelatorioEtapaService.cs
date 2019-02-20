@@ -103,6 +103,7 @@ namespace APIGestor.Business
                         }else{
                         // Outras Categorias
                             var rms = _context.AlocacoesRm
+                                .Where(p=>p.EtapaId == Etapa.First().EtapaId)
                                 .Where(p=>p.EmpresaFinanciadoraId == empresa.First().Empresa.Id)
                                 .Include(p=>p.RecursoMaterial)
                                 .Where(p=>p.RecursoMaterial.CategoriaContabil==categoria)
