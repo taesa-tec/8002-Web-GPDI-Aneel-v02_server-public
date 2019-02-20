@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Business;
 using APIGestor.Models;
+using System.Linq;
 
 namespace APIGestor.Controllers
 {
@@ -19,9 +20,14 @@ namespace APIGestor.Controllers
         }
 
         [HttpGet("{projetoId}/log")]
-        public IEnumerable<LogProjeto> Get(int projetoId, Acoes? acao, int pag=1, int size=30)
+        public object Get(int projetoId, Acoes? acao, string user=null, int pag=1, int size=30)
         {
-            return _service.ListarTodos(projetoId, acao, pag, size);
+            var logs = _service.ListarTodos(projetoId, acao, user, pag, size);
+
+            return new{
+                Total = logs.Count(),
+                Itens = logs
+            };
         }
 
         [Route("[controller]")]

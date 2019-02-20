@@ -17,7 +17,7 @@ namespace APIGestor.Business
         {
             _context = context;
         }
-        public IEnumerable<LogProjeto> ListarTodos(int projetoId, Acoes? acao, int pag, int size)
+        public IEnumerable<LogProjeto> ListarTodos(int projetoId, Acoes? acao, string user, int pag, int size)
         {
             var LogProjeto = _context.LogProjetos
                 .Include("User")
@@ -25,6 +25,10 @@ namespace APIGestor.Business
             if (acao!=null){
                 LogProjeto = LogProjeto
                     .Where(p => p.Acao == (Acoes)acao);
+            }
+            if (user!=null){
+                LogProjeto = LogProjeto
+                    .Where(p => p.UserId == user);
             }
             return LogProjeto
                 .OrderByDescending(p=>p.Created)
