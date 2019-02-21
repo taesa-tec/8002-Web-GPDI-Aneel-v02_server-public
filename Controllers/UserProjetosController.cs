@@ -10,7 +10,6 @@ using System.Linq;
 
 namespace APIGestor.Controllers
 {
-    [Route("api/UserProjetos")]
     [ApiController]
     [Authorize("Bearer")]
 
@@ -25,8 +24,8 @@ namespace APIGestor.Controllers
             _service = service;
         }
 
-
-        [HttpGet("me")]
+        //[Route("api/UserProjetos")]
+        [HttpGet("api/UserProjetos/me")]
         public IEnumerable<UserProjeto> Get()
         {
             var user = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
@@ -37,7 +36,8 @@ namespace APIGestor.Controllers
                 return null;
         }
 
-        [HttpGet("{userId}")]
+        //[Route("api/UserProjetos")]
+        [HttpGet("api/UserProjetos/{userId}")]
         public IEnumerable<UserProjeto> GetA(string userId)
         {
             if (userId != null)
@@ -46,18 +46,21 @@ namespace APIGestor.Controllers
                 return null;
         }
 
+        [Route("api/UserProjetos")]
         [HttpPost]
         public Resultado Post([FromBody]List<UserProjeto> UserProjeto)
         {
             return _service.Incluir(UserProjeto);
         }
 
-        [HttpPut]
-        public Resultado Put([FromBody]UserProjeto UserProjeto)
+        [Route("api/ProjetoUsers")]
+        [HttpPost]
+        public Resultado PostA([FromBody]List<UserProjeto> UserProjeto)
         {
-            return _service.Atualizar(UserProjeto);
+            return _service.IncluirProjeto(UserProjeto);
         }
 
+        [Route("api/UserProjetos")]
         [HttpDelete("{projetoId}")]
         public Resultado Delete(int projetoId)
         {

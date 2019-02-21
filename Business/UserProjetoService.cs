@@ -37,8 +37,7 @@ namespace APIGestor.Business
                 .ToList();
             return UserProjetos;
         }
-
-        public Resultado Incluir(List<UserProjeto> dadosUserProjeto)
+        public Resultado IncluirProjeto(List<UserProjeto> dadosUserProjeto)
         {   
             Resultado resultado = new Resultado();
             foreach(UserProjeto dados in dadosUserProjeto)
@@ -49,11 +48,10 @@ namespace APIGestor.Business
                 {
                     // Verifica se já existe associação para o projeto e remove 
                     UserProjeto UserProjeto = _context.UserProjetos.Where(
-                            p => p.UserId == dados.UserId).Where(
                             p => p.ProjetoId == dados.ProjetoId).FirstOrDefault();
                     if (UserProjeto!=null)
                     {
-                        _context.UserProjetos.Remove(UserProjeto);
+                        _context.UserProjetos.RemoveRange(_context.UserProjetos.Where(t=>t.ProjetoId == dados.ProjetoId));
                     }
                     _context.UserProjetos.Add(dados);
                 }
@@ -65,30 +63,30 @@ namespace APIGestor.Business
             }
             return resultado;
         }
-
-        public Resultado Atualizar(UserProjeto dados)
-        {
-            Resultado resultado = DadosValidos(dados);
-            resultado.Acao = "Atualização de UserProjeto";
-
-            if (resultado.Inconsistencias.Count == 0)
+        public Resultado Incluir(List<UserProjeto> dadosUserProjeto)
+        {   
+            Resultado resultado = new Resultado();
+            foreach(UserProjeto dados in dadosUserProjeto)
             {
-                UserProjeto UserProjeto = _context.UserProjetos.Where(
-                    p => p.UserId == dados.UserId).Where(
-                    p => p.ProjetoId == dados.ProjetoId).FirstOrDefault();
+                resultado = DadosValidos(dados);
 
-                if (UserProjeto == null)
+                if (resultado.Inconsistencias.Count == 0)
                 {
-                    resultado.Inconsistencias.Add(
-                        "Usuário ou Projeto não encontrados.");
-                }
-                else
-                {
-                    UserProjeto.CatalogUserPermissaoId = dados.CatalogUserPermissaoId;
-                    _context.SaveChanges();
+                    // Verifica se já existe associação para o projeto e remove 
+                    UserProjeto UserProjeto = _context.UserProjetos.Where(
+                            p => p.UserId == dados.UserId).FirstOrDefault();
+                    if (UserProjeto!=null)
+                    {
+                        _context.UserProjetos.RemoveRange(_context.UserProjetos.Where(t=>t.UserId == dados.UserId));
+                    }
+                    _context.UserProjetos.Add(dados);
                 }
             }
-
+            resultado.Acao = "Inclusão de UserProjeto";
+            if (resultado.Inconsistencias.Count == 0)
+            {
+                _context.SaveChanges();
+            }
             return resultado;
         }
 
