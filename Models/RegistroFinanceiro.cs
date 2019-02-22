@@ -27,6 +27,8 @@ namespace APIGestor.Models
         [ForeignKey("EmpresaFinanciadoraId")]
         public Empresa EmpresaFinanciadora { get; set; }
         public TipoDocumento TipoDocumento { get; set; }
+        [NotMapped]
+        public string TipoDocumentoValor { get => Enum.GetName(typeof(TipoDocumento),TipoDocumento); }
         public string NumeroDocumento { get; set; }
         [Column(TypeName="date")]
         public DateTime? DataDocumento { get; set; }
@@ -41,6 +43,9 @@ namespace APIGestor.Models
         public string Beneficiado { get; set; }
         public string CnpjBeneficiado { get; set; }
         public CategoriaContabil CategoriaContabil { get; set; }
+        [NotMapped]
+        public string CategoriaContabilValor { get => Enum.GetName(typeof(CategoriaContabil),CategoriaContabil); }
+
         public bool? EquiparLabExistente { get; set; }
         public bool? EquiparLabNovo { get; set; }
         public bool? ItemNacional { get; set; }
