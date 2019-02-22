@@ -30,10 +30,7 @@ namespace APIGestor.Business
                 LogProjeto = LogProjeto
                     .Where(p => p.UserId == user);
             }
-            return LogProjeto
-                .OrderByDescending(p=>p.Created)
-                .Skip((pag-1) * size)
-                .Take(size);
+            return LogProjeto;
         }
         public Resultado Incluir(LogProjeto dados)
         {

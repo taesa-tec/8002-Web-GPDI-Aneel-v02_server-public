@@ -26,7 +26,10 @@ namespace APIGestor.Controllers
 
             return new{
                 Total = logs.Count(),
-                Itens = logs
+                Itens =  logs
+                        .OrderByDescending(p=>p.Created)
+                        .Skip((pag-1) * size)
+                        .Take(size)
             };
         }
 
