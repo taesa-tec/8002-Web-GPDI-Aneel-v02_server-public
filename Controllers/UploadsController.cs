@@ -43,7 +43,7 @@ namespace APIGestor.Controllers
             return _service.Incluir(Upload,Request.Form,UserId);
         }
 
-        [HttpDelete("[controller]/{Id}")]
+        [HttpDelete("{Id}")]
         public Resultado Delete(int id)
         {
             return _service.Excluir(id);

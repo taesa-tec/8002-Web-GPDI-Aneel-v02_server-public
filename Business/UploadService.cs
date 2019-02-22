@@ -119,15 +119,21 @@ namespace APIGestor.Business
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de Upload";
 
-            Upload Upload = _context.Uploads.First(t => t.Id == id);
-            if (Upload == null)
+            var upload = _context.Uploads.FirstOrDefault(t => t.Id == id);
+            if (upload == null)
             {
                 resultado.Inconsistencias.Add("Upload não localizada");
             }
             else
             {
-                _context.Uploads.Remove(Upload);
+
+                _context.Uploads.Remove(upload);
                 _context.SaveChanges();
+                string fullPath = upload.Url+id;
+                if (System.IO.File.Exists(fullPath))
+                {
+                    System.IO.File.Delete(fullPath);
+                }
             }
 
             return resultado;
