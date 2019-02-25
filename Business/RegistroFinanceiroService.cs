@@ -97,13 +97,13 @@ namespace APIGestor.Business
                         obs.UserId = userId; 
                     }
                     registro.ProjetoId = dados.ProjetoId==null ? registro.ProjetoId : dados.ProjetoId;
-                    registro.Tipo = Enum.IsDefined(typeof(TipoRegistro),dados.Tipo) ? dados.Tipo : registro.Tipo;
-                    registro.Status  = Enum.IsDefined(typeof(StatusRegistro),dados.Status) ? dados.Status : registro.Status;
+                    registro.Tipo = (dados.Tipo!=null && Enum.IsDefined(typeof(TipoRegistro),dados.Tipo)) ? dados.Tipo : registro.Tipo;
+                    registro.Status  = (dados.Status!=null && Enum.IsDefined(typeof(StatusRegistro),dados.Status)) ? dados.Status : registro.Status;
                     registro.RecursoHumanoId = dados.RecursoHumanoId==null ? registro.RecursoHumanoId : dados.RecursoHumanoId;
                     registro.Mes  = dados.Mes==null ? registro.Mes : dados.Mes;
                     registro.QtdHrs  = dados.QtdHrs==null ? registro.QtdHrs : dados.QtdHrs;
                     registro.EmpresaFinanciadoraId = dados.EmpresaFinanciadoraId==null ? registro.EmpresaFinanciadoraId : dados.EmpresaFinanciadoraId;
-                    registro.TipoDocumento  = Enum.IsDefined(typeof(TipoDocumento),dados.TipoDocumento) ? dados.TipoDocumento : registro.TipoDocumento;
+                    registro.TipoDocumento  = (dados.TipoDocumento!=null && Enum.IsDefined(typeof(TipoDocumento),dados.TipoDocumento)) ? dados.TipoDocumento : registro.TipoDocumento;
                     registro.NumeroDocumento  = dados.NumeroDocumento==null ? registro.NumeroDocumento : dados.NumeroDocumento;
                     registro.DataDocumento  = dados.DataDocumento==null ? registro.DataDocumento : dados.DataDocumento;
                     registro.AtividadeRealizada  = dados.AtividadeRealizada==null ? registro.AtividadeRealizada : dados.AtividadeRealizada;
@@ -116,7 +116,7 @@ namespace APIGestor.Business
                     registro.CategoriaContabil  = (dados.CategoriaContabil!=null && Enum.IsDefined(typeof(CategoriaContabil),dados.CategoriaContabil)) ? dados.CategoriaContabil : registro.CategoriaContabil;
                     registro.EquiparLabExistente  = dados.EquiparLabExistente.HasValue ? dados.EquiparLabExistente : registro.EquiparLabExistente;
                     registro.EquiparLabNovo  = dados.EquiparLabNovo.HasValue ? dados.EquiparLabNovo : registro.EquiparLabNovo;
-                    registro.ItemNacional  = dados.ItemNacional.HasValue ? registro.ItemNacional : dados.ItemNacional;
+                    registro.ItemNacional  = dados.ItemNacional.HasValue ? dados.ItemNacional : dados.ItemNacional;
                     registro.QtdItens  = dados.QtdItens==null ? registro.QtdItens : dados.QtdItens;
                     registro.ValorUnitario  = dados.ValorUnitario==null ? registro.ValorUnitario : dados.ValorUnitario;
                     registro.EspecificacaoTecnica = dados.EspecificacaoTecnica==null ? registro.EspecificacaoTecnica : dados.EspecificacaoTecnica;

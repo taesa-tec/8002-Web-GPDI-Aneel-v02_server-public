@@ -12,12 +12,12 @@ namespace APIGestor.Models
         [Key]
         public int Id { get; set; }
         public int? ProjetoId { get; set; }
-        public TipoRegistro Tipo { get; set; }
+        public TipoRegistro? Tipo { get; set; }
         [NotMapped]
-        public string TipoValor { get => Enum.GetName(typeof(TipoRegistro),Tipo); }
-        public StatusRegistro Status { get; set; }
+        public string TipoValor { get => Tipo == null ? null : Enum.GetName(typeof(TipoRegistro),Tipo); }
+        public StatusRegistro? Status { get; set; }
         [NotMapped]
-        public string StatusValor { get => Enum.GetName(typeof(StatusRegistro),Status); }
+        public string StatusValor { get => Status == null ? null : Enum.GetName(typeof(StatusRegistro),Status); }
         public int? RecursoHumanoId { get; set; }
         public RecursoHumano RecursoHumano { get; set; }
         [Column(TypeName="date")]
@@ -26,9 +26,9 @@ namespace APIGestor.Models
         public int? EmpresaFinanciadoraId { get; set; }
         [ForeignKey("EmpresaFinanciadoraId")]
         public Empresa EmpresaFinanciadora { get; set; }
-        public TipoDocumento TipoDocumento { get; set; }
+        public TipoDocumento? TipoDocumento { get; set; }
         [NotMapped]
-        public string TipoDocumentoValor { get => Enum.GetName(typeof(TipoDocumento),TipoDocumento); }
+        public string TipoDocumentoValor { get => TipoDocumento == null ? null : Enum.GetName(typeof(TipoDocumento),TipoDocumento); }
         public string NumeroDocumento { get; set; }
         [Column(TypeName="date")]
         public DateTime? DataDocumento { get; set; }
