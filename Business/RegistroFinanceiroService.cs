@@ -17,6 +17,17 @@ namespace APIGestor.Business
         {
             _context = context;
         }
+        public RegistroFinanceiro Obter(int id)
+        {
+            if (id>0)
+            {
+                return _context.RegistrosFinanceiros
+                    .Where(
+                        p => p.Id == id).FirstOrDefault();
+            }
+            else
+                return null;
+        }
         public IEnumerable<RegistroFinanceiro> ListarTodos(int projetoId, StatusRegistro status)
         {
             var RegistroFinanceiro = _context.RegistrosFinanceiros
@@ -79,7 +90,7 @@ namespace APIGestor.Business
                 }
                 else
                 { 
-                    if (dados.ObsInternas.Count()>0)
+                    if (dados.ObsInternas !=null && dados.ObsInternas.Count()>0)
                     foreach(RegistroObs obs in dados.ObsInternas)
                     {
                         obs.Created = DateTime.Now;
@@ -102,9 +113,9 @@ namespace APIGestor.Business
                     registro.EmpresaRecebedoraId = dados.EmpresaRecebedoraId==null ? registro.EmpresaRecebedoraId : dados.EmpresaRecebedoraId;
                     registro.Beneficiado  = dados.Beneficiado==null ? registro.Beneficiado : dados.Beneficiado;
                     registro.CnpjBeneficiado  = dados.CnpjBeneficiado==null ? registro.CnpjBeneficiado : dados.CnpjBeneficiado;
-                    registro.CategoriaContabil  = Enum.IsDefined(typeof(CategoriaContabil),dados.CategoriaContabil) ? dados.CategoriaContabil : registro.CategoriaContabil;
-                    registro.EquiparLabExistente  = dados.EquiparLabExistente.HasValue ? registro.EquiparLabExistente : dados.EquiparLabExistente;
-                    registro.EquiparLabNovo  = dados.EquiparLabNovo.HasValue ? registro.EquiparLabNovo : dados.EquiparLabNovo;
+                    registro.CategoriaContabil  = (dados.CategoriaContabil!=null && Enum.IsDefined(typeof(CategoriaContabil),dados.CategoriaContabil)) ? dados.CategoriaContabil : registro.CategoriaContabil;
+                    registro.EquiparLabExistente  = dados.EquiparLabExistente.HasValue ? dados.EquiparLabExistente : registro.EquiparLabExistente;
+                    registro.EquiparLabNovo  = dados.EquiparLabNovo.HasValue ? dados.EquiparLabNovo : registro.EquiparLabNovo;
                     registro.ItemNacional  = dados.ItemNacional.HasValue ? registro.ItemNacional : dados.ItemNacional;
                     registro.QtdItens  = dados.QtdItens==null ? registro.QtdItens : dados.QtdItens;
                     registro.ValorUnitario  = dados.ValorUnitario==null ? registro.ValorUnitario : dados.ValorUnitario;

@@ -42,9 +42,9 @@ namespace APIGestor.Models
         public Empresa EmpresaRecebedora { get; set; }
         public string Beneficiado { get; set; }
         public string CnpjBeneficiado { get; set; }
-        public CategoriaContabil CategoriaContabil { get; set; }
+        public CategoriaContabil? CategoriaContabil { get; set; }
         [NotMapped]
-        public string CategoriaContabilValor { get => Enum.GetName(typeof(CategoriaContabil),CategoriaContabil); }
+        public string CategoriaContabilValor { get => CategoriaContabil == null ? null : Enum.GetName(typeof(CategoriaContabil),CategoriaContabil); }
 
         public bool? EquiparLabExistente { get; set; }
         public bool? EquiparLabNovo { get; set; }

@@ -52,5 +52,16 @@ namespace APIGestor.Controllers
         {
             return _service.ListarTodos(projetoId, status);
         }
+        
+        // [HttpGet("{projetoId}/RegistroFinanceiro/exportar")]
+        // public FileResult Download(int id)  
+        // {  
+        //     var registro = _service.Obter(id);
+        //     if (registro==null)
+        //         return null;
+        //     byte[] fileBytes = System.IO.File.ReadAllBytes(@upload.Url+id);
+        //     string fileName = upload.NomeArquivo;
+        //     return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+        // }
     }
 }
