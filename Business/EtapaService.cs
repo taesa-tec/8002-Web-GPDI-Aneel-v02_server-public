@@ -28,6 +28,14 @@ namespace APIGestor.Business
                 return AddDataEtapas(Etapas);
             return null;
         }
+        private string NomeEtapa(int projetoId)
+        {
+            int total = _context.Etapas
+                                .Where(p=>p.ProjetoId==projetoId)
+                                .OrderBy(p=>p.Id)
+                                .Count()+1;
+            return "Etapa "+ total.ToString();
+        }
         private List<Etapa> AddDataEtapas(List<Etapa> etapas){
             Projeto projeto = _context.Projetos
                                 .Where(p=>p.Id==etapas.FirstOrDefault().ProjetoId)
@@ -80,6 +88,7 @@ namespace APIGestor.Business
                 var etapa = new Etapa
                 {
                     ProjetoId = dados.ProjetoId,
+                    Nome = NomeEtapa(dados.ProjetoId),
                     Desc = dados.Desc,
                     Duracao = 6,
                     EtapaProdutos = this.MontEtapaProdutos(dados)

@@ -252,7 +252,7 @@ namespace APIGestor.Business
                     ProjetoPed.PD_ProjetoBase = new PD_ProjetoBase
                     {
                         AvIniANEEL = projeto.AvaliacaoInicial.ToString(),
-                        Titulo = projeto.Titulo,
+                        Titulo = projeto.TituloDesc,
                         Duracao = projeto.Etapas.Sum(p=>p.Duracao),
                         Segmento = projeto.CatalogSegmento.Valor,
                         CodTema = projeto.Tema.CatalogTema.Valor,

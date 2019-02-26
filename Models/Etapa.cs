@@ -15,6 +15,7 @@ namespace APIGestor.Models
             get => _id;
             set => _id = value;
         }
+        public string Nome { get; set; }
         public int ProjetoId { get;set; }
         public int Duracao { get; set; }
         public string Desc { get; set; }

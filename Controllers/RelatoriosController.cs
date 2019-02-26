@@ -38,20 +38,14 @@ namespace APIGestor.Controllers
         [HttpGet("{projetoId}/ExtratoEmpresas/exportar")]
         public FileResult Download(int projetoId)  
         {  
-            var relatorio = _relatorioEmpresaService.ExportarRelatorio(projetoId);
+             MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(projetoId);
             if (relatorio==null)
                 return null;
-
-            var mr = new MemoryStream();
-            var tw = new StreamWriter(mr);
-            tw.Write(JsonConvert.SerializeObject(relatorio));
-            tw.Flush();
          
-            return new FileContentResult(mr.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet)
+            return new FileContentResult(relatorio.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet)
                 { 
-                    FileDownloadName = "relatorio.json"
+                    FileDownloadName = "relatorio.csv"
                 };
-            //return File(mr, System.Net.Mime.MediaTypeNames.Application.Octet, "relatorio.json");
         }
     }
 }

@@ -28,30 +28,32 @@ namespace APIGestor.Models
         public int AlocacaoId { get; set; }
         public string Desc { get; set; }
         public Etapa Etapa { get; set; }
+        public AlocacaoRh AlocacaoRh { get; set; }
+        public AlocacaoRm AlocacaoRm { get; set; }
         public RecursoHumano RecursoHumano { get; set; }
         public RecursoMaterial RecursoMaterial { get; set; }
         public decimal Valor { get; set; }
     }
     public class RelatorioEmpresaCsv
     {
-        public int Id;
-        public string Etapa;
-        public string NomeRecurso;
-        public string CPF;
-        public string FUNCAO;
-        public string TITULACAO;
-        public string CL;
-        public string CategoriaContabil;
-        public string EspecificacaoTecnica;
-        public string Justificativa;
-        public string EntidadePagadora;
-        public string CnpjEntidadePagadora;
-        public string EntidadeRecebedora;
-        public string CnpjEntidadeRecebedora;
-        public int QtdHoras;
-        public string ValorHora;
-        public int Unidades;
-        public string ValorUnitario;
-        public string ValorTotal;
+        public int Id { get; set; }
+        public string Etapa { get; set; }
+        public string NomeRecurso { get; set; }
+        public string CPF { get; set; }
+        public string FUNCAO { get; set; }
+        public string TITULACAO { get; set; }
+        public string CL { get; set; }
+        public string CategoriaContabil { get; set; }
+        public string EspecificacaoTecnica { get; set; }
+        public string Justificativa { get; set; }
+        public string EntidadePagadora { get; set; }
+        public string CnpjEntidadePagadora { get; set; }
+        public string EntidadeRecebedora { get; set; }
+        public string CnpjEntidadeRecebedora { get; set; }
+        public int QtdHoras { get; set; }
+        public decimal ValorHora { get; set; }
+        public int Unidades { get; set; }
+        public decimal ValorUnitario { get; set; }
+        public decimal ValorTotal { get; set; }
     }
 }

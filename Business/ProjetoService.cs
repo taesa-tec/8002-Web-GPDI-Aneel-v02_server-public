@@ -141,6 +141,8 @@ namespace APIGestor.Business
                     }else{
                         Projeto.Empresas = new List<Empresa>{new Empresa { CatalogEmpresaId = dados.CatalogEmpresaId }};
                     }
+                    var codigo = GerarCodigoProjeto(Projeto);
+                    Projeto.Codigo = codigo;
                     _context.SaveChanges();
                 }
             }
