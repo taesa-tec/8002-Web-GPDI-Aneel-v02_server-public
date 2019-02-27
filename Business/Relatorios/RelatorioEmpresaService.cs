@@ -24,11 +24,66 @@ namespace APIGestor.Business
             _context = context;
         }
 
-        public MemoryStream ExportarRelatorio(int projetoId)
+        public RelatorioEmpresa ExtratoREFP(int projetoId)
         {
-            var Relatorios = ExtratoFinanceiro(projetoId);
-            var records = new List<RelatorioEmpresaCsv>();
+            var relatorio = ExtratoFinanceiro(projetoId);
+           // var records = new List<RelatorioREFP>();
         
+            foreach(var empresa in relatorio.Empresas)
+            {
+                int TotalEmpresaAprovado = 0;
+                decimal ValorEmpresaAprovado = 0;
+                foreach(var r in empresa.Relatorios)
+                {
+                    int TotalAprovado = 0;
+                    decimal ValorAprovado = 0;
+                    foreach(var item in r.Items.ToList()){
+                        if (item.RecursoHumano!=null){
+                            RegistroFinanceiro registro = _context.RegistrosFinanceiros
+                                .Include("Uploads.User")
+                                .Include("ObsInternas.User")
+                                .Where(p => p.RecursoHumanoId == item.RecursoHumano.Id)
+                                .Where(p => p.StatusValor=="Aprovado")
+                                .FirstOrDefault();
+                            if (registro==null){
+                                r.Items.Remove(item);
+                            }else{
+                                item.RegistroFinanceiro=registro;
+                                TotalAprovado ++;
+                                ValorAprovado += item.Valor;
+                            }
+                        }
+                        if (item.RecursoMaterial!=null){
+                            RegistroFinanceiro registro = _context.RegistrosFinanceiros
+                                .Include("Uploads.User")
+                                .Include("ObsInternas.User")
+                                .Where(p => p.RecursoMaterialId == item.RecursoMaterial.Id)
+                                .Where(p => p.StatusValor=="Aprovado")
+                                .FirstOrDefault();
+                            if (registro==null){
+                                r.Items.Remove(item);
+                            }else{
+                                item.RegistroFinanceiro=registro;
+                                TotalAprovado ++;
+                                ValorAprovado += item.Valor;
+                            }
+                        }
+                    }
+                    TotalEmpresaAprovado += TotalAprovado;
+                    ValorEmpresaAprovado += ValorAprovado;
+                    r.TotalAprovado = TotalAprovado;
+                    r.ValorAprovado = ValorAprovado;
+                    r.Desvio = (r.Valor==0 || r.ValorAprovado==0)? 0 : (r.ValorAprovado/r.Valor)*100;
+                }
+                empresa.TotalAprovado = TotalEmpresaAprovado;
+                empresa.ValorAprovado = ValorEmpresaAprovado;
+                empresa.Desvio = (empresa.Valor==0 || empresa.ValorAprovado==0)? 0 : (empresa.ValorAprovado/empresa.Valor)*100;
+            }
+            return relatorio;
+        }
+        public List<RelatorioEmpresaCsv> FormatRelatorioCsv(RelatorioEmpresa Relatorios)
+        {
+            var records = new List<RelatorioEmpresaCsv>();
             foreach(var empresa in Relatorios.Empresas)
             {
                 foreach(var relatorio in empresa.Relatorios)
@@ -62,24 +117,41 @@ namespace APIGestor.Business
                             newItem.EntidadeRecebedora = (item.AlocacaoRm.EmpresaRecebedora==null) ? null : (item.AlocacaoRm.EmpresaRecebedora.Cnpj==null) ? item.AlocacaoRm.EmpresaRecebedora.CatalogEmpresa.Nome : item.AlocacaoRm.EmpresaRecebedora.RazaoSocial;
                             newItem.CnpjEntidadeRecebedora = (item.AlocacaoRm.EmpresaRecebedora==null) ? null : (item.AlocacaoRm.EmpresaRecebedora.Cnpj==null) ? null : item.AlocacaoRm.EmpresaRecebedora.Cnpj; 
                         }
+                        if (item.RegistroFinanceiro!=null){
+                            newItem.MesReferencia = item.RegistroFinanceiro.Mes.Value.Month.ToString()+"/"+item.RegistroFinanceiro.Mes.Value.Year.ToString();
+                            newItem.TipoDocumento = item.RegistroFinanceiro.TipoDocumentoValor;
+                            newItem.DataDocumento = item.RegistroFinanceiro.DataDocumento.ToString();
+                            newItem.ArquivoComprovante = (item.RegistroFinanceiro.Uploads.FirstOrDefault()!=null)? item.RegistroFinanceiro.Uploads.FirstOrDefault().NomeArquivo : null;
+                            newItem.AtividadeRealizada = item.RegistroFinanceiro.AtividadeRealizada;
+                            newItem.Beneficiado = item.RegistroFinanceiro.Beneficiado;
+                            newItem.ObsInternas = (item.RegistroFinanceiro.ObsInternas.LastOrDefault()!=null)? item.RegistroFinanceiro.ObsInternas.LastOrDefault().Texto : null;
+                            newItem.UsuarioAprovacao = (item.RegistroFinanceiro.ObsInternas.LastOrDefault()!=null)? item.RegistroFinanceiro.ObsInternas.LastOrDefault().User.NomeCompleto : null;
+                            newItem.EquiparLabExistente = (item.RegistroFinanceiro.EquiparLabExistente.HasValue) ? "Sim" : "Nao";
+                            newItem.EquiparLabNovo = (item.RegistroFinanceiro.EquiparLabNovo.HasValue) ? "Sim" : "Nao";
+                            newItem.ItemNacional = (item.RegistroFinanceiro.ItemNacional.HasValue)? "Sim" : "Nao";
+                            newItem.DataAprovacao = (item.RegistroFinanceiro.ObsInternas.LastOrDefault()!=null)? item.RegistroFinanceiro.ObsInternas.LastOrDefault().Created.ToString() : null;
+                        }
                        newItem.Id = item.AlocacaoId;
                        newItem.Etapa = item.Etapa.Nome;
 
                        records.Add(newItem);
                     }
                 }
-
             }
-
+            return records;
+        }
+        public MemoryStream ExportarRelatorio(List<RelatorioEmpresaCsv> data, string tipo)
+        {
             var mr = new MemoryStream();
             var tw = new StreamWriter(mr);
             var csv = new CsvWriter(tw);
             csv.Configuration.Delimiter = ";";
-            csv.WriteRecords(records);
+            csv.Configuration.RegisterClassMap(new RelatorioEmpresaCsvMap(tipo));
+
+            csv.WriteRecords(data);
             tw.Flush();
             tw.Close();
             return mr;
-            
         }
         public RelatorioEmpresa ExtratoFinanceiro(int projetoId)
         {

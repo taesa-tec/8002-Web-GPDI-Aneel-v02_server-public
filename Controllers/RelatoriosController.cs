@@ -34,17 +34,36 @@ namespace APIGestor.Controllers
         {
             return _relatorioEtapaService.ExtratoFinanceiro(projetoId);
         }
+        [HttpGet("{projetoId}/ExtratoREFP")]
+        public RelatorioEmpresa GetB(int projetoId)
+        {
+            return _relatorioEmpresaService.ExtratoREFP(projetoId);
+        }
         
         [HttpGet("{projetoId}/ExtratoEmpresas/exportar")]
         public FileResult Download(int projetoId)  
         {  
-             MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(projetoId);
+             var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.ExtratoFinanceiro(projetoId));
+             MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(data, "RelatorioEmpresa");
             if (relatorio==null)
                 return null;
          
             return new FileContentResult(relatorio.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet)
                 { 
                     FileDownloadName = "relatorio.csv"
+                };
+        }
+        [HttpGet("{projetoId}/ExtratoREFP/exportar")]
+        public FileResult DownloadA(int projetoId)  
+        {  
+             var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.ExtratoREFP(projetoId));
+             MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(data, "RelatorioREFP");
+            if (relatorio==null)
+                return null;
+         
+            return new FileContentResult(relatorio.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet)
+                { 
+                    FileDownloadName = "relatorioRefp.csv"
                 };
         }
     }
