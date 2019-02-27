@@ -63,5 +63,11 @@ namespace APIGestor.Controllers
         {
             return _service.AtualizaDataInicio(Projeto);
         }
+        
+        [HttpPost("prorrogar")]
+        public object PostA([FromBody]Projeto Projeto)
+        {
+            return _service.ProrrogarProjeto(Projeto);
+        }
     }
 }

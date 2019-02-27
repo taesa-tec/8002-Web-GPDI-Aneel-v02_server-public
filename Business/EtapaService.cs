@@ -36,7 +36,7 @@ namespace APIGestor.Business
                                 .Count()+1;
             return "Etapa "+ total.ToString();
         }
-        private List<Etapa> AddDataEtapas(List<Etapa> etapas){
+        public List<Etapa> AddDataEtapas(List<Etapa> etapas){
             Projeto projeto = _context.Projetos
                                 .Where(p=>p.Id==etapas.FirstOrDefault().ProjetoId)
                                 .Where(p=>p.DataInicio!=null)
@@ -51,7 +51,7 @@ namespace APIGestor.Business
             }
             return etapas;
         }
-        private List<EtapaProduto> MontEtapaProdutos(Etapa dados)
+        public List<EtapaProduto> MontEtapaProdutos(Etapa dados)
         {
             var etapaProdutos = new List<EtapaProduto>();
             foreach (var p in dados.EtapaProdutos)

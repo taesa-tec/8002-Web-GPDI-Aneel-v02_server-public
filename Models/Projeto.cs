@@ -29,6 +29,8 @@ namespace APIGestor.Models
         [NotMapped]
         public string TipoValor { get => Enum.GetName(typeof(TipoProjeto),Tipo); }
         public DateTime? DataInicio { get; set; }
+        [NotMapped]
+        public DateTime? DataFim { get; set; }
         public string Codigo { get; set; }
         public string TituloDesc { get; set; }
         public string Numero { get;set;}
@@ -56,6 +58,8 @@ namespace APIGestor.Models
         public List<RecursoMaterial> RecursosMateriais { get; set; }
         public List<AlocacaoRm> AlocacoesRm { get; set; }
         public List<Etapa> Etapas { get; set; }
+        [NotMapped]
+        public Etapa Etapa { get; set; }
         public Tema Tema { get; set; }
         [JsonIgnore]
         public List<UserProjeto> UsersProjeto { get; set; }

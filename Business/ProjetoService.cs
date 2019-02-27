@@ -10,10 +10,12 @@ namespace APIGestor.Business
     public class ProjetoService
     {
         private GestorDbContext _context;
+        private EtapaService _etapaService;
 
-        public ProjetoService(GestorDbContext context)
+        public ProjetoService(GestorDbContext context, EtapaService etapaService)
         {
             _context = context;
+            _etapaService = etapaService;
         }
 
         public Projeto Obter(int id)
@@ -57,7 +59,42 @@ namespace APIGestor.Business
                 .ToList();
             return UserProjetos;
         }
-
+        public Resultado ProrrogarProjeto(Projeto dados)
+        {
+            var resultado = new Resultado();
+            resultado.Acao = "Prorrogar projeto";
+            var projeto = _context.Projetos.Include("Etapas").FirstOrDefault(p=>p.Id==dados.Id);
+            if (projeto==null){
+                resultado.Inconsistencias.Add("Projeto não localizado");
+            }else{
+                if (projeto.DataInicio==null){
+                    resultado.Inconsistencias.Add("Data Inicio projeto não definida");
+                }
+                 if (projeto.Etapas.Count()==0){
+                    resultado.Inconsistencias.Add("Projeto não possui etapas");
+                }
+            }
+            if (resultado.Inconsistencias.Count()==0){
+                var LastEtapa = _etapaService.AddDataEtapas(projeto.Etapas).LastOrDefault();
+                if (LastEtapa.DataFim!=null){
+                    var duracao = Math.Abs(12 * (LastEtapa.DataFim.Value.Year - dados.DataFim.Value.Year) + LastEtapa.DataFim.Value.Month - dados.DataFim.Value.Month);
+                    var newDate = LastEtapa.DataFim.Value.AddMonths(duracao);
+                    var newEtapa = new Etapa{
+                        ProjetoId = projeto.Id,
+                        Nome = "Prorrogação",
+                        Desc = "Prorrogação",
+                        Duracao = duracao,
+                        DataInicio = LastEtapa.DataFim,
+                        DataFim = newDate,
+                        EtapaProdutos = _etapaService.MontEtapaProdutos(dados.Etapa)
+                    };
+                    _context.Etapas.Add(newEtapa);
+                    _context.SaveChanges();
+                    resultado.Id = newEtapa.Id.ToString();
+                }
+            }
+            return resultado;
+        }
         public Resultado Incluir(Projeto dados)
         {
             Resultado resultado = DadosValidos(dados);

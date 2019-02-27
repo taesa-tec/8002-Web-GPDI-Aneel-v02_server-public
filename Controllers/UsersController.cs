@@ -5,6 +5,7 @@ using APIGestor.Business;
 using APIGestor.Models;
 using APIGestor.Security;
 using System.IdentityModel.Tokens.Jwt;
+using System;
 
 namespace APIGestor.Controllers
 {
@@ -34,6 +35,15 @@ namespace APIGestor.Controllers
                 return User;
             else
                 return NotFound();
+        }
+        [HttpGet("{id}/avatar")]
+        [ResponseCache(Duration = 120)]
+        public FileResult Download(string id)  
+        {  
+            var user = _service.Obter(id);
+            if (user==null || user.FotoPerfil==null)
+                return null;
+            return File(user.FotoPerfil.File, System.Net.Mime.MediaTypeNames.Application.Octet, "avatar.jpg");
         }
 
         [HttpGet("me")]
