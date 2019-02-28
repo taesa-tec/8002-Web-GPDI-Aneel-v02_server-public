@@ -17,6 +17,7 @@ namespace APIGestor.Data
         public DbSet<CatalogSegmento> CatalogSegmentos { get; set; }
         public DbSet<CatalogEmpresa> CatalogEmpresas { get; set; }
         public DbSet<CatalogEstado> CatalogEstados { get; set; }
+        public DbSet<CatalogPais> CatalogPaises { get; set; }
         public DbSet<CatalogTema> CatalogTema { get; set; }
         public DbSet<CatalogSubTema> CatalogSubTemas { get; set; }
         public DbSet<UserProjeto> UserProjetos { get; set; }
@@ -33,6 +34,16 @@ namespace APIGestor.Data
         public DbSet<AlocacaoRm> AlocacoesRm { get; set; }
         public DbSet<RegistroFinanceiro> RegistrosFinanceiros { get; set; }
         public DbSet<RegistroObs> RegistroObs { get; set; }
+
+        public DbSet<RelatorioFinal> RelatorioFinal { get; set; }
+        public DbSet<ResultadoCapacitacao> ResultadosCapacitacao { get; set; }
+        public DbSet<ResultadoProducao> ResultadosProducao { get; set; }
+        public DbSet<ResultadoInfra> ResultadosInfra { get; set; }
+        public DbSet<ResultadoIntelectual> ResultadosIntelectual { get; set; }
+        public DbSet<ResultadoIntelectualInventor> ResultadoIntelectualInventores { get; set; }
+        public DbSet<ResultadoIntelectualDepositante> ResultadoIntelectualDepositantes { get; set; }
+        public DbSet<ResultadoSocioAmbiental> ResultadosSocioAmbiental { get; set; }
+        public DbSet<ResultadoEconomico> ResultadosEconomico { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Upload

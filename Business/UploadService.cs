@@ -76,6 +76,9 @@ namespace APIGestor.Business
                                 ProjetoId = Upload.ProjetoId,
                                 TemaId = Upload.TemaId,
                                 RegistroFinanceiroId = Upload.RegistroFinanceiroId,
+                                RelatorioFinalId = Upload.RelatorioFinalId,
+                                ResultadoCapacitacaoId = Upload.ResultadoCapacitacaoId,
+                                ResultadoProducaoId = Upload.ResultadoProducaoId,
                                 Categoria = Upload.Categoria
                             };   
                             _context.Uploads.Add(upload);

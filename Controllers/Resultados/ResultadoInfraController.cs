@@ -9,43 +9,43 @@ namespace APIGestor.Controllers
     [Route("api/projeto/")]
     [ApiController]
     [Authorize("Bearer")]
-    public class ProdutosController : ControllerBase
+    public class ResultadoInfraController : ControllerBase
     {
-        private ProdutoService _service;
+        private ResultadoInfraService _service;
 
-        public ProdutosController(ProdutoService service)
+        public ResultadoInfraController(ResultadoInfraService service)
         {
             _service = service;
         }
 
-        [HttpGet("{projetoId}/Produtos")]
-        public IEnumerable<Produto> Get(int projetoId)
+        [HttpGet("{projetoId}/ResultadoInfra")]
+        public IEnumerable<ResultadoInfra> Get(int projetoId)
         {
             return _service.ListarTodos(projetoId);
         }
 
-        [HttpGet("Produto/{id}")]
-        public ActionResult<Produto> GetA(int id)
+        [HttpGet("ResultadoInfra/{Id}")]
+        public ActionResult<ResultadoInfra> GetA(int id)
         {
-            var Produto = _service.Obter(id);
-            if (Produto != null)
-                return Produto;
+            var ResultadoInfra = _service.Obter(id);
+            if (ResultadoInfra != null)
+                return ResultadoInfra;
             else
                 return NotFound();
         }
 
         [Route("[controller]")]
         [HttpPost]
-        public Resultado Post([FromBody]Produto Produto)
+        public Resultado Post([FromBody]ResultadoInfra ResultadoInfra)
         {
-            return _service.Incluir(Produto);
+            return _service.Incluir(ResultadoInfra);
         }
 
         [Route("[controller]")]
         [HttpPut]
-        public Resultado Put([FromBody]Produto Produto)
+        public Resultado Put([FromBody]ResultadoInfra ResultadoInfra)
         {
-            return _service.Atualizar(Produto);
+            return _service.Atualizar(ResultadoInfra);
         }
 
         [HttpDelete("[controller]/{Id}")]

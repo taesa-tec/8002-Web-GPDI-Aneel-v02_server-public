@@ -49,5 +49,9 @@ namespace APIGestor.Business
             _context.CatalogEstados
                 .OrderBy(p => p.Nome)
                 .ToList();
+        public IEnumerable<CatalogPais> ListarCatalogPaises()=>
+            _context.CatalogPaises
+                .OrderBy(p => p.Nome)
+                .ToList();
     }
 }

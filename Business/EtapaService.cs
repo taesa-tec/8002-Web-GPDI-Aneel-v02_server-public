@@ -116,9 +116,13 @@ namespace APIGestor.Business
                 }
                 else
                 {
-                    _context.EtapaProdutos.RemoveRange(_context.EtapaProdutos.Where(p => p.EtapaId == dados.Id));
-                    Etapa.Desc = dados.Desc;
-                    Etapa.EtapaProdutos = this.MontEtapaProdutos(dados);
+
+                    Etapa.Desc = (dados.Desc==null) ? Etapa.Desc : dados.Desc;
+                    Etapa.AtividadesRealizadas = (dados.AtividadesRealizadas==null) ? Etapa.AtividadesRealizadas : dados.AtividadesRealizadas;
+                    if (dados.EtapaProdutos!=null){
+                        _context.EtapaProdutos.RemoveRange(_context.EtapaProdutos.Where(p => p.EtapaId == dados.Id));
+                        Etapa.EtapaProdutos = this.MontEtapaProdutos(dados);
+                    }
                     _context.SaveChanges();
                 }
             }

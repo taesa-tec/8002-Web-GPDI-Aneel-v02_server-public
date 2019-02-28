@@ -19,7 +19,10 @@ namespace APIGestor.Models
         public string Url { get; set; }
         public int? ProjetoId { get; set; }
         public int? TemaId { get; set; }
+        public int? RelatorioFinalId { get; set; }
         public int? RegistroFinanceiroId { get; set; }
+        public int? ResultadoCapacitacaoId { get; set; }
+        public int? ResultadoProducaoId { get; set; }
         public CategoriaUpload? Categoria { get; set; }   
         [NotMapped]
         public string CategoriaValor { get => (Categoria!=null)? Enum.GetName(typeof(CategoriaUpload),Categoria) : null; }     

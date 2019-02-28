@@ -49,8 +49,14 @@ namespace APIGestor.Controllers
             return _service.ListarCatalogEstados();
         }
 
+        [HttpGet("paises")]
+        public IEnumerable<CatalogPais> GetE()
+        {
+            return _service.ListarCatalogPaises();
+        }
+
         [HttpGet("permissoes")]
-        public IEnumerable<CatalogUserPermissao> GetE()
+        public IEnumerable<CatalogUserPermissao> GetF()
         {
             return _service.ListarCatalogUserPermissao();
         }
