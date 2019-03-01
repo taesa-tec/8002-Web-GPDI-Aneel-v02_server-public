@@ -76,6 +76,13 @@ namespace APIGestor.Models
         }
         public string TitulacaoMbEqEmp { get; set; }
         public string FuncaoMbEqEmp { get; set; }
+        private string _hhMbEqEmp{ get; set; }
+        public string HhMbEqEmp{
+            get => string.Format("{0:N}",_hhMbEqEmp);
+            set => _hhMbEqEmp = value;
+        }
+        public string MesMbEqEmp { get; set; }
+        public string HoraMesMbEqEmp { get; set; }
     }
     public class PedExecutoras
     {
@@ -104,9 +111,16 @@ namespace APIGestor.Models
             get => _bRMbEqExec=="Brasileiro" ? "S" : "N";
             set => _bRMbEqExec = value;
         }
-        public string DocMbEqExec { get; set; }
+        private string _docMbEqExec{ get; set; }
+        public string DocMbEqExec{
+            get => new Regex(@"[^\d]").Replace(_docMbEqExec, "");
+            set => _docMbEqExec = value;
+        }
         public string TitulacaoMbEqExec { get; set; }
         public string FuncaoMbEqExec { get; set; }
+        public string HhMbEqExec { get; set; }
+        public string MesMbEqExec { get; set; }
+        public string HoraMesMbEqExec { get; set; }
     }
     public class PD_Recursos
     {
@@ -144,7 +158,11 @@ namespace APIGestor.Models
     public class CustoCatContabilEmp
     {
         public string CatContabil { get; set; }
-        public string CustoEmp { get; set; }
+        private string _custoEmp{ get; set; }
+        public string CustoEmp{
+            get => new Regex(@"[^\d]").Replace(_custoEmp, "");
+            set => _custoEmp = value;
+        }
     }
     public class RecursoParceira
     {

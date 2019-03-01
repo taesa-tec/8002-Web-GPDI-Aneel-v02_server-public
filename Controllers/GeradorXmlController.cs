@@ -57,6 +57,12 @@ namespace APIGestor.Controllers
             var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
             return _service.GerarXmlProrrogacao(projetoId, versao, userId);
         }
+        [HttpGet("{projetoId}/XmlRelatorioFinal/{versao}")]
+        public Resultado GetD(int projetoId, string versao)
+        {
+            var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
+            return _service.GerarXmlRelatorioFinal(projetoId, versao, userId);
+        }
 
         [HttpGet("{projetoId}/ObterXmls")]
         public IEnumerable<Upload> GetA(int projetoId)

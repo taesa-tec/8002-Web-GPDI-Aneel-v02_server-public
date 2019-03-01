@@ -19,7 +19,6 @@ namespace APIGestor.Business
     {
         private GestorDbContext _context;
         private IHostingEnvironment _hostingEnvironment;
-
         public GeradorXmlService(GestorDbContext context, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
@@ -31,7 +30,8 @@ namespace APIGestor.Business
                 .Include("User")
                 .Where(p => p.ProjetoId == projetoId)
                 .Where(p => p.Categoria == (CategoriaUpload)3)
-                .Select(p=>new Upload{
+                .Select(p => new Upload
+                {
                     Id = p.Id,
                     NomeArquivo = p.NomeArquivo,
                     ProjetoId = p.ProjetoId,
@@ -39,7 +39,7 @@ namespace APIGestor.Business
                     RegistroFinanceiroId = p.RegistroFinanceiroId,
                     Categoria = p.Categoria,
                     UserId = p.UserId,
-                    User= new ApplicationUser{ NomeCompleto = p.User.NomeCompleto },
+                    User = new ApplicationUser { NomeCompleto = p.User.NomeCompleto },
                     Created = p.Created
                 })
                 .ToList();
@@ -58,8 +58,8 @@ namespace APIGestor.Business
             string folderName = "uploads/xmls/";
             string webRootPath = _hostingEnvironment.WebRootPath;
             string newPath = Path.Combine(webRootPath, folderName);
-            string fileName = "APLPED" + Projeto.CatalogEmpresa.Valor + "_"+Tipo+"_" + Projeto.Numero + "_" + Versao + ".XML";
-  
+            string fileName = "APLPED" + Projeto.CatalogEmpresa.Valor + "_" + Tipo + "_" + Projeto.Numero + "_" + Versao + ".XML";
+
             if (!Directory.Exists(newPath))
             {
                 Directory.CreateDirectory(newPath);
@@ -69,7 +69,7 @@ namespace APIGestor.Business
             {
                 NomeArquivo = fileName,
                 UserId = UserId,
-                Url = "wwwroot/"+folderName,
+                Url = "wwwroot/" + folderName,
                 ProjetoId = Projeto.Id,
                 Categoria = (CategoriaUpload)3
             };
@@ -81,15 +81,16 @@ namespace APIGestor.Business
 
             return resultado;
         }
-        public Resultado DadosValidos(int ProjetoId, string Versao, string UserId){
+        public Resultado DadosValidos(int ProjetoId, string Versao, string UserId)
+        {
             var resultado = new Resultado();
-            if (ProjetoId<=0)
+            if (ProjetoId <= 0)
                 resultado.Inconsistencias.Add("Informe o ProjetoId");
-            else if (_context.Projetos.Where(p=>p.Id==ProjetoId).FirstOrDefault()==null)
+            else if (_context.Projetos.Where(p => p.Id == ProjetoId).FirstOrDefault() == null)
                 resultado.Inconsistencias.Add("ProjetoId não localizado");
-            if (Versao==null)
+            if (Versao == null)
                 resultado.Inconsistencias.Add("Informe a Versão");
-            if (UserId==null)
+            if (UserId == null)
                 resultado.Inconsistencias.Add("UserId Não localizado");
             return resultado;
         }
@@ -103,19 +104,23 @@ namespace APIGestor.Business
                         .Include("Etapas")
                         .Where(p => p.Id == ProjetoId)
                         .FirstOrDefault();
-                if (projeto.Codigo==null)
+                if (projeto.Codigo == null)
                     resultado.Inconsistencias.Add("Código do Projeto não gerado");
-                
-                int Duracao = projeto.Etapas.Sum(p=>p.Duracao);
-                if ((projeto.TipoValor=="PD" && Duracao>60)||(projeto.TipoValor=="PG" && Duracao>12))
+
+                int Duracao = projeto.Etapas.Sum(p => p.Duracao);
+                if ((projeto.TipoValor == "PD" && Duracao > 60) || (projeto.TipoValor == "PG" && Duracao > 12))
                     resultado.Inconsistencias.Add("Duração máxima execedida para o projeto");
-                
-                if (resultado.Inconsistencias.Count()==0){
-                    ProrrogacaoProjeto Prorrogacao = new ProrrogacaoProjeto{
-                        PD_PrazoExecProjeto = new PD_PrazoExecProjeto{
-                            Projeto = new ProProjeto{
+
+                if (resultado.Inconsistencias.Count() == 0)
+                {
+                    ProrrogacaoProjeto Prorrogacao = new ProrrogacaoProjeto
+                    {
+                        PD_PrazoExecProjeto = new PD_PrazoExecProjeto
+                        {
+                            Projeto = new ProProjeto
+                            {
                                 CodProjeto = projeto.Codigo,
-                                Duracao = projeto.Etapas.Sum(p=>p.Duracao)
+                                Duracao = projeto.Etapas.Sum(p => p.Duracao)
                             }
                         }
                     };
@@ -127,7 +132,7 @@ namespace APIGestor.Business
             return resultado;
         }
         public Resultado GerarXmlInicioExec(int ProjetoId, string Versao, string UserId)
-        {   
+        {
             Resultado resultado = DadosValidos(ProjetoId, Versao, UserId);
             if (resultado.Inconsistencias.Count == 0)
             {
@@ -135,14 +140,18 @@ namespace APIGestor.Business
                     .Include("CatalogEmpresa")
                     .Where(p => p.Id == ProjetoId)
                     .FirstOrDefault();
-                    
-                if (projeto.Codigo==null)
+
+                if (projeto.Codigo == null)
                     resultado.Inconsistencias.Add("Código do Projeto não gerado");
 
-                if (resultado.Inconsistencias.Count()==0){
-                    InicioExecucao Inicio = new InicioExecucao{
-                        PD_InicioExecProjeto = new PD_InicioExecProjeto{
-                            Projeto = new InicioProjeto{
+                if (resultado.Inconsistencias.Count() == 0)
+                {
+                    InicioExecucao Inicio = new InicioExecucao
+                    {
+                        PD_InicioExecProjeto = new PD_InicioExecProjeto
+                        {
+                            Projeto = new InicioProjeto
+                            {
                                 CodProjeto = projeto.Codigo,
                                 DataIniProjeto = projeto.DataInicio.ToString(),
                                 DirPropIntProjeto = projeto.CompartResultadosValor
@@ -165,14 +174,18 @@ namespace APIGestor.Business
                         .Include("CatalogEmpresa")
                         .Where(p => p.Id == ProjetoId)
                         .FirstOrDefault();
-                
-                if (projeto.Codigo==null)
+
+                if (projeto.Codigo == null)
                     resultado.Inconsistencias.Add("Código do Projeto não gerado");
 
-                if (resultado.Inconsistencias.Count()==0){
-                    InteresseExecucao Interesse = new InteresseExecucao{
-                        PD_InteresseProjeto = new PD_InteresseProjeto{
-                            Projeto = new InteresseProjeto{
+                if (resultado.Inconsistencias.Count() == 0)
+                {
+                    InteresseExecucao Interesse = new InteresseExecucao
+                    {
+                        PD_InteresseProjeto = new PD_InteresseProjeto
+                        {
+                            Projeto = new InteresseProjeto
+                            {
                                 CodProjeto = projeto.Codigo
                             }
                         }
@@ -184,51 +197,51 @@ namespace APIGestor.Business
             resultado.Acao = "Geração Xml Interesse de Execução do Projeto";
             return resultado;
         }
-
         public Resultado ValidaXmlProjetoPed(Projeto projeto)
         {
             var resultado = new Resultado();
             resultado.Acao = "Validação de dados";
-                if (projeto.Tema == null || projeto.Produtos.Count()<=0)
-                    resultado.Inconsistencias.Add("Tema e/ou produto não cadastrados");
-                if (projeto.AvaliacaoInicial==null)
-                    resultado.Inconsistencias.Add("AvaliacaoInicial do projeto não preenchida");
-                if (projeto.Etapas.Count()==0)
-                    resultado.Inconsistencias.Add("Etapas do projeto não preenchida");
-                if (projeto.CatalogSegmento==null)
-                    resultado.Inconsistencias.Add("Segmento do projeto não preenchida");
-                if (projeto.Tema==null)
-                    resultado.Inconsistencias.Add("Tema do projeto não definido");
-                if (projeto.Motivacao==null)
-                    resultado.Inconsistencias.Add("Motivacao do projeto não preenchida");
-                if (projeto.Originalidade==null)
-                    resultado.Inconsistencias.Add("Originalidade do projeto não preenchida");
-                if (projeto.Aplicabilidade==null)
-                    resultado.Inconsistencias.Add("Aplicabilidade do projeto não preenchida");
-                if (projeto.Relevancia==null)
-                    resultado.Inconsistencias.Add("Relevancia do projeto não preenchida");
-                if (projeto.Razoabilidade==null)
-                    resultado.Inconsistencias.Add("Razoabilidade do projeto não preenchida");
-                if (projeto.Pesquisas==null)
-                    resultado.Inconsistencias.Add("Pesquisas do projeto não preenchida");
+            if (projeto.Tema == null || projeto.Produtos.Count() <= 0)
+                resultado.Inconsistencias.Add("Tema e/ou produto não cadastrados");
+            if (projeto.AvaliacaoInicial == null)
+                resultado.Inconsistencias.Add("AvaliacaoInicial do projeto não preenchida");
+            if (projeto.Etapas.Count() == 0)
+                resultado.Inconsistencias.Add("Etapas do projeto não preenchida");
+            if (projeto.CatalogSegmento == null)
+                resultado.Inconsistencias.Add("Segmento do projeto não preenchida");
+            if (projeto.Tema == null)
+                resultado.Inconsistencias.Add("Tema do projeto não definido");
+            if (projeto.Motivacao == null)
+                resultado.Inconsistencias.Add("Motivacao do projeto não preenchida");
+            if (projeto.Originalidade == null)
+                resultado.Inconsistencias.Add("Originalidade do projeto não preenchida");
+            if (projeto.Aplicabilidade == null)
+                resultado.Inconsistencias.Add("Aplicabilidade do projeto não preenchida");
+            if (projeto.Relevancia == null)
+                resultado.Inconsistencias.Add("Relevancia do projeto não preenchida");
+            if (projeto.Razoabilidade == null)
+                resultado.Inconsistencias.Add("Razoabilidade do projeto não preenchida");
+            if (projeto.Pesquisas == null)
+                resultado.Inconsistencias.Add("Pesquisas do projeto não preenchida");
             return resultado;
         }
         public Projeto obterProjeto(int Id)
         {
-           return _context.Projetos
-                        .Include("CatalogEmpresa")
-                        .Include("CatalogSegmento")
-                        .Include("Tema.CatalogTema")
-                        .Include("Tema.SubTemas.CatalogSubTema")
-                        .Include("Etapas")
-                        .Include("Produtos")
-                        .Include("Empresas.Estado")
-                        .Include("Empresas.CatalogEmpresa")
-                        .Include("RecursosHumanos")
-                        // .Include(p => p.RecursosMateriais)
-                        .Include("AlocacoesRm.RecursoMaterial")
-                        .Where(p => p.Id == Id)
-                        .FirstOrDefault();
+            return _context.Projetos
+                         .Include("CatalogEmpresa")
+                         .Include("CatalogSegmento")
+                         .Include("Tema.CatalogTema")
+                         .Include("Tema.SubTemas.CatalogSubTema")
+                         .Include("Etapas")
+                         .Include("Produtos")
+                         .Include("Empresas.Estado")
+                         .Include("Empresas.CatalogEmpresa")
+                         .Include("RecursosHumanos")
+                         // .Include(p => p.RecursosMateriais)
+                         .Include("AlocacoesRm.RecursoMaterial")
+                         .Include("RelatorioFinal.Uploads")
+                         .Where(p => p.Id == Id)
+                         .FirstOrDefault();
         }
         public Resultado GerarXmlProjetoPed(int ProjetoId, string Versao, string UserId)
         {
@@ -253,7 +266,7 @@ namespace APIGestor.Business
                     {
                         AvIniANEEL = projeto.AvaliacaoInicial.ToString(),
                         Titulo = projeto.TituloDesc,
-                        Duracao = projeto.Etapas.Sum(p=>p.Duracao),
+                        Duracao = projeto.Etapas.Sum(p => p.Duracao),
                         Segmento = projeto.CatalogSegmento.Valor,
                         CodTema = projeto.Tema.CatalogTema.Valor,
                         OutroTema = projeto.Tema.OutroDesc,
@@ -286,7 +299,7 @@ namespace APIGestor.Business
                     {
                         var equipeList = new List<EquipeEmpresa>();
                         foreach (RecursoHumano rh in projeto.RecursosHumanos
-                            .Where(p=>p.CPF!=null)
+                            .Where(p => p.CPF != null)
                             .Where(p => p.Empresa == empresa)
                             .ToList())
                         {
@@ -464,6 +477,287 @@ namespace APIGestor.Business
                 }
             }
             resultado.Acao = "Geração Xml Projeto PeD";
+            return resultado;
+        }
+
+        public List<CustoCatContabil> ObterCustosCat(IGrouping<Empresa, AlocacaoRm> rm, List<RegistroFinanceiro> registros)
+        {
+            var CustoCatContabil = new List<CustoCatContabil>();
+            foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabil))
+            {
+                decimal custo = 0;
+                foreach (var rm1 in rm0)
+                {
+                    custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
+                }
+                var itemDespesa = new List<ItemDespesa>();
+                foreach (var registro in registros.Where(p => p.CategoriaContabil == rm0.First().RecursoMaterial.CategoriaContabil).ToList())
+                {
+                    itemDespesa.Add(new ItemDespesa
+                    {
+                        NomeItem = registro.NomeItem,
+                        JustificaItem = rm0.First().Justificativa,
+                        QtdeItem = registro.QtdItens,
+                        ValorIndItem = registro.ValorUnitario.ToString(),
+                        TipoItem = registro.TipoValor,
+                        ItemLabE = registro.EquiparLabExistente.ToString(),
+                        ItemLabN = registro.EquiparLabNovo.ToString()
+                    });
+                }
+                CustoCatContabil.Add(new CustoCatContabil
+                {
+                    CategoriaContabil = rm0.First().RecursoMaterial.CategoriaContabilValor,
+                    ItemDespesa = itemDespesa
+                });
+            }
+            return CustoCatContabil;
+        }
+        public Resultado GerarXmlRelatorioFinal(int ProjetoId, string Versao, string UserId)
+        {
+            Resultado resultado = DadosValidos(ProjetoId, Versao, UserId);
+            if (resultado.Inconsistencias.Count == 0)
+            {
+                XmlRelatorioFinal relatorio = new XmlRelatorioFinal();
+                Projeto projeto = _context.Projetos
+                        .Include("CatalogEmpresa")
+                        .Include("Empresas.Estado")
+                        .Include("Etapas")
+                        .Include("Empresas.CatalogEmpresa")
+                        .Include("RelatorioFinal.Uploads")
+                        .Where(p => p.Id == ProjetoId)
+                        .FirstOrDefault();
+
+                var registros = _context.RegistrosFinanceiros
+                                //.Include("Uploads.User")
+                                //.Include("ObsInternas.User")
+                                .Include("RecursoHumano")
+                                .Include("RecursoMaterial")
+                                .Where(p => p.ProjetoId == ProjetoId)
+                                .Where(p => p.StatusValor == "Aprovado")
+                                .ToList();
+                int?[] rhIds = registros.Where(r => r.RecursoHumano != null).Select(r => r.RecursoHumanoId).ToArray();
+                int?[] rmIds = registros.Where(r => r.RecursoMaterial != null).Select(r => r.RecursoMaterialId).ToArray();
+
+                // resultado = ValidaXmlProjetoPed(projeto);
+                if (resultado.Inconsistencias.Count == 0)
+                {
+                    relatorio.PD_RelFinalBase = new PD_RelFinalBase
+                    {
+                        CodProjeto = projeto.Codigo,
+                        ArquivoPDF = projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAnual").FirstOrDefault().NomeArquivo,
+                        DataIniODS = projeto.DataInicio.ToString(),
+                        DataFimODS = projeto.Etapas.LastOrDefault().DataFim.ToString(),
+                        ProdPrev = projeto.RelatorioFinal.ProdutoAlcancado.ToString(),
+                        ProdJust = projeto.RelatorioFinal.JustificativaProduto,
+                        ProdEspTec = projeto.RelatorioFinal.EspecificacaoProduto,
+                        TecPrev = projeto.RelatorioFinal.TecnicaPrevista.ToString(),
+                        TecJust = projeto.RelatorioFinal.JustificativaTecnica,
+                        TecDesc = projeto.RelatorioFinal.DescTecnica,
+                        AplicPrev = projeto.RelatorioFinal.AplicabilidadePrevista.ToString(),
+                        AplicJust = projeto.RelatorioFinal.JustificativaAplicabilidade,
+                        AplicFnc = projeto.RelatorioFinal.DescTestes,
+                        AplicAbrang = projeto.RelatorioFinal.DescAbrangencia,
+                        AplicAmbito = projeto.RelatorioFinal.DescAmbito,
+                        TxDifTec = projeto.RelatorioFinal.DescAtividades
+                    };
+                    // PD_EQUIPEEMP
+                    var PedEmpresaList = new List<PedEmpresa>();
+                    var EmpresasFinanciadoras = projeto.Empresas
+                        .Where(p => p.ClassificacaoValor == "Energia" || p.ClassificacaoValor == "Proponente")
+                        .ToList();
+                    foreach (Empresa empresa in EmpresasFinanciadoras)
+                    {
+                        var equipeList = new List<EquipeEmpresa>();
+                        foreach (AlocacaoRh alRh in projeto.AlocacoesRh
+                            .Where(p => p.RecursoHumano.CPF != null) // somente brasileiros
+                            .Where(p => p.RecursoHumano.Empresa == empresa)
+                            .Where(p => rhIds.Contains(p.RecursoHumano.Id))
+                            .ToList())
+                        {
+                            equipeList.Add(new EquipeEmpresa
+                            {
+                                NomeMbEqEmp = alRh.RecursoHumano.NomeCompleto,
+                                CpfMbEqEmp = alRh.RecursoHumano.CPF,
+                                TitulacaoMbEqEmp = alRh.RecursoHumano.TitulacaoValor,
+                                FuncaoMbEqEmp = alRh.RecursoHumano.FuncaoValor,
+                                HhMbEqEmp = alRh.RecursoHumano.ValorHora.ToString(),
+                                MesMbEqEmp = alRh.HrsMes1.ToString() + "," + alRh.HrsMes2.ToString() + "," + alRh.HrsMes3.ToString() + "," + alRh.HrsMes4.ToString() + "," + alRh.HrsMes5.ToString() + "," + alRh.HrsMes6.ToString(),
+                                HoraMesMbEqEmp = alRh.RecursoHumano.FuncaoValor
+                            });
+                        }
+                        PedEmpresaList.Add(new PedEmpresa
+                        {
+                            CodEmpresa = empresa.CatalogEmpresa.Valor,
+                            TipoEmpresa = empresa.ClassificacaoValor,
+                            Equipe = new Equipe
+                            {
+                                EquipeEmpresa = equipeList
+                            }
+                        });
+                    }
+                    var PedExecutoraList = new List<PedExecutora>();
+                    foreach (Empresa empresa in projeto.Empresas
+                        .Where(p => p.ClassificacaoValor == "Executora")
+                        .ToList())
+                    {
+                        var equipeList = new List<EquipeExec>();
+                        foreach (AlocacaoRh alRh in projeto.AlocacoesRh
+                            .Where(p => p.RecursoHumano.Empresa == empresa)
+                            .Where(p => rhIds.Contains(p.RecursoHumano.Id))
+                            .ToList())
+                        {
+                            equipeList.Add(new EquipeExec
+                            {
+                                NomeMbEqExec = alRh.RecursoHumano.NomeCompleto,
+                                BRMbEqExec = alRh.RecursoHumano.NacionalidadeValor,
+                                DocMbEqExec = alRh.RecursoHumano.CPF ?? alRh.RecursoHumano.Passaporte,
+                                TitulacaoMbEqExec = alRh.RecursoHumano.TitulacaoValor,
+                                FuncaoMbEqExec = alRh.RecursoHumano.FuncaoValor,
+                                HhMbEqExec = alRh.RecursoHumano.ValorHora.ToString(),
+                                MesMbEqExec = alRh.HrsMes1.ToString() + "," + alRh.HrsMes2.ToString() + "," + alRh.HrsMes3.ToString() + "," + alRh.HrsMes4.ToString() + "," + alRh.HrsMes5.ToString() + "," + alRh.HrsMes6.ToString(),
+                                HoraMesMbEqExec = alRh.RecursoHumano.FuncaoValor
+                            });
+                        }
+                        PedExecutoraList.Add(new PedExecutora
+                        {
+                            CNPJExec = empresa.Cnpj,
+                            RazaoSocialExec = empresa.RazaoSocial,
+                            UfExec = empresa.Estado.Valor,
+                            Equipe = new ExecEquipe
+                            {
+                                EquipeExec = equipeList
+                            }
+                        });
+                    }
+                    relatorio.PD_EquipeEmp = new PD_EquipeEmp
+                    {
+                        Empresas = new PedEmpresas
+                        {
+                            Empresa = PedEmpresaList
+                        }
+                    };
+                    relatorio.PD_EquipeExec = new PD_EquipeExec
+                    {
+                        Executoras = new PedExecutoras
+                        {
+                            Executora = PedExecutoraList
+                        }
+                    };
+                    // PD_ETAPAS
+                    var EtapasList = new List<PD_Etapa>();
+                    int ordem = 1;
+                    foreach (Etapa etapa in projeto.Etapas.OrderBy(e => e.Id))
+                    {
+                        string mesExecEtapa = null;
+                        int duracao = etapa.Duracao;
+                        int[] etapalist = new int[duracao * ordem];
+                        for (int i = ((ordem * duracao) - (duracao - ((ordem - 1) * duracao) + 1)); i < etapalist.Length; i++)
+                        {
+                            etapalist.Append(i);
+                        }
+                        mesExecEtapa = String.Join(",", etapalist.Select(p => p.ToString()).ToArray());
+
+                        EtapasList.Add(new PD_Etapa
+                        {
+                            EtapaN = ordem.ToString(),
+                            Atividades = etapa.AtividadesRealizadas,
+                            MesExecEtapa = mesExecEtapa
+                        });
+                        ordem++;
+                    }
+                    relatorio.PD_Etapas = new PD_Etapas
+                    {
+                        Etapa = EtapasList
+                    };
+                    // PD_RECURSO
+                    relatorio.PD_Recursos = new RF_Recursos
+                    {
+                        RecursoEmpresa = new List<RF_RecursoEmpresa>(),
+                        RecursoParceira = new List<RF_RecursoParceira>()
+                    };
+                    foreach (Empresa empresa in EmpresasFinanciadoras)
+                    {
+                        var DestRecursosExec = new List<RF_DestRecursosExec>();
+                        foreach (var rm in projeto.AlocacoesRm
+                            .Where(p => p.EmpresaRecebedora.ClassificacaoValor == "Executora")
+                            .Where(p => p.EmpresaFinanciadora == empresa)
+                            .Where(p => rhIds.Contains(p.RecursoMaterial.Id))
+                            .GroupBy(p => p.EmpresaRecebedora)
+                            .ToList())
+                        {
+                            DestRecursosExec.Add(new RF_DestRecursosExec
+                            {
+                                CNPJExec = rm.First().EmpresaRecebedora.Cnpj,
+                                CustoCatContabil = ObterCustosCat(rm, registros)
+                            });
+                        }
+
+                        var DestRecursosEmp = new List<RF_DestRecursosEmp>();
+                        foreach (var rm in projeto.AlocacoesRm
+                                .Where(p => p.EmpresaRecebedora == empresa)
+                                .Where(p => p.EmpresaFinanciadora == empresa)
+                                .Where(p => rhIds.Contains(p.RecursoMaterial.Id))
+                                .GroupBy(p => p.EmpresaRecebedora)
+                                .ToList())
+                        {
+                            DestRecursosEmp.Add(new RF_DestRecursosEmp
+                            {
+                                CustoCatContabil = ObterCustosCat(rm, registros)
+                            });
+                        }
+
+                        relatorio.PD_Recursos.RecursoEmpresa.Add(new RF_RecursoEmpresa
+                        {
+                            CodEmpresa = empresa.CatalogEmpresa.Valor,
+                            DestRecursos = new DestRecursos
+                            {
+                                DestRecursosEmp = DestRecursosEmp,
+                                DestRecursosExec = DestRecursosExec
+                            }
+                        });
+                    }
+
+                    foreach (Empresa empresa in projeto.Empresas
+                        .Where(p => p.ClassificacaoValor == "Parceira")
+                        .ToList())
+                    {
+                        var DestRecursosExec = new List<RF_DestRecursosExec>();
+                        foreach (var rm in projeto.AlocacoesRm
+                            .Where(p => p.EmpresaRecebedora.ClassificacaoValor == "Executora")
+                            .Where(p => p.EmpresaFinanciadora == empresa)
+                            .Where(p => rhIds.Contains(p.RecursoMaterial.Id))
+                            .GroupBy(p => p.EmpresaRecebedora)
+                            .ToList())
+                        {
+                            DestRecursosExec.Add(new RF_DestRecursosExec
+                            {
+                                CNPJExec = rm.First().EmpresaRecebedora.Cnpj,
+                                CustoCatContabil = ObterCustosCat(rm, registros)
+                            });
+                        }
+
+                        relatorio.PD_Recursos.RecursoParceira.Add(new RF_RecursoParceira
+                        {
+                            CNPJParc = empresa.Cnpj,
+                            DestRecursosExec = DestRecursosExec
+                        });
+                    }
+
+
+                    // PD_RESULTADO
+                    relatorio.PD_Resultados = new PD_Resultados
+                    {
+                        PD_ResultadosCP = new PD_ResultadosCP(),
+                        PD_ResultadosCT = new PD_ResultadosCT(),
+                        PD_ResultadosSA = new PD_ResultadosSA(),
+                        PD_ResultadosIE = new PD_ResultadosIE()
+                    };
+
+                    string Tipo = "RELATORIOFINALPED";
+                    resultado = CriarArquivo(JsonConvert.SerializeObject(relatorio), Tipo, projeto, Versao, UserId);
+                }
+            }
+            resultado.Acao = "Geração Xml Relatório Final";
             return resultado;
         }
     }

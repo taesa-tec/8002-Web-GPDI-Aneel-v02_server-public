@@ -64,6 +64,7 @@ namespace APIGestor.Models
         [JsonIgnore]
         public List<UserProjeto> UsersProjeto { get; set; }
         public List<Empresa> Empresas { get; set; }
+        public RelatorioFinal RelatorioFinal { get; set; }
     }
     public enum TipoProjeto
     {
