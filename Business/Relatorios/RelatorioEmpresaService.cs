@@ -104,6 +104,7 @@ namespace APIGestor.Business
                             newItem.CnpjEntidadePagadora = item.AlocacaoRh.Empresa.Cnpj;
                             newItem.EntidadeRecebedora = (item.RecursoHumano.Empresa.Cnpj==null) ? item.RecursoHumano.Empresa.CatalogEmpresa.Nome : item.RecursoHumano.Empresa.RazaoSocial;
                             newItem.CnpjEntidadeRecebedora = (item.RecursoHumano.Empresa.Cnpj==null) ? null : item.RecursoHumano.Empresa.Cnpj;  
+                            newItem.CategoriaContabil = CategoriaContabil.RH.ToString();
                         }
                         if (item.RecursoMaterial!=null){
                             newItem.CategoriaContabil = item.RecursoMaterial.CategoriaContabilValor;
