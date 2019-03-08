@@ -144,7 +144,7 @@ namespace APIGestor.Business
         public MemoryStream ExportarRelatorio(List<RelatorioEmpresaCsv> data, string tipo)
         {
             var mr = new MemoryStream();
-            var tw = new StreamWriter(mr);
+            var tw = new StreamWriter(mr, Encoding.UTF8);
             var csv = new CsvWriter(tw);
             csv.Configuration.Delimiter = ";";
             csv.Configuration.RegisterClassMap(new RelatorioEmpresaCsvMap(tipo));
