@@ -31,57 +31,23 @@ namespace APIGestor.Controllers
         //         StatusCode = 200
         //     };
         // }
-        [HttpGet("{projetoId}/XmlProjetoPed/{versao}")]
-        public Resultado Get(int projetoId, string versao)
+        [HttpGet("{projetoId}/Xml/{xmlTipo}/{versao}")]
+        public Resultado Get(int projetoId, XmlTipo xmlTipo, string versao)
         {
             var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return _service.GerarXmlProjetoPed(projetoId, versao, userId);
+            return _service.GerarXml(projetoId, xmlTipo, versao, userId);
         }
 
-        [HttpGet("{projetoId}/XmlInteresseExecucao/{versao}")]
-        public Resultado GetA(int projetoId, string versao)
+        [HttpGet("{projetoId}/Xml/{xmlTipo}/ValidaDados")]
+        public Resultado GetA(int projetoId, XmlTipo xmlTipo)
         {
-            var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return _service.GerarXmlInteresseExec(projetoId, versao, userId);
-        }
-        
-        [HttpGet("{projetoId}/XmlInicioExecucao/{versao}")]
-        public Resultado GetB(int projetoId, string versao)
-        {
-            var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return _service.GerarXmlInicioExec(projetoId, versao, userId);
-        }
-        [HttpGet("{projetoId}/XmlProrrogacao/{versao}")]
-        public Resultado GetC(int projetoId, string versao)
-        {
-            var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return _service.GerarXmlProrrogacao(projetoId, versao, userId);
-        }
-        [HttpGet("{projetoId}/XmlRelatorioFinal/{versao}")]
-        public Resultado GetD(int projetoId, string versao)
-        {
-            var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return _service.GerarXmlRelatorioFinal(projetoId, versao, userId);
+           return _service.ValidaDados(projetoId, xmlTipo);
         }
 
         [HttpGet("{projetoId}/ObterXmls")]
-        public IEnumerable<Upload> GetA(int projetoId)
+        public IEnumerable<Upload> GetB(int projetoId)
         {
             return _service.ObterXmls(projetoId);
-        }
-
-
-        [HttpGet("{projetoId}/XmlProjetoPed/ValidaDados")]
-        public Resultado Get(int projetoId)
-        {
-            Projeto projeto = _service.obterProjeto(projetoId);
-            if (projeto==null){
-                var resultado = new Resultado();
-                resultado.Inconsistencias.Add("Projeto não localizado");
-                return resultado;
-            }else{
-                return _service.ValidaXmlProjetoPed(projeto);
-            }
         }
     }
 }

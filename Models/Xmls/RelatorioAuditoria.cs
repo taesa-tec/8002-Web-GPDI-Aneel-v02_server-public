@@ -17,7 +17,7 @@ namespace APIGestor.Models
         public string ArquivoPDF { get; set; }
         private string _custoTotal{ get; set; }
         public string CustoTotal{
-            get => new Regex(@"[^\d]").Replace(_custoTotal, "");
+            get => string.Format("{0:N}",_custoTotal);
             set => _custoTotal = value;
         }
         public List<RA_RecursoEmpresa> RecursoEmpresa { get; set; }

@@ -160,7 +160,7 @@ namespace APIGestor.Models
         public string CatContabil { get; set; }
         private string _custoEmp{ get; set; }
         public string CustoEmp{
-            get => new Regex(@"[^\d]").Replace(_custoEmp, "");
+            get => string.Format("{0:N}",_custoEmp);
             set => _custoEmp = value;
         }
     }
@@ -172,5 +172,20 @@ namespace APIGestor.Models
             set => _cnpjParc = value;
         }
         public List<DestRecursosExec> DestRecursosExec { get; set; }
+    }
+
+    public enum XmlTipo
+    {
+        MOVIMENTACAOFINANCEIRA=1,
+        PROGRAMA=2,
+        PROJETOGESTAO=3,
+        PROJETOPED=4,
+        INTERESSEPROJETOPED=5,
+        INICIOEXECUCAOPROJETO=6,
+        PRORROGAEXECUCAOPROJETO=7,
+        RELATORIOFINALPED=8,
+        RELATORIOFINALGESTAO=9,
+        RELATORIOAUDITORIAPED=10,
+        RELATORIOAUDITORIAGESTAO=11
     }
 }

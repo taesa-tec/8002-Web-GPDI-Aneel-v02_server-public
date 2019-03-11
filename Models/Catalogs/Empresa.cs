@@ -20,5 +20,6 @@ namespace APIGestor.Models
             set => _nome = value?.Trim();
         }
         public string Valor { get; set;}
+        public string Cnpj { get; set;}
     }
 }

@@ -92,7 +92,7 @@ namespace APIGestor.Models
     }
     public class PD_ResultadosCP
     {
-        public IdCP IdCP { get; set; }
+        public List<IdCP> IdCP { get; set; }
     }
     public class IdCP
     {
@@ -198,10 +198,14 @@ namespace APIGestor.Models
     {
         private string _cnpjInstCT_PI{ get; set; }
         public string CNPJInstCT_PI{
-            get => new Regex(@"[^\d]").Replace(_cnpjInstCT_PI, "");
+            get => (_cnpjInstCT_PI!=null)? new Regex(@"[^\d]").Replace(_cnpjInstCT_PI, "") : null;
             set => _cnpjInstCT_PI = value;
         }
-        public string PercInstCT_PI { get; set; } 
+        private string _percInstCT_PI{ get; set; }
+        public string PercInstCT_PI{
+            get => string.Format("{0:N}",_percInstCT_PI);
+            set => _percInstCT_PI = value;
+        }
     }
     public class PD_ResultadosSA
     {
@@ -232,8 +236,16 @@ namespace APIGestor.Models
             get => string.Format("{0:N}",_baseBenefIE);
             set => _baseBenefIE = value;
         }
-        public string PerBenefIE { get; set; }
-        public string VlrBenefIE { get; set; }
+         private string _perBenefIE{ get; set; }
+        public string PerBenefIE{
+            get => string.Format("{0:N}",_perBenefIE);
+            set => _perBenefIE = value;
+        }
+         private string _vlrBenefIE{ get; set; }
+        public string VlrBenefIE{
+            get => string.Format("{0:N}",_vlrBenefIE);
+            set => _vlrBenefIE = value;
+        }
     }
     public class RF_Recursos
     {

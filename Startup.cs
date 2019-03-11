@@ -11,6 +11,7 @@ using APIGestor.Models;
 using APIGestor.Security;
 using APIGestor.Business;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Globalization;
 
 namespace APIGestor
 {
@@ -49,7 +50,16 @@ namespace APIGestor
             services.AddScoped<UploadService>();
             services.AddScoped<RelatorioEmpresaService>();
             services.AddScoped<RelatorioEtapaService>();
+            
+            // Gerador Xml Services
             services.AddScoped<GeradorXmlService>();
+            services.AddScoped<XmlProjetoPedService>();
+            services.AddScoped<XmlInteressePedService>();
+            services.AddScoped<XmlInicioExecService>();
+            services.AddScoped<XmlProrrogacaoService>();
+            services.AddScoped<XmlRelatorioFinalService>();
+            services.AddScoped<XmlRelatorioAuditoriaService>();
+            ////////////////////////
 
             services.AddScoped<RegistroFinanceiroService>();
 
@@ -122,7 +132,11 @@ namespace APIGestor
             {
                 app.UseHsts();
             }
-
+            // Define Cultura Padrão
+            var cultureInfo = new CultureInfo("pt-BR");
+            cultureInfo.NumberFormat.CurrencySymbol = "R$";
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
             // Criação de estruturas, usuários e permissões
             // na base do ASP.NET Identity Core (caso ainda não
             // existam)
