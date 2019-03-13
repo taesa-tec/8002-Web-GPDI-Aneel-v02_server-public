@@ -105,12 +105,12 @@ namespace APIGestor.Business
                 _context.SaveChanges();
                 resultado.Id = upload.Id.ToString();
                 string fullPath = Path.Combine(newPath, upload.Id.ToString());
-                using (var writer = new XmlTextWriter(fullPath, new UTF8Encoding(true)))
-                {
-                    writer.Formatting = System.Xml.Formatting.Indented;
-                    xDoc.Save(writer);
-                }
-                //xDoc.Save(fullPath);
+                // using (var writer = new XmlTextWriter(fullPath, new UTF8Encoding(true)))
+                // {
+                //     writer.Formatting = System.Xml.Formatting.Indented;
+                //     xDoc.Save(writer);
+                // }
+                xDoc.Save(fullPath);
             }
             return resultado;
         }
