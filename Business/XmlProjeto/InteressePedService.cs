@@ -22,8 +22,12 @@ namespace APIGestor.Business
         {
             _context = context;
         }
-        public Resultado ValidaXml(Projeto projeto)
+        public Resultado ValidaXml(int ProjetoId)
         {
+            Projeto projeto = _context.Projetos
+                    .Include("CatalogEmpresa")
+                    .Where(p => p.Id == ProjetoId)
+                    .FirstOrDefault();
             var resultado = new Resultado();
             resultado.Acao = "Validação de dados";
             if (projeto.Codigo == null)
@@ -37,9 +41,6 @@ namespace APIGestor.Business
                     .Include("CatalogEmpresa")
                     .Where(p => p.Id == ProjetoId)
                     .FirstOrDefault();
-            var resultado = ValidaXml(projeto);
-            if (resultado.Inconsistencias.Count == 0)
-            {
                 Interesse.PD_InteresseProjeto = new PD_InteresseProjeto
                 {
                     Projeto = new InteresseProjeto
@@ -47,7 +48,6 @@ namespace APIGestor.Business
                         CodProjeto = projeto.Codigo
                     }
                 };
-            }
             return Interesse;
         }
     }

@@ -134,6 +134,22 @@ namespace APIGestor.Business
             Resultado resultado = DadosValidos(ProjetoId, XmlTipo, Versao, UserId);
             if (resultado.Inconsistencias.Count == 0)
             {
+                var svc = obterXmlTipo(XmlTipo);
+                Resultado ValidaXml = svc.ValidaXml(ProjetoId);
+                if(ValidaXml.Inconsistencias.Count()>0)
+                    return ValidaXml;
+                var xml = svc.GerarXml(ProjetoId, Versao, UserId);
+                if (xml!=null){
+                    resultado = CriarArquivo(JsonConvert.SerializeObject(xml), XmlTipo.ToString(), ProjetoId, Versao, UserId);
+                }else{
+                    resultado.Inconsistencias.Add("Erro na gravação do arquivo");
+                }
+                resultado.Acao = "Geração Xml " + XmlTipo.ToString();
+            }
+            return resultado;
+        }
+        private dynamic obterXmlTipo(XmlTipo XmlTipo)
+        {       
                 var svc = (dynamic)null;
                 switch (XmlTipo.ToString())
                 {
@@ -161,15 +177,7 @@ namespace APIGestor.Business
                         break;
                         //case "RELATORIOAUDITORIAGESTAO": 
                 }
-                var xml = svc.GerarXml(ProjetoId, Versao, UserId);
-                if (xml!=null){
-                    resultado = CriarArquivo(JsonConvert.SerializeObject(xml), XmlTipo.ToString(), ProjetoId, Versao, UserId);
-                }else{
-                    resultado.Inconsistencias.Add("Erro na gravação do arquivo");
-                }
-                resultado.Acao = "Geração Xml " + XmlTipo.ToString();
-            }
-            return resultado;
+                return svc;
         }
         public Resultado ValidaDados(int ProjetoId, XmlTipo XmlTipo)
         {
@@ -180,15 +188,8 @@ namespace APIGestor.Business
                 resultado.Inconsistencias.Add("Informe o XmlTipo");
             if (resultado.Inconsistencias.Count == 0)
             {
-                var svc = (dynamic)null;
-                switch (XmlTipo.ToString())
-                {
-                    case "PROJETOPED":
-                        svc = _projetoPed;
-                    break;
-                }
-                Projeto Projeto = svc.obterProjeto(ProjetoId);
-                resultado = svc.ValidaXml(Projeto);
+                var svc = obterXmlTipo(XmlTipo);
+                resultado = svc.ValidaXml(ProjetoId);
                 resultado.Acao = "Validação dados Xml " + XmlTipo.ToString();
             }
             return resultado;

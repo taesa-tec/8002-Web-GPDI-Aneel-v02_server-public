@@ -22,8 +22,14 @@ namespace APIGestor.Business
         {
             _context = context;
         }
-        public Resultado ValidaXml(Projeto projeto)
+        public Resultado ValidaXml(int ProjetoId)
         {
+            Projeto projeto = _context.Projetos
+                        .Include("CatalogEmpresa")
+                        .Include("Etapas")
+                        .Where(p => p.Id == ProjetoId)
+                        .FirstOrDefault();
+
             var resultado = new Resultado();
             resultado.Acao = "Validação de dados";
             if (projeto.Codigo == null)
@@ -41,18 +47,14 @@ namespace APIGestor.Business
                         .Include("Etapas")
                         .Where(p => p.Id == ProjetoId)
                         .FirstOrDefault();
-            var resultado = ValidaXml(projeto);
-            if (resultado.Inconsistencias.Count() == 0)
+            Prorrogacao.PD_PrazoExecProjeto = new PD_PrazoExecProjeto
             {
-                Prorrogacao.PD_PrazoExecProjeto = new PD_PrazoExecProjeto
+                Projeto = new ProProjeto
                 {
-                    Projeto = new ProProjeto
-                    {
-                        CodProjeto = projeto.Codigo,
-                        Duracao = projeto.Etapas.Sum(p => p.Duracao)
-                    }
-                };
-            }
+                    CodProjeto = projeto.Codigo,
+                    Duracao = projeto.Etapas.Sum(p => p.Duracao)
+                }
+            };
             return Prorrogacao;
         }
     }

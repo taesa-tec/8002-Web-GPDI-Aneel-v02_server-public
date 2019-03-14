@@ -22,7 +22,7 @@ namespace APIGestor.Business
         {
             _context = context;
         }
-        public Resultado ValidaXml(Projeto projeto)
+        public Resultado ValidaXml(int ProjetoId)
         {
             var resultado = new Resultado();
             resultado.Acao = "Validação de dados";
@@ -113,9 +113,6 @@ namespace APIGestor.Business
             int?[] rhIds = registros.Where(r => r.RecursoHumano != null).Select(r => r.RecursoHumanoId).ToArray();
             int?[] rmIds = registros.Where(r => r.RecursoMaterial != null).Select(r => r.RecursoMaterialId).ToArray();
 
-            var resultado = ValidaXml(projeto);
-            if (resultado.Inconsistencias.Count == 0)
-            {
                 relatorio.PD_RelFinalBase = new PD_RelFinalBase
                 {
                     CodProjeto = projeto.Codigo,
@@ -454,7 +451,6 @@ namespace APIGestor.Business
                     });
                 }
                 relatorio.PD_Resultados.PD_ResultadosIE.IdIE = listIdIE;
-            }
             return relatorio;
         }
     }
