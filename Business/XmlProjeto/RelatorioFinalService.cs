@@ -18,19 +18,50 @@ namespace APIGestor.Business
     public class XmlRelatorioFinalService
     {
         private GestorDbContext _context;
-        public XmlRelatorioFinalService(GestorDbContext context)
+        private EtapaService _etapaService;
+        public XmlRelatorioFinalService(GestorDbContext context, EtapaService etapaService)
         {
             _context = context;
+            _etapaService = etapaService;
         }
         public Resultado ValidaXml(int ProjetoId)
         {
             var resultado = new Resultado();
             resultado.Acao = "Validação de dados";
-            // if (projeto.Codigo == null)
-            //     resultado.Inconsistencias.Add("Código do Projeto não gerado");
-            // int Duracao = projeto.Etapas.Sum(p => p.Duracao);
-            // if ((projeto.TipoValor == "PD" && Duracao > 60) || (projeto.TipoValor == "PG" && Duracao > 12))
-            //     resultado.Inconsistencias.Add("Duração máxima execedida para o projeto");
+            Projeto projeto = _context.Projetos
+                    .Include("CatalogEmpresa")
+                    .Include("Empresas.Estado")
+                    .Include("Etapas")
+                    .Include("AlocacoesRh.RecursoHumano")
+                    .Include("AlocacoesRm.RecursoMaterial")
+                    .Include("Empresas.CatalogEmpresa")
+                    .Include("RelatorioFinal.Uploads")
+                    .Include("RegistroFinanceiro.RecursoHumano")
+                    .Include("RegistroFinanceiro.RecursoMaterial")
+                    .Include("ResultadosCapacitacao.RecursoHumano")
+                    .Include("ResultadosCapacitacao.Uploads")
+                    .Include("ResultadosProducao.Pais")
+                    .Include("ResultadosProducao.Uploads")
+                    .Include("ResultadosIntelectual.Inventores.RecursoHumano")
+                    .Include("ResultadosIntelectual.Depositantes.Empresa.CatalogEmpresa")
+                    .Include("ResultadosInfra")
+                    .Include("ResultadosSocioAmbiental")
+                    .Include("ResultadosEconomico")
+                    .Where(p => p.Id == ProjetoId)
+                    .FirstOrDefault();
+    
+            if (projeto == null){
+                resultado.Inconsistencias.Add("Projeto não localizado");
+            }else{
+                if (projeto.RegistroFinanceiro.Where(r=>r.StatusValor=="Aprovado").ToList().Count()<=0)
+                    resultado.Inconsistencias.Add("Não existem refps aprovados para o projeto.");
+                if (projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAnual").FirstOrDefault()==null)
+                    resultado.Inconsistencias.Add("Arquivo relatório final anual não localizado");
+                if (projeto.ResultadosCapacitacao.Where(r=>r.Uploads==null).ToList().Count()<=0)
+                    resultado.Inconsistencias.Add("Faltando Arquivo em resultados de capacitação");
+                if (projeto.ResultadosProducao.Where(r=>r.Uploads==null).ToList().Count()<=0)
+                    resultado.Inconsistencias.Add("Faltando Arquivo em resultados de produção");
+            }
             return resultado;
         }
         public List<CustoCatContabil> ObterCustosCat(IGrouping<Empresa, AlocacaoRm> rm, List<RegistroFinanceiro> registros)
@@ -92,24 +123,23 @@ namespace APIGestor.Business
         {
             XmlRelatorioFinal relatorio = new XmlRelatorioFinal();
             Projeto projeto = _context.Projetos
-                    .Include("CatalogEmpresa")
-                    .Include("Empresas.Estado")
-                    .Include("Etapas")
-                    .Include("AlocacoesRh.RecursoHumano")
-                    .Include("AlocacoesRm.RecursoMaterial")
-                    .Include("Empresas.CatalogEmpresa")
-                    .Include("RelatorioFinal.Uploads")
-                    .Where(p => p.Id == ProjetoId)
-                    .FirstOrDefault();
+                        .Include("CatalogEmpresa")
+                        .Include("Empresas.Estado")
+                        .Include("Etapas")
+                        .Include("AlocacoesRh.RecursoHumano")
+                        .Include("AlocacoesRm.RecursoMaterial")
+                        .Include("Empresas.CatalogEmpresa")
+                        .Include("RelatorioFinal.Uploads")
+                        .Where(p => p.Id == ProjetoId)
+                        .FirstOrDefault();
 
             var registros = _context.RegistrosFinanceiros
-                            //.Include("Uploads.User")
-                            //.Include("ObsInternas.User")
                             .Include("RecursoHumano")
                             .Include("RecursoMaterial")
                             .Where(p => p.ProjetoId == ProjetoId)
                             .Where(p => p.StatusValor == "Aprovado")
                             .ToList();
+
             int?[] rhIds = registros.Where(r => r.RecursoHumano != null).Select(r => r.RecursoHumanoId).ToArray();
             int?[] rmIds = registros.Where(r => r.RecursoMaterial != null).Select(r => r.RecursoMaterialId).ToArray();
 
@@ -118,7 +148,7 @@ namespace APIGestor.Business
                     CodProjeto = projeto.Codigo,
                     ArquivoPDF = projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAnual").FirstOrDefault().NomeArquivo,
                     DataIniODS = projeto.DataInicio.ToString(),
-                    DataFimODS = projeto.Etapas.LastOrDefault().DataFim.ToString(),
+                    DataFimODS = (projeto.Etapas.LastOrDefault().DataFim==null)? _etapaService.AddDataEtapas(projeto.Etapas).LastOrDefault().DataFim.ToString() : projeto.Etapas.LastOrDefault().DataFim.ToString(),
                     ProdPrev = projeto.RelatorioFinal.ProdutoAlcancado.ToString(),
                     ProdJust = projeto.RelatorioFinal.JustificativaProduto,
                     ProdEspTec = projeto.RelatorioFinal.EspecificacaoProduto,

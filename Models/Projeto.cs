@@ -65,6 +65,13 @@ namespace APIGestor.Models
         public List<UserProjeto> UsersProjeto { get; set; }
         public List<Empresa> Empresas { get; set; }
         public RelatorioFinal RelatorioFinal { get; set; }
+        public List<RegistroFinanceiro> RegistroFinanceiro { get; set; }
+        public List<ResultadoCapacitacao> ResultadosCapacitacao { get; set; }
+        public List<ResultadoProducao> ResultadosProducao { get; set; }
+        public List<ResultadoIntelectual> ResultadosIntelectual { get; set; }
+        public List<ResultadoInfra> ResultadosInfra { get; set; }
+        public List<ResultadoSocioAmbiental> ResultadosSocioAmbiental { get; set; }
+        public List<ResultadoEconomico> ResultadosEconomico { get; set; }
     }
     public enum TipoProjeto
     {
