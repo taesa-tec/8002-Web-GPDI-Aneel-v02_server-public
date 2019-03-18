@@ -132,12 +132,18 @@ namespace APIGestor.Business
         }
         public Resultado Atualizar(Projeto dados)
         {
-            Resultado resultado = DadosValidos(dados);
+            //Resultado resultado = DadosValidos(dados);
+            var resultado = new Resultado();
+            if (dados == null)
+            {
+                resultado.Inconsistencias.Add(
+                    "Preencha os Dados do Projeto");
+            }
             resultado.Acao = "Atualização de Projeto";
 
             if (resultado.Inconsistencias.Count == 0)
             {
-                Projeto Projeto = _context.Projetos.Where(
+                Projeto Projeto = _context.Projetos.Include("CatalogEmpresa").Where(
                     p => p.Id == dados.Id).FirstOrDefault();
 
                 if (Projeto == null)
@@ -145,15 +151,17 @@ namespace APIGestor.Business
                     resultado.Inconsistencias.Add(
                         "Projeto não encontrado");
                 }
-                CatalogStatus Status = _context.CatalogStatus.Where(
-                    p => p.Id == dados.CatalogStatusId).FirstOrDefault();
+                if (dados.CatalogStatusId!=null){
+                    CatalogStatus Status = _context.CatalogStatus.Where(
+                        p => p.Id == dados.CatalogStatusId).FirstOrDefault();
 
-                if (Status == null)
-                {
-                    resultado.Inconsistencias.Add(
-                        "Status não encontrado");
+                    if (Status == null)
+                    {
+                        resultado.Inconsistencias.Add(
+                            "Status não encontrado");
+                    }
                 }
-                else
+                if (resultado.Inconsistencias.Count == 0)
                 {
                     Projeto.CatalogStatusId = dados.CatalogStatusId==null ? Projeto.CatalogStatusId : dados.CatalogStatusId;
                     Projeto.Tipo = obterTipoProjeto(dados.Numero.ToString());
@@ -171,22 +179,22 @@ namespace APIGestor.Business
                     Projeto.Razoabilidade = dados.Razoabilidade==null ? Projeto.Razoabilidade : dados.Razoabilidade;
                     Projeto.Pesquisas = dados.Pesquisas==null ? Projeto.Pesquisas : dados.Pesquisas;
                     
-                    Empresa empresa = _context.Empresas.Where(e=>e.ProjetoId==dados.Id)
-                                                .Where(e=>e.Classificacao==0).FirstOrDefault();
-                    if (empresa!=null){
-                        empresa.CatalogEmpresaId = dados.CatalogEmpresaId;
-                    }else{
-                        Projeto.Empresas = new List<Empresa>{new Empresa { CatalogEmpresaId = dados.CatalogEmpresaId }};
+                    if (dados.CatalogEmpresaId!=null){
+                        Empresa empresa = _context.Empresas.Where(e=>e.ProjetoId==dados.Id)
+                                                    .Where(e=>e.Classificacao==0).FirstOrDefault();
+                        if (empresa!=null){
+                            empresa.CatalogEmpresaId = dados.CatalogEmpresaId;
+                        }else{
+                            Projeto.Empresas = new List<Empresa>{new Empresa { CatalogEmpresaId = dados.CatalogEmpresaId }};
+                        }
                     }
                     var codigo = GerarCodigoProjeto(Projeto);
                     Projeto.Codigo = codigo;
                     _context.SaveChanges();
                 }
             }
-
             return resultado;
         }
-
         public Resultado Excluir(int id)
         {
             Resultado resultado = new Resultado();
