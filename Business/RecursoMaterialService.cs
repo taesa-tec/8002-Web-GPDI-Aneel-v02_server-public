@@ -20,6 +20,8 @@ namespace APIGestor.Business
         public IEnumerable<RecursoMaterial> ListarTodos(int projetoId)
         {
             var RecursoMaterial = _context.RecursoMateriais
+                .Include("CategoriaContabilGestao")
+                .Include("Atividade")
                 .Where(p => p.ProjetoId == projetoId)
                 .ToList();
             return RecursoMaterial;
@@ -72,6 +74,9 @@ namespace APIGestor.Business
                     RecursoMaterial.ValorUnitario = dados.ValorUnitario<0 ? RecursoMaterial.ValorUnitario : dados.ValorUnitario;
                     RecursoMaterial.CategoriaContabil = Enum.IsDefined(typeof(CategoriaContabil),dados.CategoriaContabil)? dados.CategoriaContabil : RecursoMaterial.CategoriaContabil;
                     RecursoMaterial.Especificacao = dados.Especificacao==null ? RecursoMaterial.Especificacao : dados.Especificacao;
+                    RecursoMaterial.CatalogCategoriaContabilGestaoId = dados.CatalogCategoriaContabilGestaoId==null ? RecursoMaterial.CatalogCategoriaContabilGestaoId : dados.CatalogCategoriaContabilGestaoId;
+                    RecursoMaterial.CatalogAtividadeId = dados.CatalogAtividadeId==null ? RecursoMaterial.CatalogAtividadeId : dados.CatalogAtividadeId;
+                    
                     _context.SaveChanges();
                 }
             }
@@ -91,7 +96,7 @@ namespace APIGestor.Business
                 {
                     resultado.Inconsistencias.Add("Preencha o Nome do RecursoMaterial");
                 }
-                if (String.IsNullOrEmpty(dados.CategoriaContabil.ToString()))
+                if (String.IsNullOrEmpty(dados.CategoriaContabil.ToString()) && dados.CatalogCategoriaContabilGestaoId<=0)
                 {
                     resultado.Inconsistencias.Add("Preencha a Categoria Contável do RecursoMaterial");
                 }

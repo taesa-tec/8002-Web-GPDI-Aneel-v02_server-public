@@ -21,6 +21,7 @@ namespace APIGestor.Business
         {
             var Etapas = _context.Etapas
                 .Include("EtapaProdutos")
+                .Include("EtapaMeses")
                 .Where(p => p.ProjetoId == projetoId)
                 .OrderBy(p => p.Id)
                 .ToList();
@@ -53,12 +54,15 @@ namespace APIGestor.Business
         }
         public List<EtapaProduto> MontEtapaProdutos(Etapa dados)
         {
-            var etapaProdutos = new List<EtapaProduto>();
-            foreach (var p in dados.EtapaProdutos)
-            {
-                etapaProdutos.Add(new EtapaProduto { ProdutoId = p.ProdutoId });
+            if (dados.EtapaProdutos!=null){
+                var etapaProdutos = new List<EtapaProduto>();
+                foreach (var p in dados.EtapaProdutos)
+                {
+                    etapaProdutos.Add(new EtapaProduto { ProdutoId = p.ProdutoId });
+                }
+                return etapaProdutos;
             }
-            return etapaProdutos;
+            return null;
         } 
         public Resultado Incluir(Etapa dados)
         {
@@ -90,8 +94,9 @@ namespace APIGestor.Business
                     ProjetoId = dados.ProjetoId,
                     Nome = NomeEtapa(dados.ProjetoId),
                     Desc = dados.Desc,
-                    Duracao = 6,
-                    EtapaProdutos = this.MontEtapaProdutos(dados)
+                    Duracao = (dados.EtapaMeses!=null && dados.EtapaMeses.Count()>0) ? dados.EtapaMeses.Count() : 6,
+                    EtapaProdutos = this.MontEtapaProdutos(dados),
+                    EtapaMeses = dados.EtapaMeses
                 };
                 _context.Etapas.Add(etapa);
                 _context.SaveChanges();
@@ -123,6 +128,11 @@ namespace APIGestor.Business
                         _context.EtapaProdutos.RemoveRange(_context.EtapaProdutos.Where(p => p.EtapaId == dados.Id));
                         Etapa.EtapaProdutos = this.MontEtapaProdutos(dados);
                     }
+                    if (dados.EtapaMeses!=null){
+                        _context.EtapaMeses.RemoveRange(_context.EtapaMeses.Where(p => p.EtapaId == dados.Id));
+                        Etapa.EtapaMeses = dados.EtapaMeses;
+                        Etapa.Duracao = dados.EtapaMeses.Count();
+                    }
                     _context.SaveChanges();
                 }
             }
@@ -143,18 +153,21 @@ namespace APIGestor.Business
                     resultado.Inconsistencias.Add(
                         "Preencha a descrição das atividades da Etapa");
                 }
-                if (dados.EtapaProdutos.Count <= 0)
+                if (dados.EtapaProdutos==null && dados.EtapaMeses==null)
                 {
-                    resultado.Inconsistencias.Add("Informe os Produtos relacionados a Etapa.");
-                }
-                foreach (var etapaProduto in dados.EtapaProdutos)
-                {
-                    Produto Produto = _context.Produtos.Where(
-                        p => p.Id == etapaProduto.ProdutoId).FirstOrDefault();
+                    resultado.Inconsistencias.Add("Informe os Produtos ou Meses relacionados a Etapa.");
+                }else{
+                    if (dados.EtapaProdutos!=null){
+                        foreach (var etapaProduto in dados.EtapaProdutos)
+                        {
+                            Produto Produto = _context.Produtos.Where(
+                                p => p.Id == etapaProduto.ProdutoId).FirstOrDefault();
 
-                    if (Produto == null)
-                    {
-                        resultado.Inconsistencias.Add("Produto não localizado ou não relacionados");
+                            if (Produto == null)
+                            {
+                                resultado.Inconsistencias.Add("Produto não localizado ou não relacionados");
+                            }
+                        }
                     }
                 }
             }

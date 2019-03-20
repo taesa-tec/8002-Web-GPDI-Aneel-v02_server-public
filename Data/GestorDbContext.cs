@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using APIGestor.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Linq;
 
 namespace APIGestor.Data
 {
@@ -44,8 +45,22 @@ namespace APIGestor.Data
         public DbSet<ResultadoIntelectualDepositante> ResultadoIntelectualDepositantes { get; set; }
         public DbSet<ResultadoSocioAmbiental> ResultadosSocioAmbiental { get; set; }
         public DbSet<ResultadoEconomico> ResultadosEconomico { get; set; }
+
+        // Projeto Gestão
+        public DbSet<AtividadesGestao> AtividadesGestao { get; set; }
+
+        public DbSet<CatalogCategoriaContabilGestao> CatalogCategoriaContabilGestao { get; set; }
+        public DbSet<CatalogAtividade> CatalogAtividade { get; set; }
+        public DbSet<EtapaMes> EtapaMeses { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Disable Cascate Delete
+            var cascadeFKs = modelBuilder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetForeignKeys())
+                .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
+
+            foreach (var fk in cascadeFKs)
+                fk.DeleteBehavior = DeleteBehavior.Restrict;
             //Upload
             modelBuilder.Entity<Upload>()
                 .Property(b => b.Created)
@@ -102,7 +117,7 @@ namespace APIGestor.Data
             modelBuilder.Entity<LogProjeto>()
                 .Property(b => b.Created)
                 .HasDefaultValueSql("getdate()");
-
+            
             base.OnModelCreating(modelBuilder);
         }
     }

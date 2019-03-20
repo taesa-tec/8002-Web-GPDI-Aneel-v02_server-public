@@ -70,10 +70,10 @@ namespace APIGestor.Business
                 }
                 else
                 {
-                    AlocacaoRm.EtapaId = dados.EtapaId;
-                    AlocacaoRm.EmpresaFinanciadoraId = dados.EmpresaFinanciadoraId;
-                    AlocacaoRm.EmpresaRecebedoraId = dados.EmpresaRecebedoraId;
-                    AlocacaoRm.RecursoMaterialId = dados.RecursoMaterialId;
+                    AlocacaoRm.EtapaId = dados.EtapaId==null ? AlocacaoRm.EtapaId : dados.EtapaId;
+                    AlocacaoRm.EmpresaFinanciadoraId = dados.EmpresaFinanciadoraId==null ? AlocacaoRm.EmpresaFinanciadoraId : dados.EmpresaFinanciadoraId;
+                    AlocacaoRm.EmpresaRecebedoraId = dados.EmpresaRecebedoraId==null ? AlocacaoRm.EmpresaRecebedoraId : dados.EmpresaRecebedoraId;
+                    AlocacaoRm.RecursoMaterialId = dados.RecursoMaterialId==null ? AlocacaoRm.RecursoMaterialId : dados.RecursoMaterialId;
                     AlocacaoRm.Qtd = dados.Qtd;
                     AlocacaoRm.Justificativa = dados.Justificativa;
                     _context.SaveChanges();
@@ -111,23 +111,23 @@ namespace APIGestor.Business
                         resultado.Inconsistencias.Add("RecursoMaterialId não cadastrada ou não associada ao projeto.");
                     }
                 }
-                if (dados.EtapaId == null)
-                {
-                    resultado.Inconsistencias.Add("Preencha o Nome do RecursoMaterialId");
-                }
-                else
-                {
-                    Etapa Etapa = _context.Etapas
-                                        .Where(p => p.ProjetoId == dados.ProjetoId)
-                                        .Where(p => p.Id == dados.EtapaId).FirstOrDefault();
-                    if (Etapa == null)
-                    {
-                        resultado.Inconsistencias.Add("EtapaId não cadastrada ou não associada ao projeto.");
-                    }
-                }
+                // if (dados.EtapaId == null)
+                // {
+                //     resultado.Inconsistencias.Add("Preencha a Etapa do RecursoMaterialId");
+                // }
+                // else
+                // {
+                //     Etapa Etapa = _context.Etapas
+                //                         .Where(p => p.ProjetoId == dados.ProjetoId)
+                //                         .Where(p => p.Id == dados.EtapaId).FirstOrDefault();
+                //     if (Etapa == null)
+                //     {
+                //         resultado.Inconsistencias.Add("EtapaId não cadastrada ou não associada ao projeto.");
+                //     }
+                // }
                 if (dados.EmpresaFinanciadoraId == null)
                 {
-                    resultado.Inconsistencias.Add("Preencha o Nome do RecursoMaterialId");
+                    resultado.Inconsistencias.Add("Preencha o EmpresaFinanciadoraId");
                 }
                 else
                 {
@@ -139,11 +139,7 @@ namespace APIGestor.Business
                         resultado.Inconsistencias.Add("EmpresaFinanciadoraId não cadastrada ou não associada ao projeto.");
                     }
                 }
-                if (dados.EmpresaRecebedoraId == null)
-                {
-                    resultado.Inconsistencias.Add("Preencha o Nome do RecursoMaterialId");
-                }
-                else
+                if (dados.EmpresaRecebedoraId != null)
                 {
                     Empresa Empresa = _context.Empresas
                                             .Where(p => p.ProjetoId == dados.ProjetoId)

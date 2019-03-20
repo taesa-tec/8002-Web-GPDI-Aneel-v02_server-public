@@ -53,5 +53,16 @@ namespace APIGestor.Business
             _context.CatalogPaises
                 .OrderBy(p => p.Nome)
                 .ToList();
+        public IEnumerable<CatalogCategoriaContabilGestao> ListarCatalogCategoriaContabilGestao()=>
+            _context.CatalogCategoriaContabilGestao
+                .Include("Atividades")
+                .Select(st=>new CatalogCategoriaContabilGestao{
+                    Id = st.Id,
+                    Nome = st.Nome,
+                    Valor = st.Valor,
+                    Atividades = st.Atividades.OrderBy(sb=>sb.Nome).OrderBy(sb=>sb.Nome).ToList()
+                })
+                .OrderBy(q => q.Nome)
+                .ToList();
     }
 }

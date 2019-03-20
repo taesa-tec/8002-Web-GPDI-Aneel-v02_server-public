@@ -71,6 +71,9 @@ namespace APIGestor
             services.AddScoped<ResultadoSocioAmbientalService>();
             services.AddScoped<ResultadoEconomicoService>();
 
+            // Projeto Gestão
+            services.AddScoped<AtividadeGestaoService>();
+
             // Ativando a utilização do ASP.NET Identity, a fim de
             // permitir a recuperação de seus objetos via injeção de
             // dependências

@@ -70,14 +70,15 @@ namespace APIGestor.Business
                 else
                 {
                     RecursoHumano.EmpresaId = dados.EmpresaId<=0 ? RecursoHumano.EmpresaId : dados.EmpresaId;
-                    RecursoHumano.ValorHora = dados.ValorHora<=0 ? RecursoHumano.ValorHora : dados.ValorHora;;
+                    RecursoHumano.ValorHora = dados.ValorHora<=0 ? RecursoHumano.ValorHora : dados.ValorHora;
                     RecursoHumano.NomeCompleto = dados.NomeCompleto==null ? RecursoHumano.NomeCompleto : dados.NomeCompleto;
                     RecursoHumano.Titulacao = Enum.IsDefined(typeof(RecursoHumanoTitulacao),dados.Titulacao) ? dados.Titulacao : RecursoHumano.Titulacao;
                     RecursoHumano.Funcao = Enum.IsDefined(typeof(RecursoHumanoFuncao),dados.Funcao) ? dados.Funcao : RecursoHumano.Funcao;
                     RecursoHumano.Nacionalidade = Enum.IsDefined(typeof(RecursoHumanoNacionalidade),dados.Nacionalidade) ? dados.Nacionalidade : RecursoHumano.Nacionalidade;
-                    RecursoHumano.CPF = dados.CPF==null ? RecursoHumano.CPF : dados.CPF;;
-                    RecursoHumano.Passaporte = dados.Passaporte==null ? RecursoHumano.Passaporte : dados.Passaporte;;
-                    RecursoHumano.UrlCurriculo = dados.UrlCurriculo==null ? RecursoHumano.UrlCurriculo : dados.UrlCurriculo;;
+                    RecursoHumano.CPF = dados.CPF==null ? RecursoHumano.CPF : dados.CPF;
+                    RecursoHumano.Passaporte = dados.Passaporte==null ? RecursoHumano.Passaporte : dados.Passaporte;
+                    RecursoHumano.UrlCurriculo = dados.UrlCurriculo==null ? RecursoHumano.UrlCurriculo : dados.UrlCurriculo;
+                    RecursoHumano.GerenteProjeto = (!dados.GerenteProjeto.HasValue) ? RecursoHumano.GerenteProjeto : dados.GerenteProjeto;
                     _context.SaveChanges();
                 }
             }

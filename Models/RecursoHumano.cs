@@ -28,6 +28,8 @@ namespace APIGestor.Models
         public string CPF { get; set; }
         public string Passaporte { get; set; }
         public string UrlCurriculo { get; set; }
+
+        public bool? GerenteProjeto { get; set; }
     }
     public enum RecursoHumanoTitulacao
     {   
@@ -59,6 +61,24 @@ namespace APIGestor.Models
         public int HrsMes4 { get; set;}
         public int HrsMes5 { get; set;}
         public int HrsMes6 { get; set;}
+        public int? HrsMes7 { get; set;}
+        public int? HrsMes8 { get; set;}
+        public int? HrsMes9 { get; set;}
+        public int? HrsMes10 { get; set;}
+        public int? HrsMes11 { get; set;}
+        public int? HrsMes12 { get; set;}
+        public int? HrsMes13 { get; set;}
+        public int? HrsMes14 { get; set;}
+        public int? HrsMes15 { get; set;}
+        public int? HrsMes16 { get; set;}
+        public int? HrsMes17 { get; set;}
+        public int? HrsMes18 { get; set;}
+        public int? HrsMes19 { get; set;}
+        public int? HrsMes20 { get; set;}
+        public int? HrsMes21 { get; set;}
+        public int? HrsMes22 { get; set;}
+        public int? HrsMes23 { get; set;}
+        public int? HrsMes24 { get; set;}
         public string Justificativa { get; set;}
     }
 }

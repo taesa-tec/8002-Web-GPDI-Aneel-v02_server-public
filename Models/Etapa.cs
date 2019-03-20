@@ -25,6 +25,7 @@ namespace APIGestor.Models
         [Column(TypeName="date")]
         public DateTime? DataFim { get; set; }
         public List<EtapaProduto> EtapaProdutos { get; set; }
+        public List<EtapaMes> EtapaMeses { get; set; }
 
     }
     public class EtapaProduto
@@ -33,5 +34,12 @@ namespace APIGestor.Models
         public int Id { get; set; }
         public int EtapaId { get; set; }
         public int? ProdutoId { get; set; }
+    }
+    public class EtapaMes
+    {   
+        [Key]
+        public int Id { get; set; }
+        public int EtapaId { get; set; }
+        public DateTime Mes { get; set; }
     }
 }

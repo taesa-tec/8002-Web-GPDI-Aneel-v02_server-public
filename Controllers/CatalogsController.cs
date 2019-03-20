@@ -60,5 +60,11 @@ namespace APIGestor.Controllers
         {
             return _service.ListarCatalogUserPermissao();
         }
+
+        [HttpGet("CategoriasContabeisGestao")]
+        public IEnumerable<CatalogCategoriaContabilGestao> GetG()
+        {
+            return _service.ListarCatalogCategoriaContabilGestao();
+        }
     }
 }

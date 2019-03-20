@@ -18,6 +18,10 @@ namespace APIGestor.Models
         [Column(TypeName = "decimal(18, 2)")]
         public decimal ValorUnitario { get; set; }
         public string Especificacao { get; set; }
+        public int? CatalogCategoriaContabilGestaoId { get; set; }
+        public CatalogCategoriaContabilGestao CategoriaContabilGestao { get; set; }
+        public int? CatalogAtividadeId { get; set; }
+        public CatalogAtividade Atividade { get; set; }
     }
     public enum CategoriaContabil
     {   
