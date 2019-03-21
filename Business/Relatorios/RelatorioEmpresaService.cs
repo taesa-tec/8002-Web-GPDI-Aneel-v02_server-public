@@ -186,6 +186,7 @@ namespace APIGestor.Business
                     {
                         var AlocacoesRh = _context.AlocacoesRh
                             .Where(p => p.EmpresaId == empresa.Id)
+                            .Where(p => p.RecursoHumano != null)
                             .Include("RecursoHumano")
                             .Include("Etapa.EtapaProdutos")
                             .ToList();
@@ -214,6 +215,7 @@ namespace APIGestor.Business
                         // Outras Categorias
                         var AlocacoesRm = _context.AlocacoesRm
                         .Where(p => p.EmpresaFinanciadoraId == empresa.Id)
+                        .Where(p => p.RecursoMaterial != null)
                         .Include(p => p.RecursoMaterial)
                         .Where(p => p.RecursoMaterial.CategoriaContabil == categoria)
                         .Include("Etapa.EtapaProdutos")
