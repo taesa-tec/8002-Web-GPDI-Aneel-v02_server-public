@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
 using APIGestor.Business;
 using APIGestor.Models;
 
@@ -43,7 +44,8 @@ namespace APIGestor.Controllers
         [HttpPost]
         public Resultado Post([FromBody]Projeto Projeto)
         {
-            return _service.Incluir(Projeto);
+            var user = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
+            return _service.Incluir(Projeto, user.ToString());
         }
 
         [HttpPut]

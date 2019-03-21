@@ -95,7 +95,7 @@ namespace APIGestor.Business
             }
             return resultado;
         }
-        public Resultado Incluir(Projeto dados)
+        public Resultado Incluir(Projeto dados, string userId)
         {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de Projeto";
@@ -111,15 +111,18 @@ namespace APIGestor.Business
             if (resultado.Inconsistencias.Count == 0)
             {
                 dados.Tipo = obterTipoProjeto(dados.Numero.ToString());
-
                 dados.Empresas = new List<Empresa>{new Empresa { CatalogEmpresaId = dados.CatalogEmpresaId }};
-                
                 _context.Projetos.Add(dados);
-                
                 _context.SaveChanges();
-                
                 resultado.Id = dados.Id.ToString();
-                
+                // criar user projeto
+                var userProjeto = new UserProjeto{
+                    UserId = userId,
+                    ProjetoId = dados.Id,
+                    CatalogUserPermissaoId = 4
+                };
+                _context.UserProjetos.Add(userProjeto);
+                _context.SaveChanges();
             }
 
             return resultado;
