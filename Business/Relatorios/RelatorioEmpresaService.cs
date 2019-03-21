@@ -119,6 +119,7 @@ namespace APIGestor.Business
                             newItem.CnpjEntidadeRecebedora = (item.AlocacaoRm.EmpresaRecebedora==null) ? null : (item.AlocacaoRm.EmpresaRecebedora.Cnpj==null) ? null : item.AlocacaoRm.EmpresaRecebedora.Cnpj; 
                         }
                         if (item.RegistroFinanceiro!=null){
+                            newItem.NomeItem = item.RegistroFinanceiro.NomeItem;
                             newItem.MesReferencia = item.RegistroFinanceiro.Mes.Value.Month.ToString()+"/"+item.RegistroFinanceiro.Mes.Value.Year.ToString();
                             newItem.TipoDocumento = item.RegistroFinanceiro.TipoDocumentoValor;
                             newItem.DataDocumento = item.RegistroFinanceiro.DataDocumento.ToString();
@@ -185,10 +186,10 @@ namespace APIGestor.Business
                     if (categoria.ToString() == "RH")
                     {
                         var AlocacoesRh = _context.AlocacoesRh
+                            .Include("RecursoHumano.Empresa.CatalogEmpresa")
+                            .Include("Etapa.EtapaProdutos")
                             .Where(p => p.EmpresaId == empresa.Id)
                             .Where(p => p.RecursoHumano != null)
-                            .Include("RecursoHumano")
-                            .Include("Etapa.EtapaProdutos")
                             .ToList();
                         total = AlocacoesRh.Count();
                         if (AlocacoesRh != null && total > 0)
@@ -215,7 +216,6 @@ namespace APIGestor.Business
                         // Outras Categorias
                         var AlocacoesRm = _context.AlocacoesRm
                         .Where(p => p.EmpresaFinanciadoraId == empresa.Id)
-                        .Where(p => p.RecursoMaterial != null)
                         .Include(p => p.RecursoMaterial)
                         .Where(p => p.RecursoMaterial.CategoriaContabil == categoria)
                         .Include("Etapa.EtapaProdutos")

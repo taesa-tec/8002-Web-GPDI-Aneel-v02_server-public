@@ -68,6 +68,7 @@ namespace APIGestor.Models
         public decimal ValorHora { get; set; }
         public int Unidades { get; set; }
         public decimal ValorUnitario { get; set; }
+        public string NomeItem { get; set; }
         public string MesReferencia { get; set; }
 		public string TipoDocumento { get; set; }
 		public string DataDocumento { get; set; }
@@ -113,6 +114,7 @@ namespace APIGestor.Models
                     Map(m=>m.Id);
                     Map(m=>m.Etapa);
                     Map(m=>m.NomeRecurso);
+                    Map(m=>m.NomeItem);
                     Map(m=>m.CPF);
                     Map(m=>m.FUNCAO);
                     Map(m=>m.TITULACAO);
