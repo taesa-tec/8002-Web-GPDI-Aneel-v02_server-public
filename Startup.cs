@@ -50,6 +50,7 @@ namespace APIGestor
             services.AddScoped<UploadService>();
             services.AddScoped<RelatorioEmpresaService>();
             services.AddScoped<RelatorioEtapaService>();
+            services.AddScoped<RelatorioAtividadeService>();
             
             // Gerador Xml Services
             services.AddScoped<GeradorXmlService>();

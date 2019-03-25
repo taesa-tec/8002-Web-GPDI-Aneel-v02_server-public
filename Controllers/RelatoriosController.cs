@@ -15,15 +15,18 @@ namespace APIGestor.Controllers
     {
         private RelatorioEmpresaService _relatorioEmpresaService;
         private RelatorioEtapaService _relatorioEtapaService;
+        private RelatorioAtividadeService _relatorioAtividadeService;
 
         public RelatoriosController(
             RelatorioEmpresaService relatorioEmpresaService,
-            RelatorioEtapaService relatorioEtapaService)
+            RelatorioEtapaService relatorioEtapaService,
+            RelatorioAtividadeService relatorioAtividadeService)
         {
             _relatorioEmpresaService = relatorioEmpresaService;
             _relatorioEtapaService = relatorioEtapaService;
+            _relatorioAtividadeService = relatorioAtividadeService;
         }
-
+        
         [HttpGet("{projetoId}/ExtratoEmpresas")]
         public RelatorioEmpresa Get(int projetoId)
         {
@@ -38,6 +41,11 @@ namespace APIGestor.Controllers
         public RelatorioEmpresa GetB(int projetoId)
         {
             return _relatorioEmpresaService.ExtratoREFP(projetoId);
+        }
+        [HttpGet("{projetoId}/ExtratoAtividades")]
+        public RelatorioAtividade GetC(int projetoId)
+        {
+            return _relatorioAtividadeService.ExtratoFinanceiro(projetoId);
         }
         
         [HttpGet("{projetoId}/ExtratoEmpresas/exportar")]
