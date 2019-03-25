@@ -32,6 +32,8 @@ namespace APIGestor.Business
         {
             var RegistroFinanceiro = _context.RegistrosFinanceiros
                 .Include("Uploads")
+                .Include("CategoriaContabilGestao")
+                .Include("Atividade")
                 .Include(p=>p.ObsInternas)
                     .ThenInclude(p=>p.User)
                 .Where(p => p.ProjetoId == projetoId)
@@ -121,6 +123,8 @@ namespace APIGestor.Business
                     registro.ValorUnitario  = dados.ValorUnitario==null ? registro.ValorUnitario : dados.ValorUnitario;
                     registro.EspecificacaoTecnica = dados.EspecificacaoTecnica==null ? registro.EspecificacaoTecnica : dados.EspecificacaoTecnica;
                     registro.FuncaoRecurso = dados.FuncaoRecurso==null ? registro.FuncaoRecurso : dados.FuncaoRecurso;
+                    registro.CatalogCategoriaContabilGestaoId = dados.CatalogCategoriaContabilGestaoId==null ? registro.CatalogCategoriaContabilGestaoId : dados.CatalogCategoriaContabilGestaoId;
+                    registro.CatalogAtividadeId = dados.CatalogAtividadeId==null ? registro.CatalogAtividadeId : dados.CatalogAtividadeId;
                     
                     _context.SaveChanges();
                 }

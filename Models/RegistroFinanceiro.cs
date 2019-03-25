@@ -56,6 +56,11 @@ namespace APIGestor.Models
         public string EspecificacaoTecnica { get; set;}
         public string FuncaoRecurso { get; set;}
         public ICollection<Upload> Uploads { get; set; }
+        public int? CatalogCategoriaContabilGestaoId { get; set; }
+        public CatalogCategoriaContabilGestao CategoriaContabilGestao { get; set; }
+        public int? CatalogAtividadeId { get; set; }
+        public CatalogAtividade Atividade { get; set; }
+
     }
     public enum TipoDocumento
     {
