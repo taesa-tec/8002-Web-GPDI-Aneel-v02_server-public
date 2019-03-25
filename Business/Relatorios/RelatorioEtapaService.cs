@@ -81,6 +81,7 @@ namespace APIGestor.Business
                         if (categoria.ToString()=="RH"){
                         //obter alocações recursos humanos                    
                         var rhs = _context.AlocacoesRh
+                            .Where(p=>p.EmpresaId == empresa.First().Empresa.Id)
                             .Where(p=>p.EtapaId == Etapa.First().EtapaId)
                             .Include("RecursoHumano")
                             .ToList();
