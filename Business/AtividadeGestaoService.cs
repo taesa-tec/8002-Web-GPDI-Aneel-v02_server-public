@@ -66,6 +66,18 @@ namespace APIGestor.Business
                     AtividadesGestao.BuscaAnterioridade = dados.BuscaAnterioridade==null ? AtividadesGestao.BuscaAnterioridade : dados.BuscaAnterioridade;
                     AtividadesGestao.ContratacaoAuditoria = dados.ContratacaoAuditoria==null ? AtividadesGestao.ContratacaoAuditoria : dados.ContratacaoAuditoria;
                     AtividadesGestao.ApoioCitenel = dados.ApoioCitenel==null ? AtividadesGestao.ApoioCitenel : dados.ApoioCitenel;
+                    
+                    //Resultado Atividades
+                    AtividadesGestao.ResDedicacaoHorario = dados.ResDedicacaoHorario==null ? AtividadesGestao.ResDedicacaoHorario : dados.ResDedicacaoHorario;
+                    AtividadesGestao.ResParticipacaoMembros = dados.ResParticipacaoMembros==null ? AtividadesGestao.ResParticipacaoMembros : dados.ResParticipacaoMembros;
+                    AtividadesGestao.ResDesenvFerramenta = dados.ResDesenvFerramenta==null ? AtividadesGestao.ResDesenvFerramenta : dados.ResDesenvFerramenta;
+                    AtividadesGestao.ResProspTecnologica = dados.ResProspTecnologica==null ? AtividadesGestao.ResProspTecnologica : dados.ResProspTecnologica;
+                    AtividadesGestao.ResDivulgacaoResultados = dados.ResDivulgacaoResultados==null ? AtividadesGestao.ResDivulgacaoResultados : dados.ResDivulgacaoResultados;
+                    AtividadesGestao.ResParticipacaoTecnicos = dados.ResParticipacaoTecnicos==null ? AtividadesGestao.ResParticipacaoTecnicos : dados.ResParticipacaoTecnicos;
+                    AtividadesGestao.ResBuscaAnterioridade = dados.ResBuscaAnterioridade==null ? AtividadesGestao.ResBuscaAnterioridade : dados.ResBuscaAnterioridade;
+                    AtividadesGestao.ResContratacaoAuditoria = dados.ResContratacaoAuditoria==null ? AtividadesGestao.ResContratacaoAuditoria : dados.ResContratacaoAuditoria;
+                    AtividadesGestao.ResApoioCitenel = dados.ResApoioCitenel==null ? AtividadesGestao.ResApoioCitenel : dados.ResApoioCitenel;
+                    
                     _context.SaveChanges();
                 }
             }
