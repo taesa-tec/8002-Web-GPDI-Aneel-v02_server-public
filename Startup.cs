@@ -60,6 +60,9 @@ namespace APIGestor
             services.AddScoped<XmlProrrogacaoService>();
             services.AddScoped<XmlRelatorioFinalService>();
             services.AddScoped<XmlRelatorioAuditoriaService>();
+            services.AddScoped<XmlProjetoGestaoService>();
+            services.AddScoped<XmlRelatorioFinalGestaoService>();
+            services.AddScoped<XmlRelatorioAuditoriaGestaoService>();
             ////////////////////////
 
             services.AddScoped<RegistroFinanceiroService>();

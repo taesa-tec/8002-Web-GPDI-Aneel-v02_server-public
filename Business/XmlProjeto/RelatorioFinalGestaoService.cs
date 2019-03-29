@@ -15,11 +15,11 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace APIGestor.Business
 {
-    public class XmlRelatorioFinalService
+    public class XmlRelatorioFinalGestaoService
     {
         private GestorDbContext _context;
         private EtapaService _etapaService;
-        public XmlRelatorioFinalService(GestorDbContext context, EtapaService etapaService)
+        public XmlRelatorioFinalGestaoService(GestorDbContext context, EtapaService etapaService)
         {
             _context = context;
             _etapaService = etapaService;

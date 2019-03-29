@@ -25,6 +25,9 @@ namespace APIGestor.Business
         private XmlProrrogacaoService _prorrogacaoPed;
         private XmlRelatorioFinalService _relatorioFinalPed;
         private XmlRelatorioAuditoriaService _relatorioAuditoriaPed;
+        private XmlRelatorioFinalGestaoService _relatorioFinalGestao;
+        private XmlRelatorioAuditoriaGestaoService _relatorioAuditoriaGestao;
+        private XmlProjetoGestaoService _projetoGestao;
         private IHostingEnvironment _hostingEnvironment;
         public GeradorXmlService(
             GestorDbContext context,
@@ -34,7 +37,10 @@ namespace APIGestor.Business
             XmlInicioExecService inicioExec,
             XmlProrrogacaoService prorrogacaoPed,
             XmlRelatorioFinalService relatorioFinalPed,
-            XmlRelatorioAuditoriaService relatorioAuditoriaPed)
+            XmlRelatorioAuditoriaService relatorioAuditoriaPed,
+            XmlProjetoGestaoService projetoGestao,
+            XmlRelatorioFinalGestaoService relatorioFinalGestao,
+            XmlRelatorioAuditoriaGestaoService relatorioAuditoriaGestao)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
@@ -44,6 +50,9 @@ namespace APIGestor.Business
             _prorrogacaoPed = prorrogacaoPed;
             _relatorioFinalPed = relatorioFinalPed;
             _relatorioAuditoriaPed = relatorioAuditoriaPed;
+            _projetoGestao = projetoGestao;
+            _relatorioFinalGestao = relatorioFinalGestao;
+            _relatorioAuditoriaGestao = relatorioAuditoriaGestao;
         }
         public IEnumerable<Upload> ObterXmls(int projetoId)
         {
@@ -155,7 +164,9 @@ namespace APIGestor.Business
                 {
                     //case "MOVIMENTACAOFINANCEIRA":
                     //case "PROGRAMA": 
-                    //case "PROJETOGESTAO":
+                    case "PROJETOGESTAO":
+                        svc = _projetoGestao;
+                        break;
                     case "PROJETOPED":
                         svc = _projetoPed;
                         break;
@@ -171,11 +182,15 @@ namespace APIGestor.Business
                     case "RELATORIOFINALPED":
                         svc = _relatorioFinalPed;
                         break;
-                    //case "RELATORIOFINALGESTAO":
+                    case "RELATORIOFINALGESTAO":
+                        svc = _relatorioAuditoriaGestao;
+                        break;
                     case "RELATORIOAUDITORIAPED":
                         svc = _relatorioAuditoriaPed;
                         break;
-                        //case "RELATORIOAUDITORIAGESTAO": 
+                    case "RELATORIOAUDITORIAGESTAO": 
+                        svc = _relatorioAuditoriaGestao;
+                        break;
                 }
                 return svc;
         }
