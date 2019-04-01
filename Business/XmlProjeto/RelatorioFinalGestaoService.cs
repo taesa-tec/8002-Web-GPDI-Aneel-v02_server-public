@@ -146,10 +146,10 @@ namespace APIGestor.Business
             var AtividadesList = new List<RFG_Atividade>();
             foreach (var rm0 in registros.GroupBy(p => p.Atividade))
             {
-                decimal custo = 0;
+                decimal? custo = 0;
                 foreach (var rm1 in rm0)
                 {
-                    custo += rm1.ValorUnitario * rm1.Qtd;
+                    custo += rm1.ValorUnitario * rm1.QtdItens;
                 }
                 AtividadesList.Add(new RFG_Atividade
                 {

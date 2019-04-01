@@ -57,6 +57,7 @@ namespace APIGestor.Models
         public string AplicAbrang { get; set; }
         public string AplicAmbito { get; set; }
         public string TxDifTec { get; set; }
+        public RFG_Atividades Atividades { get; set; }
     }
     public class PD_EquipeEmp
     {
