@@ -33,15 +33,15 @@ namespace APIGestor.Business
             //     resultado.Inconsistencias.Add("Duração máxima execedida para o projeto");
             return resultado;
         }
-        public XmlRelatorioAuditoria GerarXml(int ProjetoId, string Versao, string UserId)
+        public XmlRelatorioAuditoriaGestao GerarXml(int ProjetoId, string Versao, string UserId)
         {
-            XmlRelatorioAuditoria relatorio = new XmlRelatorioAuditoria();
+            XmlRelatorioAuditoriaGestao relatorio = new XmlRelatorioAuditoriaGestao();
             Projeto projeto = _context.Projetos
                     .Include("CatalogEmpresa")
                     .Include("Empresas.Estado")
                     .Include("Etapas")
                     .Include("AlocacoesRh.RecursoHumano")
-                    .Include("AlocacoesRm.RecursoMaterial")
+                    .Include("AlocacoesRm.RecursoMaterial.CategoriaContabilGestao")
                     .Include("Empresas.CatalogEmpresa")
                     .Include("RelatorioFinal.Uploads")
                     .Where(p => p.Id == ProjetoId)
@@ -49,7 +49,7 @@ namespace APIGestor.Business
 
             var registros = _context.RegistrosFinanceiros
                             .Include("RecursoHumano")
-                            .Include("RecursoMaterial")
+                            .Include("RecursoMaterial.CategoriaContabilGestao")
                             .Where(p => p.ProjetoId == ProjetoId)
                             .Where(p => p.StatusValor == "Aprovado")
                             .ToList();
@@ -59,7 +59,7 @@ namespace APIGestor.Business
             decimal? TotalRh = registros.Where(r => r.QtdHrs != null && r.RecursoHumano != null).Sum(r => r.QtdHrs * r.RecursoHumano.ValorHora);
             decimal? TotalRm = registros.Where(r => r.QtdItens != null && r.RecursoMaterial != null).Sum(r => r.QtdItens * r.RecursoMaterial.ValorUnitario);
 
-            relatorio.PD_RelAuditoriaPED = new PD_RelAuditoriaPED
+            relatorio.PD_RelAuditoriaPG = new PD_RelAuditoriaPG
             {
                 CodProjeto = projeto.Codigo,
                 ArquivoPDF = projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAuditoria").FirstOrDefault().NomeArquivo,
@@ -70,38 +70,31 @@ namespace APIGestor.Business
                 .ToList();
 
             // RecursoEmpresa
-            var ListRecursoEmpresa = new List<RA_RecursoEmpresa>();
+            var ListRecursoEmpresa = new List<RAG_RecursoEmpresa>();
             foreach (Empresa empresa in EmpresasFinanciadoras)
             {
-                var DestRecursosExec = new List<RA_DestRecursosExec>();
-                foreach (var rm in projeto.AlocacoesRm
-                    .Where(p => p.EmpresaRecebedora.ClassificacaoValor == "Executora")
-                    .Where(p => p.EmpresaFinanciadora == empresa)
-                    .Where(p => rmIds.Contains(p.RecursoMaterial.Id))
-                    .GroupBy(p => p.EmpresaRecebedora)
-                    .ToList())
+                var RAG_CustoCatContabil = new List<RAG_CustoCatContabil>();
+                //RH
+                foreach (var rh in projeto.AlocacoesRh
+                        .Where(p => p.Empresa == empresa)
+                        .Where(p => rmIds.Contains(p.RecursoHumano.Id))
+                        .GroupBy(p => p.Empresa)
+                        .ToList())
                 {
-                    var CustoCatContabilExec = new List<CustoCatContabilExec>();
-                    foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabil))
+                    decimal custo = 0;
+                    foreach (var rh0 in rh)
                     {
-                        decimal custo = 0;
-                        foreach (var rm1 in rm0)
-                        {
-                            custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
-                        }
-                        CustoCatContabilExec.Add(new CustoCatContabilExec
-                        {
-                            CatContabil = rm0.First().RecursoMaterial.CategoriaContabilValor,
-                            CustoExec = custo.ToString()
-                        });
+                        custo += rh0.RecursoHumano.ValorHora * (rh0.HrsMes1 + rh0.HrsMes2 + rh0.HrsMes3
+                            + rh0.HrsMes4 + rh0.HrsMes5 + rh0.HrsMes6);
+
                     }
-                    DestRecursosExec.Add(new RA_DestRecursosExec
+                    RAG_CustoCatContabil.Add(new RAG_CustoCatContabil
                     {
-                        CNPJExec = rm.First().EmpresaRecebedora.Cnpj,
-                        CustoCatContabil = CustoCatContabilExec
+                        CatContabil = "RH",
+                        CustoEmpresa = custo.ToString()
                     });
                 }
-                var DestRecursosEmp = new List<RA_DestRecursosEmp>();
+                // RM
                 foreach (var rm in projeto.AlocacoesRm
                         .Where(p => p.EmpresaRecebedora == empresa)
                         .Where(p => p.EmpresaFinanciadora == empresa)
@@ -109,77 +102,29 @@ namespace APIGestor.Business
                         .GroupBy(p => p.EmpresaRecebedora)
                         .ToList())
                 {
-                    var CustoCatContabilEmp = new List<CustoCatContabilEmp>();
-                    foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabil))
+                    foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabilGestao.Valor))
                     {
                         decimal custo = 0;
                         foreach (var rm1 in rm0)
                         {
                             custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
                         }
-                        CustoCatContabilEmp.Add(new CustoCatContabilEmp
+                        RAG_CustoCatContabil.Add(new RAG_CustoCatContabil
                         {
-                            CatContabil = rm0.First().RecursoMaterial.CategoriaContabilValor,
-                            CustoEmp = custo.ToString()
+                            CatContabil = rm0.First().RecursoMaterial.CategoriaContabilGestao.Valor,
+                            CustoEmpresa = custo.ToString()
                         });
                     }
-                    DestRecursosEmp.Add(new RA_DestRecursosEmp
-                    {
-                        CustoCatContabil = CustoCatContabilEmp
-                    });
                 }
 
-                ListRecursoEmpresa.Add(new RA_RecursoEmpresa
+                ListRecursoEmpresa.Add(new RAG_RecursoEmpresa
                 {
                     CodEmpresa = empresa.CatalogEmpresa.Valor,
-                    DestRecursosExc = DestRecursosExec,
-                    DestRecursosEmp = DestRecursosEmp
+                    CustoCatContabil = RAG_CustoCatContabil
                 });
             }
-            relatorio.PD_RelAuditoriaPED.RecursoEmpresa = ListRecursoEmpresa;
+            relatorio.PD_RelAuditoriaPG.RecursoEmpresa = ListRecursoEmpresa;
 
-            //RecursoParceira
-            var ListRecursoParceira = new List<RA_RecursoParceira>();
-            foreach (Empresa empresa in projeto.Empresas
-                .Where(p => p.ClassificacaoValor == "Parceira")
-                .ToList())
-            {
-                var DestRecursosExec = new List<RA_DestRecursosExec>();
-                foreach (var rm in projeto.AlocacoesRm
-                    .Where(p => p.EmpresaRecebedora.ClassificacaoValor == "Executora")
-                    .Where(p => p.EmpresaFinanciadora == empresa)
-                    .Where(p => rmIds.Contains(p.RecursoMaterial.Id))
-                    .GroupBy(p => p.EmpresaRecebedora)
-                    .ToList())
-                {
-                    var CustoCatContabilExec = new List<CustoCatContabilExec>();
-                    foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabil))
-                    {
-                        decimal custo = 0;
-                        foreach (var rm1 in rm0)
-                        {
-                            custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
-                        }
-                        CustoCatContabilExec.Add(new CustoCatContabilExec
-                        {
-                            CatContabil = rm0.First().RecursoMaterial.CategoriaContabilValor,
-                            CustoExec = custo.ToString()
-                        });
-                    }
-                    DestRecursosExec.Add(new RA_DestRecursosExec
-                    {
-                        CNPJExec = rm.First().EmpresaRecebedora.Cnpj,
-                        CustoCatContabil = CustoCatContabilExec
-                    });
-                }
-
-                ListRecursoParceira.Add(new RA_RecursoParceira
-                {
-                    CNPJParc = empresa.Cnpj,
-                    DestRecursosExec = DestRecursosExec
-                });
-            }
-            relatorio.PD_RelAuditoriaPED.RecursoParceira = ListRecursoParceira;
             return relatorio;
         }
     }

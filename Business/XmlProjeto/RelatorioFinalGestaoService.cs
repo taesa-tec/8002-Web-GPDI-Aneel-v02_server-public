@@ -125,7 +125,7 @@ namespace APIGestor.Business
                         .Include("Empresas.Estado")
                         .Include("Etapas")
                         .Include("AlocacoesRh.RecursoHumano")
-                        .Include("AlocacoesRm.RecursoMaterial")
+                        .Include("AlocacoesRm.RecursoMaterial.CategoriaContabilGestao")
                         .Include("Empresas.CatalogEmpresa")
                         .Include("RelatorioFinal.Uploads")
                         .Where(p => p.Id == ProjetoId)
@@ -133,7 +133,9 @@ namespace APIGestor.Business
 
             var registros = _context.RegistrosFinanceiros
                             .Include("RecursoHumano")
-                            .Include("RecursoMaterial")
+                            .Include("RecursoMaterial.CategoriaContabilGestao")
+                            .Include("CategoriaContabilGestao")
+                            .Include("Atividade")
                             .Where(p => p.ProjetoId == ProjetoId)
                             .Where(p => p.StatusValor == "Aprovado")
                             .ToList();
@@ -141,24 +143,28 @@ namespace APIGestor.Business
             int?[] rhIds = registros.Where(r => r.RecursoHumano != null).Select(r => r.RecursoHumanoId).ToArray();
             int?[] rmIds = registros.Where(r => r.RecursoMaterial != null).Select(r => r.RecursoMaterialId).ToArray();
 
+            var AtividadesList = new List<RFG_Atividade>();
+            foreach (var rm0 in registros.GroupBy(p => p.Atividade))
+            {
+                decimal custo = 0;
+                foreach (var rm1 in rm0)
+                {
+                    custo += rm1.ValorUnitario * rm1.Qtd;
+                }
+                AtividadesList.Add(new RFG_Atividade
+                {
+                    TipoAtividade = rm0.First().Atividade.Valor,
+                    ResAtividade = rm0.First().CategoriaContabilValor,
+                    CustoAtividade = custo.ToString()
+                });
+            }
             relatorio.PD_RelFinalBase = new PD_RelFinalBase
             {
                 CodProjeto = projeto.Codigo,
                 ArquivoPDF = projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAnual").FirstOrDefault().NomeArquivo,
                 DataIniODS = projeto.DataInicio.ToString(),
                 DataFimODS = (projeto.Etapas.LastOrDefault().DataFim == null) ? _etapaService.AddDataEtapas(projeto.Etapas).LastOrDefault().DataFim.ToString() : projeto.Etapas.LastOrDefault().DataFim.ToString(),
-                ProdPrev = projeto.RelatorioFinal.ProdutoAlcancado.ToString(),
-                ProdJust = projeto.RelatorioFinal.JustificativaProduto,
-                ProdEspTec = projeto.RelatorioFinal.EspecificacaoProduto,
-                TecPrev = projeto.RelatorioFinal.TecnicaPrevista.ToString(),
-                TecJust = projeto.RelatorioFinal.JustificativaTecnica,
-                TecDesc = projeto.RelatorioFinal.DescTecnica,
-                AplicPrev = projeto.RelatorioFinal.AplicabilidadePrevista.ToString(),
-                AplicJust = projeto.RelatorioFinal.JustificativaAplicabilidade,
-                AplicFnc = projeto.RelatorioFinal.DescTestes,
-                AplicAbrang = projeto.RelatorioFinal.DescAbrangencia,
-                AplicAmbito = projeto.RelatorioFinal.DescAmbito,
-                TxDifTec = projeto.RelatorioFinal.DescAtividades
+                Atividades = new RFG_Atividades { Atividade = AtividadesList }
             };
             // PD_EQUIPEEMP
             var PedEmpresaList = new List<PedEmpresa>();

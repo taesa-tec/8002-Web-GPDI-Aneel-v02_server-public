@@ -74,6 +74,36 @@ namespace APIGestor.Business
             foreach (Empresa empresa in EmpresasFinanciadoras)
             {
                 var DestRecursosExec = new List<RA_DestRecursosExec>();
+                // RH
+                foreach (var rh in projeto.AlocacoesRh
+                    .Where(p => p.Empresa.ClassificacaoValor == "Executora")
+                    .Where(p => p.Empresa == empresa)
+                    .Where(p => rhIds.Contains(p.RecursoHumano.Id))
+                    .GroupBy(p => p.Empresa)
+                    .ToList())
+                {
+                    decimal custo = 0;
+
+                    var CustoCatContabilExec = new List<CustoCatContabilExec>();
+
+                    foreach (var rh0 in rh)
+                    {
+                        custo += rh0.RecursoHumano.ValorHora * (rh0.HrsMes1 + rh0.HrsMes2 + rh0.HrsMes3
+                            + rh0.HrsMes4 + rh0.HrsMes5 + rh0.HrsMes6);
+
+                    }
+                    CustoCatContabilExec.Add(new CustoCatContabilExec
+                    {
+                        CatContabil = "RH",
+                        CustoExec = custo.ToString()
+                    });
+                    DestRecursosExec.Add(new RA_DestRecursosExec
+                    {
+                        CNPJExec = rh.First().Empresa.Cnpj,
+                        CustoCatContabil = CustoCatContabilExec
+                    });
+                }
+                // RM
                 foreach (var rm in projeto.AlocacoesRm
                     .Where(p => p.EmpresaRecebedora.ClassificacaoValor == "Executora")
                     .Where(p => p.EmpresaFinanciadora == empresa)
@@ -101,7 +131,37 @@ namespace APIGestor.Business
                         CustoCatContabil = CustoCatContabilExec
                     });
                 }
+                
                 var DestRecursosEmp = new List<RA_DestRecursosEmp>();
+                // RH
+                foreach (var rh in projeto.AlocacoesRh
+                    .Where(p => p.Empresa.ClassificacaoValor != "Executora")
+                    .Where(p => p.Empresa == empresa)
+                    .Where(p => rhIds.Contains(p.RecursoHumano.Id))
+                    .GroupBy(p => p.Empresa)
+                    .ToList())
+                {
+                    decimal custo = 0;
+
+                    var CustoCatContabilEmp = new List<CustoCatContabilEmp>();
+
+                    foreach (var rh0 in rh)
+                    {
+                        custo += rh0.RecursoHumano.ValorHora * (rh0.HrsMes1 + rh0.HrsMes2 + rh0.HrsMes3
+                            + rh0.HrsMes4 + rh0.HrsMes5 + rh0.HrsMes6);
+
+                    }
+                    CustoCatContabilEmp.Add(new CustoCatContabilEmp
+                    {
+                        CatContabil = "RH",
+                        CustoEmp = custo.ToString()
+                    });
+                    DestRecursosEmp.Add(new RA_DestRecursosEmp
+                    {
+                        CustoCatContabil = CustoCatContabilEmp
+                    });
+                }
+                // RM
                 foreach (var rm in projeto.AlocacoesRm
                         .Where(p => p.EmpresaRecebedora == empresa)
                         .Where(p => p.EmpresaFinanciadora == empresa)
@@ -145,6 +205,37 @@ namespace APIGestor.Business
                 .ToList())
             {
                 var DestRecursosExec = new List<RA_DestRecursosExec>();
+
+                //RH
+                foreach (var rh in projeto.AlocacoesRh
+                        .Where(p => p.Empresa == empresa)
+                        .Where(p => p.Empresa.ClassificacaoValor == "Executora")
+                        .Where(p => rhIds.Contains(p.RecursoHumano.Id))
+                        .GroupBy(p => p.Empresa)
+                        .ToList())
+                {
+                    decimal custo = 0;
+
+                    var CustoCatContabilExec = new List<CustoCatContabilExec>();
+
+                    foreach (var rh0 in rh)
+                    {
+                        custo += rh0.RecursoHumano.ValorHora * (rh0.HrsMes1 + rh0.HrsMes2 + rh0.HrsMes3
+                            + rh0.HrsMes4 + rh0.HrsMes5 + rh0.HrsMes6);
+
+                    }
+                    CustoCatContabilExec.Add(new CustoCatContabilExec
+                    {
+                        CatContabil = "RH",
+                        CustoExec = custo.ToString()
+                    });
+                    DestRecursosExec.Add(new RA_DestRecursosExec
+                    {
+                        CNPJExec = rh.First().Empresa.Cnpj,
+                        CustoCatContabil = CustoCatContabilExec
+                    });
+                }
+                // RM
                 foreach (var rm in projeto.AlocacoesRm
                     .Where(p => p.EmpresaRecebedora.ClassificacaoValor == "Executora")
                     .Where(p => p.EmpresaFinanciadora == empresa)
@@ -153,6 +244,7 @@ namespace APIGestor.Business
                     .ToList())
                 {
                     var CustoCatContabilExec = new List<CustoCatContabilExec>();
+            
                     foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabil))
                     {
                         decimal custo = 0;
