@@ -81,11 +81,10 @@ namespace APIGestor.Business
                         .GroupBy(p => p.Empresa)
                         .ToList())
                 {
-                    decimal custo = 0;
-                    foreach (var rh0 in rh)
+                    decimal? custo = 0;
+                    foreach (var a in rh)
                     {
-                        custo += rh0.RecursoHumano.ValorHora * (rh0.HrsMes1 + rh0.HrsMes2 + rh0.HrsMes3
-                            + rh0.HrsMes4 + rh0.HrsMes5 + rh0.HrsMes6);
+                        custo += a.RecursoHumano.ValorHora * ((a.HrsMes1+a.HrsMes2+a.HrsMes3+a.HrsMes4+a.HrsMes5+a.HrsMes6)+(a.HrsMes7+a.HrsMes8+a.HrsMes9+a.HrsMes10+a.HrsMes11+a.HrsMes12)+(a.HrsMes13+a.HrsMes14+a.HrsMes15+a.HrsMes16+a.HrsMes17+a.HrsMes18)+(a.HrsMes19+a.HrsMes20+a.HrsMes21+a.HrsMes22+a.HrsMes23+a.HrsMes24));
 
                     }
                     RAG_CustoCatContabil.Add(new RAG_CustoCatContabil

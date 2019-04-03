@@ -60,6 +60,7 @@ namespace APIGestor.Models
         public List<Etapa> Etapas { get; set; }
         [NotMapped]
         public Etapa Etapa { get; set; }
+        public AtividadesGestao Atividades { get; set; }
         public Tema Tema { get; set; }
         [JsonIgnore]
         public List<UserProjeto> UsersProjeto { get; set; }

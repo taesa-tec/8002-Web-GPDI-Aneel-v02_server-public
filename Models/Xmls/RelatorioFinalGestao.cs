@@ -12,7 +12,7 @@ namespace APIGestor.Models
         public PD_RelFinalBase PD_RelFinalBase { get; set; }
         public PD_Equipe PD_Equipe { get; set; }
         public PD_Etapas PD_Etapas { get; set; }
-        public RF_Recursos PD_Recursos { get; set; }
+        public RFG_Recursos PD_Recursos { get; set; }
         public PD_ResultadosCP PD_ResultadosCP { get; set; }
         public PD_ResultadosPC PD_ResultadosPC { get; set; }
     }

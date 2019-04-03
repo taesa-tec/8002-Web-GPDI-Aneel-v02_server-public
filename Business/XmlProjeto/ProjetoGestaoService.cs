@@ -61,6 +61,7 @@ namespace APIGestor.Business
                          .Include("Tema.CatalogTema")
                          .Include("Tema.SubTemas.CatalogSubTema")
                          .Include("Etapas")
+                         .Include("Atividades")
                          .Include("Produtos")
                          .Include("Empresas.Estado")
                          .Include("Empresas.CatalogEmpresa")
@@ -72,308 +73,169 @@ namespace APIGestor.Business
                          .Where(p => p.Id == Id)
                          .FirstOrDefault();
         }
-        public ProjetoPed GerarXml(int ProjetoId, string Versao, string UserId)
+        public XmlProjetoGestao GerarXml(int ProjetoId, string Versao, string UserId)
         {
-            ProjetoPed ProjetoPed = new ProjetoPed();
+            XmlProjetoGestao relatorio = new XmlProjetoGestao();
             Projeto projeto = obterProjeto(ProjetoId);
-            var SubtemasList = new List<PedSubTema>();
-            foreach (TemaSubTema subTema in projeto.Tema.SubTemas)
-            {
-                SubtemasList.Add(new PedSubTema
-                {
-                    CodSubtema = subTema.CatalogSubTema.Valor,
-                    OutroSubtema = subTema.OutroDesc
-                });
-            }
-            ProjetoPed.PD_ProjetoBase = new PD_ProjetoBase
-            {
-                AvIniANEEL = projeto.AvaliacaoInicial.ToString(),
-                Titulo = projeto.TituloDesc,
-                Duracao = projeto.Etapas.Sum(p => p.Duracao),
-                Segmento = projeto.CatalogSegmento.Valor,
-                CodTema = projeto.Tema.CatalogTema.Valor,
-                OutroTema = projeto.Tema.OutroDesc,
-                Subtemas = new PedSubTemas
-                {
-                    Subtema = SubtemasList
-                },
-                Motivacao = projeto.Motivacao,
-                Originalidade = projeto.Originalidade,
-                Aplicabilidade = projeto.Aplicabilidade,
-                Relevancia = projeto.Relevancia,
-                RazoabCustos = projeto.Razoabilidade,
-                PesqCorrelata = projeto.Pesquisas
-            };
-            Produto Produto = projeto.Produtos.Where(
-                        p => p.Classificacao == (ProdutoClassificacao)(1)).FirstOrDefault();
-            if (Produto != null)
-            {
-                ProjetoPed.PD_ProjetoBase.FaseInovacao = Produto.FaseCadeiaValor;
-                ProjetoPed.PD_ProjetoBase.TipoProduto = Produto.TipoValor;
-                ProjetoPed.PD_ProjetoBase.DescricaoProduto = Produto.Desc;
 
-            }
-            // PD_EQUIPE
-            var PedEmpresaList = new List<PedEmpresa>();
+            // EMPRESAS
+            var EmpresaList = new List<GstEmpresa>();
+            // CustosContabeis
+            var GstCustoCatContabilList = new List<GstCustoCatContabil>();
+
             var EmpresasFinanciadoras = projeto.Empresas
                 .Where(p => p.ClassificacaoValor == "Energia" || p.ClassificacaoValor == "Proponente")
                 .ToList();
             foreach (Empresa empresa in EmpresasFinanciadoras)
             {
-                var equipeList = new List<EquipeEmpresa>();
+                var equipeList = new List<GstEquipeGestao>();
                 foreach (RecursoHumano rh in projeto.RecursosHumanos
                     .Where(p => p.CPF != null)
                     .Where(p => p.Empresa == empresa)
                     .ToList())
                 {
-                    equipeList.Add(new EquipeEmpresa
+                    equipeList.Add(new GstEquipeGestao
                     {
                         NomeMbEqEmp = rh.NomeCompleto,
-                        CpfMbEqEmp = rh.CPF,
-                        TitulacaoMbEqEmp = rh.TitulacaoValor,
-                        FuncaoMbEqEmp = rh.FuncaoValor
-                    });
-                }
-                PedEmpresaList.Add(new PedEmpresa
-                {
-                    CodEmpresa = empresa.CatalogEmpresa.Valor,
-                    TipoEmpresa = empresa.ClassificacaoValor,
-                    Equipe = new Equipe
-                    {
-                        EquipeEmpresa = equipeList
-                    }
-                });
-            }
-            var PedExecutoraList = new List<PedExecutora>();
-            foreach (Empresa empresa in projeto.Empresas
-                .Where(p => p.ClassificacaoValor == "Executora")
-                .ToList())
-            {
-                var equipeList = new List<EquipeExec>();
-                foreach (RecursoHumano rh in projeto.RecursosHumanos
-                    .Where(p => p.Empresa == empresa)
-                    .ToList())
-                {
-                    equipeList.Add(new EquipeExec
-                    {
-                        NomeMbEqExec = rh.NomeCompleto,
-                        BRMbEqExec = rh.NacionalidadeValor,
-                        DocMbEqExec = rh.Passaporte ?? rh.CPF,
-                        TitulacaoMbEqExec = rh.TitulacaoValor,
-                        FuncaoMbEqExec = rh.FuncaoValor
-                    });
-                }
-                PedExecutoraList.Add(new PedExecutora
-                {
-                    CNPJExec = empresa.Cnpj,
-                    RazaoSocialExec = empresa.RazaoSocial,
-                    UfExec = empresa.Estado.Valor,
-                    Equipe = new ExecEquipe
-                    {
-                        EquipeExec = equipeList
-                    }
-                });
-            }
-            ProjetoPed.PD_Equipe = new PD_Equipe
-            {
-                Empresas = new PedEmpresas
-                {
-                    Empresa = PedEmpresaList
-                },
-                Executoras = new PedExecutoras
-                {
-                    Executora = PedExecutoraList
-                }
-            };
-            // PD_RECURSO
-            ProjetoPed.PD_Recursos = new PD_Recursos
-            {
-                RecursoEmpresa = new List<RecursoEmpresa>(),
-                RecursoParceira = new List<RecursoParceira>()
-            };
-            foreach (Empresa empresa in EmpresasFinanciadoras)
-            {
-                // DestRecursosExec
-                var DestRecursosExec = new List<DestRecursosExec>();
-                // Recursos - RH
-                foreach (var rh in projeto.AlocacoesRh
-                    .Where(p => p.Empresa.ClassificacaoValor == "Executora")
-                    .Where(p => p.Empresa == empresa)
-                    .GroupBy(p => p.Empresa)
-                    .ToList())
-                {
-                    var CustoCatContabilExec = new List<CustoCatContabilExec>();
-                    decimal custo = 0;
-                    foreach (var rh0 in rh)
-                    {
-                        custo += rh0.RecursoHumano.ValorHora * (rh0.HrsMes1 + rh0.HrsMes2 + rh0.HrsMes3
-                            + rh0.HrsMes4 + rh0.HrsMes5 + rh0.HrsMes6);
-
-                    }
-                    CustoCatContabilExec.Add(new CustoCatContabilExec
-                    {
-                        CatContabil = "RH",
-                        CustoExec = custo.ToString()
-                    });
-                    DestRecursosExec.Add(new DestRecursosExec
-                    {
-                        CNPJExec = rh.First().Empresa.Cnpj,
-                        CustoCatContabilExec = CustoCatContabilExec
-                    });
-                }
-                // Recursos RM
-                foreach (var rm in projeto.AlocacoesRm
-                    .Where(p => p.EmpresaRecebedora.ClassificacaoValor == "Executora")
-                    .Where(p => p.EmpresaFinanciadora == empresa)
-                    .GroupBy(p => p.EmpresaRecebedora)
-                    .ToList())
-                {
-                    var CustoCatContabilExec = new List<CustoCatContabilExec>();
-                    foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabil))
-                    {
-                        decimal custo = 0;
-                        foreach (var rm1 in rm0)
-                        {
-                            custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
-                        }
-                        CustoCatContabilExec.Add(new CustoCatContabilExec
-                        {
-                            CatContabil = rm0.First().RecursoMaterial.CategoriaContabilValor,
-                            CustoExec = custo.ToString()
-                        });
-                    }
-                    DestRecursosExec.Add(new DestRecursosExec
-                    {
-                        CNPJExec = rm.First().EmpresaRecebedora.Cnpj,
-                        CustoCatContabilExec = CustoCatContabilExec
+                        CpfMbEqEmp = rh.CPF
                     });
                 }
 
-                // DestRecursosEmp
-                var DestRecursosEmp = new List<DestRecursosEmp>();
-                //Emp - RH
+                var GstCustoCatContabil = new List<GstCustoCatContabil>();
+                //RH
                 foreach (var rh in projeto.AlocacoesRh
                         .Where(p => p.Empresa == empresa)
                         .GroupBy(p => p.Empresa)
                         .ToList())
                 {
-                    var CustoCatContabilEmp = new List<CustoCatContabilEmp>();
-                    decimal custo = 0;
-                    foreach (var rh0 in rh)
+                    decimal? custo = 0;
+                    foreach (var a in rh)
                     {
-                        custo += rh0.RecursoHumano.ValorHora * (rh0.HrsMes1 + rh0.HrsMes2 + rh0.HrsMes3
-                            + rh0.HrsMes4 + rh0.HrsMes5 + rh0.HrsMes6);
-
+                        custo += a.RecursoHumano.ValorHora * ((a.HrsMes1 + a.HrsMes2 + a.HrsMes3 + a.HrsMes4 + a.HrsMes5 + a.HrsMes6) + (a.HrsMes7 + a.HrsMes8 + a.HrsMes9 + a.HrsMes10 + a.HrsMes11 + a.HrsMes12) + (a.HrsMes13 + a.HrsMes14 + a.HrsMes15 + a.HrsMes16 + a.HrsMes17 + a.HrsMes18) + (a.HrsMes19 + a.HrsMes20 + a.HrsMes21 + a.HrsMes22 + a.HrsMes23 + a.HrsMes24));
                     }
-                    CustoCatContabilEmp.Add(new CustoCatContabilEmp
+                    GstCustoCatContabil.Add(new GstCustoCatContabil
                     {
-                        CatContabil = "RH",
-                        CustoEmp = custo.ToString()
-                    });
-                    DestRecursosEmp.Add(new DestRecursosEmp
-                    {
-                        CustoCatContabilEmp = CustoCatContabilEmp
+                        CategoriaContabil = "RH",
+                        CustoEmpresa = custo.ToString()
                     });
                 }
-                //Emp - RM
+                // RM
                 foreach (var rm in projeto.AlocacoesRm
                         .Where(p => p.EmpresaRecebedora == empresa)
                         .Where(p => p.EmpresaFinanciadora == empresa)
                         .GroupBy(p => p.EmpresaRecebedora)
                         .ToList())
                 {
-                    var CustoCatContabilEmp = new List<CustoCatContabilEmp>();
-                    foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabil))
+                    foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabilGestao.Valor))
                     {
                         decimal custo = 0;
                         foreach (var rm1 in rm0)
                         {
                             custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
                         }
-                        CustoCatContabilEmp.Add(new CustoCatContabilEmp
+                        GstCustoCatContabil.Add(new GstCustoCatContabil
                         {
-                            CatContabil = rm0.First().RecursoMaterial.CategoriaContabilValor,
-                            CustoEmp = custo.ToString()
+                            CategoriaContabil = rm0.First().RecursoMaterial.CategoriaContabilGestao.Valor,
+                            CustoEmpresa = custo.ToString()
                         });
                     }
-                    DestRecursosEmp.Add(new DestRecursosEmp
-                    {
-                        CustoCatContabilEmp = CustoCatContabilEmp
-                    });
                 }
-                ProjetoPed.PD_Recursos.RecursoEmpresa.Add(new RecursoEmpresa
+
+                EmpresaList.Add(new GstEmpresa
                 {
+                    TipoEmpresa = empresa.ClassificacaoValor,
                     CodEmpresa = empresa.CatalogEmpresa.Valor,
-                    DestRecursosExec = DestRecursosExec,
-                    DestRecursosEmp = DestRecursosEmp,
+                    Equipe = new GstEquipe
+                    {
+                        EquipeGestao = equipeList
+                    },
+                    CustosContabeis = new GstCustosContabeis
+                    {
+                        CustoCatContabil = GstCustoCatContabil
+                    }
                 });
             }
+            // Atividades
+            var AtividadesList = new List<GstAtividade>();
+            //RH
+            foreach (var a in projeto.AlocacoesRh.ToList())
+            {
+                decimal? custo = 0;
+                custo += a.RecursoHumano.ValorHora * ((a.HrsMes1 + a.HrsMes2 + a.HrsMes3 + a.HrsMes4 + a.HrsMes5 + a.HrsMes6) + (a.HrsMes7 + a.HrsMes8 + a.HrsMes9 + a.HrsMes10 + a.HrsMes11 + a.HrsMes12) + (a.HrsMes13 + a.HrsMes14 + a.HrsMes15 + a.HrsMes16 + a.HrsMes17 + a.HrsMes18) + (a.HrsMes19 + a.HrsMes20 + a.HrsMes21 + a.HrsMes22 + a.HrsMes23 + a.HrsMes24));
 
-            foreach (Empresa empresa in projeto.Empresas
-                .Where(p => p.ClassificacaoValor == "Parceira")
+                string _descAtividade = projeto.Atividades.DedicacaoHorario;
+                AtividadesList.Add(new GstAtividade
+                {
+                    TipoAtividade = "HH",
+                    DescAtividade = _descAtividade,
+                    CustoAtividade = custo.ToString()
+                });
+            }
+            // RM
+            foreach (var rm in projeto.AlocacoesRm
+                .GroupBy(p => p.RecursoMaterial.Atividade.Valor)
                 .ToList())
             {
-                var DestRecursosExec = new List<DestRecursosExec>();
-                // Parceira - RH
-                foreach (var rh in projeto.AlocacoesRh
-                    .Where(p => p.Empresa.ClassificacaoValor == "Executora")
-                    .GroupBy(p => p.Empresa)
-                    .ToList())
+                decimal custo = 0;
+                foreach (var rm1 in rm)
                 {
-                    var CustoCatContabilExec = new List<CustoCatContabilExec>();
-                    decimal custo = 0;
-                    foreach (var rh0 in rh)
-                    {
-                        custo += rh0.RecursoHumano.ValorHora * (rh0.HrsMes1 + rh0.HrsMes2 + rh0.HrsMes3
-                            + rh0.HrsMes4 + rh0.HrsMes5 + rh0.HrsMes6);
-
-                    }
-                    CustoCatContabilExec.Add(new CustoCatContabilExec
-                    {
-                        CatContabil = "RH",
-                        CustoExec = custo.ToString()
-                    });
-                    DestRecursosExec.Add(new DestRecursosExec
-                    {
-                        CNPJExec = rh.First().Empresa.Cnpj,
-                        CustoCatContabilExec = CustoCatContabilExec
-                    });
+                    custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
                 }
-                // Parceira - RM
-                foreach (var rm in projeto.AlocacoesRm
-                    .Where(p => p.EmpresaRecebedora.ClassificacaoValor == "Executora")
-                    .Where(p => p.EmpresaFinanciadora == empresa)
-                    .GroupBy(p => p.EmpresaRecebedora)
-                    .ToList())
+                string _descAtividade = null;
+                switch (rm.First().RecursoMaterial.Atividade.Valor)
                 {
-                    var CustoCatContabilExec = new List<CustoCatContabilExec>();
-                    foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabil))
-                    {
-                        decimal custo = 0;
-                        foreach (var rm1 in rm0)
-                        {
-                            custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
-                        }
-                        CustoCatContabilExec.Add(new CustoCatContabilExec
-                        {
-                            CatContabil = rm0.First().RecursoMaterial.CategoriaContabilValor,
-                            CustoExec = custo.ToString()
-                        });
-                    }
-                    DestRecursosExec.Add(new DestRecursosExec
-                    {
-                        CNPJExec = rm.First().EmpresaRecebedora.Cnpj,
-                        CustoCatContabilExec = CustoCatContabilExec
-                    });
+                    case "HH":
+                        _descAtividade = projeto.Atividades.DedicacaoHorario;
+                        break;
+                    case "EC":
+                        _descAtividade = projeto.Atividades.ParticipacaoMembros;
+                        break;
+                    case "FG":
+                        _descAtividade = projeto.Atividades.DesenvFerramenta;
+                        break;
+                    case "PP":
+                        _descAtividade = projeto.Atividades.ProspTecnologica;
+                        break;
+                    case "RP":
+                        _descAtividade = projeto.Atividades.DivulgacaoResultados;
+                        break;
+                    case "AP":
+                        _descAtividade = projeto.Atividades.ParticipacaoTecnicos;
+                        break;
+                    case "BA":
+                        _descAtividade = projeto.Atividades.BuscaAnterioridade;
+                        break;
+                    case "CA":
+                        _descAtividade = projeto.Atividades.ContratacaoAuditoria;
+                        break;
+                    case "AC":
+                        _descAtividade = projeto.Atividades.ApoioCitenel;
+                        break;
                 }
-
-                ProjetoPed.PD_Recursos.RecursoParceira.Add(new RecursoParceira
+                AtividadesList.Add(new GstAtividade
                 {
-                    CNPJParc = empresa.Cnpj,
-                    DestRecursosExec = DestRecursosExec
+                    TipoAtividade = rm.First().RecursoMaterial.Atividade.Valor,
+                    DescAtividade = _descAtividade,
+                    CustoAtividade = custo.ToString()
                 });
             }
-            return ProjetoPed;
+
+            // PD_ProjetoGestao
+            relatorio.PD_ProjetoGestao = new PD_ProjetoGestao
+            {
+                Empresas = new GstEmpresas
+                {
+                    Empresa = EmpresaList
+                },
+                Atividades = new GstAtividades
+                {
+                    Atividade = AtividadesList
+                },
+                Duracao = 24,
+                CpfGerente = projeto.RecursosHumanos.Where(p => p.GerenteProjeto == true).First().CPF
+            };
+
+            return relatorio;
         }
     }
 }
