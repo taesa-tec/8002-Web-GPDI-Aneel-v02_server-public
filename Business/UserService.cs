@@ -71,7 +71,7 @@ namespace APIGestor.Business
                 string UserId = resultado.Id;
                 if (resultado.Inconsistencias.Count == 0)
                 {
-                    resultado = _mailService.SendMail(dadosUser, "Seja bem-vindo ao Gestor P&D", "mail-cadastro");
+                    resultado = _mailService.SendMail(dadosUser, "Seja bem-vindo ao Gerenciador P&D Taesa", "mail-cadastro");
                     resultado.Id = UserId;
                 }
                 

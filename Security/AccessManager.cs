@@ -144,7 +144,7 @@ namespace APIGestor.Security
 
             if (resultado.Inconsistencias.Count == 0)
             {
-                resultado = _mailService.SendMail(User, "Redefinição de Senha - Gestor P&D", "redefinir-senha");
+                resultado = _mailService.SendMail(User, "Redefinição de Senha - Gerenciador P&D Taesa", "redefinir-senha");
             }
 
             return resultado;

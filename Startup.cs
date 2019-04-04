@@ -85,7 +85,8 @@ namespace APIGestor
                     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+/";
                 })
                 .AddEntityFrameworkStores<GestorDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddErrorDescriber<PortugueseIdentityErrorDescriber>();
 
             // Configurando a dependência para a classe de validação
             // de credenciais e geração de tokens

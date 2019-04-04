@@ -1,82 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-<table align="center" width="600" border="0" style="font-family: Roboto, Arial, sans-serif; color:#989898" cellspacing="0" cellpadding="0">
-    <tr>
-        <td width="36"></td>
-        <td width="528">
-            <table width="100%" style="border: solid 1px #CCC;" cellspacing="0" cellpadding="0">
-                <tr>
-                    <td height="104" colspan="3">
-                        <img style="display: block;" width="528" src="{{URL_SITE}}/images/email-header.jpg" alt="Taesa">
-                    </td>
-                </tr>
-                <tr>
-                    <td width="48">&nbsp;</td>
-                    <td>
-                        <center>
-                            <h3 style="color:#042769; font-weight: 500;">
-                                Seja bem-vindo ao
-                                <br>
-                                Gerenciador P&D Taesa
-                            </h3>
-                        </center>
-                    </td>
-                    <td width="48">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td width="48">&nbsp;</td>
-                    <td>
-                        <center>
-                            <p>
-                                Seu usuário no Gerenciador P&D Taesa foi criado com sucesso. Abaixo dados do seu login.                         </p>
-                            <p>
-                                <span style="color: #042769">Usuário: {{USER_EMAIL}}</span>
-                            </p>
-                            <p>
-                                Para acessar o sistema clique no botão abaixo para criar uma senha e acessar o sistema.
-                            </p>
-                        </center>
-                    </td>
-                    <td width="48">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td colspan="3" height="32">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td width="48">&nbsp;</td>
-                    <td>
-                        <center>
-                            <a href="{{URL_SITE}}/login/nova-senha/?email={{USER_EMAIL}}&token={{USER_TOKEN}}">
-                                <img src="{{URL_SITE}}/images/criar-senha.png" alt="Taesa">
-                            </a>
-                        </center>
-                    </td>
-                    <td width="48">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td colspan="3" height="32">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td width="48">&nbsp;</td>
-                    <td>
-                        <center>
-                            Em caso de dúvidas, por favor entrar em contato com <a style="color:#989898" href="mailto:ped@taesa.com.br">ped@taesa.com.br</a>
-                        </center>
-                    </td>
-                    <td width="48">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td colspan="3" height="28">&nbsp;</td>
-                </tr>
-            </table>
-        </td>
-        <td width="36"></td>
-    </tr>
-</table>
-</body>
+
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+    </head>
+
+    <body>
+        <table align="center" width="600" border="0" style="font-family: Roboto, Arial, sans-serif; color:#989898"
+               cellspacing="0" cellpadding="0">
+            <tr>
+                <td width="36"></td>
+                <td width="528">
+                    <table width="100%" style="border: solid 1px #CCC;" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td height="104" colspan="3">
+                                <img style="display: block;" width="528" src="{{URL_SITE}}/images/email-header.jpg" alt="Taesa">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="48">&nbsp;</td>
+                            <td>
+                                <center>
+                                    <h3 style="color:#042769; font-weight: 500;">
+                                        <font face="Roboto, Arial, sans-serif" color="#042769">
+                                            Seja bem-vindo ao
+                                            <br>
+                                            Gerenciador P&D Taesa
+                                        </font>
+                                    </h3>
+                                </center>
+                            </td>
+                            <td width="48">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td width="48">&nbsp;</td>
+                            <td>
+                                <center>
+                                    <font face="Roboto, Arial, sans-serif">
+
+                                        <p>Seu usuário no Gerenciador P&D Taesa foi criado com sucesso. Abaixo dados do
+                                            seu login.</p>
+                                        <p>
+                                            <span style="color: #042769">Usuário: {{USER_EMAIL}}</span>
+                                        </p>
+                                        <p>Para acessar o sistema clique no botão abaixo para criar uma senha e acessar
+                                            o sistema:</p>
+                                    </font>
+                                </center>
+                            </td>
+                            <td width="48">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" height="32">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td width="48">&nbsp;</td>
+                            <td>
+                                <center>
+                                    <a href="{{URL_SITE}}/login/nova-senha/?email={{USER_EMAIL}}&token={{USER_TOKEN}}">
+                                        <img src="{{URL_SITE}}/images/criar-senha.png" alt="Criar Senha">
+                                    </a>
+                                </center>
+                            </td>
+                            <td width="48">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" height="32">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td width="48">&nbsp;</td>
+                            <td>
+                                <font face="Roboto, Arial, sans-serif">
+                                    <center>
+                                        Em caso de dúvidas, por favor entrar em contato com
+                                        <a style="color:#989898" href="mailto:ped@taesa.com.br">
+                                            <font color="#989898">ped@taesa.com.br</font>
+                                        </a>
+                                    </center>
+                                </font>
+                            </td>
+                            <td width="48">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" height="28">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+                <td width="36"></td>
+            </tr>
+        </table>
+    </body>
 </html>
