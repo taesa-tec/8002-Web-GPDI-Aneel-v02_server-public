@@ -212,6 +212,25 @@ namespace APIGestor.Business
             else
             {
                 _context.UserProjetos.RemoveRange(_context.UserProjetos.Where(t=>t.ProjetoId == id));
+                _context.Empresas.RemoveRange(_context.Empresas.Where(t=>t.ProjetoId == id));
+                _context.Etapas.RemoveRange(_context.Etapas.Where(t=>t.ProjetoId == id));
+                _context.Temas.RemoveRange(_context.Temas.Where(t=>t.ProjetoId == id));
+                _context.AtividadesGestao.RemoveRange(_context.AtividadesGestao.Where(t=>t.ProjetoId == id));
+                _context.Produtos.RemoveRange(_context.Produtos.Where(t=>t.ProjetoId == id));
+                _context.AlocacoesRh.RemoveRange(_context.AlocacoesRh.Where(t=>t.ProjetoId == id));
+                _context.RecursoHumanos.RemoveRange(_context.RecursoHumanos.Where(t=>t.ProjetoId == id));
+                _context.AlocacoesRm.RemoveRange(_context.AlocacoesRm.Where(t=>t.ProjetoId == id));
+                _context.RecursoMateriais.RemoveRange(_context.RecursoMateriais.Where(t=>t.ProjetoId == id));
+                _context.RegistrosFinanceiros.RemoveRange(_context.RegistrosFinanceiros.Where(t=>t.ProjetoId == id));
+                _context.RelatorioFinal.RemoveRange(_context.RelatorioFinal.Where(t=>t.ProjetoId == id));
+                _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.ProjetoId == id));
+                _context.ResultadosCapacitacao.RemoveRange(_context.ResultadosCapacitacao.Where(t=>t.ProjetoId == id));
+                _context.ResultadosEconomico.RemoveRange(_context.ResultadosEconomico.Where(t=>t.ProjetoId == id));
+                _context.ResultadosInfra.RemoveRange(_context.ResultadosInfra.Where(t=>t.ProjetoId == id));
+                _context.ResultadosIntelectual.RemoveRange(_context.ResultadosIntelectual.Where(t=>t.ProjetoId == id));
+                _context.ResultadosProducao.RemoveRange(_context.ResultadosProducao.Where(t=>t.ProjetoId == id));
+                _context.ResultadosSocioAmbiental.RemoveRange(_context.ResultadosSocioAmbiental.Where(t=>t.ProjetoId == id));
+                _context.LogProjetos.RemoveRange(_context.LogProjetos.Where(t=>t.ProjetoId == id));
                 _context.Projetos.Remove(Projeto);
                 _context.SaveChanges();
             }
