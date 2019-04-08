@@ -211,6 +211,7 @@ namespace APIGestor.Business
             }
             else
             {
+                _context.UserProjetos.RemoveRange(_context.UserProjetos.Where(t=>t.ProjetoId == id));
                 _context.Projetos.Remove(Projeto);
                 _context.SaveChanges();
             }
