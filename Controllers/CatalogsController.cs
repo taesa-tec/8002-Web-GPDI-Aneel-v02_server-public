@@ -66,5 +66,11 @@ namespace APIGestor.Controllers
         {
             return _service.ListarCatalogCategoriaContabilGestao();
         }
+
+        [HttpGet("ProdutoFasesCadeia")]
+        public IEnumerable<CatalogProdutoFaseCadeia> GetH()
+        {
+            return _service.ListarProdutoFasesCadeia();
+        }
     }
 }

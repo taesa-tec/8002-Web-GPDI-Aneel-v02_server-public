@@ -64,5 +64,16 @@ namespace APIGestor.Business
                 })
                 .OrderBy(q => q.Nome)
                 .ToList();
+        public IEnumerable<CatalogProdutoFaseCadeia> ListarProdutoFasesCadeia()=>
+            _context.CatalogProdutoFaseCadeia
+                .Include("TiposDetalhados")
+                .Select(st=>new CatalogProdutoFaseCadeia{
+                    Id = st.Id,
+                    Nome = st.Nome,
+                    Valor = st.Valor,
+                    TiposDetalhados = st.TiposDetalhados.OrderBy(sb=>sb.Nome).OrderBy(sb=>sb.Nome).ToList()
+                })
+                .OrderBy(q => q.Nome)
+                .ToList();
     }
 }

@@ -61,7 +61,7 @@ namespace APIGestor.Business
                          .Include("Tema.CatalogTema")
                          .Include("Tema.SubTemas.CatalogSubTema")
                          .Include("Etapas")
-                         .Include("Produtos")
+                         .Include("Produtos.CatalogProdutoFaseCadeia")
                          .Include("Empresas.Estado")
                          .Include("Empresas.CatalogEmpresa")
                          .Include("RecursosHumanos")
@@ -104,11 +104,12 @@ namespace APIGestor.Business
                 RazoabCustos = projeto.Razoabilidade,
                 PesqCorrelata = projeto.Pesquisas
             };
-            Produto Produto = projeto.Produtos.Where(
+            Produto Produto = projeto.Produtos
+                        .Where(
                         p => p.Classificacao == (ProdutoClassificacao)(1)).FirstOrDefault();
             if (Produto != null)
             {
-                ProjetoPed.PD_ProjetoBase.FaseInovacao = Produto.FaseCadeiaValor;
+                ProjetoPed.PD_ProjetoBase.FaseInovacao = Produto.CatalogProdutoFaseCadeia.Valor;
                 ProjetoPed.PD_ProjetoBase.TipoProduto = Produto.TipoValor;
                 ProjetoPed.PD_ProjetoBase.DescricaoProduto = Produto.Desc;
 

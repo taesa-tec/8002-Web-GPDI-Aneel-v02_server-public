@@ -21,6 +21,8 @@ namespace APIGestor.Data
         public DbSet<CatalogPais> CatalogPaises { get; set; }
         public DbSet<CatalogTema> CatalogTema { get; set; }
         public DbSet<CatalogSubTema> CatalogSubTemas { get; set; }
+        public DbSet<CatalogProdutoFaseCadeia> CatalogProdutoFaseCadeia { get; set; }
+        public DbSet<CatalogProdutoTipoDetalhado> CatalogProdutoTipoDetalhado { get; set; }
         public DbSet<UserProjeto> UserProjetos { get; set; }
         public DbSet<Projeto> Projetos { get; set; }
         public DbSet<Empresa> Empresas { get; set; }

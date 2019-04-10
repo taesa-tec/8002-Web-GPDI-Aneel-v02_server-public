@@ -20,8 +20,11 @@ namespace APIGestor.Business
         {
             if (id>0)
             {
-                return _context.Produtos.Include("EtapaProduto").Where(
-                    p => p.Id == id).FirstOrDefault();
+                return _context.Produtos
+                    .Include("EtapaProduto")
+                    .Include("CatalogProdutoFaseCadeia")
+                    .Include("CatalogProdutoTipoDetalhado")
+                    .Where(p => p.Id == id).FirstOrDefault();
             }
             else
                 return null;
@@ -31,6 +34,8 @@ namespace APIGestor.Business
         {
             if (projetoId>0){
                 var Produtos = _context.Produtos
+                    .Include("CatalogProdutoFaseCadeia")
+                    .Include("CatalogProdutoTipoDetalhado")
                     .Include("EtapaProduto")
                     .Where(
                     p => p.ProjetoId == projetoId).OrderBy(p => p.Titulo);
@@ -92,7 +97,8 @@ namespace APIGestor.Business
                     Produto.Desc = dadosProduto.Desc;
                     Produto.Classificacao = dadosProduto.Classificacao;
                     Produto.Tipo = dadosProduto.Tipo;
-                    Produto.FaseCadeia = dadosProduto.FaseCadeia;
+                    Produto.CatalogProdutoFaseCadeiaId = dadosProduto.CatalogProdutoFaseCadeiaId;
+                    Produto.CatalogProdutoTipoDetalhadoId = dadosProduto.CatalogProdutoTipoDetalhadoId;
                     _context.SaveChanges();
                 }
             }
