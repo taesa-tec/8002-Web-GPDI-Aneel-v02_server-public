@@ -36,7 +36,6 @@ namespace APIGestor.Models
         public int? CatalogProdutoTipoDetalhadoId { get; set; }
         public CatalogProdutoTipoDetalhado CatalogProdutoTipoDetalhado { get; set; }
         public ProdutoFaseCadeia? FaseCadeia { get; set; }
-        [NotMapped]
         public List<EtapaProduto> EtapaProduto { get; set; }
     }
     public enum ProdutoClassificacao
