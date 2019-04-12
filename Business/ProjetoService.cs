@@ -213,22 +213,66 @@ namespace APIGestor.Business
             {
                 _context.UserProjetos.RemoveRange(_context.UserProjetos.Where(t=>t.ProjetoId == id));
                 _context.Empresas.RemoveRange(_context.Empresas.Where(t=>t.ProjetoId == id));
-                _context.Etapas.RemoveRange(_context.Etapas.Where(t=>t.ProjetoId == id));
-                _context.Temas.RemoveRange(_context.Temas.Where(t=>t.ProjetoId == id));
+                
+                // Remove Etapas e associados
+                foreach(var etapa in _context.Etapas.Where(t=>t.ProjetoId == id))
+                {
+                    _context.EtapaMeses.RemoveRange(_context.EtapaMeses.Where(t=>t.EtapaId == etapa.Id));
+                    _context.EtapaProdutos.RemoveRange(_context.EtapaProdutos.Where(t=>t.EtapaId == etapa.Id));
+                    _context.Etapas.Remove(etapa);
+                }
+                // Remove Temas e Arquivos
+                foreach(var tema in _context.Temas.Where(t=>t.ProjetoId == id))
+                {
+                    _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.TemaId == tema.Id));
+                    _context.TemaSubTemas.RemoveRange(_context.TemaSubTemas.Where(t=>t.TemaId == tema.Id));
+                    _context.Temas.Remove(tema);
+                }
                 _context.AtividadesGestao.RemoveRange(_context.AtividadesGestao.Where(t=>t.ProjetoId == id));
                 _context.Produtos.RemoveRange(_context.Produtos.Where(t=>t.ProjetoId == id));
                 _context.AlocacoesRh.RemoveRange(_context.AlocacoesRh.Where(t=>t.ProjetoId == id));
                 _context.RecursoHumanos.RemoveRange(_context.RecursoHumanos.Where(t=>t.ProjetoId == id));
                 _context.AlocacoesRm.RemoveRange(_context.AlocacoesRm.Where(t=>t.ProjetoId == id));
                 _context.RecursoMateriais.RemoveRange(_context.RecursoMateriais.Where(t=>t.ProjetoId == id));
-                _context.RegistrosFinanceiros.RemoveRange(_context.RegistrosFinanceiros.Where(t=>t.ProjetoId == id));
-                _context.RelatorioFinal.RemoveRange(_context.RelatorioFinal.Where(t=>t.ProjetoId == id));
+                // Remove Registros Financeiros
+                foreach(var registro in _context.RegistrosFinanceiros.Where(t=>t.ProjetoId == id).ToList())
+                {
+                    _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.RegistroFinanceiroId == registro.Id));
+                    _context.RegistroObs.RemoveRange(_context.RegistroObs.Where(t=>t.RegistroFinanceiroId == registro.Id));
+                    _context.RegistrosFinanceiros.Remove(registro);
+                }
                 _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.ProjetoId == id));
-                _context.ResultadosCapacitacao.RemoveRange(_context.ResultadosCapacitacao.Where(t=>t.ProjetoId == id));
+
+                // Remove Relatorio Final e Arquivos
+                foreach(var rf in _context.RelatorioFinal.Where(t=>t.ProjetoId == id))
+                {
+                    _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.RelatorioFinalId == rf.Id));
+                    _context.RelatorioFinal.Remove(rf);
+                }
+                // Remove Resultado Capacitação e Arquivos
+                foreach(var rc in _context.ResultadosCapacitacao.Where(t=>t.ProjetoId == id))
+                {
+                    _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.ResultadoCapacitacaoId == rc.Id));
+                    _context.ResultadosCapacitacao.Remove(rc);
+                }
                 _context.ResultadosEconomico.RemoveRange(_context.ResultadosEconomico.Where(t=>t.ProjetoId == id));
                 _context.ResultadosInfra.RemoveRange(_context.ResultadosInfra.Where(t=>t.ProjetoId == id));
                 _context.ResultadosIntelectual.RemoveRange(_context.ResultadosIntelectual.Where(t=>t.ProjetoId == id));
-                _context.ResultadosProducao.RemoveRange(_context.ResultadosProducao.Where(t=>t.ProjetoId == id));
+                
+                // Remove Resultado Intelectual e associações
+                foreach(var ri in _context.ResultadosIntelectual.Where(t=>t.ProjetoId == id))
+                {
+                    _context.ResultadoIntelectualInventores.RemoveRange(_context.ResultadoIntelectualInventores.Where(p => p.ResultadoIntelectualId == ri.Id));
+                    _context.ResultadoIntelectualDepositantes.RemoveRange(_context.ResultadoIntelectualDepositantes.Where(p => p.ResultadoIntelectualId == ri.Id));   
+                    _context.ResultadosIntelectual.Remove(ri);
+                }
+                
+                // Remove Resultado Produção e Arquivos
+                foreach(var rp in _context.ResultadosProducao.Where(t=>t.ProjetoId == id))
+                {
+                    _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.ResultadoProducaoId == rp.Id));
+                    _context.ResultadosProducao.Remove(rp);
+                }
                 _context.ResultadosSocioAmbiental.RemoveRange(_context.ResultadosSocioAmbiental.Where(t=>t.ProjetoId == id));
                 _context.LogProjetos.RemoveRange(_context.LogProjetos.Where(t=>t.ProjetoId == id));
                 _context.Projetos.Remove(Projeto);

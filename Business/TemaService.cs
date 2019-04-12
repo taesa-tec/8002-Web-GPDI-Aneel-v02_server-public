@@ -143,7 +143,9 @@ namespace APIGestor.Business
                 resultado.Inconsistencias.Add("Tema não encontrado");
             }
             else
-            {   _context.TemaSubTemas.RemoveRange(_context.TemaSubTemas.Where(t=>t.TemaId == id));
+            {   
+                _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.TemaId == id));
+                _context.TemaSubTemas.RemoveRange(_context.TemaSubTemas.Where(t=>t.TemaId == id));
                 _context.Temas.Remove(Tema);
                 _context.SaveChanges();
             }

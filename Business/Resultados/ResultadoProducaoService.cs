@@ -93,6 +93,7 @@ namespace APIGestor.Business
             }
             else
             {
+                _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.ResultadoProducaoId == id));
                 _context.ResultadosProducao.Remove(ResultadoProducao);
                 _context.SaveChanges();
             }

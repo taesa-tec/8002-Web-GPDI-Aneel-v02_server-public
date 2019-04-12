@@ -94,6 +94,7 @@ namespace APIGestor.Business
             }
             else
             {
+                _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.ResultadoCapacitacaoId == id));
                 _context.ResultadosCapacitacao.Remove(ResultadoCapacitacao);
                 _context.SaveChanges();
             }

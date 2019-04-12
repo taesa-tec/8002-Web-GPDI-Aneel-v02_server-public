@@ -99,6 +99,7 @@ namespace APIGestor.Business
             }
             else
             {
+                _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.RelatorioFinalId == id));
                 _context.RelatorioFinal.Remove(RelatorioFinal);
                 _context.SaveChanges();
             }

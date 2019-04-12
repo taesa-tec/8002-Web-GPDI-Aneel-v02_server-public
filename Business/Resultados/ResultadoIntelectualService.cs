@@ -100,7 +100,7 @@ namespace APIGestor.Business
             }
             else
             {
-                 _context.ResultadoIntelectualInventores.RemoveRange(_context.ResultadoIntelectualInventores.Where(p => p.ResultadoIntelectualId == id));
+                _context.ResultadoIntelectualInventores.RemoveRange(_context.ResultadoIntelectualInventores.Where(p => p.ResultadoIntelectualId == id));
                 _context.ResultadoIntelectualDepositantes.RemoveRange(_context.ResultadoIntelectualDepositantes.Where(p => p.ResultadoIntelectualId == id));   
                 _context.ResultadosIntelectual.Remove(ResultadoIntelectual);
                 _context.SaveChanges();
