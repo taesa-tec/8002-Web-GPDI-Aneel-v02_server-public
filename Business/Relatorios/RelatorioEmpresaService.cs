@@ -32,11 +32,58 @@ namespace APIGestor.Business
             foreach(var empresa in relatorio.Empresas)
             {
                 int TotalEmpresaAprovado = 0;
-                decimal ValorEmpresaAprovado = 0;
+                decimal? ValorEmpresaAprovado = 0;
+
+                var rhs = _context.RegistrosFinanceiros
+                                .Include("Uploads.User")
+                                .Include("RecursoHumano")
+                                .Include("ObsInternas.User")
+                                .Where(p => p.RecursoHumano.EmpresaId == empresa.Id)
+                                .Where(p => p.StatusValor=="Aprovado")
+                                .ToList();
+
+                var rms = _context.RegistrosFinanceiros
+                                .Include("Uploads.User")
+                                .Include("RecursoMaterial")
+                                .Include("ObsInternas.User")
+                                .Where(p => p.EmpresaFinanciadoraId == empresa.Id)
+                                .Where(p => p.StatusValor=="Aprovado")
+                                .ToList();
                 foreach(var r in empresa.Relatorios)
                 {
                     int TotalAprovado = 0;
-                    decimal ValorAprovado = 0;
+                    decimal? ValorAprovado = 0; 
+                    if (r.Desc=="RH"){
+                        foreach(var rh in rhs){
+                             decimal? valor = (rh.QtdHrs) * rh.RecursoHumano.ValorHora;
+                                r.Items.Add(new RelatorioEmpresaItems
+                                {
+                                    //AlocacaoId = a.Id,
+                                    //RegistroFinanceiro = rh,
+                                    Desc = rh.RecursoHumano.NomeCompleto,
+                                    //Etapa = a.Etapa,
+                                    //AlocacaoRh = a,
+                                    RecursoHumano = rh.RecursoHumano,
+                                    Valor = valor
+                                });
+                                //TotalAprovado ++;
+                                //ValorAprovado += valor;
+                        }
+                    }else{
+                        foreach (var rm in rms)
+                        {
+                                decimal? valor = (rm.QtdItens) * rm.ValorUnitario;
+                                r.Items.Add(new RelatorioEmpresaItems
+                                {
+                                    //AlocacaoId = a.Id,
+                                    Desc = rm.RecursoMaterial.Nome,
+                                    //Etapa = a.Etapa,
+                                    //AlocacaoRm = a,
+                                    RecursoMaterial = rm.RecursoMaterial,
+                                    Valor = valor
+                                });
+                            }
+                    }                  
                     foreach(var item in r.Items.ToList()){
                         if (item.RecursoHumano!=null){
                             RegistroFinanceiro registro = _context.RegistrosFinanceiros
@@ -169,7 +216,7 @@ namespace APIGestor.Business
             relatorio.Valor = 0;
             foreach (Empresa empresa in Empresas)
             {
-                decimal ValorEmpresa = 0;
+                decimal? ValorEmpresa = 0;
                 var categorias = new List<RelatorioEmpresaCategorias>();
                 string nomeEmpresa = null;
                 if (empresa.CatalogEmpresaId > 0)
@@ -182,7 +229,7 @@ namespace APIGestor.Business
                     //obter alocações recursos humanos
                     var data = new List<RelatorioEmpresaItems>();
                     int total = 0;
-                    decimal ValorCategoria = 0;
+                    decimal? ValorCategoria = 0;
                     if (categoria.ToString() == "RH")
                     {
                         var AlocacoesRh = _context.AlocacoesRh
@@ -196,7 +243,7 @@ namespace APIGestor.Business
                         {
                             foreach (AlocacaoRh a in AlocacoesRh)
                             {
-                                decimal valor = (a.HrsMes1 + a.HrsMes2 + a.HrsMes3 + a.HrsMes4 + a.HrsMes5 + a.HrsMes6) * a.RecursoHumano.ValorHora;
+                                decimal? valor = (a.HrsMes1 + a.HrsMes2 + a.HrsMes3 + a.HrsMes4 + a.HrsMes5 + a.HrsMes6) * a.RecursoHumano.ValorHora;
                                 data.Add(new RelatorioEmpresaItems
                                 {
                                     AlocacaoId = a.Id,
@@ -225,7 +272,7 @@ namespace APIGestor.Business
                         {
                             foreach (AlocacaoRm a in AlocacoesRm)
                             {
-                                decimal valor = (a.Qtd) * a.RecursoMaterial.ValorUnitario;
+                                decimal? valor = (a.Qtd) * a.RecursoMaterial.ValorUnitario;
                                 data.Add(new RelatorioEmpresaItems
                                 {
                                     AlocacaoId = a.Id,
@@ -256,6 +303,7 @@ namespace APIGestor.Business
                 // Fim Outros Relatorios
                 relatorio.Empresas.Add(new RelatorioEmpresas
                 {
+                    Id = empresa.Id,
                     Nome = nomeEmpresa,
                     Relatorios = categorias,
                     Total = categorias.Count(),

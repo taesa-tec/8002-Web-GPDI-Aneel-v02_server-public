@@ -9,15 +9,16 @@ namespace APIGestor.Models
     {
         public List<RelatorioEmpresas> Empresas { get; set; }
         public int Total { get; set; }
-        public decimal Valor { get; set; }
+        public decimal? Valor { get; set; }
 
     }
     public class RelatorioEmpresas
     {
+        public int Id { get; set; }
         public string Nome { get; set; }
         public List<RelatorioEmpresaCategorias> Relatorios { get; set; }
         public int Total { get; set; }
-        public decimal Valor { get; set; }
+        public decimal? Valor { get; set; }
         public int? TotalAprovado { get; set; }
         public decimal? ValorAprovado { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:P2}")]
@@ -29,7 +30,7 @@ namespace APIGestor.Models
         public string Desc {get; set;}
         public List<RelatorioEmpresaItems> Items { get; set; }
         public int Total { get; set; }
-        public decimal Valor { get; set; }
+        public decimal? Valor { get; set; }
         public int? TotalAprovado { get; set; }
         public decimal? ValorAprovado { get; set; }
 
@@ -46,7 +47,7 @@ namespace APIGestor.Models
         public RecursoMaterial RecursoMaterial { get; set; }
         [NotMapped]
         public RegistroFinanceiro RegistroFinanceiro { get; set; }
-        public decimal Valor { get; set; }
+        public decimal? Valor { get; set; }
     }
     public class RelatorioEmpresaCsv
     {
@@ -81,7 +82,7 @@ namespace APIGestor.Models
 		public string EquiparLabNovo { get; set; }
 		public string ItemNacional { get; set; }
 		public string DataAprovacao { get; set; }
-        public decimal ValorTotal { get; set; }
+        public decimal? ValorTotal { get; set; }
     }
     public sealed class RelatorioEmpresaCsvMap : ClassMap<RelatorioEmpresaCsv> 
     {

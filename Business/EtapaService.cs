@@ -190,7 +190,9 @@ namespace APIGestor.Business
                 resultado.Inconsistencias.Add("Possível somente excluir a última etapa do projeto");
             }
             else
-            {   _context.EtapaProdutos.RemoveRange(_context.EtapaProdutos.Where(t=>t.EtapaId == id));
+            {   
+                _context.EtapaMeses.RemoveRange(_context.EtapaMeses.Where(t=>t.EtapaId == id));
+                _context.EtapaProdutos.RemoveRange(_context.EtapaProdutos.Where(t=>t.EtapaId == id));
                 _context.Etapas.Remove(Etapa);
                 _context.SaveChanges();
             }
