@@ -46,7 +46,7 @@ namespace APIGestor.Business
                          .Include("RecursosHumanos")
                          // .Include(p => p.RecursosMateriais)
                          .Include("AlocacoesRh.RecursoHumano")
-                         .Include("AlocacoesRm.RecursoMaterial")
+                         .Include("AlocacoesRm.RecursoMaterial.Atividade")
                          .Include("RelatorioFinal.Uploads")
                          .Where(p => p.Id == Id)
                          .FirstOrDefault();

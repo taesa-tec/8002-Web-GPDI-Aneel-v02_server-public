@@ -122,6 +122,7 @@ namespace APIGestor.Business
             }
             else
             {
+                _context.UserProjetos.RemoveRange(_context.UserProjetos.Where(t=>t.UserId == userId));
                 _context.FotoPerfil.RemoveRange(_context.FotoPerfil.Where(t=>t.UserId == userId));
                 _context.Users.Remove(User);
                 _context.SaveChanges();
