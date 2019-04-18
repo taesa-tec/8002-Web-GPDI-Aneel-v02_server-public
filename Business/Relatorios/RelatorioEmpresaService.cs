@@ -181,7 +181,7 @@ namespace APIGestor.Business
                             newItem.DataAprovacao = (item.RegistroFinanceiro.ObsInternas.LastOrDefault()!=null)? item.RegistroFinanceiro.ObsInternas.LastOrDefault().Created.ToString() : null;
                         }
                        newItem.Id = item.AlocacaoId;
-                       newItem.Etapa = item.Etapa.Nome;
+                       newItem.Etapa = (item.Etapa!=null) ? item.Etapa.Nome : null ;
 
                        records.Add(newItem);
                     }

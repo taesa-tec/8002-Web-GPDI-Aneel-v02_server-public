@@ -29,40 +29,18 @@ namespace APIGestor.Business
             Projeto projeto = obterProjeto(ProjetoId);
             var resultado = new Resultado();
             resultado.Acao = "Validação de dados";
-            if (projeto.Tema == null || projeto.Produtos.Count() <= 0)
-                resultado.Inconsistencias.Add("Tema e/ou produto não cadastrados");
-            if (projeto.AvaliacaoInicial == null)
-                resultado.Inconsistencias.Add("AvaliacaoInicial do projeto não preenchida");
             if (projeto.Etapas.Count() == 0)
                 resultado.Inconsistencias.Add("Etapas do projeto não preenchida");
-            if (projeto.CatalogSegmento == null)
-                resultado.Inconsistencias.Add("Segmento do projeto não preenchida");
-            if (projeto.Tema == null)
-                resultado.Inconsistencias.Add("Tema do projeto não definido");
-            if (projeto.Motivacao == null)
-                resultado.Inconsistencias.Add("Motivacao do projeto não preenchida");
-            if (projeto.Originalidade == null)
-                resultado.Inconsistencias.Add("Originalidade do projeto não preenchida");
-            if (projeto.Aplicabilidade == null)
-                resultado.Inconsistencias.Add("Aplicabilidade do projeto não preenchida");
-            if (projeto.Relevancia == null)
-                resultado.Inconsistencias.Add("Relevancia do projeto não preenchida");
-            if (projeto.Razoabilidade == null)
-                resultado.Inconsistencias.Add("Razoabilidade do projeto não preenchida");
-            if (projeto.Pesquisas == null)
-                resultado.Inconsistencias.Add("Pesquisas do projeto não preenchida");
+            if (projeto.Atividades.DedicacaoHorario == null)
+                resultado.Inconsistencias.Add("Atividades do projeto não preenchidas");
             return resultado;
         }
         public Projeto obterProjeto(int Id)
         {
             return _context.Projetos
                          .Include("CatalogEmpresa")
-                         .Include("CatalogSegmento")
-                         .Include("Tema.CatalogTema")
-                         .Include("Tema.SubTemas.CatalogSubTema")
                          .Include("Etapas")
                          .Include("Atividades")
-                         .Include("Produtos")
                          .Include("Empresas.Estado")
                          .Include("Empresas.CatalogEmpresa")
                          .Include("RecursosHumanos")

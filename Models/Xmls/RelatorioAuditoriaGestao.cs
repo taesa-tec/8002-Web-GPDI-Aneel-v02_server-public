@@ -9,7 +9,7 @@ namespace APIGestor.Models
 {
     public class XmlRelatorioAuditoriaGestao
     {
-        public PD_RelAuditoriaPG PD_RelAuditoriaPG { get; set; }
+        public PD_RelAuditoriaPG PD_RelFinalBase { get; set; }
     }
     public class PD_RelAuditoriaPG
     {
