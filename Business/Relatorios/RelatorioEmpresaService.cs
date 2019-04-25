@@ -144,21 +144,25 @@ namespace APIGestor.Business
                             newItem.TITULACAO = item.RecursoHumano.TitulacaoValor;
                             newItem.CL = item.RecursoHumano.UrlCurriculo;
                             newItem.ValorHora = item.RecursoHumano.ValorHora;
-                            newItem.QtdHoras = item.AlocacaoRh.HrsMes1+item.AlocacaoRh.HrsMes2+item.AlocacaoRh.HrsMes3+item.AlocacaoRh.HrsMes4+item.AlocacaoRh.HrsMes5+item.AlocacaoRh.HrsMes6;
-                            newItem.ValorTotal = newItem.ValorHora*newItem.QtdHoras;
-                            newItem.Justificativa = item.AlocacaoRh.Justificativa;
-                            newItem.EntidadePagadora = (item.AlocacaoRh.Empresa.Cnpj==null) ? item.AlocacaoRh.Empresa.CatalogEmpresa.Nome : item.AlocacaoRh.Empresa.RazaoSocial;
-                            newItem.CnpjEntidadePagadora = item.AlocacaoRh.Empresa.Cnpj;
                             newItem.EntidadeRecebedora = (item.RecursoHumano.Empresa.Cnpj==null) ? item.RecursoHumano.Empresa.CatalogEmpresa.Nome : item.RecursoHumano.Empresa.RazaoSocial;
                             newItem.CnpjEntidadeRecebedora = (item.RecursoHumano.Empresa.Cnpj==null) ? null : item.RecursoHumano.Empresa.Cnpj;  
                             newItem.CategoriaContabil = CategoriaContabil.RH.ToString();
                         }
+                        if (item.AlocacaoRh!=null){
+                            newItem.QtdHoras = ((item.AlocacaoRh.HrsMes1+item.AlocacaoRh.HrsMes2+item.AlocacaoRh.HrsMes3+item.AlocacaoRh.HrsMes4+item.AlocacaoRh.HrsMes5+item.AlocacaoRh.HrsMes6)+(item.AlocacaoRh.HrsMes7+item.AlocacaoRh.HrsMes8+item.AlocacaoRh.HrsMes9+item.AlocacaoRh.HrsMes10+item.AlocacaoRh.HrsMes11+item.AlocacaoRh.HrsMes12)+(item.AlocacaoRh.HrsMes13+item.AlocacaoRh.HrsMes14+item.AlocacaoRh.HrsMes15+item.AlocacaoRh.HrsMes16+item.AlocacaoRh.HrsMes17+item.AlocacaoRh.HrsMes18)+(item.AlocacaoRh.HrsMes19+item.AlocacaoRh.HrsMes20+item.AlocacaoRh.HrsMes21+item.AlocacaoRh.HrsMes22+item.AlocacaoRh.HrsMes23+item.AlocacaoRh.HrsMes24));
+                            newItem.ValorTotal = newItem.ValorHora*newItem.QtdHoras;
+                            newItem.Justificativa = item.AlocacaoRh.Justificativa;
+                            newItem.EntidadePagadora = (item.AlocacaoRh.Empresa.Cnpj==null) ? item.AlocacaoRh.Empresa.CatalogEmpresa.Nome : item.AlocacaoRh.Empresa.RazaoSocial;
+                            newItem.CnpjEntidadePagadora = item.AlocacaoRh.Empresa.Cnpj;
+                        }
                         if (item.RecursoMaterial!=null){
                             newItem.CategoriaContabil = item.RecursoMaterial.CategoriaContabilValor;
                             newItem.ValorUnitario = item.RecursoMaterial.ValorUnitario;
+                            newItem.EspecificacaoTecnica = item.RecursoMaterial.Especificacao;
+                        }
+                        if (item.AlocacaoRm!=null){
                             newItem.Unidades = item.AlocacaoRm.Qtd;
                             newItem.ValorTotal = newItem.ValorUnitario*newItem.Unidades;
-                            newItem.EspecificacaoTecnica = item.RecursoMaterial.Especificacao;
                             newItem.Justificativa = item.AlocacaoRm.Justificativa;
                             newItem.EntidadePagadora = (item.AlocacaoRm.EmpresaFinanciadora.Cnpj==null) ? item.AlocacaoRm.EmpresaFinanciadora.CatalogEmpresa.Nome : item.AlocacaoRm.EmpresaFinanciadora.RazaoSocial;
                             newItem.CnpjEntidadePagadora = (item.AlocacaoRm.EmpresaFinanciadora.Cnpj==null) ? null : item.AlocacaoRm.EmpresaFinanciadora.Cnpj;  ;
@@ -243,7 +247,8 @@ namespace APIGestor.Business
                         {
                             foreach (AlocacaoRh a in AlocacoesRh)
                             {
-                                decimal? valor = (a.HrsMes1 + a.HrsMes2 + a.HrsMes3 + a.HrsMes4 + a.HrsMes5 + a.HrsMes6) * a.RecursoHumano.ValorHora;
+                                decimal? valor = ((a.HrsMes1+a.HrsMes2+a.HrsMes3+a.HrsMes4+a.HrsMes5+a.HrsMes6)+(a.HrsMes7+a.HrsMes8+a.HrsMes9+a.HrsMes10+a.HrsMes11+a.HrsMes12)+(a.HrsMes13+a.HrsMes14+a.HrsMes15+a.HrsMes16+a.HrsMes17+a.HrsMes18)+(a.HrsMes19+a.HrsMes20+a.HrsMes21+a.HrsMes22+a.HrsMes23+a.HrsMes24))*a.RecursoHumano.ValorHora;
+                               
                                 data.Add(new RelatorioEmpresaItems
                                 {
                                     AlocacaoId = a.Id,

@@ -65,7 +65,7 @@ namespace APIGestor.Models
         public string CnpjEntidadePagadora { get; set; }
         public string EntidadeRecebedora { get; set; }
         public string CnpjEntidadeRecebedora { get; set; }
-        public int QtdHoras { get; set; }
+        public int? QtdHoras { get; set; }
         public decimal ValorHora { get; set; }
         public int Unidades { get; set; }
         public decimal ValorUnitario { get; set; }

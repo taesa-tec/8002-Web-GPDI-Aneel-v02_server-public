@@ -59,7 +59,7 @@ namespace APIGestor.Business
             decimal? TotalRh = registros.Where(r => r.QtdHrs != null && r.RecursoHumano != null).Sum(r => r.QtdHrs * r.RecursoHumano.ValorHora);
             decimal? TotalRm = registros.Where(r => r.QtdItens != null && r.RecursoMaterial != null).Sum(r => r.QtdItens * r.RecursoMaterial.ValorUnitario);
 
-            relatorio.PD_RelFinalBase = new PD_RelAuditoriaPG
+            relatorio.PD_RelAuditoriaPG = new PD_RelAuditoriaPG
             {
                 CodProjeto = projeto.Codigo,
                 ArquivoPDF = projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAuditoria").FirstOrDefault().NomeArquivo,
@@ -122,7 +122,7 @@ namespace APIGestor.Business
                     CustoCatContabil = RAG_CustoCatContabil
                 });
             }
-            relatorio.PD_RelFinalBase.RecursoEmpresa = ListRecursoEmpresa;
+            relatorio.PD_RelAuditoriaPG.RecursoEmpresa = ListRecursoEmpresa;
 
             return relatorio;
         }
