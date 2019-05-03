@@ -33,6 +33,9 @@ namespace APIGestor.Business
                 resultado.Inconsistencias.Add("Etapas do projeto não preenchida");
             if (projeto.Atividades.DedicacaoHorario == null)
                 resultado.Inconsistencias.Add("Atividades do projeto não preenchidas");
+            if(projeto.RecursosHumanos.Where(p => p.GerenteProjeto == true).Count() == 0)
+                resultado.Inconsistencias.Add("O projeto não tem nenhum gerente cadastrado");
+
             return resultado;
         }
         public Projeto obterProjeto(int Id)
@@ -199,6 +202,7 @@ namespace APIGestor.Business
             }
 
             // PD_ProjetoGestao
+            var gerente = projeto.RecursosHumanos.Where(p => p.GerenteProjeto == true);
             relatorio.PD_ProjetoGestao = new PD_ProjetoGestao
             {
                 Empresas = new GstEmpresas
@@ -210,7 +214,7 @@ namespace APIGestor.Business
                     Atividade = AtividadesList
                 },
                 Duracao = 24,
-                CpfGerente = projeto.RecursosHumanos.Where(p => p.GerenteProjeto == true).First().CPF
+                CpfGerente = gerente.Count() > 0 ? gerente.First().CPF : ""
             };
 
             return relatorio;

@@ -126,16 +126,24 @@ namespace APIGestor.Business
         public Resultado DadosValidos(int ProjetoId, XmlTipo XmlTipo, string Versao, string UserId)
         {
             var resultado = new Resultado();
-            if (ProjetoId <= 0)
-                resultado.Inconsistencias.Add("Informe o ProjetoId");
-            if (XmlTipo.ToString() == null || !Enum.IsDefined(typeof(XmlTipo), XmlTipo))
-                resultado.Inconsistencias.Add("Informe o XmlTipo");
-            else if (_context.Projetos.Where(p => p.Id == ProjetoId).FirstOrDefault() == null)
-                resultado.Inconsistencias.Add("ProjetoId não localizado");
-            if (Versao == null)
-                resultado.Inconsistencias.Add("Informe a Versão");
-            if (UserId == null)
-                resultado.Inconsistencias.Add("UserId Não localizado");
+            try
+            {
+                if (ProjetoId <= 0)
+                    resultado.Inconsistencias.Add("Informe o ProjetoId");
+                if (XmlTipo.ToString() == null || !Enum.IsDefined(typeof(XmlTipo), XmlTipo))
+                    resultado.Inconsistencias.Add("Informe o XmlTipo");
+                else if (_context.Projetos.Where(p => p.Id == ProjetoId).FirstOrDefault() == null)
+                    resultado.Inconsistencias.Add("ProjetoId não localizado");
+                if (Versao == null)
+                    resultado.Inconsistencias.Add("Informe a Versão");
+                if (UserId == null)
+                    resultado.Inconsistencias.Add("UserId Não localizado");
+            }
+            catch (Exception ex)
+            {
+                resultado.Inconsistencias.Add(ex.Message);
+            }
+            
             return resultado;
         }
         public Resultado GerarXml(int ProjetoId, XmlTipo XmlTipo, string Versao, string UserId)

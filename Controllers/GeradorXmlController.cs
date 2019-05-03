@@ -34,8 +34,19 @@ namespace APIGestor.Controllers
         [HttpGet("{projetoId}/Xml/{xmlTipo}/{versao}")]
         public Resultado Get(int projetoId, XmlTipo xmlTipo, string versao)
         {
-            var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return _service.GerarXml(projetoId, xmlTipo, versao, userId);
+            Resultado r = new Resultado();
+            try
+            {
+                var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
+
+                return _service.GerarXml(projetoId, xmlTipo, versao, userId);
+            }
+            catch (System.Exception e)
+            {
+                r.Inconsistencias.Add(e.Message);
+                return r;
+            }
+            
         }
 
         [HttpGet("{projetoId}/Xml/{xmlTipo}/ValidaDados")]
