@@ -28,8 +28,8 @@
     },
     "APIGestor": {
       "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "api/projetos",
+      "launchBrowser": false,
+      "launchUrl": "api/",
       "applicationUrl": "https://localhost:8080",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

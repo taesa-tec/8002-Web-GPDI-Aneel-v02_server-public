@@ -6,6 +6,7 @@ using APIGestor.Models;
 using APIGestor.Security;
 using System.IdentityModel.Tokens.Jwt;
 using System;
+using Microsoft.Extensions.FileProviders;
 
 namespace APIGestor.Controllers
 {
@@ -36,14 +37,23 @@ namespace APIGestor.Controllers
             else
                 return NotFound();
         }
+        [AllowAnonymous]
         [HttpGet("{id}/avatar")]
         [ResponseCache(Duration = 120)]
+       
         public FileResult Download(string id)  
-        {  
+        {
+            byte[] image;
             var user = _service.Obter(id);
-            if (user==null || user.FotoPerfil==null)
-                return null;
-            return File(user.FotoPerfil.File, System.Net.Mime.MediaTypeNames.Application.Octet, "avatar.jpg");
+            
+            if (user==null || user.FotoPerfil == null || user.FotoPerfil.File.Length < 1)
+            {
+                image = System.IO.File.ReadAllBytes("wwwroot/Assets/default_avatar.jpg");
+            }
+            else {
+                image = user.FotoPerfil.File;
+            }
+            return File(image, System.Net.Mime.MediaTypeNames.Image.Jpeg);
         }
 
         [HttpGet("me")]
