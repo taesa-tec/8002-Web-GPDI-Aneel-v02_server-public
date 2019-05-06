@@ -70,7 +70,8 @@ namespace APIGestor.Models
         Guia = 4,
         Nota = 5,
         Recibo = 6,
-        Reserva = 7
+        Reserva = 7,
+        ReciboSemCNPJ = 8
     }
     public enum StatusRegistro
     {   
