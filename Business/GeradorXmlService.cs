@@ -96,8 +96,6 @@ namespace APIGestor.Business
                     .Where(a => a.IsEmpty || String.IsNullOrWhiteSpace(a.Value))
                     .Remove();
 
-                    // Match m = Regex.Match(d.Value, @"&#x(.{4})");
-
                 string folderName = "uploads/xmls/";
                 string webRootPath = _hostingEnvironment.WebRootPath;
                 string newPath = Path.Combine(webRootPath, folderName);
@@ -159,18 +157,18 @@ namespace APIGestor.Business
             {
                 var svc = obterXmlTipo(XmlTipo);
                 Resultado ValidaXml = svc.ValidaXml(ProjetoId);
-                if(ValidaXml.Inconsistencias.Count()>0)
-                    return ValidaXml;
-                var xml = svc.GerarXml(ProjetoId, Versao, UserId);
-                if (xml!=null){
 
-                    JsonSerializerSettings jss = new JsonSerializerSettings();
-                    jss.StringEscapeHandling = StringEscapeHandling.Default;
-                    jss.Converters.Clear();
+                if (ValidaXml.Inconsistencias.Count()>0)
+                    return ValidaXml;
+
+                var xml = svc.GerarXml(ProjetoId, Versao, UserId);
+
+                if (xml!=null){
                     resultado = CriarArquivo(JsonConvert.SerializeObject(xml), XmlTipo.ToString(), ProjetoId, Versao, UserId);
                 }else{
                     resultado.Inconsistencias.Add("Erro na gravação do arquivo");
                 }
+
                 resultado.Acao = "Geração Xml " + XmlTipo.ToString();
             }
             return resultado;

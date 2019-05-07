@@ -17,7 +17,7 @@ namespace APIGestor.Models
         public string ArquivoPDF { get; set; }
         private string _custoTotal{ get; set; }
         public string CustoTotal{
-            get => string.Format("{0:N}",_custoTotal);
+            get => decimal.Parse(_custoTotal).ToString("N2");
             set => _custoTotal = value;
         }
         public List<RA_RecursoEmpresa> RecursoEmpresa { get; set; }

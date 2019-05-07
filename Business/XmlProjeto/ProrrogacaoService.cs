@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace APIGestor.Business
 {
-    public class XmlProrrogacaoService
+    public class XmlProrrogacaoService : IXmlService<ProrrogacaoProjeto>
     {
         private GestorDbContext _context;
         public XmlProrrogacaoService(GestorDbContext context)

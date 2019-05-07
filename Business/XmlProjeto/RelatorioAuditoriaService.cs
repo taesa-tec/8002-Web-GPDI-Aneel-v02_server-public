@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace APIGestor.Business
 {
-    public class XmlRelatorioAuditoriaService
+    public class XmlRelatorioAuditoriaService : IXmlService<XmlRelatorioAuditoria>
     {
         private GestorDbContext _context;
         public XmlRelatorioAuditoriaService(GestorDbContext context)

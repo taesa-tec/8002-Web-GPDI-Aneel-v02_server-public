@@ -65,7 +65,7 @@ namespace APIGestor.Models
         public string CategoriaContabil { get; set; }
         private string _custoEmpresa{ get; set; }
         public string CustoEmpresa{
-            get => string.Format("{0:N}",_custoEmpresa);
+            get => decimal.Parse(_custoEmpresa).ToString("N2");
             set => _custoEmpresa = value;
         }
     } 
@@ -79,7 +79,7 @@ namespace APIGestor.Models
         public string DescAtividade { get; set; }
         private string _custoAtividade{ get; set; }
         public string CustoAtividade{
-            get => string.Format("{0:N}",_custoAtividade);
+            get => decimal.Parse(_custoAtividade).ToString("N2");
             set => _custoAtividade = value;
         }
     }

@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace APIGestor.Business
 {
-    public class XmlProjetoPedService
+    public class XmlProjetoPedService : IXmlService<ProjetoPed>
     {
         private GestorDbContext _context;
         private IHostingEnvironment _hostingEnvironment;

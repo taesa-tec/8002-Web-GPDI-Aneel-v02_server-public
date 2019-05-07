@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace APIGestor.Business
 {
-    public class XmlInicioExecService
+    public class XmlInicioExecService : IXmlService<InicioExecucao>
     {
         private GestorDbContext _context;
         public XmlInicioExecService(GestorDbContext context)

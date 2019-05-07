@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace APIGestor.Business
 {
-    public class XmlInteressePedService
+    public class XmlInteressePedService : IXmlService<InteresseExecucao>
     {
         private GestorDbContext _context;
         public XmlInteressePedService(GestorDbContext context)

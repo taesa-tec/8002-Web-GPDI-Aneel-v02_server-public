@@ -27,7 +27,7 @@ namespace APIGestor.Models
         public string ResAtividade { get; set; }
         private string _custoAtividade{ get; set; }
         public string CustoAtividade{
-            get => string.Format("{0:N}",_custoAtividade);
+            get => decimal.Parse(_custoAtividade).ToString("N2");
             set => _custoAtividade = value;
         }
     }

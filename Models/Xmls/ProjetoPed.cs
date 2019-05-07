@@ -147,7 +147,7 @@ namespace APIGestor.Models
         public string CatContabil { get; set; }
         private string _custoExec{ get; set; }
         public string CustoExec{
-            get => string.Format("{0:N}",_custoExec);
+            get => decimal.Parse(_custoExec).ToString("N2");
             set => _custoExec = value;
         }
     }
@@ -160,7 +160,7 @@ namespace APIGestor.Models
         public string CatContabil { get; set; }
         private string _custoEmp{ get; set; }
         public string CustoEmp{
-            get => string.Format("{0:N}",_custoEmp);
+            get => decimal.Parse(_custoEmp).ToString("N2");
             set => _custoEmp = value;
         }
     }

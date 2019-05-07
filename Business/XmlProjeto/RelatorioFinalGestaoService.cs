@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace APIGestor.Business
 {
-    public class XmlRelatorioFinalGestaoService
+    public class XmlRelatorioFinalGestaoService : IXmlService<XmlRelatorioFinalGestao>
     {
         private GestorDbContext _context;
         private EtapaService _etapaService;

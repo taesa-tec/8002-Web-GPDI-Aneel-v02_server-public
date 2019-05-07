@@ -284,7 +284,7 @@ namespace APIGestor.Models
         public int? QtdeItem { get; set; }
         private string _valorIndItem{ get; set; }
         public string ValorIndItem{
-            get => string.Format("{0:N}",_valorIndItem);
+            get => decimal.Parse(_valorIndItem).ToString("N2");
             set => _valorIndItem = value;
         }
         private string _tipoItem;
