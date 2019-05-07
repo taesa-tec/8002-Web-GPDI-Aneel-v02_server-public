@@ -4,14 +4,11 @@ using System.Linq;
 using System.Collections.Generic;
 using APIGestor.Data;
 using APIGestor.Models;
-using Microsoft.AspNetCore.Identity;
-using APIGestor.Security;
 using System.Xml.Linq;
 using System.IO;
 using Newtonsoft.Json;
-using System.Xml;
-using System.Text;
 using Microsoft.AspNetCore.Hosting;
+using System.Text.RegularExpressions;
 
 namespace APIGestor.Business
 {
@@ -85,13 +82,22 @@ namespace APIGestor.Business
             }
             else
             {
-                XDocument xDoc = XDocument.Parse(JsonConvert.DeserializeXmlNode(XmlDoc, "PED").InnerXml);
+                string innerXml = JsonConvert.DeserializeXmlNode(XmlDoc, "PED").InnerXml;
+
+                innerXml = Regex.Replace(innerXml, "\u2013", "-");
+                innerXml = Regex.Replace(innerXml, "\u201C", "\"");
+                innerXml = Regex.Replace(innerXml, "\u201D", "\"");
+
+                XDocument xDoc = XDocument.Parse(innerXml);
                 xDoc.Declaration = new XDeclaration("1.0", "ISO8859-1", null);
                 xDoc.Root.SetAttributeValue("Tipo", Tipo);
                 xDoc.Root.SetAttributeValue("CodigoEmpresa", Projeto.CatalogEmpresa.Valor);
                 xDoc.Descendants()
                     .Where(a => a.IsEmpty || String.IsNullOrWhiteSpace(a.Value))
                     .Remove();
+
+                    // Match m = Regex.Match(d.Value, @"&#x(.{4})");
+
                 string folderName = "uploads/xmls/";
                 string webRootPath = _hostingEnvironment.WebRootPath;
                 string newPath = Path.Combine(webRootPath, folderName);
@@ -114,7 +120,7 @@ namespace APIGestor.Business
                 _context.SaveChanges();
                 resultado.Id = upload.Id.ToString();
                 string fullPath = Path.Combine(newPath, upload.Id.ToString());
-                // using (var writer = new XmlTextWriter(fullPath, new UTF8Encoding(true)))
+                //using (var writer = new XmlTextWriter( fullPath, new UTF8Encoding(true)))
                 // {
                 //     writer.Formatting = System.Xml.Formatting.Indented;
                 //     xDoc.Save(writer);
@@ -157,6 +163,10 @@ namespace APIGestor.Business
                     return ValidaXml;
                 var xml = svc.GerarXml(ProjetoId, Versao, UserId);
                 if (xml!=null){
+
+                    JsonSerializerSettings jss = new JsonSerializerSettings();
+                    jss.StringEscapeHandling = StringEscapeHandling.Default;
+                    jss.Converters.Clear();
                     resultado = CriarArquivo(JsonConvert.SerializeObject(xml), XmlTipo.ToString(), ProjetoId, Versao, UserId);
                 }else{
                     resultado.Inconsistencias.Add("Erro na gravação do arquivo");
