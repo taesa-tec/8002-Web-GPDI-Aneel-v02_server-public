@@ -40,7 +40,7 @@ namespace APIGestor.Controllers
         [HttpGet("{projetoId}/ExtratoREFP")]
         public RelatorioEmpresa GetB(int projetoId)
         {
-            return _relatorioEmpresaService.ExtratoREFP(projetoId);
+            return _relatorioEmpresaService.ExtratoREFP2(projetoId);
         }
         [HttpGet("{projetoId}/ExtratoAtividades")]
         public RelatorioAtividade GetC(int projetoId)

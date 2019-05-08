@@ -27,91 +27,112 @@ namespace APIGestor.Business
         public RelatorioEmpresa ExtratoREFP(int projetoId)
         {
             var relatorio = ExtratoFinanceiro(projetoId);
-           // var records = new List<RelatorioREFP>();
-        
-            foreach(var empresa in relatorio.Empresas)
+            // var records = new List<RelatorioREFP>();
+
+            foreach (var empresa in relatorio.Empresas)
             {
                 int TotalEmpresaAprovado = 0;
                 decimal? ValorEmpresaAprovado = 0;
 
+                #region Registro Financeiros Recursos Humanos Aprovados
                 var rhs = _context.RegistrosFinanceiros
                                 .Include("Uploads.User")
                                 .Include("RecursoHumano")
                                 .Include("ObsInternas.User")
                                 .Where(p => p.RecursoHumano.EmpresaId == empresa.Id)
-                                .Where(p => p.StatusValor=="Aprovado")
+                                .Where(p => p.StatusValor == "Aprovado")
                                 .ToList();
+                #endregion
 
+                #region Registro Financeiros Recursos Materias Aprovados
                 var rms = _context.RegistrosFinanceiros
                                 .Include("Uploads.User")
                                 .Include("RecursoMaterial")
                                 .Include("ObsInternas.User")
                                 .Where(p => p.EmpresaFinanciadoraId == empresa.Id)
-                                .Where(p => p.StatusValor=="Aprovado")
+                                .Where(p => p.StatusValor == "Aprovado")
+                                .Where(p => p.RecursoMaterialId != null)
                                 .ToList();
-                foreach(var r in empresa.Relatorios)
+                #endregion
+
+
+                foreach (var r in empresa.Relatorios)
                 {
                     int TotalAprovado = 0;
-                    decimal? ValorAprovado = 0; 
-                    if (r.Desc=="RH"){
-                        foreach(var rh in rhs){
-                             decimal? valor = (rh.QtdHrs) * rh.RecursoHumano.ValorHora;
-                                r.Items.Add(new RelatorioEmpresaItems
-                                {
-                                    //AlocacaoId = a.Id,
-                                    //RegistroFinanceiro = rh,
-                                    Desc = rh.RecursoHumano.NomeCompleto,
-                                    //Etapa = a.Etapa,
-                                    //AlocacaoRh = a,
-                                    RecursoHumano = rh.RecursoHumano,
-                                    Valor = valor
-                                });
-                                //TotalAprovado ++;
-                                //ValorAprovado += valor;
+                    decimal? ValorAprovado = 0;
+                    if (r.Desc == "RH")
+                    {
+                        foreach (var rh in rhs)
+                        {
+                            decimal? valor = (rh.QtdHrs) * rh.RecursoHumano.ValorHora;
+                            r.Items.Add(new RelatorioEmpresaItems
+                            {
+                                //AlocacaoId = a.Id,
+                                //RegistroFinanceiro = rh,
+                                Desc = rh.RecursoHumano.NomeCompleto,
+                                //Etapa = a.Etapa,
+                                //AlocacaoRh = a,
+                                RecursoHumano = rh.RecursoHumano,
+                                Valor = valor
+                            });
+                            //TotalAprovado ++;
+                            //ValorAprovado += valor;
                         }
-                    }else{
+                    }
+                    else
+                    {
                         foreach (var rm in rms)
                         {
-                                decimal? valor = (rm.QtdItens) * rm.ValorUnitario;
-                                r.Items.Add(new RelatorioEmpresaItems
-                                {
-                                    //AlocacaoId = a.Id,
-                                    Desc = rm.RecursoMaterial.Nome,
-                                    //Etapa = a.Etapa,
-                                    //AlocacaoRm = a,
-                                    RecursoMaterial = rm.RecursoMaterial,
-                                    Valor = valor
-                                });
-                            }
-                    }                  
-                    foreach(var item in r.Items.ToList()){
-                        if (item.RecursoHumano!=null){
+                            decimal? valor = (rm.QtdItens) * rm.ValorUnitario;
+                            r.Items.Add(new RelatorioEmpresaItems
+                            {
+                                //AlocacaoId = a.Id,
+                                Desc = rm.RecursoMaterial.Nome,
+                                //Etapa = a.Etapa,
+                                //AlocacaoRm = a,
+                                RecursoMaterial = rm.RecursoMaterial,
+                                Valor = valor
+                            });
+                        }
+                    }
+
+                    foreach (var item in r.Items.ToList())
+                    {
+                        if (item.RecursoHumano != null)
+                        {
                             RegistroFinanceiro registro = _context.RegistrosFinanceiros
                                 .Include("Uploads.User")
                                 .Include("ObsInternas.User")
                                 .Where(p => p.RecursoHumanoId == item.RecursoHumano.Id)
-                                .Where(p => p.StatusValor=="Aprovado")
+                                .Where(p => p.StatusValor == "Aprovado")
                                 .FirstOrDefault();
-                            if (registro==null){
+                            if (registro == null)
+                            {
                                 r.Items.Remove(item);
-                            }else{
-                                item.RegistroFinanceiro=registro;
-                                TotalAprovado ++;
+                            }
+                            else
+                            {
+                                item.RegistroFinanceiro = registro;
+                                TotalAprovado++;
                                 ValorAprovado += item.Valor;
                             }
                         }
-                        if (item.RecursoMaterial!=null){
+                        if (item.RecursoMaterial != null)
+                        {
                             RegistroFinanceiro registro = _context.RegistrosFinanceiros
                                 .Include("Uploads.User")
                                 .Include("ObsInternas.User")
                                 .Where(p => p.RecursoMaterialId == item.RecursoMaterial.Id)
-                                .Where(p => p.StatusValor=="Aprovado")
+                                .Where(p => p.StatusValor == "Aprovado")
                                 .FirstOrDefault();
-                            if (registro==null){
+                            if (registro == null)
+                            {
                                 r.Items.Remove(item);
-                            }else{
-                                item.RegistroFinanceiro=registro;
-                                TotalAprovado ++;
+                            }
+                            else
+                            {
+                                item.RegistroFinanceiro = registro;
+                                TotalAprovado++;
                                 ValorAprovado += item.Valor;
                             }
                         }
@@ -120,74 +141,80 @@ namespace APIGestor.Business
                     ValorEmpresaAprovado += ValorAprovado;
                     r.TotalAprovado = TotalAprovado;
                     r.ValorAprovado = ValorAprovado;
-                    r.Desvio = (r.Valor==0 || r.ValorAprovado==0)? 0 : (r.ValorAprovado/r.Valor)*100;
+                    r.Desvio = (r.Valor == 0 || r.ValorAprovado == 0) ? 0 : (r.ValorAprovado / r.Valor) * 100;
                 }
                 empresa.TotalAprovado = TotalEmpresaAprovado;
                 empresa.ValorAprovado = ValorEmpresaAprovado;
-                empresa.Desvio = (empresa.Valor==0 || empresa.ValorAprovado==0)? 0 : (empresa.ValorAprovado/empresa.Valor)*100;
+                empresa.Desvio = (empresa.Valor == 0 || empresa.ValorAprovado == 0) ? 0 : (empresa.ValorAprovado / empresa.Valor) * 100;
             }
             return relatorio;
         }
         public List<RelatorioEmpresaCsv> FormatRelatorioCsv(RelatorioEmpresa Relatorios)
         {
             var records = new List<RelatorioEmpresaCsv>();
-            foreach(var empresa in Relatorios.Empresas)
+            foreach (var empresa in Relatorios.Empresas)
             {
-                foreach(var relatorio in empresa.Relatorios)
+                foreach (var relatorio in empresa.Relatorios)
                 {
-                    foreach(var item in relatorio.Items){
+                    foreach (var item in relatorio.Items)
+                    {
                         var newItem = new RelatorioEmpresaCsv();
                         newItem.NomeRecurso = item.Desc;
-                        if (item.RecursoHumano!=null){
+                        if (item.RecursoHumano != null)
+                        {
                             newItem.CPF = item.RecursoHumano.CPF;
                             newItem.FUNCAO = item.RecursoHumano.FuncaoValor;
                             newItem.TITULACAO = item.RecursoHumano.TitulacaoValor;
                             newItem.CL = item.RecursoHumano.UrlCurriculo;
                             newItem.ValorHora = item.RecursoHumano.ValorHora;
-                            newItem.EntidadeRecebedora = (item.RecursoHumano.Empresa.Cnpj==null) ? item.RecursoHumano.Empresa.CatalogEmpresa.Nome : item.RecursoHumano.Empresa.RazaoSocial;
-                            newItem.CnpjEntidadeRecebedora = (item.RecursoHumano.Empresa.Cnpj==null) ? null : item.RecursoHumano.Empresa.Cnpj;  
+                            newItem.EntidadeRecebedora = (item.RecursoHumano.Empresa.Cnpj == null) ? item.RecursoHumano.Empresa.CatalogEmpresa.Nome : item.RecursoHumano.Empresa.RazaoSocial;
+                            newItem.CnpjEntidadeRecebedora = (item.RecursoHumano.Empresa.Cnpj == null) ? null : item.RecursoHumano.Empresa.Cnpj;
                             newItem.CategoriaContabil = CategoriaContabil.RH.ToString();
                         }
-                        if (item.AlocacaoRh!=null){
-                            newItem.QtdHoras = ((item.AlocacaoRh.HrsMes1+item.AlocacaoRh.HrsMes2+item.AlocacaoRh.HrsMes3+item.AlocacaoRh.HrsMes4+item.AlocacaoRh.HrsMes5+item.AlocacaoRh.HrsMes6)+(item.AlocacaoRh.HrsMes7+item.AlocacaoRh.HrsMes8+item.AlocacaoRh.HrsMes9+item.AlocacaoRh.HrsMes10+item.AlocacaoRh.HrsMes11+item.AlocacaoRh.HrsMes12)+(item.AlocacaoRh.HrsMes13+item.AlocacaoRh.HrsMes14+item.AlocacaoRh.HrsMes15+item.AlocacaoRh.HrsMes16+item.AlocacaoRh.HrsMes17+item.AlocacaoRh.HrsMes18)+(item.AlocacaoRh.HrsMes19+item.AlocacaoRh.HrsMes20+item.AlocacaoRh.HrsMes21+item.AlocacaoRh.HrsMes22+item.AlocacaoRh.HrsMes23+item.AlocacaoRh.HrsMes24));
-                            newItem.ValorTotal = newItem.ValorHora*newItem.QtdHoras;
+                        if (item.AlocacaoRh != null)
+                        {
+                            newItem.QtdHoras = ((item.AlocacaoRh.HrsMes1 + item.AlocacaoRh.HrsMes2 + item.AlocacaoRh.HrsMes3 + item.AlocacaoRh.HrsMes4 + item.AlocacaoRh.HrsMes5 + item.AlocacaoRh.HrsMes6) + (item.AlocacaoRh.HrsMes7 + item.AlocacaoRh.HrsMes8 + item.AlocacaoRh.HrsMes9 + item.AlocacaoRh.HrsMes10 + item.AlocacaoRh.HrsMes11 + item.AlocacaoRh.HrsMes12) + (item.AlocacaoRh.HrsMes13 + item.AlocacaoRh.HrsMes14 + item.AlocacaoRh.HrsMes15 + item.AlocacaoRh.HrsMes16 + item.AlocacaoRh.HrsMes17 + item.AlocacaoRh.HrsMes18) + (item.AlocacaoRh.HrsMes19 + item.AlocacaoRh.HrsMes20 + item.AlocacaoRh.HrsMes21 + item.AlocacaoRh.HrsMes22 + item.AlocacaoRh.HrsMes23 + item.AlocacaoRh.HrsMes24));
+                            newItem.ValorTotal = newItem.ValorHora * newItem.QtdHoras;
                             newItem.Justificativa = item.AlocacaoRh.Justificativa;
-                            newItem.EntidadePagadora = (item.AlocacaoRh.Empresa.Cnpj==null) ? item.AlocacaoRh.Empresa.CatalogEmpresa.Nome : item.AlocacaoRh.Empresa.RazaoSocial;
+                            newItem.EntidadePagadora = (item.AlocacaoRh.Empresa.Cnpj == null) ? item.AlocacaoRh.Empresa.CatalogEmpresa.Nome : item.AlocacaoRh.Empresa.RazaoSocial;
                             newItem.CnpjEntidadePagadora = item.AlocacaoRh.Empresa.Cnpj;
                         }
-                        if (item.RecursoMaterial!=null){
+                        if (item.RecursoMaterial != null)
+                        {
                             newItem.CategoriaContabil = item.RecursoMaterial.CategoriaContabilValor;
                             newItem.ValorUnitario = item.RecursoMaterial.ValorUnitario;
                             newItem.EspecificacaoTecnica = item.RecursoMaterial.Especificacao;
                         }
-                        if (item.AlocacaoRm!=null){
+                        if (item.AlocacaoRm != null)
+                        {
                             newItem.Unidades = item.AlocacaoRm.Qtd;
-                            newItem.ValorTotal = newItem.ValorUnitario*newItem.Unidades;
+                            newItem.ValorTotal = newItem.ValorUnitario * newItem.Unidades;
                             newItem.Justificativa = item.AlocacaoRm.Justificativa;
-                            newItem.EntidadePagadora = (item.AlocacaoRm.EmpresaFinanciadora.Cnpj==null) ? item.AlocacaoRm.EmpresaFinanciadora.CatalogEmpresa.Nome : item.AlocacaoRm.EmpresaFinanciadora.RazaoSocial;
-                            newItem.CnpjEntidadePagadora = (item.AlocacaoRm.EmpresaFinanciadora.Cnpj==null) ? null : item.AlocacaoRm.EmpresaFinanciadora.Cnpj;  ;
-                            newItem.EntidadeRecebedora = (item.AlocacaoRm.EmpresaRecebedora==null) ? null : (item.AlocacaoRm.EmpresaRecebedora.Cnpj==null) ? item.AlocacaoRm.EmpresaRecebedora.CatalogEmpresa.Nome : item.AlocacaoRm.EmpresaRecebedora.RazaoSocial;
-                            newItem.CnpjEntidadeRecebedora = (item.AlocacaoRm.EmpresaRecebedora==null) ? null : (item.AlocacaoRm.EmpresaRecebedora.Cnpj==null) ? null : item.AlocacaoRm.EmpresaRecebedora.Cnpj; 
+                            newItem.EntidadePagadora = (item.AlocacaoRm.EmpresaFinanciadora.Cnpj == null) ? item.AlocacaoRm.EmpresaFinanciadora.CatalogEmpresa.Nome : item.AlocacaoRm.EmpresaFinanciadora.RazaoSocial;
+                            newItem.CnpjEntidadePagadora = (item.AlocacaoRm.EmpresaFinanciadora.Cnpj == null) ? null : item.AlocacaoRm.EmpresaFinanciadora.Cnpj; ;
+                            newItem.EntidadeRecebedora = (item.AlocacaoRm.EmpresaRecebedora == null) ? null : (item.AlocacaoRm.EmpresaRecebedora.Cnpj == null) ? item.AlocacaoRm.EmpresaRecebedora.CatalogEmpresa.Nome : item.AlocacaoRm.EmpresaRecebedora.RazaoSocial;
+                            newItem.CnpjEntidadeRecebedora = (item.AlocacaoRm.EmpresaRecebedora == null) ? null : (item.AlocacaoRm.EmpresaRecebedora.Cnpj == null) ? null : item.AlocacaoRm.EmpresaRecebedora.Cnpj;
                         }
-                        if (item.RegistroFinanceiro!=null){
+                        if (item.RegistroFinanceiro != null)
+                        {
                             newItem.NomeItem = item.RegistroFinanceiro.NomeItem;
-                            newItem.MesReferencia = item.RegistroFinanceiro.Mes.Value.Month.ToString()+"/"+item.RegistroFinanceiro.Mes.Value.Year.ToString();
+                            newItem.MesReferencia = item.RegistroFinanceiro.Mes.Value.Month.ToString() + "/" + item.RegistroFinanceiro.Mes.Value.Year.ToString();
                             newItem.TipoDocumento = item.RegistroFinanceiro.TipoDocumentoValor;
                             newItem.DataDocumento = item.RegistroFinanceiro.DataDocumento.ToString();
-                            newItem.ArquivoComprovante = (item.RegistroFinanceiro.Uploads.FirstOrDefault()!=null)? item.RegistroFinanceiro.Uploads.FirstOrDefault().NomeArquivo : null;
+                            newItem.ArquivoComprovante = (item.RegistroFinanceiro.Uploads.FirstOrDefault() != null) ? item.RegistroFinanceiro.Uploads.FirstOrDefault().NomeArquivo : null;
                             newItem.AtividadeRealizada = item.RegistroFinanceiro.AtividadeRealizada;
                             newItem.Beneficiado = item.RegistroFinanceiro.Beneficiado;
-                            newItem.ObsInternas = (item.RegistroFinanceiro.ObsInternas.LastOrDefault()!=null)? item.RegistroFinanceiro.ObsInternas.LastOrDefault().Texto : null;
-                            newItem.UsuarioAprovacao = (item.RegistroFinanceiro.ObsInternas.LastOrDefault()!=null)? item.RegistroFinanceiro.ObsInternas.LastOrDefault().User.NomeCompleto : null;
+                            newItem.ObsInternas = (item.RegistroFinanceiro.ObsInternas.LastOrDefault() != null) ? item.RegistroFinanceiro.ObsInternas.LastOrDefault().Texto : null;
+                            newItem.UsuarioAprovacao = (item.RegistroFinanceiro.ObsInternas.LastOrDefault() != null) ? item.RegistroFinanceiro.ObsInternas.LastOrDefault().User.NomeCompleto : null;
                             newItem.EquiparLabExistente = (item.RegistroFinanceiro.EquiparLabExistente.HasValue) ? "Sim" : "Nao";
                             newItem.EquiparLabNovo = (item.RegistroFinanceiro.EquiparLabNovo.HasValue) ? "Sim" : "Nao";
-                            newItem.ItemNacional = (item.RegistroFinanceiro.ItemNacional.HasValue)? "Sim" : "Nao";
-                            newItem.DataAprovacao = (item.RegistroFinanceiro.ObsInternas.LastOrDefault()!=null)? item.RegistroFinanceiro.ObsInternas.LastOrDefault().Created.ToString() : null;
+                            newItem.ItemNacional = (item.RegistroFinanceiro.ItemNacional.HasValue) ? "Sim" : "Nao";
+                            newItem.DataAprovacao = (item.RegistroFinanceiro.ObsInternas.LastOrDefault() != null) ? item.RegistroFinanceiro.ObsInternas.LastOrDefault().Created.ToString() : null;
                         }
-                       newItem.Id = item.AlocacaoId;
-                       newItem.Etapa = (item.Etapa!=null) ? item.Etapa.Nome : null ;
+                        newItem.Id = item.AlocacaoId;
+                        newItem.Etapa = (item.Etapa != null) ? item.Etapa.Nome : null;
 
-                       records.Add(newItem);
+                        records.Add(newItem);
                     }
                 }
             }
@@ -234,6 +261,7 @@ namespace APIGestor.Business
                     var data = new List<RelatorioEmpresaItems>();
                     int total = 0;
                     decimal? ValorCategoria = 0;
+
                     if (categoria.ToString() == "RH")
                     {
                         var AlocacoesRh = _context.AlocacoesRh
@@ -242,13 +270,15 @@ namespace APIGestor.Business
                             .Where(p => p.EmpresaId == empresa.Id)
                             .Where(p => p.RecursoHumano != null)
                             .ToList();
+
                         total = AlocacoesRh.Count();
+
                         if (AlocacoesRh != null && total > 0)
                         {
                             foreach (AlocacaoRh a in AlocacoesRh)
                             {
-                                decimal? valor = ((a.HrsMes1+a.HrsMes2+a.HrsMes3+a.HrsMes4+a.HrsMes5+a.HrsMes6)+(a.HrsMes7+a.HrsMes8+a.HrsMes9+a.HrsMes10+a.HrsMes11+a.HrsMes12)+(a.HrsMes13+a.HrsMes14+a.HrsMes15+a.HrsMes16+a.HrsMes17+a.HrsMes18)+(a.HrsMes19+a.HrsMes20+a.HrsMes21+a.HrsMes22+a.HrsMes23+a.HrsMes24))*a.RecursoHumano.ValorHora;
-                               
+                                decimal? valor = a.HrsTotais * a.RecursoHumano.ValorHora;
+
                                 data.Add(new RelatorioEmpresaItems
                                 {
                                     AlocacaoId = a.Id,
@@ -258,6 +288,7 @@ namespace APIGestor.Business
                                     RecursoHumano = a.RecursoHumano,
                                     Valor = valor
                                 });
+
                                 ValorCategoria += valor;
                             }
                         }
@@ -272,12 +303,15 @@ namespace APIGestor.Business
                         .Where(p => p.RecursoMaterial.CategoriaContabil == categoria)
                         .Include("Etapa.EtapaProdutos")
                         .ToList();
+
                         total = AlocacoesRm.Count();
+
                         if (total > 0)
                         {
                             foreach (AlocacaoRm a in AlocacoesRm)
                             {
                                 decimal? valor = (a.Qtd) * a.RecursoMaterial.ValorUnitario;
+
                                 data.Add(new RelatorioEmpresaItems
                                 {
                                     AlocacaoId = a.Id,
@@ -287,6 +321,7 @@ namespace APIGestor.Business
                                     RecursoMaterial = a.RecursoMaterial,
                                     Valor = valor
                                 });
+
                                 ValorCategoria += valor;
                             }
 
@@ -316,6 +351,142 @@ namespace APIGestor.Business
                 });
                 relatorio.Valor += ValorEmpresa;
             }
+            return relatorio;
+        }
+        protected void getTotal_e_Valor(int empresaId, CategoriaContabil categoria, out int total, out decimal valor)
+        {
+            if (categoria.ToString() == "RH")
+            {
+                var alocacoes = _context.AlocacoesRh
+                        .Include("RecursoHumano.Empresa.CatalogEmpresa")
+                        .Include("Etapa.EtapaProdutos")
+                        .Where(p => p.EmpresaId == empresaId)
+                        .Where(p => p.RecursoHumano != null);
+
+                total = alocacoes.Count();
+                valor = alocacoes.Sum(aloc => aloc.HrsTotais * aloc.RecursoHumano.ValorHora);
+            }
+            else
+            {
+                var alocacoes = _context.AlocacoesRm
+                .Include(p => p.RecursoMaterial)
+                .Include("Etapa.EtapaProdutos")
+                .Where(p => p.EmpresaFinanciadoraId == empresaId)
+                .Where(p => p.RecursoMaterial.CategoriaContabil == categoria);
+
+                total = alocacoes.Count();
+                valor = alocacoes.Sum(aloc => aloc.Qtd * aloc.RecursoMaterial.ValorUnitario);
+
+            }
+        }
+        public RelatorioEmpresa ExtratoREFP2(int projetoId)
+        {
+            RelatorioEmpresa relatorio = new RelatorioEmpresa();
+            var empresas = _context.Empresas
+                .Where(p => p.ProjetoId == projetoId)
+                .Where(p => p.Classificacao.ToString() == "Proponente" || p.Classificacao.ToString() == "Energia" || p.Classificacao.ToString() == "Parceira")
+                .Include("CatalogEmpresa")
+                .ToList();
+
+            relatorio.Empresas = new List<RelatorioEmpresas>();
+            relatorio.Total = empresas.Count();
+            relatorio.Valor = 0;
+
+            foreach (var empresa in empresas)
+            {
+
+                RelatorioEmpresas relatorioEmpresa = new RelatorioEmpresas
+                {
+                    Id = empresa.Id,
+                    Nome = empresa.CatalogEmpresaId > 0 ? empresa.CatalogEmpresa.Nome : empresa.RazaoSocial,
+                    Relatorios = new List<RelatorioEmpresaCategorias>(),
+                    Desvio = 0,
+                    Total = 0,
+                    TotalAprovado = 0,
+                    Valor = 0,
+                    ValorAprovado = 0
+
+                };
+
+                var registrosRH = _context.RegistrosFinanceiros
+                                .Include("Uploads.User")
+                                .Include("RecursoHumano")
+                                .Include("ObsInternas.User")
+                                .Where(p => p.RecursoHumano.EmpresaId == empresa.Id)
+                                .Where(p => p.StatusValor == "Aprovado")
+                                .ToList();
+
+                var registrosRM = _context.RegistrosFinanceiros
+                            .Include("Uploads.User")
+                            .Include("RecursoMaterial")
+                            .Include("ObsInternas.User")
+                            .Where(p => p.EmpresaFinanciadoraId == empresa.Id)
+                            .Where(p => p.StatusValor == "Aprovado")
+                            .Where(p => p.RecursoMaterialId != null)
+                            .ToList();
+
+                foreach (CategoriaContabil categoria in CategoriaContabil.GetValues(typeof(CategoriaContabil)))
+                {
+
+                    List<RelatorioEmpresaItems> itens = new List<RelatorioEmpresaItems>();
+
+                    getTotal_e_Valor(empresa.Id, categoria, out int total, out decimal valor);
+
+                    if (total == 0)
+                        continue;
+
+                    relatorioEmpresa.Total += total;
+                    relatorioEmpresa.Valor += valor;
+
+                    if (categoria.ToString() == "RH")
+                    {
+                        foreach (var registroRH in registrosRH)
+                        {
+                            itens.Add(new RelatorioEmpresaItems
+                            {
+                                //RegistroFinanceiro = rh,
+                                Desc = registroRH.RecursoHumano.NomeCompleto,
+                                RecursoHumano = registroRH.RecursoHumano,
+                                Valor = registroRH.ValorTotalRH
+                            });
+                        }
+                    }
+                    else
+                    {
+                        foreach (var registroRM in registrosRM.Where(reg=>reg.CategoriaContabil == categoria))
+                        {
+                            itens.Add(new RelatorioEmpresaItems
+                            {
+                                //RegistroFinanceiro = rh,
+                                Desc = registroRM.NomeItem,
+                                RecursoMaterial = registroRM.RecursoMaterial,
+                                Valor = registroRM.ValorTotalRM
+                            });
+                        }
+                    }
+
+                    decimal ValorAprovado = (decimal)itens.Sum(i => i.Valor);
+                    decimal Desvio = valor * ValorAprovado == 0 ? 0 : ValorAprovado/ valor * 100.0m; 
+
+                    relatorioEmpresa.Relatorios.Add(new RelatorioEmpresaCategorias
+                    {
+                        CategoriaContabil = categoria,
+                        Desc = categoria.ToString(),
+                        Items = itens,
+                        Total = total,
+                        Valor = valor,
+                        TotalAprovado = itens.Count,
+                        ValorAprovado = ValorAprovado,
+                        Desvio = Desvio
+                    });
+                }
+
+                relatorioEmpresa.TotalAprovado = relatorioEmpresa.Relatorios.Sum(r=>r.TotalAprovado);
+                relatorioEmpresa.ValorAprovado = relatorioEmpresa.Relatorios.Sum(r => r.ValorAprovado);
+                relatorio.Empresas.Add(relatorioEmpresa);
+
+            }
+            relatorio.Valor = relatorio.Empresas.Sum(emp => emp.Valor);
             return relatorio;
         }
     }

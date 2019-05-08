@@ -80,5 +80,19 @@ namespace APIGestor.Models
         public int? HrsMes23 { get; set;}
         public int? HrsMes24 { get; set;}
         public string Justificativa { get; set;}
+
+        [NotMapped]
+        public int HrsTotais { get {
+                int t = 0;
+
+                for (int i = 1; i <= 24; i++)
+                {
+                    var hrs = this.GetType().GetProperty("HrsMes" + i).GetValue(this);
+                    t += hrs != null?(int)hrs:0;
+                }
+
+                return t;
+            }
+        }
     }
 }
