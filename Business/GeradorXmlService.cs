@@ -124,6 +124,12 @@ namespace APIGestor.Business
                 //     xDoc.Save(writer);
                 // }
                 xDoc.Save(fullPath);
+
+                // My little gambi
+                // Um fihote de gambiarra abaixo:
+                string[] lines = File.ReadAllLines(fullPath, System.Text.Encoding.GetEncoding("iso-8859-1"));
+                lines[0] = Regex.Replace(lines[0], "encoding=\"iso-8859-1\"", "encoding=\"ISO8859-1\"");
+                File.WriteAllLines(fullPath, lines, System.Text.Encoding.GetEncoding("iso-8859-1"));
             }
             return resultado;
         }
@@ -147,7 +153,7 @@ namespace APIGestor.Business
             {
                 resultado.Inconsistencias.Add(ex.Message);
             }
-            
+
             return resultado;
         }
         public Resultado GerarXml(int ProjetoId, XmlTipo XmlTipo, string Versao, string UserId)
@@ -158,14 +164,17 @@ namespace APIGestor.Business
                 var svc = obterXmlTipo(XmlTipo);
                 Resultado ValidaXml = svc.ValidaXml(ProjetoId);
 
-                if (ValidaXml.Inconsistencias.Count()>0)
+                if (ValidaXml.Inconsistencias.Count() > 0)
                     return ValidaXml;
 
                 var xml = svc.GerarXml(ProjetoId, Versao, UserId);
 
-                if (xml!=null){
+                if (xml != null)
+                {
                     resultado = CriarArquivo(JsonConvert.SerializeObject(xml), XmlTipo.ToString(), ProjetoId, Versao, UserId);
-                }else{
+                }
+                else
+                {
                     resultado.Inconsistencias.Add("Erro na gravação do arquivo");
                 }
 
@@ -174,46 +183,46 @@ namespace APIGestor.Business
             return resultado;
         }
         private dynamic obterXmlTipo(XmlTipo XmlTipo)
-        {       
-                var svc = (dynamic)null;
-                switch (XmlTipo.ToString())
-                {
-                    //case "MOVIMENTACAOFINANCEIRA":
-                    //case "PROGRAMA": 
-                    case "PROJETOGESTAO":
-                        svc = _projetoGestao;
-                        break;
-                    case "PROJETOPED":
-                        svc = _projetoPed;
-                        break;
-                    case "INTERESSEPROJETOPED":
-                        svc = _interessePed;
-                        break;
-                    case "INICIOEXECUCAOPROJETO":
-                        svc = _inicioExec;
-                        break;
-                    case "PRORROGAEXECUCAOPROJETO":
-                        svc = _prorrogacaoPed;
-                        break;
-                    case "RELATORIOFINALPED":
-                        svc = _relatorioFinalPed;
-                        break;
-                    case "RELATORIOFINALGESTAO":
-                        svc = _relatorioAuditoriaGestao;
-                        break;
-                    case "RELATORIOAUDITORIAPED":
-                        svc = _relatorioAuditoriaPed;
-                        break;
-                    case "RELATORIOAUDITORIAGESTAO": 
-                        svc = _relatorioAuditoriaGestao;
-                        break;
-                }
-                return svc;
+        {
+            var svc = (dynamic)null;
+            switch (XmlTipo.ToString())
+            {
+                //case "MOVIMENTACAOFINANCEIRA":
+                //case "PROGRAMA": 
+                case "PROJETOGESTAO":
+                    svc = _projetoGestao;
+                    break;
+                case "PROJETOPED":
+                    svc = _projetoPed;
+                    break;
+                case "INTERESSEPROJETOPED":
+                    svc = _interessePed;
+                    break;
+                case "INICIOEXECUCAOPROJETO":
+                    svc = _inicioExec;
+                    break;
+                case "PRORROGAEXECUCAOPROJETO":
+                    svc = _prorrogacaoPed;
+                    break;
+                case "RELATORIOFINALPED":
+                    svc = _relatorioFinalPed;
+                    break;
+                case "RELATORIOFINALGESTAO":
+                    svc = _relatorioAuditoriaGestao;
+                    break;
+                case "RELATORIOAUDITORIAPED":
+                    svc = _relatorioAuditoriaPed;
+                    break;
+                case "RELATORIOAUDITORIAGESTAO":
+                    svc = _relatorioAuditoriaGestao;
+                    break;
+            }
+            return svc;
         }
         public Resultado ValidaDados(int ProjetoId, XmlTipo XmlTipo)
         {
             Resultado resultado = new Resultado();
-             if (ProjetoId <= 0)
+            if (ProjetoId <= 0)
                 resultado.Inconsistencias.Add("Informe o ProjetoId");
             if (XmlTipo.ToString() == null || !Enum.IsDefined(typeof(XmlTipo), XmlTipo))
                 resultado.Inconsistencias.Add("Informe o XmlTipo");
