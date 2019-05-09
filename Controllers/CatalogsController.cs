@@ -11,6 +11,7 @@ namespace APIGestor.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize("Bearer")]
+    [ResponseCache(Duration = 3600)]
     public class CatalogsController : ControllerBase
     {
         private CatalogService _service;
