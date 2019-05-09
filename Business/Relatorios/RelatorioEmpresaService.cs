@@ -173,7 +173,7 @@ namespace APIGestor.Business
                         }
                         if (item.AlocacaoRh != null)
                         {
-                            newItem.QtdHoras = ((item.AlocacaoRh.HrsMes1 + item.AlocacaoRh.HrsMes2 + item.AlocacaoRh.HrsMes3 + item.AlocacaoRh.HrsMes4 + item.AlocacaoRh.HrsMes5 + item.AlocacaoRh.HrsMes6) + (item.AlocacaoRh.HrsMes7 + item.AlocacaoRh.HrsMes8 + item.AlocacaoRh.HrsMes9 + item.AlocacaoRh.HrsMes10 + item.AlocacaoRh.HrsMes11 + item.AlocacaoRh.HrsMes12) + (item.AlocacaoRh.HrsMes13 + item.AlocacaoRh.HrsMes14 + item.AlocacaoRh.HrsMes15 + item.AlocacaoRh.HrsMes16 + item.AlocacaoRh.HrsMes17 + item.AlocacaoRh.HrsMes18) + (item.AlocacaoRh.HrsMes19 + item.AlocacaoRh.HrsMes20 + item.AlocacaoRh.HrsMes21 + item.AlocacaoRh.HrsMes22 + item.AlocacaoRh.HrsMes23 + item.AlocacaoRh.HrsMes24));
+                            newItem.QtdHoras = item.AlocacaoRh.HrsTotais;
                             newItem.ValorTotal = newItem.ValorHora * newItem.QtdHoras;
                             newItem.Justificativa = item.AlocacaoRh.Justificativa;
                             newItem.EntidadePagadora = (item.AlocacaoRh.Empresa.Cnpj == null) ? item.AlocacaoRh.Empresa.CatalogEmpresa.Nome : item.AlocacaoRh.Empresa.RazaoSocial;
@@ -444,7 +444,7 @@ namespace APIGestor.Business
                         {
                             itens.Add(new RelatorioEmpresaItems
                             {
-                                //RegistroFinanceiro = rh,
+                                RegistroFinanceiro = registroRH,
                                 Desc = registroRH.RecursoHumano.NomeCompleto,
                                 RecursoHumano = registroRH.RecursoHumano,
                                 Valor = registroRH.ValorTotalRH
@@ -457,7 +457,7 @@ namespace APIGestor.Business
                         {
                             itens.Add(new RelatorioEmpresaItems
                             {
-                                //RegistroFinanceiro = rh,
+                                RegistroFinanceiro = registroRM,
                                 Desc = registroRM.NomeItem,
                                 RecursoMaterial = registroRM.RecursoMaterial,
                                 Valor = registroRM.ValorTotalRM

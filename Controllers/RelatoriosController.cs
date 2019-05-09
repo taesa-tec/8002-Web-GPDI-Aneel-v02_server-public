@@ -64,7 +64,7 @@ namespace APIGestor.Controllers
         [HttpGet("{projetoId}/ExtratoREFP/exportar")]
         public FileResult DownloadA(int projetoId)  
         {  
-             var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.ExtratoREFP(projetoId));
+             var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.ExtratoREFP2(projetoId));
              MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(data, "RelatorioREFP");
             if (relatorio==null)
                 return null;

@@ -45,6 +45,8 @@ namespace APIGestor.Business
         public IEnumerable<Projeto> ListarTodos()
         {
             var Projetos = _context.Projetos
+                .Include(p => p.CatalogStatus)
+                .Include(p => p.CatalogEmpresa)
                 .OrderBy(p => p.Titulo)
                 .ToList();
             return Projetos;

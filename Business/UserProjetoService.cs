@@ -32,7 +32,8 @@ namespace APIGestor.Business
             var UserProjetos = _context.UserProjetos
                 .Where(y => y.UserId == userId)
                 .Include("CatalogUserPermissao")
-                .Include("Projeto")
+                .Include("Projeto.CatalogStatus")
+                .Include("Projeto.CatalogEmpresa")
                 .OrderBy(y => y.ProjetoId)
                 .ToList();
             return UserProjetos;
