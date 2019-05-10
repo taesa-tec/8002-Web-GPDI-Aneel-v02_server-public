@@ -58,8 +58,15 @@ namespace APIGestor.Business
             {
                 if (projeto.RegistroFinanceiro.Where(r => r.StatusValor == "Aprovado").ToList().Count() <= 0)
                     resultado.Inconsistencias.Add("Não existem refps aprovados para o projeto.");
-                if (projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAnual").FirstOrDefault() == null)
-                    resultado.Inconsistencias.Add("Arquivo relatório final anual não localizado");
+
+                if (projeto.RelatorioFinal != null) {
+                    if (projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAnual").FirstOrDefault() == null)
+                        resultado.Inconsistencias.Add("Arquivo relatório final anual não localizado");
+                }
+                else {
+                    resultado.Inconsistencias.Add("Não há Relatório final cadastrado");
+                }
+
                 if (projeto.ResultadosCapacitacao.Where(r => r.Uploads == null).ToList().Count() <= 0)
                     resultado.Inconsistencias.Add("Faltando Arquivo em resultados de capacitação");
                 if (projeto.ResultadosProducao.Where(r => r.Uploads == null).ToList().Count() <= 0)
