@@ -12,6 +12,10 @@ using System.Reflection;
 using System.IO;
 using CsvHelper;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
+using System.Threading.Tasks;
+using ClosedXML.Excel;
+
 
 namespace APIGestor.Business {
     public class RelatorioEmpresaService {
@@ -126,6 +130,97 @@ namespace APIGestor.Business {
             return mr;
         }
         #endregion
+
+
+        public XLWorkbook gerarXLSOrcamento(int projetoId) {
+
+
+            XLWorkbook xls = new XLWorkbook();
+
+            var workRH = xls.AddWorksheet("Recursos Humanos");
+            workRH.ColumnWidth = 40;
+            var workRM = xls.AddWorksheet("Recursos Materiais");
+            workRM.ColumnWidth = 40;
+
+            List<OrcamentoEmpresaItem> items = new List<OrcamentoEmpresaItem>();
+
+            OrcamentoEmpresas orcamento = orcamentoEmpresas(projetoId);
+
+            foreach (var empresa in orcamento.Empresas) {
+                foreach (var categoria in empresa.Relatorios) {
+                    foreach (var item in categoria.Items) {
+                        items.Add(item);
+                    }
+
+                }
+
+            }
+
+            var table = new DataTable("Recursos Humanos");
+            table.Columns.Add("Nome");
+            table.Columns.Add("Titulo");
+            table.Columns.Add("Cpf");
+            table.Columns.Add("Empresa");
+            table.Columns.Add("Custo Hora");
+            table.Columns.Add("Horas Totais");
+            table.Columns.Add("Custo");
+            table.Columns.Add("Currículo Lattes");
+
+            var rhItems = from i in items
+                          where i.RecursoHumano != null
+                          let custo = i.RecursoHumano.ValorHora * i.AlocacaoRh.HrsTotais
+                          select new {
+                              i.Desc,
+                              i.RecursoHumano.TitulacaoValor,
+                              i.RecursoHumano.CPF,
+                              i.RecursoHumano.Empresa.NomeEmpresa,
+                              i.RecursoHumano.ValorHora,
+                              i.AlocacaoRh.HrsTotais,
+                              custo,
+                              i.RecursoHumano.UrlCurriculo
+                          };
+            foreach (var item in rhItems) {
+                table.Rows.Add(item.Desc, item.TitulacaoValor, item.CPF, item.NomeEmpresa, item.ValorHora, item.HrsTotais, item.custo, item.UrlCurriculo);
+            }
+
+            workRH.Cell(1, 1).InsertTable(table);
+
+
+            table = new DataTable("Recursos Materiais");
+            table.Columns.Add("Descrição");
+            table.Columns.Add("Nome");
+            table.Columns.Add("Categoria");
+            table.Columns.Add("Especificação");
+            table.Columns.Add("Atividade");
+            table.Columns.Add("Quantidade");
+            table.Columns.Add("Valor Unitário");
+            table.Columns.Add("Custo");
+            table.Columns.Add("Empresa Financiadora");
+
+            var rmItems = from i in items
+                          where i.RecursoMaterial != null
+                          let atividade = i.RecursoMaterial.Atividade.Nome
+                          let custo = i.AlocacaoRm.Qtd * i.RecursoMaterial.ValorUnitario
+                          select new {
+                              i.Desc,
+                              i.RecursoMaterial.Nome,
+                              i.RecursoMaterial.categoria,
+                              i.RecursoMaterial.Especificacao,
+                              atividade,
+                              i.AlocacaoRm.Qtd,
+                              i.RecursoMaterial.ValorUnitario,
+                              custo,
+                              i.AlocacaoRm.EmpresaFinanciadora.NomeEmpresa
+                          };
+
+            foreach (var item in rmItems) {
+                table.Rows.Add(item.Desc, item.Nome, item.categoria, item.Especificacao, item.atividade, item.Qtd, item.ValorUnitario, item.custo, item.NomeEmpresa);
+            }
+
+            workRM.Cell(1, 1).InsertTable(table);
+
+            return xls;
+        }
 
     }
 }

@@ -26,6 +26,19 @@ namespace APIGestor.Models
         [ForeignKey("CatalogEstadoId")]
         public CatalogEstado Estado { get; set; }
         public string RazaoSocial { get; set; }
+
+        [NotMapped]
+        public string NomeEmpresa {
+            get {
+                if(this.CatalogEmpresa != null) {
+                    return this.CatalogEmpresa.Nome;
+                }else if(this.RazaoSocial != null) {
+                    return this.RazaoSocial;
+                }
+                return "";
+            }
+        }
+
     }
     public enum EmpresaClassificacao
     {   

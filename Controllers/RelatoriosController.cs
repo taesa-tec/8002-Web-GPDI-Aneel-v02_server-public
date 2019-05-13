@@ -5,6 +5,7 @@ using APIGestor.Business;
 using APIGestor.Models;
 using System.IO;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace APIGestor.Controllers {
     [Route("api/projeto/")]
@@ -44,7 +45,7 @@ namespace APIGestor.Controllers {
             return _relatorioAtividadeService.ExtratoFinanceiro(projetoId);
         }
 
-        [HttpGet("{projetoId}/ExtratoEmpresas/exportar")]
+        [HttpGet("{projetoId}/ExtratoEmpresas/exportar_old")]
         public FileResult Download(int projetoId) {
             var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.orcamentoEmpresas(projetoId));
             MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(data, "RelatorioEmpresa");
@@ -56,9 +57,19 @@ namespace APIGestor.Controllers {
             };
         }
 
+        [HttpGet("{projetoId}/ExtratoEmpresas/exportar")]
+        public ActionResult DownloadXLS(int projetoId) {
+            MemoryStream stream = new MemoryStream();
+            var workbook = this._relatorioEmpresaService.gerarXLSOrcamento(projetoId);
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+            Response.Headers.Add("Content-Disposition", "inline; filename=\"projeto-"+projetoId + "-relatorio.xlsx\"");
+            return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
         //[HttpGet("{projetoId}/ExtratoREFP/exportar")]
         //public FileResult DownloadA(int projetoId) {
-        //    var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.extratoEmpresas(projetoId));
+        //    var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.ExtratoREFP2(projetoId));
         //    MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(data, "RelatorioREFP");
         //    if (relatorio == null)
         //        return null;
