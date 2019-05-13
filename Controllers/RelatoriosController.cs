@@ -25,8 +25,8 @@ namespace APIGestor.Controllers {
         }
 
         [HttpGet("{projetoId}/ExtratoEmpresas")]
-        public RelatorioEmpresas Get(int projetoId) {
-            return _relatorioEmpresaService.ExtratoFinanceiro(projetoId);
+        public OrcamentoEmpresas Get(int projetoId) {
+            return _relatorioEmpresaService.orcamentoEmpresas(projetoId);
         }
 
         [HttpGet("{projetoId}/ExtratoEtapas")]
@@ -35,8 +35,8 @@ namespace APIGestor.Controllers {
         }
 
         [HttpGet("{projetoId}/ExtratoREFP")]
-        public RelatorioEmpresas GetB(int projetoId) {
-            return _relatorioEmpresaService.ExtratoREFP2(projetoId);
+        public ExtratoEmpresas GetB(int projetoId) {
+            return _relatorioEmpresaService.extratoEmpresas(projetoId);
         }
 
         [HttpGet("{projetoId}/ExtratoAtividades")]
@@ -46,7 +46,7 @@ namespace APIGestor.Controllers {
 
         [HttpGet("{projetoId}/ExtratoEmpresas/exportar")]
         public FileResult Download(int projetoId) {
-            var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.ExtratoFinanceiro(projetoId));
+            var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.orcamentoEmpresas(projetoId));
             MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(data, "RelatorioEmpresa");
             if (relatorio == null)
                 return null;
@@ -56,16 +56,16 @@ namespace APIGestor.Controllers {
             };
         }
 
-        [HttpGet("{projetoId}/ExtratoREFP/exportar")]
-        public FileResult DownloadA(int projetoId) {
-            var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.ExtratoREFP2(projetoId));
-            MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(data, "RelatorioREFP");
-            if (relatorio == null)
-                return null;
+        //[HttpGet("{projetoId}/ExtratoREFP/exportar")]
+        //public FileResult DownloadA(int projetoId) {
+        //    var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.extratoEmpresas(projetoId));
+        //    MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(data, "RelatorioREFP");
+        //    if (relatorio == null)
+        //        return null;
 
-            return new FileContentResult(relatorio.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet) {
-                FileDownloadName = "relatorioRefp.csv"
-            };
-        }
+        //    return new FileContentResult(relatorio.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet) {
+        //        FileDownloadName = "relatorioRefp.csv"
+        //    };
+        //}
     }
 }

@@ -5,12 +5,164 @@ using CsvHelper.Configuration;
 
 namespace APIGestor.Models {
 
-    #region Itens do Relatório
-    public class RelatorioEmpresaItem {
+
+    #region Base Relatorio
+    public class RelatorioEmpresas<T> {
+        public List<T> Empresas { get; set; } = new List<T>();
+        public int Total { get; set; }
+        public decimal? Valor { get; set; }
+    }
+
+    public abstract class RelatorioEmpresa<T> {
+        protected Dictionary<string, T> CategoriaRelatorios { get; set; } = new Dictionary<string, T>();
+        public List<T> Relatorios {
+            get {
+                List<T> ts = new List<T>();
+                foreach (var item in CategoriaRelatorios) {
+                    ts.Add(item.Value);
+                }
+                return ts;
+            }
+        }
+        public int Id { get; set; }
+        public string Nome { get; set; }
+        public int Total { get; set; }
+        public decimal Valor { get; set; }
+
+        public RelatorioEmpresa(Empresa empresa) {
+            this.Id = empresa.Id;
+            this.Nome = empresa.CatalogEmpresa != null ? empresa.CatalogEmpresa.Nome : empresa.RazaoSocial;
+        }
+    }
+
+    public abstract class RelatoriosCategoria<T> {
+        public string Desc { get; set; }
+        public List<T> Items { get; set; } = new List<T>();
+
+        public int Total { get { return Items.Count; } }
+
+        public decimal? Valor { get; set; }
+
+        public void addItem(T item) {
+            this.Items.Add(item);
+        }
+
+        protected RelatoriosCategoria(string desc) {
+            Desc = desc;
+        }
+    }
+
+    public abstract class RelatorioEmpresaItem {
         public string Desc { get; set; }
         public RecursoHumano RecursoHumano { get; set; }
         public RecursoMaterial RecursoMaterial { get; set; }
         public decimal? Valor { get; set; }
+    }
+    #endregion
+
+    #region Orçamentos - Proposta
+
+    public class OrcamentoEmpresas : RelatorioEmpresas<OrcamentoEmpresa> {
+
+        protected List<AlocacaoRh> alocacaoRhs;
+        protected List<AlocacaoRm> alocacaoRms;
+
+        public new int Total {
+            get {
+                int t = 0;
+                foreach (var empresa in Empresas) {
+                    t += empresa.Total;
+                }
+                return t;
+            }
+        }
+
+        public new decimal Valor {
+            get {
+                decimal t = 0;
+                foreach (var empresa in Empresas) {
+                    t += empresa.Valor;
+                }
+                return t;
+            }
+        }
+
+        public OrcamentoEmpresas(List<AlocacaoRh> alocacaoRhs, List<AlocacaoRm> alocacaoRms) {
+            this.alocacaoRhs = alocacaoRhs;
+            this.alocacaoRms = alocacaoRms;
+
+            Dictionary<int, OrcamentoEmpresa> empresas = new Dictionary<int, OrcamentoEmpresa>();
+
+            alocacaoRhs.ForEach(alocacao => {
+                if (!empresas.ContainsKey(alocacao.Empresa.Id))
+                    empresas.Add(alocacao.Empresa.Id, new OrcamentoEmpresa(alocacao.Empresa));
+                empresas[alocacao.Empresa.Id].addItem(alocacao);
+
+            });
+
+            alocacaoRms.ForEach(alocacao => {
+                if (!empresas.ContainsKey(alocacao.EmpresaFinanciadora.Id))
+                    empresas.Add(alocacao.EmpresaFinanciadora.Id, new OrcamentoEmpresa(alocacao.EmpresaFinanciadora));
+                empresas[alocacao.EmpresaFinanciadora.Id].addItem(alocacao);
+            });
+
+            foreach (var empresa in empresas) {
+                Empresas.Add(empresa.Value);
+            }
+
+        }
+    }
+
+    public class OrcamentoEmpresa : RelatorioEmpresa<OrcamentoCategoria> {
+
+        public void addItem(AlocacaoRh alocacao) {
+            if (!this.CategoriaRelatorios.ContainsKey("RH")) {
+                this.CategoriaRelatorios.Add("RH", new OrcamentoCategoria("Recursos Humanos"));
+            }
+            this.CategoriaRelatorios["RH"].addItem(new OrcamentoEmpresaItem(alocacao));
+
+        }
+        public new int Total {
+            get {
+                int total = 0;
+                foreach (var item in Relatorios) {
+                    total += item.Total;
+                }
+                return total;
+            }
+        }
+        public new decimal Valor {
+            get {
+                decimal valor = 0;
+                foreach (var item in Relatorios) {
+                    valor += (decimal)item.Valor;
+                }
+                return valor;
+            }
+        }
+        public void addItem(AlocacaoRm alocacao) {
+            if (!this.CategoriaRelatorios.ContainsKey(alocacao.RecursoMaterial.categoria)) {
+                this.CategoriaRelatorios.Add(alocacao.RecursoMaterial.categoria, new OrcamentoCategoria(alocacao.RecursoMaterial.categoria));
+            }
+            this.CategoriaRelatorios[alocacao.RecursoMaterial.categoria].addItem(new OrcamentoEmpresaItem(alocacao));
+        }
+
+        public OrcamentoEmpresa(Empresa e) : base(e) { }
+
+    }
+
+    public class OrcamentoCategoria : RelatoriosCategoria<OrcamentoEmpresaItem> {
+        public OrcamentoCategoria(string desc) : base(desc) { }
+
+        public new decimal Valor {
+            get {
+                decimal t = 0;
+                foreach (OrcamentoEmpresaItem item in Items) {
+                    t += (decimal)item.Valor;
+                }
+                return t;
+            }
+        }
     }
 
     public class OrcamentoEmpresaItem : RelatorioEmpresaItem {
@@ -18,31 +170,152 @@ namespace APIGestor.Models {
         public Etapa Etapa { get; set; }
         public AlocacaoRh AlocacaoRh { get; set; }
         public AlocacaoRm AlocacaoRm { get; set; }
+
+        public OrcamentoEmpresaItem(AlocacaoRh alocacaoRh) {
+            Desc = alocacaoRh.RecursoHumano.NomeCompleto;
+            AlocacaoRh = alocacaoRh;
+            AlocacaoId = alocacaoRh.Id;
+            Etapa = alocacaoRh.Etapa;
+            Valor = alocacaoRh.HrsTotais * alocacaoRh.RecursoHumano.ValorHora;
+            RecursoHumano = alocacaoRh.RecursoHumano;
+        }
+
+        public OrcamentoEmpresaItem(AlocacaoRm alocacaoRm) {
+            Desc = alocacaoRm.RecursoMaterial.Nome;
+            AlocacaoRm = alocacaoRm;
+            AlocacaoId = alocacaoRm.Id;
+            Etapa = alocacaoRm.Etapa;
+            Valor = alocacaoRm.Qtd * alocacaoRm.RecursoMaterial.ValorUnitario;
+            RecursoMaterial = alocacaoRm.RecursoMaterial;
+        }
     }
 
-    public class ExtratoEmpresaItem : RelatorioEmpresaItem {
-        public RegistroFinanceiro RegistroFinanceiro { get; set; }
-    }
+
 
     #endregion
 
-    #region Categorias
-    public class RelatorioEmpresaCategorias<T> where T : RelatorioEmpresaItem {
-        public string Desc { get; set; }
-        public List<T> Items { get; set; }
-        public int Total { get; set; }
-        public decimal? Valor { get; set; }
+    #region Extratos - Iniciado
 
+    public class ExtratoEmpresas : RelatorioEmpresas<ExtratoEmpresa> {
+
+        protected OrcamentoEmpresas orcamentoEmpresas;
+        protected List<RegistroFinanceiro> registroFinanceiros;
+
+        public new int Total {
+            get { return this.orcamentoEmpresas.Total; }
+        }
+
+        public new decimal Valor {
+            get { return this.orcamentoEmpresas.Valor; }
+        }
+
+        public int TotalAprovado {
+            get {
+                int t = 0;
+                this.Empresas.ForEach(e => t += e.TotalAprovado);
+                return t;
+            }
+        }
+
+        public decimal ValorAprovado {
+            get {
+                decimal t = 0;
+                this.Empresas.ForEach(e => t += e.ValorAprovado);
+                return t;
+            }
+        }
+
+
+        public decimal? Desvio {
+            get {
+                return this.ValorAprovado / this.Valor;
+            }
+        }
+
+        public ExtratoEmpresas(List<RegistroFinanceiro> registroFinanceiros, OrcamentoEmpresas orcamentoEmpresas) {
+
+            this.orcamentoEmpresas = orcamentoEmpresas;
+            this.registroFinanceiros = registroFinanceiros;
+
+            Dictionary<int, ExtratoEmpresa> empresas = new Dictionary<int, ExtratoEmpresa>();
+
+            registroFinanceiros.ForEach(registro => {
+                if (!empresas.ContainsKey(registro.EmpresaFinanciadora.Id)) {
+                    empresas.Add(registro.EmpresaFinanciadora.Id,
+                        new ExtratoEmpresa(registro.EmpresaFinanciadora,
+                        this.orcamentoEmpresas.Empresas.Find(e => e.Id == registro.EmpresaFinanciadora.Id)
+                        )
+                    );
+                }
+                empresas[registro.EmpresaFinanciadora.Id].addItem(registro);
+            });
+
+            foreach (var empresa in empresas) {
+                Empresas.Add(empresa.Value);
+            }
+        }
     }
 
-    public class OrcamentoEmpresaCategorias : RelatorioEmpresaCategorias<OrcamentoEmpresaItem> {
+    public class ExtratoEmpresa : RelatorioEmpresa<ExtratoEmpresaCategorias> {
+        OrcamentoEmpresa orcamento;
+        public int TotalAprovado {
+            get {
+                int t = 0;
+                this.Relatorios.ForEach(r => t += r.TotalAprovado);
+                return t;
+            }
+        }
+        public decimal ValorAprovado {
+            get {
+                decimal t = 0;
+                this.Relatorios.ForEach(r => t += r.ValorAprovado);
+                return t;
+            }
+        }
 
+
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:P2}")]
+        public decimal? Desvio {
+            get {
+                return this.ValorAprovado / this.Valor;
+            }
+        }
+        public ExtratoEmpresa(Empresa e, OrcamentoEmpresa orcamento) : base(e) {
+            this.Valor = orcamento.Valor;
+            this.Total = orcamento.Total;
+            this.orcamento = orcamento;
+        }
+
+        public void addItem(RegistroFinanceiro registro) {
+            if (registro.RecursoHumano != null) {
+
+                if (!this.CategoriaRelatorios.ContainsKey("RH")) {
+                    this.CategoriaRelatorios.Add("RH", new ExtratoEmpresaCategorias("Recursos Humanos", orcamento.Relatorios.Find(o => o.Desc == "Recursos Humanos")));
+                }
+                this.CategoriaRelatorios["RH"].addItem(new ExtratoEmpresaItem(registro));
+            }
+            else if (registro.RecursoMaterial != null) {
+                if (!this.CategoriaRelatorios.ContainsKey(registro.RecursoMaterial.categoria)) {
+                    this.CategoriaRelatorios.Add(registro.RecursoMaterial.categoria, new ExtratoEmpresaCategorias(registro.RecursoMaterial.categoria,
+                        orcamento.Relatorios.Find(o => o.Desc == registro.RecursoMaterial.categoria)));
+                }
+                this.CategoriaRelatorios[registro.RecursoMaterial.categoria].addItem(new ExtratoEmpresaItem(registro));
+            }
+        }
     }
 
-    public class ExtratoEmpresaCategorias : RelatorioEmpresaCategorias<ExtratoEmpresaItem> {
+    public class ExtratoEmpresaCategorias : RelatoriosCategoria<ExtratoEmpresaItem> {
 
-        public int? TotalAprovado { get; set; }
-        public decimal? ValorAprovado { get; set; }
+        public int TotalAprovado { get { return Items.Count; } }
+        public decimal ValorAprovado {
+            get {
+                decimal t = 0;
+                Items.ForEach(i => t += (decimal)i.Valor);
+                return t;
+            }
+        }
+
+        public new int Total = 0;
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:P2}")]
         public decimal? Desvio {
@@ -50,71 +323,38 @@ namespace APIGestor.Models {
                 return this.TotalAprovado / Total;
             }
         }
-    }
-    #endregion
 
-    #region Relatório por empresa
-    public class RelatorioEmpresa<T> {
-        public int Id { get; set; }
-        public string Nome { get; set; }
-        public List<T> Relatorios { get; set; }
-        public int Total { get; set; }
-        public decimal? Valor { get; set; }
-
+        public ExtratoEmpresaCategorias(string desc, OrcamentoCategoria orcamento) : base(desc) {
+            if (orcamento != null) {
+                this.Valor = orcamento.Valor;
+                this.Total = orcamento.Total;
+            }
+        }
     }
 
-    public class OrcamentoEmpresa : RelatorioEmpresa<OrcamentoEmpresaCategorias> {
+    public class ExtratoEmpresaItem : RelatorioEmpresaItem {
+        public RegistroFinanceiro RegistroFinanceiro { get; set; }
 
-    }
-
-    public class ExtratoEmpresa : RelatorioEmpresa<ExtratoEmpresaCategorias> {
-
-        public int TotalAprovado { get; set; }
-        public decimal ValorAprovado { get; set; }
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:P2}")]
-        public decimal? Desvio {
-            get {
-                return this.ValorAprovado / this.Valor;
+        public ExtratoEmpresaItem(RegistroFinanceiro registroFinanceiro) {
+            RegistroFinanceiro = registroFinanceiro;
+            if (registroFinanceiro.RecursoHumano != null) {
+                RecursoHumano = registroFinanceiro.RecursoHumano;
+                Desc = RecursoHumano.NomeCompleto;
+                Valor = registroFinanceiro.QtdHrs * RecursoHumano.ValorHora;
+            }
+            else if (registroFinanceiro.RecursoMaterial != null) {
+                RecursoMaterial = registroFinanceiro.RecursoMaterial;
+                Desc = registroFinanceiro.RecursoMaterial.Nome;
+                Valor = registroFinanceiro.QtdItens * RecursoMaterial.ValorUnitario;
             }
         }
     }
 
     #endregion
 
-    #region Relatórios empresas
 
-    public class RelatorioEmpresas<T> {
-        public List<T> Empresas { get; set; }
-        public int Total { get; set; }
-        public decimal? Valor { get; set; }
 
-    }
-    public class OrcamentoEmpresas : RelatorioEmpresas<OrcamentoEmpresa> {
 
-        protected List<AlocacaoRh> alocacaoRhs;
-        protected List<AlocacaoRm> alocacaoRms;
-
-        public OrcamentoEmpresas(List<AlocacaoRh> alocacaoRhs, List<AlocacaoRm> alocacaoRms) {
-            this.alocacaoRhs = alocacaoRhs;
-            this.alocacaoRms = alocacaoRms;
-        }
-    }
-    public class ExtratoEmpresas : RelatorioEmpresas<ExtratoEmpresa> {
-
-        protected List<RegistroFinanceiro> registroFinanceiros;
-        public int TotalAprovado { get; set; }
-        public decimal ValorAprovado { get; set; }
-        public decimal? Desvio {
-            get {
-                return this.ValorAprovado / this.Valor;
-            }
-        }
-
-        public ExtratoEmpresas(List<RegistroFinanceiro> registroFinanceiros) {
-            this.registroFinanceiros = registroFinanceiros;
-        }
-    }
-    #endregion
 
     public class RelatorioEmpresaCsv {
         public int Id { get; set; }

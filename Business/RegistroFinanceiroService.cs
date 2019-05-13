@@ -17,6 +17,7 @@ namespace APIGestor.Business
         {
             _context = context;
         }
+
         public RegistroFinanceiro Obter(int id)
         {
             if (id>0)
@@ -28,6 +29,7 @@ namespace APIGestor.Business
             else
                 return null;
         }
+
         public IEnumerable<RegistroFinanceiro> ListarTodos(int projetoId, StatusRegistro status)
         {
             var RegistroFinanceiro = _context.RegistrosFinanceiros
@@ -41,6 +43,7 @@ namespace APIGestor.Business
                 .ToList();
             return RegistroFinanceiro;
         }
+
         public Resultado Incluir(RegistroFinanceiro dados, string userId)
         {
             Resultado resultado = DadosValidos(dados);
@@ -75,6 +78,7 @@ namespace APIGestor.Business
             }
             return resultado;
         }
+
         public Resultado Atualizar(RegistroFinanceiro dados, string userId)
         {
             Resultado resultado = DadosValidos(dados);

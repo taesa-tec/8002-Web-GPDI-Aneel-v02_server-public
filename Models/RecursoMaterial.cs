@@ -37,11 +37,12 @@ namespace APIGestor.Models {
         [NotMapped]
         public string categoria {
             get {
-                if (this.CategoriaContabil != 0) {
-                    return this.categoriasContabeis.GetValueOrDefault(this.CategoriaContabil);
-                }
-                else if (this.CategoriaContabilGestao != null) {
+
+                if (this.CategoriaContabilGestao != null) {
                     return this.CategoriaContabilGestao.Nome;
+                }
+                else if (this.CategoriaContabil != 0) {
+                    return this.categoriasContabeis.GetValueOrDefault(this.CategoriaContabil);
                 }
                 return "";
             }
