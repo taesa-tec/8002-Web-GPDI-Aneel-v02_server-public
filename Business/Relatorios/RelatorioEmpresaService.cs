@@ -225,9 +225,9 @@ namespace APIGestor.Business {
         public XLWorkbook gerarXLSExtrato(int projetoId) {
             XLWorkbook xls = new XLWorkbook();
 
-            var workEm = xls.AddWorksheet("Empresas");
             var workRH = xls.AddWorksheet("Recursos Humanos");
             var workRM = xls.AddWorksheet("Recursos Materiais");
+            var workEm = xls.AddWorksheet("Empresas");
 
             workEm.ColumnWidth = 20;
             workRH.ColumnWidth = 40;
@@ -239,30 +239,33 @@ namespace APIGestor.Business {
             #region Resumo dos dados
 
             var tableEmpresas = new DataTable("Empresas");
-            var tableGeral = new DataTable("Geral");
+            //var tableGeral = new DataTable("Geral");
 
-            foreach (var col in new string[] { "Total", "Total Aprovado", "Valor", "Valor aprovado", "Desvio" }) {
-                tableGeral.Columns.Add(col);
-            }
-            tableGeral.Rows.Add(extrato.Total, extrato.TotalAprovado, extrato.Valor, extrato.ValorAprovado, extrato.Desvio);
+            //foreach (var col in new string[] { "Total", "Total Aprovado", "Valor", "Valor aprovado", "Desvio" }) {
+            //    tableGeral.Columns.Add(col);
+            //}
+            //tableGeral.Rows.Add(extrato.Total, extrato.TotalAprovado, extrato.Valor, extrato.ValorAprovado, extrato.Desvio);
 
-            foreach (var col in new string[] { "Empresa", "Total", "Total Aprovado", "Valor", "Valor aprovado", "Desvio" }) {
-                tableEmpresas.Columns.Add(col);
+            tableEmpresas.Columns.Add(new DataColumn("Empresa", typeof(string)));
+            foreach (var colname in new string[] { "Total", "Total Aprovado", "Valor", "Valor aprovado", "Desvio" }) {
+                var coll = new DataColumn(colname);
+                coll.DataType = typeof(decimal);
+                tableEmpresas.Columns.Add(coll);
             }
 
             foreach (var empresa in extrato.Empresas) {
-                tableEmpresas.Rows.Add(empresa.Nome, empresa.Total, empresa.TotalAprovado, empresa.Valor, empresa.ValorAprovado, empresa.Desvio);
+                tableEmpresas.Rows.Add(empresa.Nome, empresa.Total, empresa.TotalAprovado, empresa.Valor, empresa.ValorAprovado, empresa.Desvio / 100m);
             }
 
-            workEm.Cell(2, 5).Style.NumberFormat.Format = "0,00%";
+            //workEm.Cell(2, 5).Style.NumberFormat.Format = "0,00%";
             var coldesvio = workEm.Column("F");
             coldesvio.Style.NumberFormat.Format = "0,00%";
-            coldesvio.DataType = XLDataType.Number;
+            //coldesvio.DataType = XLDataType.Number;
 
-            var table = workEm.Cell(1, 1).InsertTable(tableGeral, "Dados do Projeto");
-            table.Style.Fill.BackgroundColor = XLColor.BlueGray;
+            //var table = workEm.Cell(1, 1).InsertTable(tableGeral, "Dados do Projeto");
+            //table.Style.Fill.BackgroundColor = XLColor.BlueGray;
 
-            workEm.Cell(4, 1).InsertTable(tableEmpresas, "Dados gerais por empresa");
+            workEm.Cell(1, 1).InsertTable(tableEmpresas, "Dados gerais por empresa");
             #endregion
 
             #region Registros RH
