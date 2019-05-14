@@ -28,7 +28,6 @@ namespace APIGestor.Models {
         public string Nome { get; set; }
         public int Total { get; set; }
         public decimal Valor { get; set; }
-
         public RelatorioEmpresa(Empresa empresa) {
             this.Id = empresa.Id;
             this.Nome = empresa.CatalogEmpresa != null ? empresa.CatalogEmpresa.Nome : empresa.RazaoSocial;
@@ -84,6 +83,18 @@ namespace APIGestor.Models {
                     t += empresa.Valor;
                 }
                 return t;
+            }
+        }
+
+        public List<OrcamentoEmpresaItem> OrcamentoEmpresaItens {
+            get {
+                var itens = new List<OrcamentoEmpresaItem>();
+                foreach (var empresa in Empresas) {
+                    foreach (var categoria in empresa.Relatorios) {
+                        itens.AddRange(categoria.Items);
+                    }
+                }
+                return itens;
             }
         }
 
@@ -229,6 +240,18 @@ namespace APIGestor.Models {
         public decimal? Desvio {
             get {
                 return this.ValorAprovado / this.Valor;
+            }
+        }
+
+        public List<ExtratoEmpresaItem> ExtratoEmpresaItens {
+            get {
+                var itens = new List<ExtratoEmpresaItem>();
+                foreach (var empresa in Empresas) {
+                    foreach (var categoria in empresa.Relatorios) {
+                        itens.AddRange(categoria.Items);
+                    }
+                }
+                return itens;
             }
         }
 

@@ -222,5 +222,115 @@ namespace APIGestor.Business {
             return xls;
         }
 
+        public XLWorkbook gerarXLSExtrato(int projetoId) {
+            XLWorkbook xls = new XLWorkbook();
+
+            var workEm = xls.AddWorksheet("Empresas");
+            var workRH = xls.AddWorksheet("Recursos Humanos");
+            var workRM = xls.AddWorksheet("Recursos Materiais");
+
+            workEm.ColumnWidth = 20;
+            workRH.ColumnWidth = 40;
+            workRM.ColumnWidth = 40;
+
+            var extrato = extratoEmpresas(projetoId);
+            var itens = extrato.ExtratoEmpresaItens;
+
+            #region Resumo dos dados
+
+            var tableEmpresas = new DataTable("Empresas");
+            var tableGeral = new DataTable("Geral");
+
+            foreach (var col in new string[] { "Total", "Total Aprovado", "Valor", "Valor aprovado", "Desvio" }) {
+                tableGeral.Columns.Add(col);
+            }
+            tableGeral.Rows.Add(extrato.Total, extrato.TotalAprovado, extrato.Valor, extrato.ValorAprovado, extrato.Desvio);
+
+            foreach (var col in new string[] { "Empresa", "Total", "Total Aprovado", "Valor", "Valor aprovado", "Desvio" }) {
+                tableEmpresas.Columns.Add(col);
+            }
+
+            foreach (var empresa in extrato.Empresas) {
+                tableEmpresas.Rows.Add(empresa.Nome, empresa.Total, empresa.TotalAprovado, empresa.Valor, empresa.ValorAprovado, empresa.Desvio);
+            }
+
+            workEm.Cell(2, 5).Style.NumberFormat.Format = "0,00%";
+            var coldesvio = workEm.Column("F");
+            coldesvio.Style.NumberFormat.Format = "0,00%";
+            coldesvio.DataType = XLDataType.Number;
+
+            var table = workEm.Cell(1, 1).InsertTable(tableGeral, "Dados do Projeto");
+            table.Style.Fill.BackgroundColor = XLColor.BlueGray;
+
+            workEm.Cell(4, 1).InsertTable(tableEmpresas, "Dados gerais por empresa");
+            #endregion
+
+            #region Registros RH
+            var registrosRH = from i in itens
+                              where i.RecursoHumano != null
+                              select i;
+            var tableRH = new DataTable("Recursos Humanos");
+            foreach (var col in new string[] { "Nome completo", "CPF", "Função", "Empresa", "Empresa Financiadora", "Empresa Recebedora", "Qtd Hrs", "Custo Hora", "Custo Total", "Mês" }) {
+                tableRH.Columns.Add(col);
+            }
+
+            foreach (var rrg in registrosRH) {
+                var recurso = rrg.RecursoHumano;
+                var registro = rrg.RegistroFinanceiro;
+                var financiadora = registro.EmpresaFinanciadora;
+                var recebedora = registro.EmpresaRecebedora;
+
+                tableRH.Rows.Add(
+                    recurso.NomeCompleto,
+                    recurso.CPF,
+                    recurso.FuncaoValor,
+                    recurso.Empresa.NomeEmpresa,
+                    financiadora.NomeEmpresa,
+                    (recebedora != null ? recebedora.NomeEmpresa : financiadora.NomeEmpresa),
+                    registro.QtdHrs,
+                    recurso.ValorHora,
+                    registro.ValorTotalRH,
+                    registro.Mes
+
+                );
+            }
+            workRH.Cell(1, 1).InsertTable(tableRH);
+            #endregion
+
+            #region Registro RM
+            var tableRM = new DataTable("Recursos Materiais");
+            var registrosRM = from i in itens
+                              where i.RecursoMaterial != null
+                              select i;
+
+            foreach (var col in new string[] { "Nome Item", "Recurso", "Categoria", "Especificação", "Empresa Financiadora", "Empresa Recebedora", "Mês", "Qtd Itens", "Valor Unitário", "Valor Total" }) {
+                tableRM.Columns.Add(col);
+            }
+            foreach (var rrg in registrosRM) {
+                var recurso = rrg.RecursoMaterial;
+                var registro = rrg.RegistroFinanceiro;
+                var financiadora = registro.EmpresaFinanciadora;
+                var recebedora = registro.EmpresaRecebedora;
+
+                tableRM.Rows.Add(
+                    registro.NomeItem,
+                    recurso.Nome,
+                    recurso.categoria,
+                    recurso.Especificacao,
+                    financiadora.NomeEmpresa,
+                    (recebedora != null ? recebedora.NomeEmpresa : financiadora.NomeEmpresa),
+                    registro.Mes,
+                    registro.QtdItens,
+                    registro.ValorUnitario,
+                    registro.ValorTotalRM
+                );
+            }
+            workRM.Cell(1, 1).InsertTable(tableRM);
+
+            #endregion
+
+
+            return xls;
+        }
     }
 }

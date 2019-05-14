@@ -58,25 +58,24 @@ namespace APIGestor.Controllers {
         }
 
         [HttpGet("{projetoId}/ExtratoEmpresas/exportar")]
-        public ActionResult DownloadXLS(int projetoId) {
+        public ActionResult DownloadOrcamento(int projetoId) {
             MemoryStream stream = new MemoryStream();
             var workbook = this._relatorioEmpresaService.gerarXLSOrcamento(projetoId);
             workbook.SaveAs(stream);
             stream.Position = 0;
-            Response.Headers.Add("Content-Disposition", "inline; filename=\"projeto-"+projetoId + "-relatorio.xlsx\"");
+            Response.Headers.Add("Content-Disposition", "inline; filename=\"projeto-" + projetoId + "-relatorio.xlsx\"");
             return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 
-        //[HttpGet("{projetoId}/ExtratoREFP/exportar")]
-        //public FileResult DownloadA(int projetoId) {
-        //    var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.ExtratoREFP2(projetoId));
-        //    MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(data, "RelatorioREFP");
-        //    if (relatorio == null)
-        //        return null;
+        [HttpGet("{projetoId}/ExtratoREFP/exportar")]
+        public ActionResult DownloadExtrato(int projetoId) {
+            MemoryStream stream = new MemoryStream();
+            var workbook = this._relatorioEmpresaService.gerarXLSExtrato(projetoId);
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+            Response.Headers.Add("Content-Disposition", "inline; filename=\"projeto-" + projetoId + "-relatorio.xlsx\"");
+            return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
 
-        //    return new FileContentResult(relatorio.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet) {
-        //        FileDownloadName = "relatorioRefp.csv"
-        //    };
-        //}
     }
 }
