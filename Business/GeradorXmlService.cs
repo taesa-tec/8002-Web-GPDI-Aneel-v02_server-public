@@ -208,7 +208,7 @@ namespace APIGestor.Business
                     svc = _relatorioFinalPed;
                     break;
                 case "RELATORIOFINALGESTAO":
-                    svc = _relatorioAuditoriaGestao;
+                    svc = _relatorioFinalGestao;
                     break;
                 case "RELATORIOAUDITORIAPED":
                     svc = _relatorioAuditoriaPed;

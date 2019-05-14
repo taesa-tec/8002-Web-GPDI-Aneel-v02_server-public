@@ -40,24 +40,16 @@ namespace APIGestor.Business
                     .Include("CatalogEmpresa")
                     .Include("Empresas.Estado")
                     .Include("Etapas")
-                    .Include("AlocacoesRh.RecursoHumano")
-                    .Include("AlocacoesRm.RecursoMaterial.CategoriaContabilGestao")
+                    .Include("RegistroFinanceiro.RecursoHumano")
+                    .Include("RegistroFinanceiro.RecursoMaterial.CategoriaContabilGestao")
                     .Include("Empresas.CatalogEmpresa")
                     .Include("RelatorioFinal.Uploads")
                     .Where(p => p.Id == ProjetoId)
                     .FirstOrDefault();
 
-            var registros = _context.RegistrosFinanceiros
-                            .Include("RecursoHumano")
-                            .Include("RecursoMaterial.CategoriaContabilGestao")
-                            .Where(p => p.ProjetoId == ProjetoId)
-                            .Where(p => p.StatusValor == "Aprovado")
-                            .ToList();
-            int?[] rhIds = registros.Where(r => r.RecursoHumano != null).Select(r => r.RecursoHumanoId).ToArray();
-            int?[] rmIds = registros.Where(r => r.RecursoMaterial != null).Select(r => r.RecursoMaterialId).ToArray();
 
-            decimal? TotalRh = registros.Where(r => r.QtdHrs != null && r.RecursoHumano != null).Sum(r => r.QtdHrs * r.RecursoHumano.ValorHora);
-            decimal? TotalRm = registros.Where(r => r.QtdItens != null && r.RecursoMaterial != null).Sum(r => r.QtdItens * r.RecursoMaterial.ValorUnitario);
+            decimal? TotalRh = projeto.RegistroFinanceiro.Where(r => r.StatusValor == "Aprovado" && r.QtdHrs != null && r.RecursoHumano != null).Sum(r => r.QtdHrs * r.RecursoHumano.ValorHora);
+            decimal? TotalRm = projeto.RegistroFinanceiro.Where(r => r.StatusValor == "Aprovado" && r.QtdItens != null && r.RecursoMaterial != null).Sum(r => r.QtdItens * r.ValorUnitario);
 
             relatorio.PD_RelAuditoriaPG = new PD_RelAuditoriaPG
             {
@@ -75,16 +67,17 @@ namespace APIGestor.Business
             {
                 var RAG_CustoCatContabil = new List<RAG_CustoCatContabil>();
                 //RH
-                foreach (var rh in projeto.AlocacoesRh
-                        .Where(p => p.Empresa == empresa)
-                        .Where(p => rmIds.Contains(p.RecursoHumano.Id))
-                        .GroupBy(p => p.Empresa)
+                foreach (var rh in projeto.RegistroFinanceiro
+                        .Where(p => p.EmpresaFinanciadoraId == empresa.Id)
+                        .Where(p => p.RecursoHumano != null)
+                        .Where(p => p.StatusValor == "Aprovado")
+                        .GroupBy(p => p.EmpresaFinanciadora)
                         .ToList())
                 {
                     decimal? custo = 0;
                     foreach (var a in rh)
                     {
-                        custo += a.RecursoHumano.ValorHora * ((a.HrsMes1+a.HrsMes2+a.HrsMes3+a.HrsMes4+a.HrsMes5+a.HrsMes6)+(a.HrsMes7+a.HrsMes8+a.HrsMes9+a.HrsMes10+a.HrsMes11+a.HrsMes12)+(a.HrsMes13+a.HrsMes14+a.HrsMes15+a.HrsMes16+a.HrsMes17+a.HrsMes18)+(a.HrsMes19+a.HrsMes20+a.HrsMes21+a.HrsMes22+a.HrsMes23+a.HrsMes24));
+                        custo += a.RecursoHumano.ValorHora * ((a.QtdHrs));
 
                     }
                     RAG_CustoCatContabil.Add(new RAG_CustoCatContabil
@@ -94,19 +87,19 @@ namespace APIGestor.Business
                     });
                 }
                 // RM
-                foreach (var rm in projeto.AlocacoesRm
-                        .Where(p => p.EmpresaRecebedora == empresa)
-                        .Where(p => p.EmpresaFinanciadora == empresa)
-                        .Where(p => rmIds.Contains(p.RecursoMaterial.Id))
-                        .GroupBy(p => p.EmpresaRecebedora)
+                foreach (var rm in projeto.RegistroFinanceiro
+                        .Where(p => p.EmpresaFinanciadoraId == empresa.Id)
+                        .Where(p => p.RecursoMaterial != null)
+                        .Where(p => p.StatusValor == "Aprovado")
+                        .GroupBy(p => p.EmpresaFinanciadora)
                         .ToList())
                 {
                     foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabilGestao.Valor))
                     {
-                        decimal custo = 0;
+                        decimal? custo = 0;
                         foreach (var rm1 in rm0)
                         {
-                            custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
+                            custo += rm1.ValorUnitario * rm1.QtdItens;
                         }
                         RAG_CustoCatContabil.Add(new RAG_CustoCatContabil
                         {
