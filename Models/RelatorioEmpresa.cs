@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using CsvHelper.Configuration;
@@ -40,7 +41,7 @@ namespace APIGestor.Models {
 
         public int Total { get { return Items.Count; } }
 
-        public decimal? Valor { get; set; }
+        public decimal Valor { get; set; }
 
         public void addItem(T item) {
             this.Items.Add(item);
@@ -210,7 +211,7 @@ namespace APIGestor.Models {
     public class ExtratoEmpresas : RelatorioEmpresas<ExtratoEmpresa> {
 
         protected OrcamentoEmpresas orcamentoEmpresas;
-        protected List<RegistroFinanceiro> registroFinanceiros;
+        protected IEnumerable<RegistroFinanceiro> registroFinanceiros;
 
         public new int Total {
             get { return this.orcamentoEmpresas.Total; }
@@ -237,9 +238,9 @@ namespace APIGestor.Models {
         }
 
 
-        public decimal? Desvio {
+        public decimal Desvio {
             get {
-                return this.ValorAprovado / this.Valor;
+                return 100m * (this.Valor > 0 ? this.ValorAprovado / this.Valor : 0);
             }
         }
 
@@ -258,12 +259,14 @@ namespace APIGestor.Models {
         public ExtratoEmpresas(List<RegistroFinanceiro> registroFinanceiros, OrcamentoEmpresas orcamentoEmpresas) {
 
             this.orcamentoEmpresas = orcamentoEmpresas;
-            this.registroFinanceiros = registroFinanceiros;
+            this.registroFinanceiros = from r in registroFinanceiros
+                                       where r.EmpresaFinanciadora != null
+                                       select r;
 
             Dictionary<int, ExtratoEmpresa> empresas = new Dictionary<int, ExtratoEmpresa>();
 
-            registroFinanceiros.ForEach(registro => {
-                if (!empresas.ContainsKey(registro.EmpresaFinanciadora.Id)) {
+            foreach (var registro in this.registroFinanceiros) {
+                if (registro.EmpresaFinanciadora != null && !empresas.ContainsKey(registro.EmpresaFinanciadora.Id)) {
                     empresas.Add(registro.EmpresaFinanciadora.Id,
                         new ExtratoEmpresa(registro.EmpresaFinanciadora,
                         this.orcamentoEmpresas.Empresas.Find(e => e.Id == registro.EmpresaFinanciadora.Id)
@@ -271,7 +274,7 @@ namespace APIGestor.Models {
                     );
                 }
                 empresas[registro.EmpresaFinanciadora.Id].addItem(registro);
-            });
+            }
 
             foreach (var empresa in empresas) {
                 Empresas.Add(empresa.Value);
@@ -298,9 +301,9 @@ namespace APIGestor.Models {
 
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:P2}")]
-        public decimal? Desvio {
+        public decimal Desvio {
             get {
-                return this.ValorAprovado / this.Valor;
+                return 100m * (this.Valor > 0 ? this.ValorAprovado / this.Valor : 0);
             }
         }
         public ExtratoEmpresa(Empresa e, OrcamentoEmpresa orcamento) : base(e) {
@@ -341,9 +344,9 @@ namespace APIGestor.Models {
         public new int Total = 0;
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:P2}")]
-        public decimal? Desvio {
+        public decimal Desvio {
             get {
-                return this.TotalAprovado / Total;
+                return 100m * (Valor > 0 ? this.ValorAprovado / Valor : 0);
             }
         }
 
@@ -351,6 +354,10 @@ namespace APIGestor.Models {
             if (orcamento != null) {
                 this.Valor = orcamento.Valor;
                 this.Total = orcamento.Total;
+            }
+            else {
+                this.Valor = 0;
+                this.Total = 0;
             }
         }
     }
