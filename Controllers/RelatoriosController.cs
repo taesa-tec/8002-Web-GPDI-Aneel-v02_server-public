@@ -6,6 +6,7 @@ using APIGestor.Models;
 using System.IO;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace APIGestor.Controllers {
     [Route("api/projeto/")]
@@ -41,20 +42,10 @@ namespace APIGestor.Controllers {
         }
 
         [HttpGet("{projetoId}/ExtratoAtividades")]
-        public RelatorioAtividade GetC(int projetoId) {
+        public RelatorioAtividades GetC(int projetoId) {
             return _relatorioAtividadeService.ExtratoFinanceiro(projetoId);
-        }
 
-        [HttpGet("{projetoId}/ExtratoEmpresas/exportar_old")]
-        public FileResult Download(int projetoId) {
-            var data = _relatorioEmpresaService.FormatRelatorioCsv(_relatorioEmpresaService.orcamentoEmpresas(projetoId));
-            MemoryStream relatorio = _relatorioEmpresaService.ExportarRelatorio(data, "RelatorioEmpresa");
-            if (relatorio == null)
-                return null;
-
-            return new FileContentResult(relatorio.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet) {
-                FileDownloadName = "relatorio.csv"
-            };
+            // return _relatorioAtividadeService.ExtratoAtividades(projetoId);
         }
 
         [HttpGet("{projetoId}/ExtratoEmpresas/exportar")]

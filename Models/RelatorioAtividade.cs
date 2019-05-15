@@ -2,14 +2,14 @@
 
 namespace APIGestor.Models
 {
-    public class RelatorioAtividade
+    public class RelatorioAtividades
     {
-        public List<RelatorioAtividades> Atividades { get; set; }
+        public List<RelatorioAtividade> Atividades { get; set; }
         public int Total { get; set; }
         public decimal? Valor { get; set; }
 
     }
-    public class RelatorioAtividades
+    public class RelatorioAtividade
     {
         public string Nome { get; set; }
         public CatalogAtividade Atividade { get; set; }
