@@ -161,9 +161,9 @@ namespace APIGestor.Business {
             table.Columns.Add("Titulo");
             table.Columns.Add("Cpf");
             table.Columns.Add("Empresa");
-            table.Columns.Add("Custo Hora");
-            table.Columns.Add("Horas Totais");
-            table.Columns.Add("Custo");
+            table.Columns.Add("Custo Hora",typeof(decimal));
+            table.Columns.Add("Horas Totais", typeof(int));
+            table.Columns.Add("Custo", typeof(decimal));
             table.Columns.Add("Currículo Lattes");
 
             var rhItems = from i in items
@@ -173,7 +173,7 @@ namespace APIGestor.Business {
                               i.Desc,
                               i.RecursoHumano.TitulacaoValor,
                               i.RecursoHumano.CPF,
-                              i.RecursoHumano.Empresa.NomeEmpresa,
+                              i.AlocacaoRh.Empresa.NomeEmpresa,
                               i.RecursoHumano.ValorHora,
                               i.AlocacaoRh.HrsTotais,
                               custo,
@@ -185,36 +185,37 @@ namespace APIGestor.Business {
 
             workRH.Cell(1, 1).InsertTable(table);
 
-
             table = new DataTable("Recursos Materiais");
             table.Columns.Add("Descrição");
             table.Columns.Add("Nome");
             table.Columns.Add("Categoria");
             table.Columns.Add("Especificação");
             table.Columns.Add("Atividade");
-            table.Columns.Add("Quantidade");
-            table.Columns.Add("Valor Unitário");
-            table.Columns.Add("Custo");
+            table.Columns.Add("Quantidade", typeof(int));
+            table.Columns.Add("Valor Unitário", typeof(decimal));
+            table.Columns.Add("Custo", typeof(decimal));
             table.Columns.Add("Empresa Financiadora");
 
             var rmItems = from i in items
                           where i.RecursoMaterial != null
-                          let atividade = i.RecursoMaterial.Atividade.Nome
-                          let custo = i.AlocacaoRm.Qtd * i.RecursoMaterial.ValorUnitario
-                          select new {
-                              i.Desc,
-                              i.RecursoMaterial.Nome,
-                              i.RecursoMaterial.categoria,
-                              i.RecursoMaterial.Especificacao,
-                              atividade,
-                              i.AlocacaoRm.Qtd,
-                              i.RecursoMaterial.ValorUnitario,
-                              custo,
-                              i.AlocacaoRm.EmpresaFinanciadora.NomeEmpresa
-                          };
+                          select i;
 
-            foreach (var item in rmItems) {
-                table.Rows.Add(item.Desc, item.Nome, item.categoria, item.Especificacao, item.atividade, item.Qtd, item.ValorUnitario, item.custo, item.NomeEmpresa);
+
+
+            foreach (var i in rmItems) {
+                string atividade = i.RecursoMaterial.Atividade != null ? i.RecursoMaterial.Atividade.Nome : String.Empty;
+                decimal custo = i.AlocacaoRm.Qtd * i.RecursoMaterial.ValorUnitario;
+                table.Rows.Add(
+                    i.Desc,
+                    i.RecursoMaterial.Nome,
+                    i.RecursoMaterial.categoria,
+                    i.RecursoMaterial.Especificacao,
+                    atividade,
+                    i.AlocacaoRm.Qtd,
+                    i.RecursoMaterial.ValorUnitario,
+                    custo,
+                    i.AlocacaoRm.EmpresaFinanciadora.NomeEmpresa
+                    );
             }
 
             workRM.Cell(1, 1).InsertTable(table);
