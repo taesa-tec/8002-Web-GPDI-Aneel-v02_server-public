@@ -67,9 +67,9 @@ namespace APIGestor.Business
                     resultado.Inconsistencias.Add("Não há Relatório final cadastrado");
                 }
 
-                if (projeto.ResultadosCapacitacao.Where(r => r.Uploads == null).ToList().Count() <= 0)
+                if (projeto.ResultadosCapacitacao.Where(r => r.Uploads == null).ToList().Count() > 0)
                     resultado.Inconsistencias.Add("Faltando Arquivo em resultados de capacitação");
-                if (projeto.ResultadosProducao.Where(r => r.Uploads == null).ToList().Count() <= 0)
+                if (projeto.ResultadosProducao.Where(r => r.Uploads == null).ToList().Count() > 0)
                     resultado.Inconsistencias.Add("Faltando Arquivo em resultados de produção");
             }
             return resultado;
@@ -159,7 +159,7 @@ namespace APIGestor.Business
 
             var AtividadesList = new List<RFG_Atividade>();
 
-            foreach (var rm0 in registros.GroupBy(p => p.Atividade.Valor))
+            foreach (var rm0 in registros.Where(r => r.RecursoMaterial != null && r.Atividade != null).GroupBy(p => p.Atividade.Valor))
             {
                 decimal? custo = 0;
                 foreach (var rm1 in rm0)
