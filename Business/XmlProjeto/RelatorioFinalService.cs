@@ -48,7 +48,8 @@ namespace APIGestor.Business {
 
             if (projeto == null) {
                 resultado.Inconsistencias.Add("Projeto não localizado");
-            } else {
+            }
+            else {
 
                 if (projeto.RegistroFinanceiro.Where(r => r.StatusValor == "Aprovado").ToList().Count() <= 0)
                     resultado.Inconsistencias.Add("Não existem refps aprovados para o projeto.");
@@ -56,7 +57,8 @@ namespace APIGestor.Business {
                 if (projeto.RelatorioFinal != null) {
                     if (projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAnual").FirstOrDefault() == null)
                         resultado.Inconsistencias.Add("Arquivo relatório final anual não localizado");
-                } else {
+                }
+                else {
                     resultado.Inconsistencias.Add("Não há Relatório final cadastrado");
                 }
 
@@ -94,8 +96,9 @@ namespace APIGestor.Business {
 
         private List<string> ObterMesReferencia(Projeto projeto, List<RegistroFinanceiro> registros) {
             DateTime? DataInicio = projeto.DataInicio;
-            string MesMb = null;
-            string HoraMesMb = null;
+            List<string> MesMb = new List<string>();
+            List<string> HoraMesMb = new List<string>();
+
             foreach (var mes in registros) {
                 DateTime? DataAprov = mes.Mes;
                 if (DataAprov != null && DataInicio != null) {
@@ -104,12 +107,14 @@ namespace APIGestor.Business {
                         nMonths = DataAprov.Value.Month - DataInicio.Value.Month;
                     else
                         nMonths = (12 - DataInicio.Value.Month) + DataAprov.Value.Month;
-                    MesMb += (nMonths + 1) + ",";
-                    HoraMesMb += (mes.QtdHrs + "/" + (nMonths + 1)) + ",";
+                    MesMb.Add((nMonths + 1).ToString());
+                    HoraMesMb.Add(mes.QtdHrs.ToString());
                 }
             }
-            return new List<string> { MesMb.TrimEnd(','), HoraMesMb.TrimEnd(',') };
+
+            return new List<string> { String.Join(", ", MesMb), String.Join(", ", HoraMesMb) };
         }
+
         public XmlRelatorioFinal GerarXml(int ProjetoId, string Versao, string UserId) {
             XmlRelatorioFinal relatorio = new XmlRelatorioFinal();
             Projeto projeto = _context.Projetos
@@ -133,6 +138,7 @@ namespace APIGestor.Business {
             int?[] rhIds = registros.Where(r => r.RecursoHumano != null).Select(r => r.RecursoHumanoId).ToArray();
             int?[] rmIds = registros.Where(r => r.RecursoMaterial != null).Select(r => r.RecursoMaterialId).ToArray();
 
+            #region <PD_RelFinalBase>
             relatorio.PD_RelFinalBase = new PD_RelFinalBase {
                 CodProjeto = projeto.Codigo,
                 ArquivoPDF = projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAnual").FirstOrDefault().NomeArquivo,
@@ -151,29 +157,36 @@ namespace APIGestor.Business {
                 AplicAmbito = projeto.RelatorioFinal.DescAmbito,
                 TxDifTec = projeto.RelatorioFinal.DescAtividades
             };
-            // PD_EQUIPEEMP
+            #endregion
+
+            #region <PD_EquipeEmp>
+
             var PedEmpresaList = new List<PedEmpresa>();
+
             var EmpresasFinanciadoras = projeto.Empresas
                 .Where(p => p.ClassificacaoValor == "Energia" || p.ClassificacaoValor == "Proponente")
                 .ToList();
+
             foreach (Empresa empresa in EmpresasFinanciadoras) {
                 var equipeList = new List<EquipeEmpresa>();
-                foreach (AlocacaoRh alRh in projeto.AlocacoesRh
-                    .Where(p => p.RecursoHumano.CPF != null) // somente brasileiros
-                    .Where(p => p.RecursoHumano.Empresa == empresa)
-                    .Where(p => rhIds.Contains(p.RecursoHumano.Id))
-                    .ToList()) {
-                    var strMesHora = ObterMesReferencia(projeto, registros.Where(r => r.RecursoHumanoId == alRh.RecursoHumanoId).ToList());
+
+                var registroRhEmpresa = registros.Where(r => r.RecursoHumano != null && r.RecursoHumano.Empresa == empresa).GroupBy(r => r.RecursoHumanoId).Select(r => r.First());
+
+                foreach (var registro in registroRhEmpresa) {
+
+                    var strMesHora = ObterMesReferencia(projeto, registros.Where(r => r.RecursoHumanoId == registro.RecursoHumanoId).ToList());
+
                     equipeList.Add(new EquipeEmpresa {
-                        NomeMbEqEmp = alRh.RecursoHumano.NomeCompleto,
-                        CpfMbEqEmp = alRh.RecursoHumano.CPF,
-                        TitulacaoMbEqEmp = alRh.RecursoHumano.TitulacaoValor,
-                        FuncaoMbEqEmp = alRh.RecursoHumano.FuncaoValor,
-                        HhMbEqEmp = alRh.RecursoHumano.ValorHora.ToString(),
+                        NomeMbEqEmp = registro.RecursoHumano.NomeCompleto,
+                        CpfMbEqEmp = registro.RecursoHumano.CPF,
+                        TitulacaoMbEqEmp = registro.RecursoHumano.TitulacaoValor,
+                        FuncaoMbEqEmp = registro.RecursoHumano.FuncaoValor,
+                        HhMbEqEmp = registro.RecursoHumano.ValorHora.ToString(),
                         MesMbEqEmp = strMesHora[0],
                         HoraMesMbEqEmp = strMesHora[1]
                     });
                 }
+
                 PedEmpresaList.Add(new PedEmpresa {
                     CodEmpresa = empresa.CatalogEmpresa.Valor,
                     TipoEmpresa = empresa.ClassificacaoValor,
@@ -182,25 +195,30 @@ namespace APIGestor.Business {
                     }
                 });
             }
+            #endregion
+
+            #region <PD_EquipeExec>
+
             // PD_EQUIPEEXEC
             var PedExecutoraList = new List<PedExecutora>();
+            
             foreach (Empresa empresa in projeto.Empresas
                 .Where(p => p.ClassificacaoValor == "Executora")
                 .ToList()) {
+
+
                 var equipeList = new List<EquipeExec>();
-                foreach (AlocacaoRh alRh in projeto.AlocacoesRh
-                    .Where(p => p.RecursoHumano.Empresa == empresa)
-                    .Where(p => rhIds.Contains(p.RecursoHumano.Id))
-                    .ToList()) {
-                    var strMesHora = ObterMesReferencia(projeto, registros.Where(r => r.RecursoHumanoId == alRh.RecursoHumanoId).ToList());
+                var registroRhEmpresa = registros.Where(r => r.RecursoHumano != null && r.RecursoHumano.Empresa == empresa).GroupBy(r => r.RecursoHumanoId).Select(r => r.First());
+                foreach (var registro in registroRhEmpresa) {
+                    var strMesHora = ObterMesReferencia(projeto, registros.Where(r => r.RecursoHumanoId == registro.RecursoHumanoId).ToList());
 
                     equipeList.Add(new EquipeExec {
-                        NomeMbEqExec = alRh.RecursoHumano.NomeCompleto,
-                        BRMbEqExec = alRh.RecursoHumano.NacionalidadeValor,
-                        DocMbEqExec = alRh.RecursoHumano.CPF ?? alRh.RecursoHumano.Passaporte,
-                        TitulacaoMbEqExec = alRh.RecursoHumano.TitulacaoValor,
-                        FuncaoMbEqExec = alRh.RecursoHumano.FuncaoValor,
-                        HhMbEqExec = alRh.RecursoHumano.ValorHora.ToString(),
+                        NomeMbEqExec = registro.RecursoHumano.NomeCompleto,
+                        BRMbEqExec = registro.RecursoHumano.NacionalidadeValor,
+                        DocMbEqExec = registro.RecursoHumano.CPF ?? registro.RecursoHumano.Passaporte,
+                        TitulacaoMbEqExec = registro.RecursoHumano.TitulacaoValor,
+                        FuncaoMbEqExec = registro.RecursoHumano.FuncaoValor,
+                        HhMbEqExec = registro.RecursoHumano.ValorHora.ToString(),
                         MesMbEqExec = strMesHora[0],
                         HoraMesMbEqExec = strMesHora[1]
                     });
@@ -214,6 +232,7 @@ namespace APIGestor.Business {
                     }
                 });
             }
+
             relatorio.PD_EquipeEmp = new PD_EquipeEmp {
                 Empresas = new PedEmpresas {
                     Empresa = PedEmpresaList
@@ -224,7 +243,11 @@ namespace APIGestor.Business {
                     Executora = PedExecutoraList
                 }
             };
-            // PD_ETAPAS
+
+            #endregion
+
+
+            #region <PD_ETAPAS>
             var EtapasList = new List<PD_Etapa>();
             int ordem = 1;
             int anterior = 0;
@@ -250,7 +273,9 @@ namespace APIGestor.Business {
             relatorio.PD_Etapas = new PD_Etapas {
                 Etapa = EtapasList
             };
-            // PD_RECURSO
+            #endregion
+
+            #region <PD_RECURSO>
             relatorio.PD_Recursos = new RF_Recursos {
                 RecursoEmpresa = new List<RF_RecursoEmpresa>(),
                 RecursoParceira = new List<RF_RecursoParceira>()
@@ -342,7 +367,9 @@ namespace APIGestor.Business {
                 });
             }
 
-            // PD_RESULTADO
+            #endregion
+
+            #region <PD_RESULTADO>
             relatorio.PD_Resultados = new PD_Resultados {
                 PD_ResultadosCP = new PD_ResultadosCP(),
                 PD_ResultadosCT = new PD_ResultadosCT {
@@ -450,6 +477,9 @@ namespace APIGestor.Business {
                 });
             }
             relatorio.PD_Resultados.PD_ResultadosIE.IdIE = listIdIE;
+
+            #endregion
+
             return relatorio;
         }
     }

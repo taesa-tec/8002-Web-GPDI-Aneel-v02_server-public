@@ -13,19 +13,15 @@ using System.Xml;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
 
-namespace APIGestor.Business
-{
-    public class XmlRelatorioFinalGestaoService : IXmlService<XmlRelatorioFinalGestao>
-    {
+namespace APIGestor.Business {
+    public class XmlRelatorioFinalGestaoService : IXmlService<XmlRelatorioFinalGestao> {
         private GestorDbContext _context;
         private EtapaService _etapaService;
-        public XmlRelatorioFinalGestaoService(GestorDbContext context, EtapaService etapaService)
-        {
+        public XmlRelatorioFinalGestaoService(GestorDbContext context, EtapaService etapaService) {
             _context = context;
             _etapaService = etapaService;
         }
-        public Resultado ValidaXml(int ProjetoId)
-        {
+        public Resultado ValidaXml(int ProjetoId) {
             var resultado = new Resultado();
             resultado.Acao = "Validação de dados";
             Projeto projeto = _context.Projetos
@@ -50,12 +46,10 @@ namespace APIGestor.Business
                     .Where(p => p.Id == ProjetoId)
                     .FirstOrDefault();
 
-            if (projeto == null)
-            {
+            if (projeto == null) {
                 resultado.Inconsistencias.Add("Projeto não localizado");
             }
-            else
-            {
+            else {
                 if (projeto.RegistroFinanceiro.Where(r => r.StatusValor == "Aprovado").ToList().Count() <= 0)
                     resultado.Inconsistencias.Add("Não existem refps aprovados para o projeto.");
 
@@ -74,24 +68,19 @@ namespace APIGestor.Business
             }
             return resultado;
         }
-        public List<CustoCatContabil> ObterCustosCat(ICollection<AlocacaoRm> AlocacoesRm,  Empresa empresa, int?[] rmIds, List<RegistroFinanceiro> registros)
-        {
+        public List<CustoCatContabil> ObterCustosCat(ICollection<AlocacaoRm> AlocacoesRm, Empresa empresa, int?[] rmIds, List<RegistroFinanceiro> registros) {
             var CustoCatContabil = new List<CustoCatContabil>();
             foreach (var rm in AlocacoesRm
                         .Where(p => p.EmpresaRecebedora == empresa)
                         .Where(p => p.EmpresaFinanciadora == empresa)
                         .Where(p => rmIds.Contains(p.RecursoMaterial.Id))
                         .GroupBy(p => p.EmpresaRecebedora)
-                        .ToList())
-            {
-                foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabilGestao.Valor))
-                {
+                        .ToList()) {
+                foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabilGestao.Valor)) {
                     var itemDespesa = new List<ItemDespesa>();
                     foreach (var registro in registros
-                            .Where(p => p.RecursoMaterial != null && p.RecursoMaterial.CategoriaContabilGestao.Valor == rm0.First().RecursoMaterial.CategoriaContabilGestao.Valor).ToList())
-                    {
-                        itemDespesa.Add(new ItemDespesa
-                        {
+                            .Where(p => p.RecursoMaterial != null && p.RecursoMaterial.CategoriaContabilGestao.Valor == rm0.First().RecursoMaterial.CategoriaContabilGestao.Valor).ToList()) {
+                        itemDespesa.Add(new ItemDespesa {
                             NomeItem = registro.NomeItem,
                             JustificaItem = rm0.First().Justificativa,
                             QtdeItem = registro.QtdItens,
@@ -99,8 +88,7 @@ namespace APIGestor.Business
                             TipoItem = registro.TipoValor
                         });
                     }
-                    CustoCatContabil.Add(new CustoCatContabil
-                    {
+                    CustoCatContabil.Add(new CustoCatContabil {
                         CategoriaContabil = rm0.First().RecursoMaterial.CategoriaContabilValor,
                         ItemDespesa = itemDespesa
                     });
@@ -109,16 +97,13 @@ namespace APIGestor.Business
             return CustoCatContabil;
         }
 
-        private List<string> ObterMesReferencia(Projeto projeto, List<RegistroFinanceiro> registros)
-        {
+        private List<string> ObterMesReferencia(Projeto projeto, List<RegistroFinanceiro> registros) {
             DateTime? DataInicio = projeto.DataInicio;
             string MesMb = null;
             string HoraMesMb = null;
-            foreach (var mes in registros)
-            {
+            foreach (var mes in registros) {
                 DateTime? DataAprov = mes.Mes;
-                if (DataAprov != null && DataInicio != null)
-                {
+                if (DataAprov != null && DataInicio != null) {
                     int nMonths = 0;
                     if (DataInicio.Value.Year == DataAprov.Value.Year)
                         nMonths = DataAprov.Value.Month - DataInicio.Value.Month;
@@ -130,13 +115,12 @@ namespace APIGestor.Business
             }
             return new List<string> { MesMb.TrimEnd(','), HoraMesMb.TrimEnd(',') };
         }
-        public XmlRelatorioFinalGestao GerarXml(int ProjetoId, string Versao, string UserId)
-        {
+        public XmlRelatorioFinalGestao GerarXml(int ProjetoId, string Versao, string UserId) {
             XmlRelatorioFinalGestao relatorio = new XmlRelatorioFinalGestao();
             Projeto projeto = _context.Projetos
                         .Include("CatalogEmpresa")
                         .Include("Empresas.Estado")
-                        .Include("Etapas")
+                        .Include("Etapas.EtapaMeses")
                         .Include("Atividades")
                         .Include("AlocacoesRh.RecursoHumano")
                         .Include("AlocacoesRm.RecursoMaterial.CategoriaContabilGestao")
@@ -159,52 +143,48 @@ namespace APIGestor.Business
 
             var AtividadesList = new List<RFG_Atividade>();
 
-            foreach (var rm0 in registros.Where(r => r.RecursoMaterial != null && r.Atividade != null).GroupBy(p => p.Atividade.Valor))
-            {
+            foreach (var rm0 in registros.Where(r => r.RecursoMaterial != null && r.Atividade != null).GroupBy(p => p.Atividade.Valor)) {
                 decimal? custo = 0;
-                foreach (var rm1 in rm0)
-                {
+                foreach (var rm1 in rm0) {
                     custo += rm1.ValorUnitario * rm1.QtdItens;
                 }
                 string _resAtividade = null;
-                switch(rm0.First().Atividade.Valor){
+                switch (rm0.First().Atividade.Valor) {
                     case "HH":
                         _resAtividade = projeto.Atividades.ResDedicacaoHorario;
-                    break;
+                        break;
                     case "EC":
                         _resAtividade = projeto.Atividades.ResParticipacaoMembros;
-                    break;
+                        break;
                     case "FG":
                         _resAtividade = projeto.Atividades.ResDesenvFerramenta;
-                    break;
+                        break;
                     case "PP":
                         _resAtividade = projeto.Atividades.ResProspTecnologica;
-                    break;
+                        break;
                     case "RP":
                         _resAtividade = projeto.Atividades.ResDivulgacaoResultados;
-                    break;
+                        break;
                     case "AP":
                         _resAtividade = projeto.Atividades.ResParticipacaoTecnicos;
-                    break;
+                        break;
                     case "BA":
                         _resAtividade = projeto.Atividades.ResBuscaAnterioridade;
-                    break;
+                        break;
                     case "CA":
                         _resAtividade = projeto.Atividades.ResContratacaoAuditoria;
-                    break;
+                        break;
                     case "AC":
                         _resAtividade = projeto.Atividades.ResApoioCitenel;
-                    break;
+                        break;
                 }
-                AtividadesList.Add(new RFG_Atividade
-                {
+                AtividadesList.Add(new RFG_Atividade {
                     TipoAtividade = rm0.First().Atividade.Valor,
                     ResAtividade = _resAtividade,
                     CustoAtividade = custo.ToString()
                 });
             }
-            relatorio.PD_RelFinalBase = new PD_RelFinalBase
-            {
+            relatorio.PD_RelFinalBase = new PD_RelFinalBase {
                 CodProjeto = projeto.Codigo,
                 ArquivoPDF = projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAnual").FirstOrDefault().NomeArquivo,
                 DataIniODS = projeto.DataInicio.ToString(),
@@ -216,18 +196,15 @@ namespace APIGestor.Business
             var EmpresasFinanciadoras = projeto.Empresas
                 .Where(p => p.ClassificacaoValor == "Energia" || p.ClassificacaoValor == "Proponente")
                 .ToList();
-            foreach (Empresa empresa in EmpresasFinanciadoras)
-            {
+            foreach (Empresa empresa in EmpresasFinanciadoras) {
                 var equipeList = new List<EquipeEmpresa>();
                 foreach (AlocacaoRh alRh in projeto.AlocacoesRh
                     .Where(p => p.RecursoHumano.CPF != null) // somente brasileiros
                     .Where(p => p.RecursoHumano.Empresa == empresa)
                     .Where(p => rhIds.Contains(p.RecursoHumano.Id))
-                    .ToList())
-                {
+                    .ToList()) {
                     var strMesHora = ObterMesReferencia(projeto, registros.Where(r => r.RecursoHumanoId == alRh.RecursoHumanoId).ToList());
-                    equipeList.Add(new EquipeEmpresa
-                    {
+                    equipeList.Add(new EquipeEmpresa {
                         NomeMbEqEmp = alRh.RecursoHumano.NomeCompleto,
                         CpfMbEqEmp = alRh.RecursoHumano.CPF,
                         HhMbEqEmp = alRh.RecursoHumano.ValorHora.ToString(),
@@ -235,63 +212,59 @@ namespace APIGestor.Business
                         HoraMesMbEqEmp = strMesHora[1]
                     });
                 }
-                PedEmpresaList.Add(new PedEmpresa
-                {
+                PedEmpresaList.Add(new PedEmpresa {
                     CodEmpresa = empresa.CatalogEmpresa.Valor,
                     TipoEmpresa = empresa.ClassificacaoValor,
-                    Equipe = new Equipe
-                    {
+                    Equipe = new Equipe {
                         EquipeEmpresa = equipeList
                     }
                 });
             }
-            relatorio.PD_Equipe = new PD_Equipe
-            {
-                Empresas = new PedEmpresas
-                {
+            relatorio.PD_Equipe = new PD_Equipe {
+                Empresas = new PedEmpresas {
                     Empresa = PedEmpresaList
                 }
             };
             // PD_ETAPAS
             var EtapasList = new List<PD_Etapa>();
             int ordem = 1;
-            int anterior = 0;
-            foreach (Etapa etapa in projeto.Etapas.OrderBy(e => e.Id))
-            {
-                string mesExecEtapa = null;
-                int duracao = etapa.Duracao;
-                var etapalist = new List<string>();
-                int last = 0;
-                for (int a = anterior + 1; a <= (anterior + duracao); a++)
-                {
-                    etapalist.Add((a).ToString());
-                    last = a;
-                }
-                anterior = last;
-                mesExecEtapa = String.Join(",", etapalist);
 
-                EtapasList.Add(new PD_Etapa
-                {
+            var meses = new List<DateTime>();
+
+            projeto.Etapas.ForEach(e =>
+                meses.AddRange(
+                    e.EtapaMeses.Select(m => m.Mes)
+                )
+            );
+            meses = meses.GroupBy(m => m).Select(m => m.First()).OrderBy(m => m).ToList();
+
+
+            projeto.Etapas.Select(e => e.EtapaMeses.Select(m => m.Mes));
+
+            foreach (Etapa etapa in projeto.Etapas.OrderBy(e => e.Id)) {
+
+                var etapalist = etapa.EtapaMeses.Select(m => meses.IndexOf(m.Mes) + 1).ToList();
+
+                var mesExecEtapa = String.Join(",", etapalist);
+
+                EtapasList.Add(new PD_Etapa {
                     EtapaN = ordem.ToString().PadLeft(2, '0'),
                     Atividades = etapa.AtividadesRealizadas,
                     MesExecEtapa = mesExecEtapa
                 });
+
                 ordem++;
             }
-            relatorio.PD_Etapas = new PD_Etapas
-            {
+            relatorio.PD_Etapas = new PD_Etapas {
                 Etapa = EtapasList
             };
             // PD_RECURSO
-            relatorio.PD_Recursos = new RFG_Recursos
-            {
+            relatorio.PD_Recursos = new RFG_Recursos {
                 RecursoEmpresa = new List<RFG_RecursoEmpresa>()
             };
-            foreach (Empresa empresa in EmpresasFinanciadoras)
-            {
+            foreach (Empresa empresa in EmpresasFinanciadoras) {
 
-                relatorio.PD_Recursos.RecursoEmpresa.Add(new RFG_RecursoEmpresa
-                {
+                relatorio.PD_Recursos.RecursoEmpresa.Add(new RFG_RecursoEmpresa {
                     CodEmpresa = empresa.CatalogEmpresa.Valor,
                     CustoCatContabil = ObterCustosCat(projeto.AlocacoesRm, empresa, rmIds, registros)
                 });
@@ -300,10 +273,8 @@ namespace APIGestor.Business
 
             // PD_RESULTADO
             var listIdCp = new List<IdCP>();
-            foreach (ResultadoCapacitacao rCp in _context.ResultadosCapacitacao.Include("RecursoHumano").Include("Uploads").Where(r => r.ProjetoId == ProjetoId).ToList())
-            {
-                listIdCp.Add(new IdCP
-                {
+            foreach (ResultadoCapacitacao rCp in _context.ResultadosCapacitacao.Include("RecursoHumano").Include("Uploads").Where(r => r.ProjetoId == ProjetoId).ToList()) {
+                listIdCp.Add(new IdCP {
                     TipoCP = rCp.TipoValor,
                     ConclusaoCP = rCp.Conclusao.ToString(),
                     DataCP = rCp.DataConclusao.ToString(),
@@ -315,15 +286,13 @@ namespace APIGestor.Business
                 });
             }
 
-            relatorio.PD_ResultadosCP = new PD_ResultadosCP{
+            relatorio.PD_ResultadosCP = new PD_ResultadosCP {
                 IdCP = listIdCp
             };
 
             var listIdPC = new List<IdPC>();
-            foreach (ResultadoProducao rCT_PC in _context.ResultadosProducao.Include("Pais").Include("Uploads").Where(r => r.ProjetoId == ProjetoId).ToList())
-            {
-                listIdPC.Add(new IdPC
-                {
+            foreach (ResultadoProducao rCT_PC in _context.ResultadosProducao.Include("Pais").Include("Uploads").Where(r => r.ProjetoId == ProjetoId).ToList()) {
+                listIdPC.Add(new IdPC {
                     TipoPC = rCT_PC.TipoValor,
                     ConfPubPC = rCT_PC.Confirmacao.ToString(),
                     DataPC = rCT_PC.DataPublicacao.ToString(),
@@ -335,7 +304,7 @@ namespace APIGestor.Business
                     ArquivoPDF = rCT_PC.Uploads.First().NomeArquivo,
                 });
             }
-            relatorio.PD_ResultadosPC = new PD_ResultadosPC{
+            relatorio.PD_ResultadosPC = new PD_ResultadosPC {
                 IdPC = listIdPC
             };
             return relatorio;
