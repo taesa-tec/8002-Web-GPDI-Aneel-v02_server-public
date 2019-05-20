@@ -6,17 +6,14 @@ using APIGestor.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 
-namespace APIGestor.Controllers
-{
+namespace APIGestor.Controllers {
     [Route("api/projeto/")]
     [ApiController]
     [Authorize("Bearer")]
-    public class GeradorXmlController : ControllerBase
-    {
+    public class GeradorXmlController : ControllerBase {
         private GeradorXmlService _service;
 
-        public GeradorXmlController(GeradorXmlService service)
-        {
+        public GeradorXmlController( GeradorXmlService service ) {
             _service = service;
         }
 
@@ -32,34 +29,28 @@ namespace APIGestor.Controllers
         //     };
         // }
         [HttpGet("{projetoId}/Xml/{xmlTipo}/{versao}")]
-        public Resultado Get(int projetoId, XmlTipo xmlTipo, string versao)
-        {
+        public Resultado Get( int projetoId, XmlTipo xmlTipo, string versao ) {
             Resultado r = new Resultado();
-            try
-            {
+            try {
                 var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
 
                 return _service.GerarXml(projetoId, xmlTipo, versao, userId);
             }
-            catch (System.Exception e)
-            {
+            catch(System.Exception e) {
                 // Substituir depois só por uma mensagem de erro genérica
                 r.Inconsistencias.Add(e.Message);
-                r.Inconsistencias.Add(e.StackTrace);
                 return r;
             }
-            
+
         }
 
         [HttpGet("{projetoId}/Xml/{xmlTipo}/ValidaDados")]
-        public Resultado GetA(int projetoId, XmlTipo xmlTipo)
-        {
-           return _service.ValidaDados(projetoId, xmlTipo);
+        public Resultado GetA( int projetoId, XmlTipo xmlTipo ) {
+            return _service.ValidaDados(projetoId, xmlTipo);
         }
 
         [HttpGet("{projetoId}/ObterXmls")]
-        public IEnumerable<Upload> GetB(int projetoId)
-        {
+        public IEnumerable<Upload> GetB( int projetoId ) {
             return _service.ObterXmls(projetoId);
         }
     }

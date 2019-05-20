@@ -246,7 +246,7 @@ namespace APIGestor.Business {
 
             foreach(Etapa etapa in projeto.Etapas.OrderBy(e => e.Id)) {
 
-                var etapalist = etapa.EtapaMeses.Select(m => meses.IndexOf(m.Mes) + 1).ToList();
+                var etapalist = etapa.EtapaMeses.Select(m => meses.IndexOf(m.Mes) + 1).OrderBy(i => i).ToList();
 
                 var mesExecEtapa = String.Join(",", etapalist);
 
