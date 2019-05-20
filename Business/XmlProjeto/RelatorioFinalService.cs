@@ -70,8 +70,8 @@ namespace APIGestor.Business {
             }
             return resultado;
         }
-        public List<CustoCatContabil> ObterCustosCat(IGrouping<Empresa, AlocacaoRm> rm, List<RegistroFinanceiro> registros) {
-            var CustoCatContabil = new List<CustoCatContabil>();
+        public List<CustoCatContabil<ItemDespesa>> ObterCustosCat(IGrouping<Empresa, AlocacaoRm> rm, List<RegistroFinanceiro> registros) {
+            var CustoCatContabil = new List<CustoCatContabil<ItemDespesa>>();
             foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabil)) {
                 var itemDespesa = new List<ItemDespesa>();
                 foreach (var registro in registros
@@ -86,7 +86,7 @@ namespace APIGestor.Business {
                         ItemLabN = registro.EquiparLabNovo.ToString()
                     });
                 }
-                CustoCatContabil.Add(new CustoCatContabil {
+                CustoCatContabil.Add(new CustoCatContabil<ItemDespesa> {
                     CategoriaContabil = rm0.First().RecursoMaterial.CategoriaContabilValor,
                     ItemDespesa = itemDespesa
                 });
@@ -139,7 +139,7 @@ namespace APIGestor.Business {
             int?[] rmIds = registros.Where(r => r.RecursoMaterial != null).Select(r => r.RecursoMaterialId).ToArray();
 
             #region <PD_RelFinalBase>
-            relatorio.PD_RelFinalBase = new PD_RelFinalBase {
+            relatorio.PD_RelFinalBase = new PD_RelFinalBasePD {
                 CodProjeto = projeto.Codigo,
                 ArquivoPDF = projeto.RelatorioFinal.Uploads.Where(u => u.CategoriaValor == "RelatorioFinalAnual").FirstOrDefault().NomeArquivo,
                 DataIniODS = projeto.DataInicio.ToString(),
@@ -325,7 +325,7 @@ namespace APIGestor.Business {
                     .Where(p => rhIds.Contains(p.RecursoHumano.Id))
                     .ToList()) {
 
-                    var CustoCatContabil = new List<CustoCatContabil>();
+                    var CustoCatContabil = new List<CustoCatContabil<ItemDespesa>>();
                     var itemDespesa = new List<ItemDespesa>();
                     foreach (var registro in registros
                             .Where(p => p.RecursoHumano != null).ToList()) {
@@ -339,7 +339,7 @@ namespace APIGestor.Business {
                             //ItemLabN = registro.EquiparLabNovo.ToString()
                         });
                     }
-                    CustoCatContabil.Add(new CustoCatContabil {
+                    CustoCatContabil.Add(new CustoCatContabil<ItemDespesa> {
                         CategoriaContabil = "RH",
                         ItemDespesa = itemDespesa
                     });

@@ -10,10 +10,8 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Hosting;
 using System.Text.RegularExpressions;
 
-namespace APIGestor.Business
-{
-    public class GeradorXmlService
-    {
+namespace APIGestor.Business {
+    public class GeradorXmlService {
         private GestorDbContext _context;
 
         private XmlProjetoPedService _projetoPed;
@@ -37,8 +35,7 @@ namespace APIGestor.Business
             XmlRelatorioAuditoriaService relatorioAuditoriaPed,
             XmlProjetoGestaoService projetoGestao,
             XmlRelatorioFinalGestaoService relatorioFinalGestao,
-            XmlRelatorioAuditoriaGestaoService relatorioAuditoriaGestao)
-        {
+            XmlRelatorioAuditoriaGestaoService relatorioAuditoriaGestao ) {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
             _projetoPed = projetoPed;
@@ -51,14 +48,12 @@ namespace APIGestor.Business
             _relatorioFinalGestao = relatorioFinalGestao;
             _relatorioAuditoriaGestao = relatorioAuditoriaGestao;
         }
-        public IEnumerable<Upload> ObterXmls(int projetoId)
-        {
+        public IEnumerable<Upload> ObterXmls( int projetoId ) {
             var Upload = _context.Uploads
                 .Include("User")
                 .Where(p => p.ProjetoId == projetoId)
                 .Where(p => p.Categoria == (CategoriaUpload)3)
-                .Select(p => new Upload
-                {
+                .Select(p => new Upload {
                     Id = p.Id,
                     NomeArquivo = p.NomeArquivo,
                     ProjetoId = p.ProjetoId,
@@ -72,16 +67,13 @@ namespace APIGestor.Business
                 .ToList();
             return Upload;
         }
-        public Resultado CriarArquivo(string XmlDoc, string Tipo, int ProjetoId, string Versao, string UserId)
-        {
+        public Resultado CriarArquivo( string XmlDoc, string Tipo, int ProjetoId, string Versao, string UserId ) {
             var resultado = new Resultado();
             Projeto Projeto = _context.Projetos.Include("CatalogEmpresa").FirstOrDefault(p => p.Id == ProjetoId);
-            if (Projeto == null)
-            {
+            if(Projeto == null) {
                 resultado.Inconsistencias.Add("Projeto não localizado");
             }
-            else
-            {
+            else {
                 string innerXml = JsonConvert.DeserializeXmlNode(XmlDoc, "PED").InnerXml;
 
                 innerXml = Regex.Replace(innerXml, "\u2013", "-");
@@ -101,13 +93,11 @@ namespace APIGestor.Business
                 string newPath = Path.Combine(webRootPath, folderName);
                 string fileName = "APLPED" + Projeto.CatalogEmpresa.Valor + "_" + Tipo + "_" + Projeto.Numero + "_" + Versao + ".XML";
 
-                if (!Directory.Exists(newPath))
-                {
+                if(!Directory.Exists(newPath)) {
                     Directory.CreateDirectory(newPath);
                 }
 
-                var upload = new Upload
-                {
+                var upload = new Upload {
                     NomeArquivo = fileName,
                     UserId = UserId,
                     Url = "wwwroot/" + folderName,
@@ -133,48 +123,41 @@ namespace APIGestor.Business
             }
             return resultado;
         }
-        public Resultado DadosValidos(int ProjetoId, XmlTipo XmlTipo, string Versao, string UserId)
-        {
+        public Resultado DadosValidos( int ProjetoId, XmlTipo XmlTipo, string Versao, string UserId ) {
             var resultado = new Resultado();
-            try
-            {
-                if (ProjetoId <= 0)
+            try {
+                if(ProjetoId <= 0)
                     resultado.Inconsistencias.Add("Informe o ProjetoId");
-                if (XmlTipo.ToString() == null || !Enum.IsDefined(typeof(XmlTipo), XmlTipo))
+                if(XmlTipo.ToString() == null || !Enum.IsDefined(typeof(XmlTipo), XmlTipo))
                     resultado.Inconsistencias.Add("Informe o XmlTipo");
-                else if (_context.Projetos.Where(p => p.Id == ProjetoId).FirstOrDefault() == null)
+                else if(_context.Projetos.Where(p => p.Id == ProjetoId).FirstOrDefault() == null)
                     resultado.Inconsistencias.Add("ProjetoId não localizado");
-                if (Versao == null)
+                if(Versao == null)
                     resultado.Inconsistencias.Add("Informe a Versão");
-                if (UserId == null)
+                if(UserId == null)
                     resultado.Inconsistencias.Add("UserId Não localizado");
             }
-            catch (Exception ex)
-            {
+            catch(Exception ex) {
                 resultado.Inconsistencias.Add(ex.Message);
             }
 
             return resultado;
         }
-        public Resultado GerarXml(int ProjetoId, XmlTipo XmlTipo, string Versao, string UserId)
-        {
+        public Resultado GerarXml( int ProjetoId, XmlTipo XmlTipo, string Versao, string UserId ) {
             Resultado resultado = DadosValidos(ProjetoId, XmlTipo, Versao, UserId);
-            if (resultado.Inconsistencias.Count == 0)
-            {
+            if(resultado.Inconsistencias.Count == 0) {
                 var svc = obterXmlTipo(XmlTipo);
                 Resultado ValidaXml = svc.ValidaXml(ProjetoId);
 
-                if (ValidaXml.Inconsistencias.Count() > 0)
+                if(ValidaXml.Inconsistencias.Count() > 0)
                     return ValidaXml;
 
                 var xml = svc.GerarXml(ProjetoId, Versao, UserId);
 
-                if (xml != null)
-                {
+                if(xml != null) {
                     resultado = CriarArquivo(JsonConvert.SerializeObject(xml), XmlTipo.ToString(), ProjetoId, Versao, UserId);
                 }
-                else
-                {
+                else {
                     resultado.Inconsistencias.Add("Erro na gravação do arquivo");
                 }
 
@@ -182,11 +165,9 @@ namespace APIGestor.Business
             }
             return resultado;
         }
-        private dynamic obterXmlTipo(XmlTipo XmlTipo)
-        {
+        private dynamic obterXmlTipo( XmlTipo XmlTipo ) {
             var svc = (dynamic)null;
-            switch (XmlTipo.ToString())
-            {
+            switch(XmlTipo.ToString()) {
                 //case "MOVIMENTACAOFINANCEIRA":
                 //case "PROGRAMA": 
                 case "PROJETOGESTAO":
@@ -219,15 +200,13 @@ namespace APIGestor.Business
             }
             return svc;
         }
-        public Resultado ValidaDados(int ProjetoId, XmlTipo XmlTipo)
-        {
+        public Resultado ValidaDados( int ProjetoId, XmlTipo XmlTipo ) {
             Resultado resultado = new Resultado();
-            if (ProjetoId <= 0)
+            if(ProjetoId <= 0)
                 resultado.Inconsistencias.Add("Informe o ProjetoId");
-            if (XmlTipo.ToString() == null || !Enum.IsDefined(typeof(XmlTipo), XmlTipo))
+            if(XmlTipo.ToString() == null || !Enum.IsDefined(typeof(XmlTipo), XmlTipo))
                 resultado.Inconsistencias.Add("Informe o XmlTipo");
-            if (resultado.Inconsistencias.Count == 0)
-            {
+            if(resultado.Inconsistencias.Count == 0) {
                 var svc = obterXmlTipo(XmlTipo);
                 resultado = svc.ValidaXml(ProjetoId);
                 resultado.Acao = "Validação dados Xml " + XmlTipo.ToString();

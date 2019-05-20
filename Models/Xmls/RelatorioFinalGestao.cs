@@ -5,10 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace APIGestor.Models
-{
-    public class XmlRelatorioFinalGestao
-    {
+namespace APIGestor.Models {
+    public class XmlRelatorioFinalGestao {
         public PD_RelFinalBase PD_RelFinalBase { get; set; }
         public PD_Equipe PD_Equipe { get; set; }
         public PD_Etapas PD_Etapas { get; set; }
@@ -17,35 +15,30 @@ namespace APIGestor.Models
         public PD_ResultadosPC PD_ResultadosPC { get; set; }
     }
 
-    public class RFG_Atividades
-    {
+    public class RFG_Atividades {
         public List<RFG_Atividade> Atividade { get; set; }
     }
-    public class RFG_Atividade
-    {
+    public class RFG_Atividade {
         public string TipoAtividade { get; set; }
         public string ResAtividade { get; set; }
-        private string _custoAtividade{ get; set; }
-        public string CustoAtividade{
+        private string _custoAtividade { get; set; }
+        public string CustoAtividade {
             get => decimal.Parse(_custoAtividade).ToString("N2");
             set => _custoAtividade = value;
         }
     }
-    public class PD_ResultadosPC
-    {
+    public class PD_ResultadosPC {
         public List<IdPC> IdPC { get; set; }
     }
-    public class IdPC
-    {
+    public class IdPC {
         public string TipoPC { get; set; }
         private string _confPubPC;
-        public string ConfPubPC
-        {
-            get => _confPubPC=="True" ? "S" : "N";
+        public string ConfPubPC {
+            get => _confPubPC == "True" ? "S" : "N";
             set => _confPubPC = value;
         }
-        private DateTime _dataPC{ get; set; }
-        public string DataPC{
+        private DateTime _dataPC { get; set; }
+        public string DataPC {
             get => _dataPC.ToString("MMyyyy", CultureInfo.InvariantCulture);
             set => _dataPC = Convert.ToDateTime(value);
         }
@@ -57,13 +50,11 @@ namespace APIGestor.Models
         public string ArquivoPDF { get; set; }
     }
 
-    public class RFG_Recursos
-    {
+    public class RFG_Recursos {
         public List<RFG_RecursoEmpresa> RecursoEmpresa { get; set; }
     }
-    public class RFG_RecursoEmpresa
-    {
+    public class RFG_RecursoEmpresa {
         public string CodEmpresa { get; set; }
-        public List<CustoCatContabil> CustoCatContabil { get; set; }
+        public List<CustoCatContabil<ItemDespesaBase>> CustoCatContabil { get; set; }
     }
 }
