@@ -39,6 +39,7 @@ namespace APIGestor.Controllers {
             catch(System.Exception e) {
                 // Substituir depois só por uma mensagem de erro genérica
                 r.Inconsistencias.Add(e.Message);
+                r.Inconsistencias.Add(e.StackTrace);
                 return r;
             }
 
