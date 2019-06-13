@@ -19,7 +19,7 @@ namespace APIGestor.Models {
         public List<T> Relatorios {
             get {
                 List<T> ts = new List<T>();
-                foreach (var item in CategoriaRelatorios) {
+                foreach(var item in CategoriaRelatorios) {
                     ts.Add(item.Value);
                 }
                 return ts;
@@ -29,7 +29,7 @@ namespace APIGestor.Models {
         public string Nome { get; set; }
         public int Total { get; set; }
         public decimal Valor { get; set; }
-        public RelatorioEmpresa(Empresa empresa) {
+        public RelatorioEmpresa( Empresa empresa ) {
             this.Id = empresa.Id;
             this.Nome = empresa.CatalogEmpresa != null ? empresa.CatalogEmpresa.Nome : empresa.RazaoSocial;
         }
@@ -43,11 +43,11 @@ namespace APIGestor.Models {
 
         public decimal Valor { get; set; }
 
-        public void addItem(T item) {
+        public void addItem( T item ) {
             this.Items.Add(item);
         }
 
-        protected RelatoriosCategoria(string desc) {
+        protected RelatoriosCategoria( string desc ) {
             Desc = desc;
         }
     }
@@ -70,7 +70,7 @@ namespace APIGestor.Models {
         public new int Total {
             get {
                 int t = 0;
-                foreach (var empresa in Empresas) {
+                foreach(var empresa in Empresas) {
                     t += empresa.Total;
                 }
                 return t;
@@ -80,7 +80,7 @@ namespace APIGestor.Models {
         public new decimal Valor {
             get {
                 decimal t = 0;
-                foreach (var empresa in Empresas) {
+                foreach(var empresa in Empresas) {
                     t += empresa.Valor;
                 }
                 return t;
@@ -90,8 +90,8 @@ namespace APIGestor.Models {
         public List<OrcamentoEmpresaItem> OrcamentoEmpresaItens {
             get {
                 var itens = new List<OrcamentoEmpresaItem>();
-                foreach (var empresa in Empresas) {
-                    foreach (var categoria in empresa.Relatorios) {
+                foreach(var empresa in Empresas) {
+                    foreach(var categoria in empresa.Relatorios) {
                         itens.AddRange(categoria.Items);
                     }
                 }
@@ -99,26 +99,26 @@ namespace APIGestor.Models {
             }
         }
 
-        public OrcamentoEmpresas(List<AlocacaoRh> alocacaoRhs, List<AlocacaoRm> alocacaoRms) {
+        public OrcamentoEmpresas( List<AlocacaoRh> alocacaoRhs, List<AlocacaoRm> alocacaoRms ) {
             this.alocacaoRhs = alocacaoRhs;
             this.alocacaoRms = alocacaoRms;
 
             Dictionary<int, OrcamentoEmpresa> empresas = new Dictionary<int, OrcamentoEmpresa>();
 
             alocacaoRhs.ForEach(alocacao => {
-                if (!empresas.ContainsKey(alocacao.Empresa.Id))
+                if(!empresas.ContainsKey(alocacao.Empresa.Id))
                     empresas.Add(alocacao.Empresa.Id, new OrcamentoEmpresa(alocacao.Empresa));
                 empresas[alocacao.Empresa.Id].addItem(alocacao);
 
             });
 
             alocacaoRms.ForEach(alocacao => {
-                if (!empresas.ContainsKey(alocacao.EmpresaFinanciadora.Id))
+                if(!empresas.ContainsKey(alocacao.EmpresaFinanciadora.Id))
                     empresas.Add(alocacao.EmpresaFinanciadora.Id, new OrcamentoEmpresa(alocacao.EmpresaFinanciadora));
                 empresas[alocacao.EmpresaFinanciadora.Id].addItem(alocacao);
             });
 
-            foreach (var empresa in empresas) {
+            foreach(var empresa in empresas) {
                 Empresas.Add(empresa.Value);
             }
 
@@ -127,8 +127,8 @@ namespace APIGestor.Models {
 
     public class OrcamentoEmpresa : RelatorioEmpresa<OrcamentoCategoria> {
 
-        public void addItem(AlocacaoRh alocacao) {
-            if (!this.CategoriaRelatorios.ContainsKey("RH")) {
+        public void addItem( AlocacaoRh alocacao ) {
+            if(!this.CategoriaRelatorios.ContainsKey("RH")) {
                 this.CategoriaRelatorios.Add("RH", new OrcamentoCategoria("Recursos Humanos"));
             }
             this.CategoriaRelatorios["RH"].addItem(new OrcamentoEmpresaItem(alocacao));
@@ -137,7 +137,7 @@ namespace APIGestor.Models {
         public new int Total {
             get {
                 int total = 0;
-                foreach (var item in Relatorios) {
+                foreach(var item in Relatorios) {
                     total += item.Total;
                 }
                 return total;
@@ -146,30 +146,30 @@ namespace APIGestor.Models {
         public new decimal Valor {
             get {
                 decimal valor = 0;
-                foreach (var item in Relatorios) {
+                foreach(var item in Relatorios) {
                     valor += (decimal)item.Valor;
                 }
                 return valor;
             }
         }
-        public void addItem(AlocacaoRm alocacao) {
-            if (!this.CategoriaRelatorios.ContainsKey(alocacao.RecursoMaterial.categoria)) {
+        public void addItem( AlocacaoRm alocacao ) {
+            if(!this.CategoriaRelatorios.ContainsKey(alocacao.RecursoMaterial.categoria)) {
                 this.CategoriaRelatorios.Add(alocacao.RecursoMaterial.categoria, new OrcamentoCategoria(alocacao.RecursoMaterial.categoria));
             }
             this.CategoriaRelatorios[alocacao.RecursoMaterial.categoria].addItem(new OrcamentoEmpresaItem(alocacao));
         }
 
-        public OrcamentoEmpresa(Empresa e) : base(e) { }
+        public OrcamentoEmpresa( Empresa e ) : base(e) { }
 
     }
 
     public class OrcamentoCategoria : RelatoriosCategoria<OrcamentoEmpresaItem> {
-        public OrcamentoCategoria(string desc) : base(desc) { }
+        public OrcamentoCategoria( string desc ) : base(desc) { }
 
         public new decimal Valor {
             get {
                 decimal t = 0;
-                foreach (OrcamentoEmpresaItem item in Items) {
+                foreach(OrcamentoEmpresaItem item in Items) {
                     t += (decimal)item.Valor;
                 }
                 return t;
@@ -183,7 +183,7 @@ namespace APIGestor.Models {
         public AlocacaoRh AlocacaoRh { get; set; }
         public AlocacaoRm AlocacaoRm { get; set; }
 
-        public OrcamentoEmpresaItem(AlocacaoRh alocacaoRh) {
+        public OrcamentoEmpresaItem( AlocacaoRh alocacaoRh ) {
             Desc = alocacaoRh.RecursoHumano.NomeCompleto;
             AlocacaoRh = alocacaoRh;
             AlocacaoId = alocacaoRh.Id;
@@ -192,7 +192,7 @@ namespace APIGestor.Models {
             RecursoHumano = alocacaoRh.RecursoHumano;
         }
 
-        public OrcamentoEmpresaItem(AlocacaoRm alocacaoRm) {
+        public OrcamentoEmpresaItem( AlocacaoRm alocacaoRm ) {
             Desc = alocacaoRm.RecursoMaterial.Nome;
             AlocacaoRm = alocacaoRm;
             AlocacaoId = alocacaoRm.Id;
@@ -247,8 +247,8 @@ namespace APIGestor.Models {
         public List<ExtratoEmpresaItem> ExtratoEmpresaItens {
             get {
                 var itens = new List<ExtratoEmpresaItem>();
-                foreach (var empresa in Empresas) {
-                    foreach (var categoria in empresa.Relatorios) {
+                foreach(var empresa in Empresas) {
+                    foreach(var categoria in empresa.Relatorios) {
                         itens.AddRange(categoria.Items);
                     }
                 }
@@ -256,27 +256,29 @@ namespace APIGestor.Models {
             }
         }
 
-        public ExtratoEmpresas(List<RegistroFinanceiro> registroFinanceiros, OrcamentoEmpresas orcamentoEmpresas) {
+        public ExtratoEmpresas( List<RegistroFinanceiro> registroFinanceiros, OrcamentoEmpresas orcamentoEmpresas ) {
 
             this.orcamentoEmpresas = orcamentoEmpresas;
+
             this.registroFinanceiros = from r in registroFinanceiros
-                                       where r.EmpresaFinanciadora != null
+                                       where r.EmpresaFinanciadoraId != null
                                        select r;
 
             Dictionary<int, ExtratoEmpresa> empresas = new Dictionary<int, ExtratoEmpresa>();
 
-            foreach (var registro in this.registroFinanceiros) {
-                if (registro.EmpresaFinanciadora != null && !empresas.ContainsKey(registro.EmpresaFinanciadora.Id)) {
-                    empresas.Add(registro.EmpresaFinanciadora.Id,
-                        new ExtratoEmpresa(registro.EmpresaFinanciadora,
-                        this.orcamentoEmpresas.Empresas.Find(e => e.Id == registro.EmpresaFinanciadora.Id)
-                        )
+            foreach(var registro in this.registroFinanceiros) {
+                if(registro.EmpresaFinanciadoraId != null && !empresas.ContainsKey((int)registro.EmpresaFinanciadoraId)) {
+
+                    var empresaOrcamento = this.orcamentoEmpresas.Empresas.Find(e => e.Id == registro.EmpresaFinanciadora.Id);
+
+                    empresas.Add((int)registro.EmpresaFinanciadoraId,
+                        new ExtratoEmpresa(registro.EmpresaFinanciadora, empresaOrcamento)
                     );
                 }
-                empresas[registro.EmpresaFinanciadora.Id].addItem(registro);
+                empresas[(int)registro.EmpresaFinanciadoraId].addItem(registro);
             }
 
-            foreach (var empresa in empresas) {
+            foreach(var empresa in empresas) {
                 Empresas.Add(empresa.Value);
             }
         }
@@ -306,22 +308,22 @@ namespace APIGestor.Models {
                 return 100m * (this.Valor > 0 ? this.ValorAprovado / this.Valor : 0);
             }
         }
-        public ExtratoEmpresa(Empresa e, OrcamentoEmpresa orcamento) : base(e) {
-            this.Valor = orcamento.Valor;
-            this.Total = orcamento.Total;
-            this.orcamento = orcamento;
+        public ExtratoEmpresa( Empresa e, OrcamentoEmpresa orcamento ) : base(e) {
+            this.orcamento = orcamento != null ? orcamento : new OrcamentoEmpresa(e);
+            this.Valor = this.orcamento.Valor;
+            this.Total = this.orcamento.Total;
         }
 
-        public void addItem(RegistroFinanceiro registro) {
-            if (registro.RecursoHumano != null) {
+        public void addItem( RegistroFinanceiro registro ) {
+            if(registro.RecursoHumano != null) {
 
-                if (!this.CategoriaRelatorios.ContainsKey("RH")) {
+                if(!this.CategoriaRelatorios.ContainsKey("RH")) {
                     this.CategoriaRelatorios.Add("RH", new ExtratoEmpresaCategorias("Recursos Humanos", orcamento.Relatorios.Find(o => o.Desc == "Recursos Humanos")));
                 }
                 this.CategoriaRelatorios["RH"].addItem(new ExtratoEmpresaItem(registro));
             }
-            else if (registro.RecursoMaterial != null) {
-                if (!this.CategoriaRelatorios.ContainsKey(registro.RecursoMaterial.categoria)) {
+            else if(registro.RecursoMaterial != null) {
+                if(!this.CategoriaRelatorios.ContainsKey(registro.RecursoMaterial.categoria)) {
                     this.CategoriaRelatorios.Add(registro.RecursoMaterial.categoria, new ExtratoEmpresaCategorias(registro.RecursoMaterial.categoria,
                         orcamento.Relatorios.Find(o => o.Desc == registro.RecursoMaterial.categoria)));
                 }
@@ -350,8 +352,8 @@ namespace APIGestor.Models {
             }
         }
 
-        public ExtratoEmpresaCategorias(string desc, OrcamentoCategoria orcamento) : base(desc) {
-            if (orcamento != null) {
+        public ExtratoEmpresaCategorias( string desc, OrcamentoCategoria orcamento ) : base(desc) {
+            if(orcamento != null) {
                 this.Valor = orcamento.Valor;
                 this.Total = orcamento.Total;
             }
@@ -365,14 +367,14 @@ namespace APIGestor.Models {
     public class ExtratoEmpresaItem : RelatorioEmpresaItem {
         public RegistroFinanceiro RegistroFinanceiro { get; set; }
 
-        public ExtratoEmpresaItem(RegistroFinanceiro registroFinanceiro) {
+        public ExtratoEmpresaItem( RegistroFinanceiro registroFinanceiro ) {
             RegistroFinanceiro = registroFinanceiro;
-            if (registroFinanceiro.RecursoHumano != null) {
+            if(registroFinanceiro.RecursoHumano != null) {
                 RecursoHumano = registroFinanceiro.RecursoHumano;
                 Desc = RecursoHumano.NomeCompleto;
                 Valor = registroFinanceiro.QtdHrs * RecursoHumano.ValorHora;
             }
-            else if (registroFinanceiro.RecursoMaterial != null) {
+            else if(registroFinanceiro.RecursoMaterial != null) {
                 RecursoMaterial = registroFinanceiro.RecursoMaterial;
                 Desc = registroFinanceiro.RecursoMaterial.Nome;
                 Valor = registroFinanceiro.QtdItens * RecursoMaterial.ValorUnitario;
@@ -422,8 +424,8 @@ namespace APIGestor.Models {
     }
 
     public sealed class RelatorioEmpresaCsvMap : ClassMap<RelatorioEmpresaCsv> {
-        public RelatorioEmpresaCsvMap(string type) {
-            switch (type) {
+        public RelatorioEmpresaCsvMap( string type ) {
+            switch(type) {
                 case "RelatorioEmpresa":
                     Map(m => m.Id);
                     Map(m => m.Etapa);
