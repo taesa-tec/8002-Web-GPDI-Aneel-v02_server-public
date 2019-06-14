@@ -24,14 +24,14 @@ namespace APIGestor.Business {
         protected AlocacaoRmService AlocacaoRmService;
         protected RegistroFinanceiroService RegistroFinanceiroService;
 
-        public RelatorioEmpresaService(GestorDbContext context, AlocacaoRhService alocacaoRhService, AlocacaoRmService alocacaoRmService, RegistroFinanceiroService registroFinanceiroService) {
+        public RelatorioEmpresaService( GestorDbContext context, AlocacaoRhService alocacaoRhService, AlocacaoRmService alocacaoRmService, RegistroFinanceiroService registroFinanceiroService ) {
             this.context = context;
             AlocacaoRhService = alocacaoRhService;
             AlocacaoRmService = alocacaoRmService;
             RegistroFinanceiroService = registroFinanceiroService;
         }
 
-        public OrcamentoEmpresas orcamentoEmpresas(int projetoId) {
+        public OrcamentoEmpresas orcamentoEmpresas( int projetoId ) {
 
             List<AlocacaoRh> alocacaoRhs = AlocacaoRhService.ListarTodos(projetoId).ToList();
             List<AlocacaoRm> alocacaoRms = AlocacaoRmService.ListarTodos(projetoId).ToList();
@@ -41,7 +41,7 @@ namespace APIGestor.Business {
             return orcamentos;
         }
 
-        public ExtratoEmpresas extratoEmpresas(int projetoId) {
+        public ExtratoEmpresas extratoEmpresas( int projetoId ) {
 
             List<RegistroFinanceiro> registroFinanceiros = RegistroFinanceiroService.ListarTodos(projetoId, StatusRegistro.Aprovado).ToList();
 
@@ -52,17 +52,17 @@ namespace APIGestor.Business {
 
 
         #region Gerar CSV
-        public List<RelatorioEmpresaCsv> FormatRelatorioCsv(OrcamentoEmpresas Relatorios) {
+        public List<RelatorioEmpresaCsv> FormatRelatorioCsv( OrcamentoEmpresas Relatorios ) {
             var records = new List<RelatorioEmpresaCsv>();
-            foreach (var empresa in Relatorios.Empresas) {
+            foreach(var empresa in Relatorios.Empresas) {
 
-                foreach (var relatorio in empresa.Relatorios) {
+                foreach(var relatorio in empresa.Relatorios) {
 
-                    foreach (var item in relatorio.Items) {
+                    foreach(var item in relatorio.Items) {
 
                         var newItem = new RelatorioEmpresaCsv();
                         newItem.NomeRecurso = item.Desc;
-                        if (item.RecursoHumano != null) {
+                        if(item.RecursoHumano != null) {
                             newItem.CPF = item.RecursoHumano.CPF;
                             newItem.FUNCAO = item.RecursoHumano.FuncaoValor;
                             newItem.TITULACAO = item.RecursoHumano.TitulacaoValor;
@@ -72,19 +72,19 @@ namespace APIGestor.Business {
                             newItem.CnpjEntidadeRecebedora = (item.RecursoHumano.Empresa.Cnpj == null) ? null : item.RecursoHumano.Empresa.Cnpj;
                             newItem.CategoriaContabil = CategoriaContabil.RH.ToString();
                         }
-                        if (item.AlocacaoRh != null) {
+                        if(item.AlocacaoRh != null) {
                             newItem.QtdHoras = item.AlocacaoRh.HrsTotais;
                             newItem.ValorTotal = newItem.ValorHora * newItem.QtdHoras;
                             newItem.Justificativa = item.AlocacaoRh.Justificativa;
                             newItem.EntidadePagadora = (item.AlocacaoRh.Empresa.Cnpj == null) ? item.AlocacaoRh.Empresa.CatalogEmpresa.Nome : item.AlocacaoRh.Empresa.RazaoSocial;
                             newItem.CnpjEntidadePagadora = item.AlocacaoRh.Empresa.Cnpj;
                         }
-                        if (item.RecursoMaterial != null) {
+                        if(item.RecursoMaterial != null) {
                             newItem.CategoriaContabil = item.RecursoMaterial.CategoriaContabilValor;
                             newItem.ValorUnitario = item.RecursoMaterial.ValorUnitario;
                             newItem.EspecificacaoTecnica = item.RecursoMaterial.Especificacao;
                         }
-                        if (item.AlocacaoRm != null) {
+                        if(item.AlocacaoRm != null) {
                             newItem.Unidades = item.AlocacaoRm.Qtd;
                             newItem.ValorTotal = newItem.ValorUnitario * newItem.Unidades;
                             newItem.Justificativa = item.AlocacaoRm.Justificativa;
@@ -117,7 +117,7 @@ namespace APIGestor.Business {
             }
             return records;
         }
-        public MemoryStream ExportarRelatorio(List<RelatorioEmpresaCsv> data, string tipo) {
+        public MemoryStream ExportarRelatorio( List<RelatorioEmpresaCsv> data, string tipo ) {
             var mr = new MemoryStream();
             var tw = new StreamWriter(mr, Encoding.UTF8);
             var csv = new CsvWriter(tw);
@@ -132,7 +132,7 @@ namespace APIGestor.Business {
         #endregion
 
 
-        public XLWorkbook gerarXLSOrcamento(int projetoId) {
+        public XLWorkbook gerarXLSOrcamento( int projetoId ) {
 
 
             XLWorkbook xls = new XLWorkbook();
@@ -142,13 +142,15 @@ namespace APIGestor.Business {
             var workRM = xls.AddWorksheet("Recursos Materiais");
             workRM.ColumnWidth = 40;
 
+            var etapas = context.Etapas.Where(e => e.ProjetoId == projetoId).OrderBy(e => e.Id).ToList();
+
             List<OrcamentoEmpresaItem> items = new List<OrcamentoEmpresaItem>();
 
             OrcamentoEmpresas orcamento = orcamentoEmpresas(projetoId);
 
-            foreach (var empresa in orcamento.Empresas) {
-                foreach (var categoria in empresa.Relatorios) {
-                    foreach (var item in categoria.Items) {
+            foreach(var empresa in orcamento.Empresas) {
+                foreach(var categoria in empresa.Relatorios) {
+                    foreach(var item in categoria.Items) {
                         items.Add(item);
                     }
 
@@ -161,7 +163,9 @@ namespace APIGestor.Business {
             table.Columns.Add("Titulo");
             table.Columns.Add("Cpf");
             table.Columns.Add("Empresa");
-            table.Columns.Add("Custo Hora",typeof(decimal));
+            table.Columns.Add("Empresa Recebedora");
+            table.Columns.Add("Etapa");
+            table.Columns.Add("Custo Hora", typeof(decimal));
             table.Columns.Add("Horas Totais", typeof(int));
             table.Columns.Add("Custo", typeof(decimal));
             table.Columns.Add("Currículo Lattes");
@@ -170,17 +174,19 @@ namespace APIGestor.Business {
                           where i.RecursoHumano != null
                           let custo = i.RecursoHumano.ValorHora * i.AlocacaoRh.HrsTotais
                           select new {
-                              i.Desc,
-                              i.RecursoHumano.TitulacaoValor,
-                              i.RecursoHumano.CPF,
-                              i.AlocacaoRh.Empresa.NomeEmpresa,
+                              Nome = i.Desc,
+                              Titulo = i.RecursoHumano.TitulacaoValor,
+                              Cpf = i.RecursoHumano.CPF,
+                              EmpresaRecebedora = i.RecursoHumano.Empresa.NomeEmpresa,
+                              Etapa = etapas.IndexOf(i.AlocacaoRh.Etapa) + 1,
+                              Empresa = i.AlocacaoRh.Empresa.NomeEmpresa,
                               i.RecursoHumano.ValorHora,
-                              i.AlocacaoRh.HrsTotais,
+                              HorasTotais = i.AlocacaoRh.HrsTotais,
                               custo,
                               i.RecursoHumano.UrlCurriculo
                           };
-            foreach (var item in rhItems) {
-                table.Rows.Add(item.Desc, item.TitulacaoValor, item.CPF, item.NomeEmpresa, item.ValorHora, item.HrsTotais, item.custo, item.UrlCurriculo);
+            foreach(var item in rhItems) {
+                table.Rows.Add(item.Nome, item.Titulo, item.Cpf, item.Empresa, item.EmpresaRecebedora, item.Etapa, item.ValorHora, item.HorasTotais, item.custo, item.UrlCurriculo);
             }
 
             workRH.Cell(1, 1).InsertTable(table);
@@ -194,7 +200,9 @@ namespace APIGestor.Business {
             table.Columns.Add("Quantidade", typeof(int));
             table.Columns.Add("Valor Unitário", typeof(decimal));
             table.Columns.Add("Custo", typeof(decimal));
+            table.Columns.Add("Etapa");
             table.Columns.Add("Empresa Financiadora");
+            table.Columns.Add("Empresa Recebedora");
 
             var rmItems = from i in items
                           where i.RecursoMaterial != null
@@ -202,7 +210,7 @@ namespace APIGestor.Business {
 
 
 
-            foreach (var i in rmItems) {
+            foreach(var i in rmItems) {
                 string atividade = i.RecursoMaterial.Atividade != null ? i.RecursoMaterial.Atividade.Nome : String.Empty;
                 decimal custo = i.AlocacaoRm.Qtd * i.RecursoMaterial.ValorUnitario;
                 table.Rows.Add(
@@ -211,11 +219,14 @@ namespace APIGestor.Business {
                     i.RecursoMaterial.categoria,
                     i.RecursoMaterial.Especificacao,
                     atividade,
+
                     i.AlocacaoRm.Qtd,
                     i.RecursoMaterial.ValorUnitario,
                     custo,
-                    i.AlocacaoRm.EmpresaFinanciadora.NomeEmpresa
-                    );
+                    etapas.IndexOf(i.AlocacaoRm.Etapa) + 1,
+                    i.AlocacaoRm.EmpresaFinanciadora.NomeEmpresa,
+                    i.AlocacaoRm.EmpresaRecebedora.NomeEmpresa
+                    ); ; ;
             }
 
             workRM.Cell(1, 1).InsertTable(table);
@@ -223,7 +234,7 @@ namespace APIGestor.Business {
             return xls;
         }
 
-        public XLWorkbook gerarXLSExtrato(int projetoId) {
+        public XLWorkbook gerarXLSExtrato( int projetoId ) {
             XLWorkbook xls = new XLWorkbook();
 
             var workRH = xls.AddWorksheet("Recursos Humanos");
@@ -248,13 +259,13 @@ namespace APIGestor.Business {
             //tableGeral.Rows.Add(extrato.Total, extrato.TotalAprovado, extrato.Valor, extrato.ValorAprovado, extrato.Desvio);
 
             tableEmpresas.Columns.Add(new DataColumn("Empresa", typeof(string)));
-            foreach (var colname in new string[] { "Total", "Total Aprovado", "Valor", "Valor aprovado", "Desvio" }) {
+            foreach(var colname in new string[] { "Total", "Total Aprovado", "Valor", "Valor aprovado", "Desvio" }) {
                 var coll = new DataColumn(colname);
                 coll.DataType = typeof(decimal);
                 tableEmpresas.Columns.Add(coll);
             }
 
-            foreach (var empresa in extrato.Empresas) {
+            foreach(var empresa in extrato.Empresas) {
                 tableEmpresas.Rows.Add(empresa.Nome, empresa.Total, empresa.TotalAprovado, empresa.Valor, empresa.ValorAprovado, empresa.Desvio / 100m);
             }
 
@@ -274,11 +285,11 @@ namespace APIGestor.Business {
                               where i.RecursoHumano != null
                               select i;
             var tableRH = new DataTable("Recursos Humanos");
-            foreach (var col in new string[] { "Nome completo", "CPF", "Função", "Empresa", "Empresa Financiadora", "Empresa Recebedora", "Qtd Hrs", "Custo Hora", "Custo Total", "Mês" }) {
+            foreach(var col in new string[] { "Nome completo", "CPF", "Função", "Empresa", "Empresa Financiadora", "Empresa Recebedora", "Qtd Hrs", "Custo Hora", "Custo Total", "Mês" }) {
                 tableRH.Columns.Add(col);
             }
 
-            foreach (var rrg in registrosRH) {
+            foreach(var rrg in registrosRH) {
                 var recurso = rrg.RecursoHumano;
                 var registro = rrg.RegistroFinanceiro;
                 var financiadora = registro.EmpresaFinanciadora;
@@ -307,10 +318,10 @@ namespace APIGestor.Business {
                               where i.RecursoMaterial != null
                               select i;
 
-            foreach (var col in new string[] { "Nome Item", "Recurso", "Categoria", "Especificação", "Empresa Financiadora", "Empresa Recebedora", "Mês", "Qtd Itens", "Valor Unitário", "Valor Total" }) {
+            foreach(var col in new string[] { "Nome Item", "Recurso", "Categoria", "Especificação", "Empresa Financiadora", "Empresa Recebedora", "Mês", "Qtd Itens", "Valor Unitário", "Valor Total" }) {
                 tableRM.Columns.Add(col);
             }
-            foreach (var rrg in registrosRM) {
+            foreach(var rrg in registrosRM) {
                 var recurso = rrg.RecursoMaterial;
                 var registro = rrg.RegistroFinanceiro;
                 var financiadora = registro.EmpresaFinanciadora;
