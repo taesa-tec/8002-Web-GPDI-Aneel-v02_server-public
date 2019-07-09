@@ -67,26 +67,26 @@ namespace APIGestor.Controllers
         }
 
         [HttpPost]
-        public Resultado Post([FromBody]ApplicationUser User)
+        public ActionResult<Resultado> Post([FromBody]ApplicationUser User)
         {
             return _service.Incluir(User);
         }
 
         [HttpPut]
-        public Resultado Put([FromBody]ApplicationUser User)
+        public ActionResult<Resultado> Put([FromBody]ApplicationUser User)
         {
             return _service.Atualizar(User);
         }
 
         [HttpPut("me")]
-         public Resultado PutA([FromBody]ApplicationUser _user)
+         public ActionResult<Resultado> PutA([FromBody]ApplicationUser _user)
         {
             _user.Id = User.FindFirst(JwtRegisteredClaimNames.Jti).Value.ToString();
             return _service.Atualizar(_user);
         }
 
         [HttpDelete("{id}")]
-        public Resultado Delete(string id)
+        public ActionResult<Resultado> Delete(string id)
         {
             return _service.Excluir(id);
         }

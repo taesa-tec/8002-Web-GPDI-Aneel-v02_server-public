@@ -35,13 +35,13 @@ namespace APIGestor.Controllers
 
         [Route("[controller]")]
         [HttpPost]
-        public Resultado Post([FromBody]LogProjeto LogProjeto)
+        public ActionResult<Resultado> Post([FromBody]LogProjeto LogProjeto)
         {
             return _service.Incluir(LogProjeto);
         }
 
         [HttpDelete("[controller]/{Id}")]
-        public Resultado Delete(int id)
+        public ActionResult<Resultado> Delete(int id)
         {
             return _service.Excluir(id);
         }

@@ -6,16 +6,13 @@ using APIGestor.Data;
 using APIGestor.Models;
 using Microsoft.AspNetCore.Identity;
 using APIGestor.Security;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business
 {
-    public class RecursoHumanoService
-    {
-        private GestorDbContext _context;
+    public class RecursoHumanoService : BaseAuthorizationService {
 
-        public RecursoHumanoService(GestorDbContext context)
-        {
-            _context = context;
+        public RecursoHumanoService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
         }
         public IEnumerable<RecursoHumano> ListarTodos(int projetoId)
         {

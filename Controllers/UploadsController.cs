@@ -37,14 +37,14 @@ namespace APIGestor.Controllers
         }
 
         [HttpPost, DisableRequestSizeLimit]
-        public Resultado UploadFile([FromForm]Upload Upload)
+        public ActionResult<Resultado> UploadFile([FromForm]Upload Upload)
         {
             var UserId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
             return _service.Incluir(Upload,Request.Form,UserId);
         }
 
         [HttpDelete("{Id}")]
-        public Resultado Delete(int id)
+        public ActionResult<Resultado> Delete(int id)
         {
             return _service.Excluir(id);
         }

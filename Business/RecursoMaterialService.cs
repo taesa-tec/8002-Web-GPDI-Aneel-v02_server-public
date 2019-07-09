@@ -5,17 +5,14 @@ using System.Collections.Generic;
 using APIGestor.Data;
 using APIGestor.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using APIGestor.Security;
 
 namespace APIGestor.Business
 {
-    public class RecursoMaterialService
-    {
-        private GestorDbContext _context;
+    public class RecursoMaterialService : BaseAuthorizationService {
 
-        public RecursoMaterialService(GestorDbContext context)
-        {
-            _context = context;
+        public RecursoMaterialService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
         }
         public IEnumerable<RecursoMaterial> ListarTodos(int projetoId)
         {

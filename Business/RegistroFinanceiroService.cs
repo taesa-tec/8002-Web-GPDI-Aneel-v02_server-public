@@ -6,16 +6,14 @@ using APIGestor.Data;
 using APIGestor.Models;
 using Microsoft.AspNetCore.Identity;
 using APIGestor.Security;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business
 {
-    public class RegistroFinanceiroService
-    {
-        private GestorDbContext _context;
+    public class RegistroFinanceiroService : BaseAuthorizationService {
 
-        public RegistroFinanceiroService(GestorDbContext context)
-        {
-            _context = context;
+        public RegistroFinanceiroService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
+            
         }
 
         public RegistroFinanceiro Obter(int id)

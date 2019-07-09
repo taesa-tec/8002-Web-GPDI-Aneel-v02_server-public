@@ -3,40 +3,32 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace APIGestor.Models
-{
-    public class Etapa
-    {
-        private int _id;
+namespace APIGestor.Models {
+    public class Etapa {
 
         [Key]
-        public int Id
-        {
-            get => _id;
-            set => _id = value;
-        }
+        public int Id { get; set; }
+
         public string Nome { get; set; }
-        public int ProjetoId { get;set; }
+        public int ProjetoId { get; set; }
         public int Duracao { get; set; }
         public string Desc { get; set; }
         public string AtividadesRealizadas { get; set; }
-        [Column(TypeName="date")]
+        [Column(TypeName = "date")]
         public DateTime? DataInicio { get; set; }
-        [Column(TypeName="date")]
+        [Column(TypeName = "date")]
         public DateTime? DataFim { get; set; }
         public List<EtapaProduto> EtapaProdutos { get; set; }
         public List<EtapaMes> EtapaMeses { get; set; }
 
     }
-    public class EtapaProduto
-    {   
+    public class EtapaProduto {
         [Key]
         public int Id { get; set; }
         public int EtapaId { get; set; }
         public int? ProdutoId { get; set; }
     }
-    public class EtapaMes
-    {   
+    public class EtapaMes {
         [Key]
         public int Id { get; set; }
         public int EtapaId { get; set; }

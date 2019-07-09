@@ -3,45 +3,50 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Business;
 using APIGestor.Models;
+using System.Linq;
 
-namespace APIGestor.Controllers
-{
+namespace APIGestor.Controllers {
     [Route("api/projeto/")]
     [ApiController]
     [Authorize("Bearer")]
-    public class EmpresasController : ControllerBase
-    {
+    public class EmpresasController : ControllerBase {
         private EmpresaService _service;
 
-        public EmpresasController(EmpresaService service)
-        {
+        public EmpresasController( EmpresaService service ) {
             _service = service;
         }
 
         [HttpGet("{projetoId}/Empresas")]
-        public IEnumerable<Empresa> Get(int projetoId)
-        {
+        public IEnumerable<Empresa> Get( int projetoId ) {
             return _service.ListarTodos(projetoId);
         }
 
         [Route("[controller]")]
         [HttpPost]
-        public Resultado Post([FromBody]Empresa Empresa)
-        {
-            return _service.Incluir(Empresa);
+        public ActionResult<Resultado> Post( [FromBody]Empresa Empresa ) {
+            if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
+                return _service.Incluir(Empresa);
+            return Forbid();
         }
 
         [Route("[controller]")]
         [HttpPut]
-        public Resultado Put([FromBody]Empresa Empresa)
-        {
-            return _service.Atualizar(Empresa);
+        public ActionResult<Resultado> Put( [FromBody]Empresa Empresa ) {
+            if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
+                return _service.Atualizar(Empresa);
+            return Forbid();
         }
 
         [HttpDelete("[controller]/{Id}")]
-        public Resultado Delete(int id)
-        {
-            return _service.Excluir(id);
+        public ActionResult<Resultado> Delete( int id ) {
+            var Empresa = _service._context.Empresas.Where(e => e.ProjetoId == id).FirstOrDefault();
+
+            if(Empresa != null) {
+                if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.Administrator))
+                    return _service.Excluir(id);
+                return Forbid();
+            }
+            return NotFound();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace APIGestor.Controllers {
         //     };
         // }
         [HttpGet("{projetoId}/Xml/{xmlTipo}/{versao}")]
-        public Resultado Get( int projetoId, XmlTipo xmlTipo, string versao ) {
+        public ActionResult<Resultado> Get( int projetoId, XmlTipo xmlTipo, string versao ) {
             Resultado r = new Resultado();
             try {
                 var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
@@ -46,7 +46,7 @@ namespace APIGestor.Controllers {
         }
 
         [HttpGet("{projetoId}/Xml/{xmlTipo}/ValidaDados")]
-        public Resultado GetA( int projetoId, XmlTipo xmlTipo ) {
+        public ActionResult<Resultado> GetA( int projetoId, XmlTipo xmlTipo ) {
             return _service.ValidaDados(projetoId, xmlTipo);
         }
 

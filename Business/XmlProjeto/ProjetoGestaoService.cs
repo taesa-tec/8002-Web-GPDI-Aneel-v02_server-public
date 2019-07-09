@@ -4,37 +4,30 @@ using System.Linq;
 using System.Collections.Generic;
 using APIGestor.Data;
 using APIGestor.Models;
-using Microsoft.AspNetCore.Identity;
-using APIGestor.Security;
-using System.Xml.Linq;
-using System.IO;
-using Newtonsoft.Json;
-using System.Xml;
-using System.Text;
 using Microsoft.AspNetCore.Hosting;
 
 namespace APIGestor.Business {
     public class XmlProjetoGestaoService : IXmlService<XmlProjetoGestao> {
         private GestorDbContext _context;
         private IHostingEnvironment _hostingEnvironment;
-        public XmlProjetoGestaoService(GestorDbContext context, IHostingEnvironment hostingEnvironment) {
+        public XmlProjetoGestaoService( GestorDbContext context, IHostingEnvironment hostingEnvironment ) {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
         }
-        public Resultado ValidaXml(int ProjetoId) {
+        public Resultado ValidaXml( int ProjetoId ) {
             Projeto projeto = obterProjeto(ProjetoId);
             var resultado = new Resultado();
             resultado.Acao = "Validação de dados";
-            if (projeto.Etapas.Count() == 0)
+            if(projeto.Etapas.Count() == 0)
                 resultado.Inconsistencias.Add("Etapas do projeto não preenchida");
-            if (projeto.Atividades.DedicacaoHorario == null)
+            if(projeto.Atividades.DedicacaoHorario == null)
                 resultado.Inconsistencias.Add("Atividades do projeto não preenchidas");
-            if (projeto.RecursosHumanos.Where(p => p.GerenteProjeto == true).Count() == 0)
+            if(projeto.RecursosHumanos.Where(p => p.GerenteProjeto == true).Count() == 0)
                 resultado.Inconsistencias.Add("O projeto não tem nenhum gerente cadastrado");
 
             return resultado;
         }
-        public Projeto obterProjeto(int Id) {
+        public Projeto obterProjeto( int Id ) {
             return _context.Projetos
                          .Include("CatalogEmpresa")
                          .Include("Etapas")
@@ -42,28 +35,64 @@ namespace APIGestor.Business {
                          .Include("Empresas.Estado")
                          .Include("Empresas.CatalogEmpresa")
                          .Include("RecursosHumanos")
-                         // .Include(p => p.RecursosMateriais)
                          .Include("AlocacoesRh.RecursoHumano")
                          .Include("AlocacoesRm.RecursoMaterial.Atividade")
+                         .Include("AlocacoesRm.RecursoMaterial.CategoriaContabilGestao")
                          .Include("RelatorioFinal.Uploads")
                          .Where(p => p.Id == Id)
                          .FirstOrDefault();
         }
-        public XmlProjetoGestao GerarXml(int ProjetoId, string Versao, string UserId) {
+
+        protected Dictionary<string, List<AlocacaoRm>> groupAlocacoesRmByCategory( List<AlocacaoRm> AlocacoesRm ) {
+            var group = (from alocacao in AlocacoesRm
+                         group alocacao by alocacao.RecursoMaterial.CategoriaContabilValor into cat
+                         select new { categoria = cat.Key, alocacoes = cat.ToList() });
+
+            return group.ToDictionary(item => item.categoria, item => item.alocacoes);
+        }
+
+        protected void getCustoEmpresa( Projeto projeto, Empresa empresa, out List<GstCustoCatContabil> CustoCatContabilEmp ) {
+
+            CustoCatContabilEmp = new List<GstCustoCatContabil>();
+
+            #region Custo com a própria empresa
+            var custoRHEmpresa = projeto.AlocacoesRh.Where(al => al.EmpresaId == empresa.Id && al.RecursoHumano.EmpresaId == empresa.Id).Sum(al => al.HrsTotais * al.RecursoHumano.ValorHora);
+
+            var custoRMEmpresa = projeto.AlocacoesRm.Where(al => al.EmpresaFinanciadoraId == empresa.Id)
+                .GroupBy(al => al.RecursoMaterial.CategoriaContabilGestao.Valor)
+                .Select(a => new GstCustoCatContabil {
+                    CategoriaContabil = a.Key,
+                    CustoEmpresa = a.Sum(b => b.Qtd * b.RecursoMaterial.ValorUnitario).ToString()
+                }).Where(cc => decimal.Parse(cc.CustoEmpresa) > 0).ToList();
+
+            if(custoRHEmpresa > 0)
+                CustoCatContabilEmp.Add(new GstCustoCatContabil { CategoriaContabil = "RH", CustoEmpresa = custoRHEmpresa.ToString() });
+
+            CustoCatContabilEmp.AddRange(custoRMEmpresa);
+            #endregion
+
+
+        }
+
+        public XmlProjetoGestao GerarXml( int ProjetoId, string Versao, string UserId ) {
             XmlProjetoGestao relatorio = new XmlProjetoGestao();
             Projeto projeto = obterProjeto(ProjetoId);
-
-            // EMPRESAS
-            var EmpresaList = new List<GstEmpresa>();
-            // CustosContabeis
-            var GstCustoCatContabilList = new List<GstCustoCatContabil>();
 
             var EmpresasFinanciadoras = projeto.Empresas
                 .Where(p => p.ClassificacaoValor == "Energia" || p.ClassificacaoValor == "Proponente")
                 .ToList();
-            foreach (Empresa empresa in EmpresasFinanciadoras) {
+
+            // EMPRESAS
+            var EmpresaList = new List<GstEmpresa>();
+
+
+            // CustosContabeis
+            var GstCustoCatContabilList = new List<GstCustoCatContabil>();
+
+
+            foreach(Empresa empresa in EmpresasFinanciadoras) {
                 var equipeList = new List<GstEquipeGestao>();
-                foreach (RecursoHumano rh in projeto.RecursosHumanos
+                foreach(RecursoHumano rh in projeto.RecursosHumanos
                     .Where(p => p.CPF != null)
                     .Where(p => p.Empresa == empresa)
                     .ToList()) {
@@ -74,37 +103,8 @@ namespace APIGestor.Business {
                 }
 
                 var GstCustoCatContabil = new List<GstCustoCatContabil>();
-                //RH
-                foreach (var rh in projeto.AlocacoesRh
-                        .Where(p => p.Empresa == empresa)
-                        .GroupBy(p => p.Empresa)
-                        .ToList()) {
-                    decimal? custo = 0;
-                    foreach (var a in rh) {
-                        custo += a.RecursoHumano.ValorHora * ((a.HrsMes1 + a.HrsMes2 + a.HrsMes3 + a.HrsMes4 + a.HrsMes5 + a.HrsMes6) + (a.HrsMes7 + a.HrsMes8 + a.HrsMes9 + a.HrsMes10 + a.HrsMes11 + a.HrsMes12) + (a.HrsMes13 + a.HrsMes14 + a.HrsMes15 + a.HrsMes16 + a.HrsMes17 + a.HrsMes18) + (a.HrsMes19 + a.HrsMes20 + a.HrsMes21 + a.HrsMes22 + a.HrsMes23 + a.HrsMes24));
-                    }
-                    GstCustoCatContabil.Add(new GstCustoCatContabil {
-                        CategoriaContabil = "RH",
-                        CustoEmpresa = custo.ToString()
-                    });
-                }
-                // RM
-                foreach (var rm in projeto.AlocacoesRm
-                        .Where(p => p.EmpresaRecebedora == empresa)
-                        .Where(p => p.EmpresaFinanciadora == empresa)
-                        .GroupBy(p => p.EmpresaRecebedora)
-                        .ToList()) {
-                    foreach (var rm0 in rm.GroupBy(p => p.RecursoMaterial.CategoriaContabilGestao.Valor)) {
-                        decimal custo = 0;
-                        foreach (var rm1 in rm0) {
-                            custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
-                        }
-                        GstCustoCatContabil.Add(new GstCustoCatContabil {
-                            CategoriaContabil = rm0.First().RecursoMaterial.CategoriaContabilGestao.Valor,
-                            CustoEmpresa = custo.ToString()
-                        });
-                    }
-                }
+
+                this.getCustoEmpresa(projeto, empresa, out GstCustoCatContabil);
 
                 EmpresaList.Add(new GstEmpresa {
                     TipoEmpresa = empresa.ClassificacaoValor,
@@ -117,10 +117,15 @@ namespace APIGestor.Business {
                     }
                 });
             }
+
+
+
+
+
             // Atividades
             var AtividadesList = new List<GstAtividade>();
             //RH
-            if (projeto.AlocacoesRh.Count > 0) {
+            if(projeto.AlocacoesRh.Count > 0) {
                 decimal custo = projeto.AlocacoesRh.Sum(a => {
                     return a.HrsTotais * a.RecursoHumano.ValorHora;
                 });
@@ -131,15 +136,15 @@ namespace APIGestor.Business {
                 });
             }
             // RM
-            foreach (var rm in projeto.AlocacoesRm
+            foreach(var rm in projeto.AlocacoesRm
                 .GroupBy(p => p.RecursoMaterial.Atividade.Valor)
                 .ToList()) {
                 decimal custo = 0;
-                foreach (var rm1 in rm) {
+                foreach(var rm1 in rm) {
                     custo += rm1.RecursoMaterial.ValorUnitario * rm1.Qtd;
                 }
                 string _descAtividade = null;
-                switch (rm.First().RecursoMaterial.Atividade.Valor) {
+                switch(rm.First().RecursoMaterial.Atividade.Valor) {
                     case "HH":
                         _descAtividade = projeto.Atividades.DedicacaoHorario;
                         break;

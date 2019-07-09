@@ -4,16 +4,13 @@ using System.Linq;
 using APIGestor.Data;
 using APIGestor.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business
 {
-    public class RelatorioFinalService
-    {
-        private GestorDbContext _context;
+    public class RelatorioFinalService : BaseAuthorizationService {
 
-        public RelatorioFinalService(GestorDbContext context)
-        {
-            _context = context;
+        public RelatorioFinalService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
         }
 
         public RelatorioFinal Obter(int projetoId)

@@ -27,7 +27,7 @@ namespace APIGestor.Controllers
 
         [Route("[controller]")]
         [HttpPost]
-        public Resultado Post([FromBody]RegistroFinanceiro RegistroFinanceiro)
+        public ActionResult<Resultado> Post([FromBody]RegistroFinanceiro RegistroFinanceiro)
         {
             var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
             return _service.Incluir(RegistroFinanceiro, userId);
@@ -35,14 +35,14 @@ namespace APIGestor.Controllers
 
         [Route("[controller]")]
         [HttpPut]
-        public Resultado Put([FromBody]RegistroFinanceiro RegistroFinanceiro)
+        public ActionResult<Resultado> Put([FromBody]RegistroFinanceiro RegistroFinanceiro)
         {
             var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
             return _service.Atualizar(RegistroFinanceiro, userId);
         }
 
         [HttpDelete("[controller]/{Id}")]
-        public Resultado Delete(int id)
+        public ActionResult<Resultado> Delete(int id)
         {
             return _service.Excluir(id);
         }

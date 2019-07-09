@@ -36,20 +36,20 @@ namespace APIGestor.Controllers
 
         [Route("[controller]")]
         [HttpPost]
-        public Resultado Post([FromBody]ResultadoProducao ResultadoProducao)
+        public ActionResult<Resultado> Post([FromBody]ResultadoProducao ResultadoProducao)
         {
             return _service.Incluir(ResultadoProducao);
         }
 
         [Route("[controller]")]
         [HttpPut]
-        public Resultado Put([FromBody]ResultadoProducao ResultadoProducao)
+        public ActionResult<Resultado> Put([FromBody]ResultadoProducao ResultadoProducao)
         {
             return _service.Atualizar(ResultadoProducao);
         }
 
         [HttpDelete("[controller]/{Id}")]
-        public Resultado Delete(int id)
+        public ActionResult<Resultado> Delete(int id)
         {
             return _service.Excluir(id);
         }

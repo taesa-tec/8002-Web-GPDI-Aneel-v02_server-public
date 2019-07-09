@@ -8,11 +8,12 @@ using System.Xml.Linq;
 using System.IO;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
 
 namespace APIGestor.Business {
-    public class GeradorXmlService {
-        private GestorDbContext _context;
+    public class GeradorXmlService : BaseAuthorizationService {
+        
 
         private XmlProjetoPedService _projetoPed;
         private XmlInteressePedService _interessePed;
@@ -24,6 +25,7 @@ namespace APIGestor.Business {
         private XmlRelatorioAuditoriaGestaoService _relatorioAuditoriaGestao;
         private XmlProjetoGestaoService _projetoGestao;
         private IHostingEnvironment _hostingEnvironment;
+
         public GeradorXmlService(
             GestorDbContext context,
             IHostingEnvironment hostingEnvironment,
@@ -35,8 +37,10 @@ namespace APIGestor.Business {
             XmlRelatorioAuditoriaService relatorioAuditoriaPed,
             XmlProjetoGestaoService projetoGestao,
             XmlRelatorioFinalGestaoService relatorioFinalGestao,
-            XmlRelatorioAuditoriaGestaoService relatorioAuditoriaGestao ) {
-            _context = context;
+            XmlRelatorioAuditoriaGestaoService relatorioAuditoriaGestao,
+            IAuthorizationService authorization) : base(context, authorization)
+             {
+        
             _hostingEnvironment = hostingEnvironment;
             _projetoPed = projetoPed;
             _interessePed = interessePed;

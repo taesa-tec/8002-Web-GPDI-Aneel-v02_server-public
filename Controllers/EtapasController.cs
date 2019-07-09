@@ -3,45 +3,53 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Business;
 using APIGestor.Models;
+using System.Linq;
 
-namespace APIGestor.Controllers
-{
+namespace APIGestor.Controllers {
     [Route("api/projeto/")]
     [ApiController]
     [Authorize("Bearer")]
-    public class EtapasController : ControllerBase
-    {
+    public class EtapasController : ControllerBase {
         private EtapaService _service;
 
-        public EtapasController(EtapaService service)
-        {
+        public EtapasController( EtapaService service ) {
             _service = service;
         }
 
         [HttpGet("{projetoId}/Etapas")]
-        public IEnumerable<Etapa> Get(int projetoId)
-        {
+        public IEnumerable<Etapa> Get( int projetoId ) {
             return _service.ListarTodos(projetoId);
         }
 
         [Route("[controller]")]
         [HttpPost]
-        public Resultado Post([FromBody]Etapa Etapa)
-        {
-            return _service.Incluir(Etapa);
+        public ActionResult<Resultado> Post( [FromBody]Etapa Etapa ) {
+            if(_service.UserProjectCan(Etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                return _service.Incluir(Etapa);
+            }
+            return Forbid();
         }
 
         [Route("[controller]")]
         [HttpPut]
-        public Resultado Put([FromBody]Etapa Etapa)
-        {
-            return _service.Atualizar(Etapa);
+        public ActionResult<Resultado> Put( [FromBody]Etapa Etapa ) {
+            if(_service.UserProjectCan(Etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                return _service.Atualizar(Etapa);
+            }
+            return Forbid();
         }
 
         [HttpDelete("[controller]/{Id}")]
-        public Resultado Delete(int id)
-        {
-            return _service.Excluir(id);
+        public ActionResult<Resultado> Delete( int id ) {
+            var Etapa = _service._context.Etapas.Where(e => e.Id == id).FirstOrDefault();
+            if(Etapa != null) {
+                if(_service.UserProjectCan(Etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                    return _service.Excluir(id);
+                }
+                return Forbid();
+            }
+            return NotFound();
+
         }
     }
 }
