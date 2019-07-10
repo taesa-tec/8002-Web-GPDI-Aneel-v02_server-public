@@ -8,31 +8,26 @@ using System.IdentityModel.Tokens.Jwt;
 using System;
 using Microsoft.Extensions.FileProviders;
 
-namespace APIGestor.Controllers
-{
+namespace APIGestor.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize("Bearer")]
-    public class UsersController : ControllerBase
-    {
+    public class UsersController : ControllerBase {
         private UserService _service;
 
-        public UsersController(UserService service)
-        {
+        public UsersController( UserService service ) {
             _service = service;
         }
 
         [HttpGet]
-        public IEnumerable<ApplicationUser> Get()
-        {
+        public IEnumerable<ApplicationUser> Get() {
             return _service.ListarTodos();
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ApplicationUser> Get(string id)
-        {
+        public ActionResult<ApplicationUser> Get( string id ) {
             var User = _service.Obter(id);
-            if (User != null)
+            if(User != null)
                 return User;
             else
                 return NotFound();
@@ -40,14 +35,12 @@ namespace APIGestor.Controllers
         [AllowAnonymous]
         [HttpGet("{id}/avatar")]
         [ResponseCache(Duration = 120)]
-       
-        public FileResult Download(string id)  
-        {
+
+        public FileResult Download( string id ) {
             byte[] image;
             var user = _service.Obter(id);
-            
-            if (user==null || user.FotoPerfil == null || user.FotoPerfil.File.Length < 1)
-            {
+
+            if(user == null || user.FotoPerfil == null || user.FotoPerfil.File.Length < 1) {
                 image = System.IO.File.ReadAllBytes("wwwroot/Assets/default_avatar.jpg");
             }
             else {
@@ -57,38 +50,38 @@ namespace APIGestor.Controllers
         }
 
         [HttpGet("me")]
-        public ActionResult<ApplicationUser> GetA()
-        {
-            var user = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            if (user != null)
-                return  _service.Obter(user.ToString());
-            else
-                return NotFound();
+        public ActionResult<ApplicationUser> GetA() {
+            return _service.Obter(this.userId());
         }
 
         [HttpPost]
-        public ActionResult<Resultado> Post([FromBody]ApplicationUser User)
-        {
-            return _service.Incluir(User);
+        public ActionResult<Resultado> Post( [FromBody]ApplicationUser User ) {
+            if(this.isAdmin())
+                return _service.Incluir(User);
+            return Forbid();
         }
 
         [HttpPut]
-        public ActionResult<Resultado> Put([FromBody]ApplicationUser User)
-        {
-            return _service.Atualizar(User);
+        public ActionResult<Resultado> Put( [FromBody]ApplicationUser User ) {
+            if(this.isAdmin())
+                return _service.Atualizar(User);
+            return Forbid();
         }
 
         [HttpPut("me")]
-         public ActionResult<Resultado> PutA([FromBody]ApplicationUser _user)
-        {
-            _user.Id = User.FindFirst(JwtRegisteredClaimNames.Jti).Value.ToString();
+        public ActionResult<Resultado> PutA( [FromBody]ApplicationUser _user ) {
+            var me = _service.Obter(this.userId());
+            _user.Id = this.userId();
+            _user.Email = me.Email;
+            _user.Role = me.Role;
             return _service.Atualizar(_user);
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Resultado> Delete(string id)
-        {
-            return _service.Excluir(id);
+        public ActionResult<Resultado> Delete( string id ) {
+            if(this.isAdmin())
+                return _service.Excluir(id);
+            return Forbid();
         }
     }
 }

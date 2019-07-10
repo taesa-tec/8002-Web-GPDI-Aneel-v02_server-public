@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using APIGestor.Data;
-using APIGestor.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace APIGestor.Business
-{
-    public class ResultadoCapacitacaoService
-    {
-        private GestorDbContext _context;
+using APIGestor.Data;
+using APIGestor.Models;
+using APIGestor.Business;
+using Microsoft.AspNetCore.Authorization;
 
-        public ResultadoCapacitacaoService(GestorDbContext context)
-        {
-            _context = context;
-        }
+namespace APIGestor.Business {
+    public class ResultadoCapacitacaoService : BaseAuthorizationService {
 
-        public ResultadoCapacitacao Obter(int id)
-        {
-            if (id>0)
-            {
+        public ResultadoCapacitacaoService( GestorDbContext context, IAuthorizationService authorizationService ) : base(context, authorizationService) { }
+
+        public ResultadoCapacitacao Obter( int id ) {
+            if(id > 0) {
+
                 return _context.ResultadosCapacitacao
                     .Include("Uploads.User")
                     .Include("RecursoHumano")
@@ -28,8 +24,7 @@ namespace APIGestor.Business
             else
                 return null;
         }
-        public IEnumerable<ResultadoCapacitacao> ListarTodos(int projetoId)
-        {
+        public IEnumerable<ResultadoCapacitacao> ListarTodos( int projetoId ) {
             var RecursoHumano = _context.ResultadosCapacitacao
                 .Include("RecursoHumano")
                 .Include("Uploads")
@@ -37,13 +32,11 @@ namespace APIGestor.Business
                 .ToList();
             return RecursoHumano;
         }
-        public Resultado Incluir(ResultadoCapacitacao dados)
-        {
+        public Resultado Incluir( ResultadoCapacitacao dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de Resultado Capacitação";
-                         
-            if (resultado.Inconsistencias.Count == 0)
-            {
+
+            if(resultado.Inconsistencias.Count == 0) {
                 _context.ResultadosCapacitacao.Add(dados);
                 _context.SaveChanges();
                 resultado.Id = dados.Id.ToString();
@@ -51,30 +44,26 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        public Resultado Atualizar(ResultadoCapacitacao dados)
-        {
+        public Resultado Atualizar( ResultadoCapacitacao dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Atualização de Resultado Capacitação";
 
-            if (resultado.Inconsistencias.Count == 0)
-            {
+            if(resultado.Inconsistencias.Count == 0) {
                 ResultadoCapacitacao ResultadoCapacitacao = _context.ResultadosCapacitacao.Where(
                     p => p.Id == dados.Id).FirstOrDefault();
 
-                if (ResultadoCapacitacao == null)
-                {
+                if(ResultadoCapacitacao == null) {
                     resultado.Inconsistencias.Add(
                         "Resultado Capacitação não encontrado");
                 }
-                else
-                {
-                    ResultadoCapacitacao.Tipo = !Enum.IsDefined(typeof(TipoCapacitacao),dados.Tipo) ? ResultadoCapacitacao.Tipo : dados.Tipo;
-                    ResultadoCapacitacao.DataConclusao = (dados.DataConclusao==null) ? ResultadoCapacitacao.DataConclusao : dados.DataConclusao;
+                else {
+                    ResultadoCapacitacao.Tipo = !Enum.IsDefined(typeof(TipoCapacitacao), dados.Tipo) ? ResultadoCapacitacao.Tipo : dados.Tipo;
+                    ResultadoCapacitacao.DataConclusao = (dados.DataConclusao == null) ? ResultadoCapacitacao.DataConclusao : dados.DataConclusao;
                     ResultadoCapacitacao.Conclusao = (!dados.Conclusao.HasValue) ? ResultadoCapacitacao.Conclusao : dados.Conclusao;
-                    ResultadoCapacitacao.CnpjInstituicao = (dados.CnpjInstituicao==null) ? ResultadoCapacitacao.CnpjInstituicao : dados.CnpjInstituicao;
-                    ResultadoCapacitacao.AreaPesquisa = (dados.AreaPesquisa==null) ? ResultadoCapacitacao.AreaPesquisa : dados.AreaPesquisa;
-                    ResultadoCapacitacao.RecursoHumanoId = (dados.RecursoHumanoId<=0) ? ResultadoCapacitacao.RecursoHumanoId : dados.RecursoHumanoId;
-                    ResultadoCapacitacao.TituloTrabalho = (dados.TituloTrabalho==null) ? ResultadoCapacitacao.TituloTrabalho : dados.TituloTrabalho;
+                    ResultadoCapacitacao.CnpjInstituicao = (dados.CnpjInstituicao == null) ? ResultadoCapacitacao.CnpjInstituicao : dados.CnpjInstituicao;
+                    ResultadoCapacitacao.AreaPesquisa = (dados.AreaPesquisa == null) ? ResultadoCapacitacao.AreaPesquisa : dados.AreaPesquisa;
+                    ResultadoCapacitacao.RecursoHumanoId = (dados.RecursoHumanoId <= 0) ? ResultadoCapacitacao.RecursoHumanoId : dados.RecursoHumanoId;
+                    ResultadoCapacitacao.TituloTrabalho = (dados.TituloTrabalho == null) ? ResultadoCapacitacao.TituloTrabalho : dados.TituloTrabalho;
                     _context.SaveChanges();
                 }
             }
@@ -82,19 +71,16 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        public Resultado Excluir(int id)
-        {
+        public Resultado Excluir( int id ) {
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de Resultado Capacitação";
 
-            ResultadoCapacitacao ResultadoCapacitacao = _context.ResultadosCapacitacao.FirstOrDefault(p=>p.Id==id);
-            if (ResultadoCapacitacao == null)
-            {
+            ResultadoCapacitacao ResultadoCapacitacao = _context.ResultadosCapacitacao.FirstOrDefault(p => p.Id == id);
+            if(ResultadoCapacitacao == null) {
                 resultado.Inconsistencias.Add("Resultado Capacitação não encontrado");
             }
-            else
-            {
-                _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.ResultadoCapacitacaoId == id));
+            else {
+                _context.Uploads.RemoveRange(_context.Uploads.Where(t => t.ResultadoCapacitacaoId == id));
                 _context.ResultadosCapacitacao.Remove(ResultadoCapacitacao);
                 _context.SaveChanges();
             }
@@ -102,11 +88,9 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        private Resultado DadosValidos(ResultadoCapacitacao dados)
-        {
+        private Resultado DadosValidos( ResultadoCapacitacao dados ) {
             var resultado = new Resultado();
-            if (dados == null)
-            {
+            if(dados == null) {
                 resultado.Inconsistencias.Add("Preencha os Dados do Resultado Capacitação");
             }
 

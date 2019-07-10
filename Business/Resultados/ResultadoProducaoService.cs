@@ -4,17 +4,14 @@ using System.Linq;
 using APIGestor.Data;
 using APIGestor.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business
 {
-    public class ResultadoProducaoService
-    {
-        private GestorDbContext _context;
+    public class ResultadoProducaoService : BaseAuthorizationService {
+        
 
-        public ResultadoProducaoService(GestorDbContext context)
-        {
-            _context = context;
-        }
+        public ResultadoProducaoService( GestorDbContext context, IAuthorizationService authorizationService ) : base(context, authorizationService) { }
 
         public ResultadoProducao Obter(int id)
         {

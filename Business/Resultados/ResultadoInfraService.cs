@@ -4,42 +4,31 @@ using System.Linq;
 using APIGestor.Data;
 using APIGestor.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+namespace APIGestor.Business {
+    public class ResultadoInfraService : BaseAuthorizationService {
 
-namespace APIGestor.Business
-{
-    public class ResultadoInfraService
-    {
-        private GestorDbContext _context;
+        public ResultadoInfraService( GestorDbContext context, IAuthorizationService authorizationService ) : base(context, authorizationService) { }
 
-        public ResultadoInfraService(GestorDbContext context)
-        {
-            _context = context;
-        }
-
-        public ResultadoInfra Obter(int id)
-        {
-            if (id>0)
-            {
+        public ResultadoInfra Obter( int id ) {
+            if(id > 0) {
                 return _context.ResultadosInfra
                     .Where(p => p.Id == id).FirstOrDefault();
             }
             else
                 return null;
         }
-        public IEnumerable<ResultadoInfra> ListarTodos(int projetoId)
-        {
+        public IEnumerable<ResultadoInfra> ListarTodos( int projetoId ) {
             var RecursoHumano = _context.ResultadosInfra
                 .Where(p => p.ProjetoId == projetoId)
                 .ToList();
             return RecursoHumano;
         }
-        public Resultado Incluir(ResultadoInfra dados)
-        {
+        public Resultado Incluir( ResultadoInfra dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de Resultado Infra-Estrutura";
-                         
-            if (resultado.Inconsistencias.Count == 0)
-            {
+
+            if(resultado.Inconsistencias.Count == 0) {
                 _context.ResultadosInfra.Add(dados);
                 _context.SaveChanges();
                 resultado.Id = dados.Id.ToString();
@@ -47,28 +36,24 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        public Resultado Atualizar(ResultadoInfra dados)
-        {
+        public Resultado Atualizar( ResultadoInfra dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Atualização de Resultado Infra-Estrutura";
 
-            if (resultado.Inconsistencias.Count == 0)
-            {
+            if(resultado.Inconsistencias.Count == 0) {
                 ResultadoInfra ResultadoInfra = _context.ResultadosInfra.Where(
                     p => p.Id == dados.Id).FirstOrDefault();
 
-                if (ResultadoInfra == null)
-                {
+                if(ResultadoInfra == null) {
                     resultado.Inconsistencias.Add(
                         "Resultado Infra-Estrutura não encontrado");
                 }
-                else
-                {
-                    ResultadoInfra.Tipo = !Enum.IsDefined(typeof(TipoInfra),dados.Tipo) ? ResultadoInfra.Tipo : dados.Tipo;
-                    ResultadoInfra.CnpjReceptora = (dados.CnpjReceptora==null) ? ResultadoInfra.CnpjReceptora : dados.CnpjReceptora;
-                    ResultadoInfra.NomeLaboratorio = (dados.NomeLaboratorio==null) ? ResultadoInfra.NomeLaboratorio : dados.NomeLaboratorio;
-                    ResultadoInfra.AreaPesquisa = (dados.AreaPesquisa==null) ? ResultadoInfra.AreaPesquisa : dados.AreaPesquisa;
-                    ResultadoInfra.ListaMateriais = (dados.ListaMateriais==null) ? ResultadoInfra.ListaMateriais : dados.ListaMateriais;
+                else {
+                    ResultadoInfra.Tipo = !Enum.IsDefined(typeof(TipoInfra), dados.Tipo) ? ResultadoInfra.Tipo : dados.Tipo;
+                    ResultadoInfra.CnpjReceptora = (dados.CnpjReceptora == null) ? ResultadoInfra.CnpjReceptora : dados.CnpjReceptora;
+                    ResultadoInfra.NomeLaboratorio = (dados.NomeLaboratorio == null) ? ResultadoInfra.NomeLaboratorio : dados.NomeLaboratorio;
+                    ResultadoInfra.AreaPesquisa = (dados.AreaPesquisa == null) ? ResultadoInfra.AreaPesquisa : dados.AreaPesquisa;
+                    ResultadoInfra.ListaMateriais = (dados.ListaMateriais == null) ? ResultadoInfra.ListaMateriais : dados.ListaMateriais;
                     _context.SaveChanges();
                 }
             }
@@ -76,18 +61,15 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        public Resultado Excluir(int id)
-        {
+        public Resultado Excluir( int id ) {
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de Resultado Infra-Estrutura";
 
-            ResultadoInfra ResultadoInfra = _context.ResultadosInfra.FirstOrDefault(p=>p.Id==id);
-            if (ResultadoInfra == null)
-            {
+            ResultadoInfra ResultadoInfra = _context.ResultadosInfra.FirstOrDefault(p => p.Id == id);
+            if(ResultadoInfra == null) {
                 resultado.Inconsistencias.Add("Resultado Infra-Estrutura não encontrado");
             }
-            else
-            {
+            else {
                 _context.ResultadosInfra.Remove(ResultadoInfra);
                 _context.SaveChanges();
             }
@@ -95,11 +77,9 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        private Resultado DadosValidos(ResultadoInfra dados)
-        {
+        private Resultado DadosValidos( ResultadoInfra dados ) {
             var resultado = new Resultado();
-            if (dados == null)
-            {
+            if(dados == null) {
                 resultado.Inconsistencias.Add("Preencha os Dados do Resultado Infra-Estrutura");
             }
 

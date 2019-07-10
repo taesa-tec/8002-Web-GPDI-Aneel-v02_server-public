@@ -1,21 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Business;
 using APIGestor.Models;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace APIGestor.Controllers
-{
+namespace APIGestor.Controllers {
     [Route("api/projeto/")]
     [ApiController]
     [Authorize("Bearer")]
-    public class RegistroFinanceiroController : ControllerBase
-    {
+    public class RegistroFinanceiroController : ControllerBase {
         private RegistroFinanceiroService _service;
 
-        public RegistroFinanceiroController(RegistroFinanceiroService service)
-        {
+        public RegistroFinanceiroController( RegistroFinanceiroService service ) {
             _service = service;
         }
 
@@ -27,32 +25,41 @@ namespace APIGestor.Controllers
 
         [Route("[controller]")]
         [HttpPost]
-        public ActionResult<Resultado> Post([FromBody]RegistroFinanceiro RegistroFinanceiro)
-        {
-            var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return _service.Incluir(RegistroFinanceiro, userId);
+        public ActionResult<Resultado> Post( [FromBody]RegistroFinanceiro RegistroFinanceiro ) {
+            var Registro = _service._context.RegistrosFinanceiros.Where(r => r.Id == RegistroFinanceiro.Id).FirstOrDefault();
+            if(_service.UserProjectCan((int)RegistroFinanceiro.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
+                return _service.Incluir(RegistroFinanceiro, this.userId());
+            return Forbid();
         }
 
         [Route("[controller]")]
         [HttpPut]
-        public ActionResult<Resultado> Put([FromBody]RegistroFinanceiro RegistroFinanceiro)
-        {
-            var userId = User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
-            return _service.Atualizar(RegistroFinanceiro, userId);
+        public ActionResult<Resultado> Put( [FromBody]RegistroFinanceiro RegistroFinanceiro ) {
+            var Registro = _service._context.RegistrosFinanceiros.Where(r => r.Id == RegistroFinanceiro.Id).FirstOrDefault();
+            if(_service.UserProjectCan((int)Registro.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
+                return _service.Atualizar(RegistroFinanceiro, this.userId());
+            return Forbid();
         }
 
         [HttpDelete("[controller]/{Id}")]
-        public ActionResult<Resultado> Delete(int id)
-        {
-            return _service.Excluir(id);
+        public ActionResult<Resultado> Delete( int id ) {
+
+            var RegistroFinanceiro = _service._context.RegistrosFinanceiros.Where(r => r.Id == id).FirstOrDefault();
+
+            if(RegistroFinanceiro != null) {
+                if(_service.UserProjectCan((int)RegistroFinanceiro.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
+                    return _service.Excluir(id);
+                return Forbid();
+            }
+
+            return NotFound();
         }
 
         [HttpGet("{projetoId}/RegistroFinanceiro/{status}")]
-        public IEnumerable<RegistroFinanceiro> Get(int projetoId, StatusRegistro status)
-        {
+        public IEnumerable<RegistroFinanceiro> Get( int projetoId, StatusRegistro status ) {
             return _service.ListarTodos(projetoId, status);
         }
-        
+
         // [HttpGet("{projetoId}/RegistroFinanceiro/exportar")]
         // public FileResult Download(int id)  
         // {  

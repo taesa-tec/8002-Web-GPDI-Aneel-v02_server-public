@@ -4,42 +4,32 @@ using System.Linq;
 using APIGestor.Data;
 using APIGestor.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
-namespace APIGestor.Business
-{
-    public class ResultadoSocioAmbientalService
-    {
-        private GestorDbContext _context;
+namespace APIGestor.Business {
+    public class ResultadoSocioAmbientalService : BaseAuthorizationService {
 
-        public ResultadoSocioAmbientalService(GestorDbContext context)
-        {
-            _context = context;
-        }
+        public ResultadoSocioAmbientalService( GestorDbContext context, IAuthorizationService authorizationService ) : base(context, authorizationService) { }
 
-        public ResultadoSocioAmbiental Obter(int id)
-        {
-            if (id>0)
-            {
+        public ResultadoSocioAmbiental Obter( int id ) {
+            if(id > 0) {
                 return _context.ResultadosSocioAmbiental
                     .Where(p => p.Id == id).FirstOrDefault();
             }
             else
                 return null;
         }
-        public IEnumerable<ResultadoSocioAmbiental> ListarTodos(int projetoId)
-        {
+        public IEnumerable<ResultadoSocioAmbiental> ListarTodos( int projetoId ) {
             var RecursoHumano = _context.ResultadosSocioAmbiental
                 .Where(p => p.ProjetoId == projetoId)
                 .ToList();
             return RecursoHumano;
         }
-        public Resultado Incluir(ResultadoSocioAmbiental dados)
-        {
+        public Resultado Incluir( ResultadoSocioAmbiental dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de Resultado SocioAmbiental";
-                         
-            if (resultado.Inconsistencias.Count == 0)
-            {
+
+            if(resultado.Inconsistencias.Count == 0) {
                 _context.ResultadosSocioAmbiental.Add(dados);
                 _context.SaveChanges();
                 resultado.Id = dados.Id.ToString();
@@ -47,27 +37,23 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        public Resultado Atualizar(ResultadoSocioAmbiental dados)
-        {
+        public Resultado Atualizar( ResultadoSocioAmbiental dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Atualização de Resultado SocioAmbiental";
 
-            if (resultado.Inconsistencias.Count == 0)
-            {
+            if(resultado.Inconsistencias.Count == 0) {
                 ResultadoSocioAmbiental ResultadoSocioAmbiental = _context.ResultadosSocioAmbiental.Where(
                     p => p.Id == dados.Id).FirstOrDefault();
 
-                if (ResultadoSocioAmbiental == null)
-                {
+                if(ResultadoSocioAmbiental == null) {
                     resultado.Inconsistencias.Add(
                         "Resultado SocioAmbiental não encontrado");
                 }
-                else
-                {
-                    ResultadoSocioAmbiental.Tipo = !Enum.IsDefined(typeof(TipoIndicador),dados.Tipo) ? ResultadoSocioAmbiental.Tipo : dados.Tipo;
-                    ResultadoSocioAmbiental.Desc = (dados.Desc==null) ? ResultadoSocioAmbiental.Desc : dados.Desc;
-                    ResultadoSocioAmbiental.Positivo = (dados.Positivo==null) ? ResultadoSocioAmbiental.Positivo : dados.Positivo;
-                    ResultadoSocioAmbiental.TecnicaPrevista = (dados.TecnicaPrevista==null) ? ResultadoSocioAmbiental.TecnicaPrevista : dados.TecnicaPrevista;
+                else {
+                    ResultadoSocioAmbiental.Tipo = !Enum.IsDefined(typeof(TipoIndicador), dados.Tipo) ? ResultadoSocioAmbiental.Tipo : dados.Tipo;
+                    ResultadoSocioAmbiental.Desc = (dados.Desc == null) ? ResultadoSocioAmbiental.Desc : dados.Desc;
+                    ResultadoSocioAmbiental.Positivo = (dados.Positivo == null) ? ResultadoSocioAmbiental.Positivo : dados.Positivo;
+                    ResultadoSocioAmbiental.TecnicaPrevista = (dados.TecnicaPrevista == null) ? ResultadoSocioAmbiental.TecnicaPrevista : dados.TecnicaPrevista;
                     _context.SaveChanges();
                 }
             }
@@ -75,18 +61,15 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        public Resultado Excluir(int id)
-        {
+        public Resultado Excluir( int id ) {
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de Resultado SocioAmbiental";
 
-            ResultadoSocioAmbiental ResultadoSocioAmbiental = _context.ResultadosSocioAmbiental.FirstOrDefault(p=>p.Id==id);
-            if (ResultadoSocioAmbiental == null)
-            {
+            ResultadoSocioAmbiental ResultadoSocioAmbiental = _context.ResultadosSocioAmbiental.FirstOrDefault(p => p.Id == id);
+            if(ResultadoSocioAmbiental == null) {
                 resultado.Inconsistencias.Add("Resultado SocioAmbiental não encontrado");
             }
-            else
-            {
+            else {
                 _context.ResultadosSocioAmbiental.Remove(ResultadoSocioAmbiental);
                 _context.SaveChanges();
             }
@@ -94,11 +77,9 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        private Resultado DadosValidos(ResultadoSocioAmbiental dados)
-        {
+        private Resultado DadosValidos( ResultadoSocioAmbiental dados ) {
             var resultado = new Resultado();
-            if (dados == null)
-            {
+            if(dados == null) {
                 resultado.Inconsistencias.Add("Preencha os Dados do Resultado SocioAmbiental");
             }
 
