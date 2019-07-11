@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using APIGestor.Business;
 using APIGestor.Models;
 using System.Linq;
+using System;
 
 namespace APIGestor.Controllers {
     [Route("api/projeto/")]
@@ -39,14 +40,25 @@ namespace APIGestor.Controllers {
 
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
-            var Empresa = _service._context.Empresas.Where(e => e.Id == id).FirstOrDefault();
+            try {
 
-            if(Empresa != null) {
-                if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.Administrator))
-                    return _service.Excluir(id);
-                return Forbid();
+                var Empresa = _service._context.Empresas.Where(e => e.Id == id).FirstOrDefault();
+
+                if(Empresa != null) {
+                    if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.Administrator))
+                        return _service.Excluir(id);
+                    return Forbid();
+                }
+                return NotFound();
+
             }
-            return NotFound();
+            catch(Exception ex) {
+                var r = new Resultado();
+                r.Inconsistencias.Add(ex.Message);
+                r.Inconsistencias.Add(ex.StackTrace);
+                return r;
+            }
+
         }
     }
 }
