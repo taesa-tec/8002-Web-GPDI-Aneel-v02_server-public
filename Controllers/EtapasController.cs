@@ -33,7 +33,8 @@ namespace APIGestor.Controllers {
         [Route("[controller]")]
         [HttpPut]
         public ActionResult<Resultado> Put( [FromBody]Etapa Etapa ) {
-            if(_service.UserProjectCan(Etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            var etapa = _service._context.Etapas.Find(Etapa.Id);
+            if(_service.UserProjectCan(etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 return _service.Atualizar(Etapa);
             }
             return Forbid();

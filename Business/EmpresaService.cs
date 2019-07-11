@@ -167,8 +167,15 @@ namespace APIGestor.Business {
                 resultado.Inconsistencias.Add("Empresa não encontrada");
             }
             else {
-                _context.Empresas.Remove(Empresa);
-                _context.SaveChanges();
+                try {
+                    _context.Empresas.Remove(Empresa);
+                    _context.SaveChanges();
+                }
+                catch(Exception) {
+                    resultado.Inconsistencias.Add("Não é possível excluir essa empresa. " +
+                        "Pode haver outros cadastros relacionados a ela no projeto");
+                }
+
             }
 
             return resultado;

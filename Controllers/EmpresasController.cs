@@ -40,24 +40,15 @@ namespace APIGestor.Controllers {
 
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
-            try {
 
-                var Empresa = _service._context.Empresas.Where(e => e.Id == id).FirstOrDefault();
+            var Empresa = _service._context.Empresas.Where(e => e.Id == id).FirstOrDefault();
 
-                if(Empresa != null) {
-                    if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.Administrator))
-                        return _service.Excluir(id);
-                    return Forbid();
-                }
-                return NotFound();
-
+            if(Empresa != null) {
+                if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.Administrator))
+                    return _service.Excluir(id);
+                return Forbid();
             }
-            catch(Exception ex) {
-                var r = new Resultado();
-                r.Inconsistencias.Add(ex.Message);
-                r.Inconsistencias.Add(ex.StackTrace);
-                return r;
-            }
+            return NotFound();
 
         }
     }

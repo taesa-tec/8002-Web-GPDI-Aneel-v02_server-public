@@ -38,7 +38,7 @@ namespace APIGestor.Controllers {
         public ActionResult<Resultado> Put( [FromBody]RelatorioFinal RelatorioFinal ) {
             var Relatorio = _service._context.RelatorioFinal.Find(RelatorioFinal.Id);
             if(Relatorio != null) {
-                if(_service.UserProjectCan(RelatorioFinal.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
+                if(_service.UserProjectCan(Relatorio.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
                     return _service.Atualizar(RelatorioFinal);
                 return Forbid();
             }
