@@ -39,7 +39,7 @@ namespace APIGestor.Controllers {
 
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
-            var Empresa = _service._context.Empresas.Where(e => e.ProjetoId == id).FirstOrDefault();
+            var Empresa = _service._context.Empresas.Where(e => e.Id == id).FirstOrDefault();
 
             if(Empresa != null) {
                 if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.Administrator))
