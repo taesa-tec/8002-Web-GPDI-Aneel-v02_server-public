@@ -134,6 +134,7 @@ namespace APIGestor.Business {
 
         public XLWorkbook gerarXLSOrcamento( int projetoId ) {
 
+            var projeto = context.Projetos.Find(projetoId);
 
             XLWorkbook xls = new XLWorkbook();
 
@@ -213,20 +214,25 @@ namespace APIGestor.Business {
             foreach(var i in rmItems) {
                 string atividade = i.RecursoMaterial.Atividade != null ? i.RecursoMaterial.Atividade.Nome : String.Empty;
                 decimal custo = i.AlocacaoRm.Qtd * i.RecursoMaterial.ValorUnitario;
-                table.Rows.Add(
-                    i.Desc,
-                    i.RecursoMaterial.Nome,
-                    i.RecursoMaterial.categoria,
-                    i.RecursoMaterial.Especificacao,
-                    atividade,
+                try {
+                    table.Rows.Add(
+                        i.Desc,
+                        i.RecursoMaterial.Nome,
+                        i.RecursoMaterial.categoria,
+                        i.RecursoMaterial.Especificacao,
+                        atividade,
 
-                    i.AlocacaoRm.Qtd,
-                    i.RecursoMaterial.ValorUnitario,
-                    custo,
-                    etapas.IndexOf(i.AlocacaoRm.Etapa) + 1,
-                    i.AlocacaoRm.EmpresaFinanciadora.NomeEmpresa,
-                    i.AlocacaoRm.EmpresaRecebedora.NomeEmpresa
-                    ); ; ;
+                        i.AlocacaoRm.Qtd,
+                        i.RecursoMaterial.ValorUnitario,
+                        custo,
+                        etapas.IndexOf(i.AlocacaoRm.Etapa) + 1,
+                        i.AlocacaoRm.EmpresaFinanciadora.NomeEmpresa,
+                        projeto.Tipo == TipoProjeto.PD ? i.AlocacaoRm.EmpresaRecebedora.NomeEmpresa : i.AlocacaoRm.EmpresaFinanciadora.NomeEmpresa
+                        );
+                }
+                catch(Exception) {
+
+                }
             }
 
             workRM.Cell(1, 1).InsertTable(table);
