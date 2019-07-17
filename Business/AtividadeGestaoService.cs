@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business {
-    public class AtividadeGestaoService : BaseAuthorizationService {
+    public class AtividadeGestaoService : BaseGestorService {
 
-        public AtividadeGestaoService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
-            
+        public AtividadeGestaoService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
+
         }
 
         public AtividadesGestao Obter( int ProjetoId ) {

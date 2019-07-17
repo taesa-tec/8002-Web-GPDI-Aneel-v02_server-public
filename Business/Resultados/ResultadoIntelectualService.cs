@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 namespace APIGestor.Business
 {
-    public class ResultadoIntelectualService : BaseAuthorizationService {
+    public class ResultadoIntelectualService : BaseGestorService {
         
-        public ResultadoIntelectualService( GestorDbContext context, IAuthorizationService authorizationService ) : base(context, authorizationService) { }
+        public ResultadoIntelectualService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) { }
 
         public ResultadoIntelectual Obter(int id)
         {

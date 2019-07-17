@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 using APIGestor.Security;
 
 namespace APIGestor.Business {
-    public class RecursoMaterialService : BaseAuthorizationService {
+    public class RecursoMaterialService : BaseGestorService {
 
-        public RecursoMaterialService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
+        public RecursoMaterialService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
         }
         public IEnumerable<RecursoMaterial> ListarTodos( int projetoId ) {
             var RecursoMaterial = _context.RecursoMateriais

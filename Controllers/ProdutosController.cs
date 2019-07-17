@@ -41,7 +41,11 @@ namespace APIGestor.Controllers {
         [HttpPost]
         public ActionResult<Resultado> Post( [FromBody]Produto Produto ) {
             if(this._service.UserProjectCan(Produto.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Incluir(Produto);
+                var resultado = _service.Incluir(Produto);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, Produto.ProjetoId, Produto);
+                }
+                return resultado;
             }
             return Forbid();
         }
@@ -50,7 +54,13 @@ namespace APIGestor.Controllers {
         [HttpPut]
         public ActionResult<Resultado> Put( [FromBody]Produto Produto ) {
             if(this._service.UserProjectCan(Produto.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Atualizar(Produto);
+                var oldProduto = _service.Obter(Produto.Id);
+                _service._context.Entry(oldProduto).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                var resultado = _service.Atualizar(Produto);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, oldProduto.ProjetoId, _service.Obter(Produto.Id), oldProduto);
+                }
+                return resultado;
             }
             return Forbid();
         }
@@ -59,7 +69,12 @@ namespace APIGestor.Controllers {
         public ActionResult<Resultado> Delete( int id ) {
             Produto p = _service.Obter(id);
             if(this._service.UserProjectCan(p.ProjetoId, User, Authorizations.ProjectPermissions.Administrator)) {
-                return _service.Excluir(id);
+                var resultado = _service.Excluir(id);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, p.ProjetoId, p);
+                }
+
+                return resultado;
             }
             return Forbid();
         }

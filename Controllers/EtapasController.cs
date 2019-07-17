@@ -25,7 +25,11 @@ namespace APIGestor.Controllers {
         [HttpPost]
         public ActionResult<Resultado> Post( [FromBody]Etapa Etapa ) {
             if(_service.UserProjectCan(Etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Incluir(Etapa);
+                var resultado = _service.Incluir(Etapa);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, Etapa.ProjetoId, Etapa);
+                }
+                return resultado;
             }
             return Forbid();
         }
@@ -33,9 +37,14 @@ namespace APIGestor.Controllers {
         [Route("[controller]")]
         [HttpPut]
         public ActionResult<Resultado> Put( [FromBody]Etapa Etapa ) {
-            var etapa = _service._context.Etapas.Find(Etapa.Id);
+            var etapa = _service.Obter(Etapa.Id);
             if(_service.UserProjectCan(etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Atualizar(Etapa);
+                _service._context.Entry(etapa).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                var resultado = _service.Atualizar(Etapa);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, etapa.ProjetoId, _service.Obter(Etapa.Id), etapa);
+                }
+                return resultado;
             }
             return Forbid();
         }
@@ -45,7 +54,11 @@ namespace APIGestor.Controllers {
             var Etapa = _service._context.Etapas.Where(e => e.Id == id).FirstOrDefault();
             if(Etapa != null) {
                 if(_service.UserProjectCan(Etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                    return _service.Excluir(id);
+                    var resultado = _service.Excluir(id);
+                    if(resultado.Sucesso) {
+                        this.CreateLog(_service, Etapa.ProjetoId, Etapa);
+                    }
+                    return resultado;
                 }
                 return Forbid();
             }

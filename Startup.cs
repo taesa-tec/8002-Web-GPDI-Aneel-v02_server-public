@@ -44,7 +44,7 @@ namespace APIGestor {
             services.AddScoped<AlocacaoRmService>();
             services.AddScoped<ProdutoService>();
             services.AddScoped<EtapaService>();
-            services.AddScoped<LogProjetoService>();
+            services.AddScoped<LogService>();
             services.AddScoped<UploadService>();
             services.AddScoped<RelatorioEmpresaService>();
             services.AddScoped<RelatorioEtapaService>();

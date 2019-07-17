@@ -6,9 +6,9 @@ using APIGestor.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 namespace APIGestor.Business {
-    public class ResultadoInfraService : BaseAuthorizationService {
+    public class ResultadoInfraService : BaseGestorService {
 
-        public ResultadoInfraService( GestorDbContext context, IAuthorizationService authorizationService ) : base(context, authorizationService) { }
+        public ResultadoInfraService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) { }
 
         public ResultadoInfra Obter( int id ) {
             if(id > 0) {

@@ -9,9 +9,11 @@ using APIGestor.Security;
 using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business {
-    public class LogProjetoService : BaseAuthorizationService {
+    public class LogService : BaseGestorService {
 
-        public LogProjetoService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) { }
+        public LogService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization, null) {
+
+        }
 
         public IEnumerable<LogProjeto> ListarTodos( int projetoId, Acoes? acao, string user, int pag, int size ) {
             var LogProjeto = _context.LogProjetos
@@ -27,6 +29,7 @@ namespace APIGestor.Business {
             }
             return LogProjeto;
         }
+
         public Resultado Incluir( LogProjeto dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de LogProjeto";
@@ -38,6 +41,7 @@ namespace APIGestor.Business {
             }
             return resultado;
         }
+
         private Resultado DadosValidos( LogProjeto dados ) {
             var resultado = new Resultado();
             if(dados == null) {
@@ -77,6 +81,7 @@ namespace APIGestor.Business {
             }
             return resultado;
         }
+
         public Resultado Excluir( int id ) {
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de LogProjeto";

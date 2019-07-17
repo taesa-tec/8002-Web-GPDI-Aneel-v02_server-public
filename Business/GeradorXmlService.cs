@@ -12,8 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
 
 namespace APIGestor.Business {
-    public class GeradorXmlService : BaseAuthorizationService {
-        
+    public class GeradorXmlService : BaseGestorService {
+
 
         private XmlProjetoPedService _projetoPed;
         private XmlInteressePedService _interessePed;
@@ -38,9 +38,8 @@ namespace APIGestor.Business {
             XmlProjetoGestaoService projetoGestao,
             XmlRelatorioFinalGestaoService relatorioFinalGestao,
             XmlRelatorioAuditoriaGestaoService relatorioAuditoriaGestao,
-            IAuthorizationService authorization) : base(context, authorization)
-             {
-        
+            IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
+
             _hostingEnvironment = hostingEnvironment;
             _projetoPed = projetoPed;
             _interessePed = interessePed;

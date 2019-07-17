@@ -9,9 +9,9 @@ using APIGestor.Business;
 using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business {
-    public class ResultadoCapacitacaoService : BaseAuthorizationService {
+    public class ResultadoCapacitacaoService : BaseGestorService {
 
-        public ResultadoCapacitacaoService( GestorDbContext context, IAuthorizationService authorizationService ) : base(context, authorizationService) { }
+        public ResultadoCapacitacaoService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) { }
 
         public ResultadoCapacitacao Obter( int id ) {
             if(id > 0) {

@@ -9,9 +9,16 @@ using Microsoft.AspNetCore.Identity;
 using APIGestor.Security;
 
 namespace APIGestor.Business {
-    public class EmpresaService : BaseAuthorizationService {
+    public class EmpresaService : BaseGestorService {
 
-        public EmpresaService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
+        public EmpresaService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
+        }
+
+        public Empresa Obter( int id ) {
+            return _context.Empresas
+                .Include("CatalogEmpresa")
+                .Include("Estado")
+                .First(e => e.Id == id);
         }
         public IEnumerable<Empresa> ListarTodos( int projetoId ) {
             var Empresas = _context.Empresas
@@ -146,7 +153,7 @@ namespace APIGestor.Business {
                                         .Where(p => p.Classificacao == dados.Classificacao)
                                         .Where(p => p.RazaoSocial == dados.RazaoSocial).FirstOrDefault();
 
-                                    if(Empresa != null) {
+                                    if(Empresa != null && Empresa.Id != dados.Id && dados.Id > 0) {
                                         resultado.Inconsistencias.Add(
                                             "RazaoSocial já cadastrada para esse projeto. Remova ou Atualize.");
                                     }

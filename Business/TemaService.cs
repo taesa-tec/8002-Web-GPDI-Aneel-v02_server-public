@@ -10,10 +10,18 @@ using Microsoft.AspNetCore.Authorization;
 
 
 namespace APIGestor.Business {
-    public class TemaService : BaseAuthorizationService {
+    public class TemaService : BaseGestorService {
 
-        public TemaService( IAuthorizationService authorization, GestorDbContext context ) : base(context, authorization) {
+        public TemaService( IAuthorizationService authorization, GestorDbContext context, LogService logService ) : base(context, authorization, logService) {
 
+        }
+
+        public Tema Obter( int temaId ) {
+            return _context.Temas
+                .Include("CatalogTema")
+                .Include("SubTemas.CatalogSubTema")
+                .Include("Uploads")
+                .First(t => t.Id == temaId);
         }
 
         public Tema ListarTema( int projetoId ) {

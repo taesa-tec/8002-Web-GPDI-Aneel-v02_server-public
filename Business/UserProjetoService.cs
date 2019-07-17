@@ -7,10 +7,10 @@ using APIGestor.Models;
 using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business {
-    public class UserProjetoService : BaseAuthorizationService {
+    public class UserProjetoService : BaseGestorService {
 
         public ProjetoService projetoService;
-        public UserProjetoService( ProjetoService service, GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
+        public UserProjetoService( ProjetoService service, GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
             projetoService = service;
         }
 

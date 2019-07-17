@@ -12,14 +12,16 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace APIGestor.Business {
-    public class BaseAuthorizationService {
+    public class BaseGestorService {
 
         protected IAuthorizationService authorization;
         public readonly GestorDbContext _context;
-
-        public BaseAuthorizationService( GestorDbContext context, IAuthorizationService authorizationService ) {
+        public readonly LogService LogService;
+        public BaseGestorService( GestorDbContext context, IAuthorizationService authorizationService, LogService logService ) {
             this.authorization = authorizationService;
             this._context = context;
+            this.LogService = logService;
+
         }
 
         public bool UserProjectCan( int projeto_id, ClaimsPrincipal User, ProjectAccessRequirement projectAccess = null ) {

@@ -9,9 +9,9 @@ using APIGestor.Security;
 using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business {
-    public class AlocacaoRmService : BaseAuthorizationService {
+    public class AlocacaoRmService : BaseGestorService {
 
-        public AlocacaoRmService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) { }
+        public AlocacaoRmService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) { }
         public IEnumerable<AlocacaoRm> ListarTodos( int projetoId ) {
             var AlocacaoRm = _context.AlocacoesRm
                 .Include("RecursoMaterial.CategoriaContabilGestao")

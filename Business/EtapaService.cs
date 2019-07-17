@@ -9,15 +9,18 @@ using Microsoft.AspNetCore.Identity;
 using APIGestor.Security;
 
 namespace APIGestor.Business {
-    public class EtapaService : BaseAuthorizationService {
+    public class EtapaService : BaseGestorService {
 
-        public EtapaService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
+        public EtapaService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
         }
 
+
+        public Etapa Obter( int id ) {
+            return _context.Etapas
+                .Include("EtapaProdutos")
+                .Include("EtapaMeses").First(e => e.Id == id);
+        }
         public IEnumerable<Etapa> ListarTodos( int projetoId ) {
-
-
-            var TodasEtapas = _context.Etapas.ToList();
 
             var Etapas = _context.Etapas
                 .Include("EtapaProdutos")

@@ -16,9 +16,10 @@ namespace APIGestor.Controllers {
     [ApiController]
     [Authorize("Bearer")]
     public class ProjetosController : ControllerBase {
-        private ProjetoService _service;
+        public ProjetoService _service;
         private UserProjetoService _userprojeto_service;
         protected GestorDbContext _context;
+
 
         public ProjetosController( ProjetoService service, GestorDbContext context, UserProjetoService userprojeto_service ) {
             _service = service;
@@ -44,7 +45,6 @@ namespace APIGestor.Controllers {
 
             if(Projeto != null) {
                 if(_service.UserProjectCan(id, User)) {
-
                     return Projeto;
                 }
                 return Forbid();
@@ -73,36 +73,63 @@ namespace APIGestor.Controllers {
         [HttpPost] // Criar
         public ActionResult<Resultado> Post( [FromBody]Projeto Projeto ) {
             if(this.isAdmin()) {
-                return _service.Incluir(Projeto, this.userId());
+                var resultado = _service.Incluir(Projeto, this.userId());
+                if(resultado.Sucesso) {
+                    this.CreateLog(this._service, int.Parse(resultado.Id), Projeto);
+                }
+                return resultado;
             }
             return Forbid();
         }
 
         [HttpPut] // Editar
         public ActionResult<Resultado> Put( [FromBody]Projeto Projeto ) {
-            if(this._service.UserProjectCan(Projeto.Id, User, ProjectPermissions.Administrator))
-                return _service.Atualizar(Projeto);
+            if(this._service.UserProjectCan(Projeto.Id, User, ProjectPermissions.Administrator)) {
+                var ProjetoOld = _service.Obter(Projeto.Id);
+                _service._context.Entry(ProjetoOld).State = EntityState.Detached;
+                var result = _service.Atualizar(Projeto);
+                if(result.Sucesso) {
+                    this.CreateLog(this._service, Projeto.Id, _service.Obter(Projeto.Id), ProjetoOld);
+                }
+                return result;
+            }
             return Forbid();
         }
 
         [HttpDelete("{id}")] // Apagar
         public ActionResult<Resultado> Delete( int id ) {
-            if(this._service.UserProjectCan(id, User, ProjectPermissions.Administrator))
-                return _service.Excluir(id);
+            if(this._service.UserProjectCan(id, User, ProjectPermissions.Administrator)) {
+                var resultado = _service.Excluir(id);
+            }
             return Forbid();
         }
 
         [HttpPut("dataInicio")]
         public ActionResult<Resultado> PutA( [FromBody]Projeto Projeto ) {
-            if(this._service.UserProjectCan(Projeto.Id, User, ProjectPermissions.Administrator))
-                return _service.AtualizaDataInicio(Projeto);
+            if(this._service.UserProjectCan(Projeto.Id, User, ProjectPermissions.Administrator)) {
+                var ProjetoOld = _service.Obter(Projeto.Id);
+                _service._context.Entry(ProjetoOld).State = EntityState.Detached;
+                var result = _service.AtualizaDataInicio(Projeto);
+                if(result.Sucesso) {
+                    this.CreateLog(this._service, Projeto.Id, _service.Obter(Projeto.Id), ProjetoOld);
+                }
+                return result;
+            }
             return Forbid();
         }
 
         [HttpPost("prorrogar")]
-        public object PostA( [FromBody]Projeto Projeto ) {
-            if(this._service.UserProjectCan(Projeto.Id, User, ProjectPermissions.Administrator))
-                return _service.ProrrogarProjeto(Projeto);
+        public ActionResult<Resultado> PostA( [FromBody]Projeto Projeto ) {
+            if(this._service.UserProjectCan(Projeto.Id, User, ProjectPermissions.Administrator)) {
+                var ProjetoOld = _service.Obter(Projeto.Id);
+                _service._context.Entry(ProjetoOld).State = EntityState.Detached;
+                var result = _service.ProrrogarProjeto(Projeto);
+                if(result.Sucesso) {
+                    this.CreateLog(this._service, Projeto.Id, _service.Obter(Projeto.Id), ProjetoOld);
+                }
+                return result;
+            }
+
             return Forbid();
         }
     }

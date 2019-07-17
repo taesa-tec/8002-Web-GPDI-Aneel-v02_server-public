@@ -28,7 +28,12 @@ namespace APIGestor.Controllers {
         [HttpPost]
         public ActionResult<Resultado> Post( [FromBody]Tema Tema ) {
             if(this._service.UserProjectCan(Tema.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Incluir(Tema);
+                var resultado = _service.Incluir(Tema);
+                if(resultado.Sucesso) {
+                    this.CreateLog(this._service, Tema.ProjetoId, Tema);
+                }
+
+                return resultado;
             }
             return Forbid();
         }
@@ -37,16 +42,26 @@ namespace APIGestor.Controllers {
         [HttpPut]
         public ActionResult<Resultado> Put( [FromBody]Tema Tema ) {
             if(this._service.UserProjectCan(Tema.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Atualizar(Tema);
+                var oldTema = _service.Obter(Tema.Id);
+                _service._context.Entry(oldTema).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                var resultado = _service.Atualizar(Tema);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, oldTema.ProjetoId, _service.Obter(Tema.Id), oldTema);
+                }
+                return resultado;
             }
             return Forbid();
         }
 
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
-            var tema = _service._context.Temas.First(t => t.Id == id);
+            var tema = _service.Obter(id);
             if(this._service.UserProjectCan(tema.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Excluir(id);
+                var resultado = _service.Excluir(id);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, tema.ProjetoId, tema);
+                }
+                return resultado;
             }
             return Forbid();
         }

@@ -9,10 +9,10 @@ using APIGestor.Security;
 using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business {
-    public class AlocacaoRhService : BaseAuthorizationService {
+    public class AlocacaoRhService : BaseGestorService {
 
 
-        public AlocacaoRhService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
+        public AlocacaoRhService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
 
         }
         public IEnumerable<AlocacaoRh> ListarTodos( int projetoId ) {

@@ -9,9 +9,9 @@ using APIGestor.Security;
 using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business {
-    public class RecursoHumanoService : BaseAuthorizationService {
+    public class RecursoHumanoService : BaseGestorService {
 
-        public RecursoHumanoService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
+        public RecursoHumanoService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
         }
         public IEnumerable<RecursoHumano> ListarTodos( int projetoId ) {
             var RecursoHumano = _context.RecursoHumanos

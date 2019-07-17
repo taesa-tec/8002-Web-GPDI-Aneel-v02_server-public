@@ -11,10 +11,10 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace APIGestor.Business {
-    public class ProjetoService : BaseAuthorizationService {
+    public class ProjetoService : BaseGestorService {
         private EtapaService _etapaService;
 
-        public ProjetoService( GestorDbContext context, EtapaService etapaService, IAuthorizationService authorizationService ) : base(context, authorizationService) {
+        public ProjetoService( GestorDbContext context, EtapaService etapaService, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
             _etapaService = etapaService;
         }
 
@@ -33,8 +33,8 @@ namespace APIGestor.Business {
                     .Include(p => p.AlocacoesRh)
                     .Include(p => p.RecursosMateriais)
                     .Include(p => p.AlocacoesRm)
-                    .Where(
-                        p => p.Id == id).FirstOrDefault();
+                    .Where(p => p.Id == id)
+                    .FirstOrDefault();
             }
             else
                 return null;

@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business
 {
-    public class ResultadoProducaoService : BaseAuthorizationService {
+    public class ResultadoProducaoService : BaseGestorService {
         
 
-        public ResultadoProducaoService( GestorDbContext context, IAuthorizationService authorizationService ) : base(context, authorizationService) { }
+        public ResultadoProducaoService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) { }
 
         public ResultadoProducao Obter(int id)
         {

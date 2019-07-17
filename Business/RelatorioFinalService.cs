@@ -6,17 +6,14 @@ using APIGestor.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
-namespace APIGestor.Business
-{
-    public class RelatorioFinalService : BaseAuthorizationService {
+namespace APIGestor.Business {
+    public class RelatorioFinalService : BaseGestorService {
 
-        public RelatorioFinalService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) {
+        public RelatorioFinalService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
         }
 
-        public RelatorioFinal Obter(int projetoId)
-        {
-            if (projetoId>0)
-            {
+        public RelatorioFinal Obter( int projetoId ) {
+            if(projetoId > 0) {
                 return _context.RelatorioFinal
                     .Include("Uploads.User")
                     .Where(p => p.ProjetoId == projetoId).FirstOrDefault();
@@ -25,22 +22,19 @@ namespace APIGestor.Business
                 return null;
         }
 
-        public Resultado Incluir(RelatorioFinal dados)
-        {
+        public Resultado Incluir( RelatorioFinal dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de RelatorioFinal";
-             
+
             RelatorioFinal RelatorioFinal = _context.RelatorioFinal
                 .Where(p => p.ProjetoId == dados.ProjetoId)
                 .FirstOrDefault();
 
-            if (RelatorioFinal != null)
-            {
+            if(RelatorioFinal != null) {
                 resultado.Inconsistencias.Add("Já existe um RelatorioFinal final para o projeto. Remova-o ou atualize.");
             }
-            
-            if (resultado.Inconsistencias.Count == 0)
-            {
+
+            if(resultado.Inconsistencias.Count == 0) {
                 _context.RelatorioFinal.Add(dados);
                 _context.SaveChanges();
                 resultado.Id = dados.Id.ToString();
@@ -48,35 +42,31 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        public Resultado Atualizar(RelatorioFinal dados)
-        {
+        public Resultado Atualizar( RelatorioFinal dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Atualização de RelatorioFinal";
 
-            if (resultado.Inconsistencias.Count == 0)
-            {
+            if(resultado.Inconsistencias.Count == 0) {
                 RelatorioFinal RelatorioFinal = _context.RelatorioFinal.Where(
                     p => p.Id == dados.Id).FirstOrDefault();
 
-                if (RelatorioFinal == null)
-                {
+                if(RelatorioFinal == null) {
                     resultado.Inconsistencias.Add(
                         "RelatorioFinal não encontrado");
                 }
-                else
-                {
+                else {
                     RelatorioFinal.ProdutoAlcancado = !dados.ProdutoAlcancado.HasValue ? RelatorioFinal.ProdutoAlcancado : dados.ProdutoAlcancado;
-                    RelatorioFinal.JustificativaProduto = (dados.JustificativaProduto==null) ? RelatorioFinal.JustificativaProduto : dados.JustificativaProduto;
-                    RelatorioFinal.EspecificacaoProduto = (dados.EspecificacaoProduto==null) ? RelatorioFinal.EspecificacaoProduto : dados.EspecificacaoProduto;
+                    RelatorioFinal.JustificativaProduto = (dados.JustificativaProduto == null) ? RelatorioFinal.JustificativaProduto : dados.JustificativaProduto;
+                    RelatorioFinal.EspecificacaoProduto = (dados.EspecificacaoProduto == null) ? RelatorioFinal.EspecificacaoProduto : dados.EspecificacaoProduto;
                     RelatorioFinal.TecnicaPrevista = !dados.TecnicaPrevista.HasValue ? RelatorioFinal.TecnicaPrevista : dados.TecnicaPrevista;
-                    RelatorioFinal.JustificativaTecnica = (dados.JustificativaTecnica==null) ? RelatorioFinal.JustificativaTecnica : dados.JustificativaTecnica;
-                    RelatorioFinal.DescTecnica = (dados.DescTecnica==null) ? RelatorioFinal.DescTecnica : dados.DescTecnica;
+                    RelatorioFinal.JustificativaTecnica = (dados.JustificativaTecnica == null) ? RelatorioFinal.JustificativaTecnica : dados.JustificativaTecnica;
+                    RelatorioFinal.DescTecnica = (dados.DescTecnica == null) ? RelatorioFinal.DescTecnica : dados.DescTecnica;
                     RelatorioFinal.AplicabilidadePrevista = !dados.AplicabilidadePrevista.HasValue ? RelatorioFinal.AplicabilidadePrevista : dados.AplicabilidadePrevista;
-                    RelatorioFinal.JustificativaAplicabilidade = (dados.JustificativaAplicabilidade==null) ? RelatorioFinal.JustificativaAplicabilidade : dados.JustificativaAplicabilidade;
-                    RelatorioFinal.DescTestes = (dados.DescTestes==null) ? RelatorioFinal.DescTestes : dados.DescTestes;
-                    RelatorioFinal.DescAbrangencia = (dados.DescAbrangencia==null) ? RelatorioFinal.DescAbrangencia : dados.DescAbrangencia;
-                    RelatorioFinal.DescAmbito = (dados.DescAmbito==null) ? RelatorioFinal.DescAmbito : dados.DescAmbito;
-                    RelatorioFinal.DescAtividades = (dados.DescAtividades==null) ? RelatorioFinal.DescAtividades : dados.DescAtividades;
+                    RelatorioFinal.JustificativaAplicabilidade = (dados.JustificativaAplicabilidade == null) ? RelatorioFinal.JustificativaAplicabilidade : dados.JustificativaAplicabilidade;
+                    RelatorioFinal.DescTestes = (dados.DescTestes == null) ? RelatorioFinal.DescTestes : dados.DescTestes;
+                    RelatorioFinal.DescAbrangencia = (dados.DescAbrangencia == null) ? RelatorioFinal.DescAbrangencia : dados.DescAbrangencia;
+                    RelatorioFinal.DescAmbito = (dados.DescAmbito == null) ? RelatorioFinal.DescAmbito : dados.DescAmbito;
+                    RelatorioFinal.DescAtividades = (dados.DescAtividades == null) ? RelatorioFinal.DescAtividades : dados.DescAtividades;
                     _context.SaveChanges();
                 }
             }
@@ -84,19 +74,16 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        public Resultado Excluir(int id)
-        {
+        public Resultado Excluir( int id ) {
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de RelatorioFinal";
 
-            RelatorioFinal RelatorioFinal = _context.RelatorioFinal.FirstOrDefault(p=>p.Id==id);
-            if (RelatorioFinal == null)
-            {
+            RelatorioFinal RelatorioFinal = _context.RelatorioFinal.FirstOrDefault(p => p.Id == id);
+            if(RelatorioFinal == null) {
                 resultado.Inconsistencias.Add("RelatorioFinal não encontrado");
             }
-            else
-            {
-                _context.Uploads.RemoveRange(_context.Uploads.Where(t=>t.RelatorioFinalId == id));
+            else {
+                _context.Uploads.RemoveRange(_context.Uploads.Where(t => t.RelatorioFinalId == id));
                 _context.RelatorioFinal.Remove(RelatorioFinal);
                 _context.SaveChanges();
             }
@@ -104,11 +91,9 @@ namespace APIGestor.Business
             return resultado;
         }
 
-        private Resultado DadosValidos(RelatorioFinal dados)
-        {
+        private Resultado DadosValidos( RelatorioFinal dados ) {
             var resultado = new Resultado();
-            if (dados == null)
-            {
+            if(dados == null) {
                 resultado.Inconsistencias.Add(
                     "Preencha os Dados do RelatorioFinal");
             }

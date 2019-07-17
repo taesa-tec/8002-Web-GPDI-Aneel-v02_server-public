@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
 namespace APIGestor.Business {
-    public class ResultadoSocioAmbientalService : BaseAuthorizationService {
+    public class ResultadoSocioAmbientalService : BaseGestorService {
 
-        public ResultadoSocioAmbientalService( GestorDbContext context, IAuthorizationService authorizationService ) : base(context, authorizationService) { }
+        public ResultadoSocioAmbientalService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) { }
 
         public ResultadoSocioAmbiental Obter( int id ) {
             if(id > 0) {

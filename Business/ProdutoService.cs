@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace APIGestor.Business {
-    public class ProdutoService : BaseAuthorizationService {
-        public ProdutoService( GestorDbContext context, IAuthorizationService authorization ) : base(context, authorization) { }
+    public class ProdutoService : BaseGestorService {
+        public ProdutoService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) { }
 
         public Produto Obter( int id ) {
             if(id > 0) {
