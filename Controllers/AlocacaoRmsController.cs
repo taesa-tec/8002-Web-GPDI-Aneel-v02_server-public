@@ -25,7 +25,11 @@ namespace APIGestor.Controllers {
         [HttpPost]
         public ActionResult<Resultado> Post( [FromBody]AlocacaoRm AlocacaoRm ) {
             if(_service.UserProjectCan((int)AlocacaoRm.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Incluir(AlocacaoRm);
+                var resultado = _service.Incluir(AlocacaoRm);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, (int)AlocacaoRm.ProjetoId, AlocacaoRm);
+                }
+                return resultado;
             }
             return Forbid();
         }
@@ -34,17 +38,27 @@ namespace APIGestor.Controllers {
         [HttpPut]
         public ActionResult<Resultado> Put( [FromBody]AlocacaoRm AlocacaoRm ) {
             if(_service.UserProjectCan((int)AlocacaoRm.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Atualizar(AlocacaoRm);
+                var oldAlocacao = _service.Obter(AlocacaoRm.Id);
+                _service._context.Entry(oldAlocacao).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                var resultado = _service.Atualizar(AlocacaoRm);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, (int)AlocacaoRm.ProjetoId, _service.Obter(AlocacaoRm.Id), oldAlocacao);
+                }
+                return resultado;
             }
             return Forbid();
         }
 
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
-            var Alocacao = _service._context.AlocacoesRm.Where(a => a.Id == id).FirstOrDefault();
+            var Alocacao = _service.Obter(id);
             if(Alocacao != null) {
                 if(_service.UserProjectCan((int)Alocacao.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                    return _service.Excluir(id);
+                    var resultado = _service.Excluir(id);
+                    if(resultado.Sucesso) {
+                        this.CreateLog(_service, (int)Alocacao.ProjetoId, Alocacao);
+                    }
+                    return resultado;
                 }
                 return Forbid();
             }

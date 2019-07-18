@@ -25,25 +25,43 @@ namespace APIGestor.Controllers {
         [Route("[controller]")]
         [HttpPost]
         public ActionResult<Resultado> Post( [FromBody]AlocacaoRh AlocacaoRh ) {
-            if(_service.UserProjectCan((int)AlocacaoRh.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
-                return _service.Incluir(AlocacaoRh);
+            if(_service.UserProjectCan((int)AlocacaoRh.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                var resultado = _service.Incluir(AlocacaoRh);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, (int)AlocacaoRh.ProjetoId, _service.Obter(AlocacaoRh.Id));
+                }
+                return resultado;
+            }
             return Forbid();
         }
 
         [Route("[controller]")]
         [HttpPut]
         public ActionResult<Resultado> Put( [FromBody]AlocacaoRh AlocacaoRh ) {
-            if(_service.UserProjectCan((int)AlocacaoRh.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
-                return _service.Atualizar(AlocacaoRh);
+            if(_service.UserProjectCan((int)AlocacaoRh.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                var oldAlocacao = _service.Obter(AlocacaoRh.Id);
+                _service._context.Entry(oldAlocacao).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                var resultado = _service.Atualizar(AlocacaoRh);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, (int)AlocacaoRh.ProjetoId, _service.Obter(AlocacaoRh.Id), oldAlocacao);
+                }
+
+                return resultado;
+            }
             return Forbid();
         }
 
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
-            var alocacao = _service._context.AlocacoesRh.Where(a => a.Id == id).FirstOrDefault();
+            var alocacao = _service.Obter(id);
             if(alocacao != null) {
-                if(_service.UserProjectCan((int)alocacao.ProjetoId, User, Authorizations.ProjectPermissions.Administrator))
-                    return _service.Excluir(id);
+                if(_service.UserProjectCan((int)alocacao.ProjetoId, User, Authorizations.ProjectPermissions.Administrator)) {
+                    var resultado = _service.Excluir(id);
+                    if(resultado.Sucesso) {
+                        this.CreateLog(_service, (int)alocacao.ProjetoId, alocacao);
+                    }
+                    return resultado;
+                }
                 return Forbid();
             }
             return NotFound();

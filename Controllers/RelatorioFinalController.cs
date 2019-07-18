@@ -28,8 +28,13 @@ namespace APIGestor.Controllers {
         [Route("[controller]")]
         [HttpPost]
         public ActionResult<Resultado> Post( [FromBody]RelatorioFinal RelatorioFinal ) {
-            if(_service.UserProjectCan(RelatorioFinal.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
-                return _service.Incluir(RelatorioFinal);
+            if(_service.UserProjectCan(RelatorioFinal.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                var resultado = _service.Incluir(RelatorioFinal);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, RelatorioFinal.ProjetoId, RelatorioFinal);
+                }
+                return resultado;
+            }
             return Forbid();
         }
 
@@ -38,8 +43,17 @@ namespace APIGestor.Controllers {
         public ActionResult<Resultado> Put( [FromBody]RelatorioFinal RelatorioFinal ) {
             var Relatorio = _service._context.RelatorioFinal.Find(RelatorioFinal.Id);
             if(Relatorio != null) {
-                if(_service.UserProjectCan(Relatorio.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
-                    return _service.Atualizar(RelatorioFinal);
+                if(_service.UserProjectCan(Relatorio.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+
+                    _service._context.Entry(Relatorio).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+
+                    var resultado = _service.Atualizar(RelatorioFinal);
+
+                    if(resultado.Sucesso) {
+                        this.CreateLog(_service, RelatorioFinal.ProjetoId, RelatorioFinal, Relatorio);
+                    }
+                    return resultado;
+                }
                 return Forbid();
             }
             return NotFound();
@@ -47,10 +61,15 @@ namespace APIGestor.Controllers {
 
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
-            var Relatorio = _service._context.RelatorioFinal.Find(id);
+            var Relatorio = _service.Obter(id);
             if(Relatorio != null) {
-                if(_service.UserProjectCan(Relatorio.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
-                    return _service.Excluir(id);
+                if(_service.UserProjectCan(Relatorio.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                    var resultado = _service.Excluir(id);
+                    if(resultado.Sucesso) {
+                        this.CreateLog(_service, Relatorio.ProjetoId, Relatorio);
+                    }
+                    return resultado;
+                }
                 return Forbid();
             }
             return NotFound();

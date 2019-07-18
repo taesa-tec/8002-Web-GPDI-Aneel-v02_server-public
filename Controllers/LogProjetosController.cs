@@ -19,7 +19,6 @@ namespace APIGestor.Controllers {
         [HttpGet("{projetoId}/log")]
         public object Get( int projetoId, Acoes? acao, string user = null, int pag = 1, int size = 30 ) {
             var logs = _service.ListarTodos(projetoId, acao, user, pag, size);
-
             return new {
                 Total = logs.Count(),
                 Itens = logs

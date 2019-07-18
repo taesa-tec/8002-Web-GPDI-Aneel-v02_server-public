@@ -42,6 +42,11 @@ namespace APIGestor.Business {
             }
             return resultado;
         }
+
+        public RecursoHumano Obter( int id ) {
+            return _context.RecursoHumanos.Include("Empresa.CatalogEmpresa").FirstOrDefault(r => r.Id == id);
+        }
+
         public Resultado Atualizar( RecursoHumano dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Atualização de RecursoHumano";

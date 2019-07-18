@@ -18,8 +18,15 @@ namespace APIGestor.Business {
         public RegistroFinanceiro Obter( int id ) {
             if(id > 0) {
                 return _context.RegistrosFinanceiros
-                    .Where(
-                        p => p.Id == id).FirstOrDefault();
+                .Include("Uploads")
+                .Include("CategoriaContabilGestao")
+                .Include("Atividade")
+                .Include("EmpresaFinanciadora.CatalogEmpresa")
+                .Include("EmpresaRecebedora..CatalogEmpresa")
+                .Include("RecursoHumano")
+                .Include("RecursoMaterial")
+                .Include(p => p.ObsInternas)
+                .FirstOrDefault(p => p.Id == id);
             }
             else
                 return null;
@@ -33,8 +40,7 @@ namespace APIGestor.Business {
                 .Include("EmpresaFinanciadora")
                 .Include("RecursoHumano")
                 .Include("RecursoMaterial")
-                .Include(p => p.ObsInternas)
-                    .ThenInclude(p => p.User)
+                .Include("ObsInternas.User")
                 .Where(p => p.ProjetoId == projetoId)
                 .Where(p => p.Status == (StatusRegistro)status)
                 .ToList();
@@ -75,19 +81,20 @@ namespace APIGestor.Business {
             resultado.Acao = "Atualização de RegistroFinanceiro";
 
             if(resultado.Inconsistencias.Count == 0) {
-                RegistroFinanceiro registro = _context.RegistrosFinanceiros.Where(
-                    p => p.Id == dados.Id).FirstOrDefault();
+                RegistroFinanceiro registro = this.Obter(dados.Id);
 
                 if(registro == null) {
                     resultado.Inconsistencias.Add(
                         "RegistroFinanceiro não encontrado");
                 }
                 else {
-                    if(dados.ObsInternas != null && dados.ObsInternas.Count() > 0)
+                    if(dados.ObsInternas != null && dados.ObsInternas.Count() > 0) {
                         foreach(RegistroObs obs in dados.ObsInternas) {
                             obs.Created = DateTime.Now;
                             obs.UserId = userId;
                         }
+                        registro.ObsInternas.AddRange(dados.ObsInternas);
+                    }
                     registro.ProjetoId = dados.ProjetoId == null ? registro.ProjetoId : dados.ProjetoId;
                     registro.Tipo = (dados.Tipo != null && Enum.IsDefined(typeof(TipoRegistro), dados.Tipo)) ? dados.Tipo : registro.Tipo;
                     registro.Status = (dados.Status != null && Enum.IsDefined(typeof(StatusRegistro), dados.Status)) ? dados.Status : registro.Status;
@@ -99,7 +106,7 @@ namespace APIGestor.Business {
                     registro.NumeroDocumento = dados.NumeroDocumento == null ? registro.NumeroDocumento : dados.NumeroDocumento;
                     registro.DataDocumento = dados.DataDocumento == null ? registro.DataDocumento : dados.DataDocumento;
                     registro.AtividadeRealizada = dados.AtividadeRealizada == null ? registro.AtividadeRealizada : dados.AtividadeRealizada;
-                    registro.ObsInternas = dados.ObsInternas == null ? registro.ObsInternas : dados.ObsInternas;
+                    // registro.ObsInternas = dados.ObsInternas == null ? registro.ObsInternas : dados.ObsInternas;
                     registro.NomeItem = dados.NomeItem == null ? registro.NomeItem : dados.NomeItem;
                     registro.RecursoMaterialId = dados.RecursoMaterialId == null ? registro.RecursoMaterialId : dados.RecursoMaterialId;
                     registro.EmpresaRecebedoraId = dados.EmpresaRecebedoraId == null ? registro.EmpresaRecebedoraId : dados.EmpresaRecebedoraId;

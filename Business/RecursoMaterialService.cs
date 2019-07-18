@@ -21,6 +21,11 @@ namespace APIGestor.Business {
                 .ToList();
             return RecursoMaterial;
         }
+
+        public RecursoMaterial Obter( int id ) {
+            return _context.RecursoMateriais.Include("CategoriaContabilGestao").Include("Atividade").FirstOrDefault(r => r.Id == id);
+        }
+
         public Resultado Incluir( RecursoMaterial dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de RecursoMaterial";

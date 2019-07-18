@@ -25,7 +25,11 @@ namespace APIGestor.Controllers {
         [HttpPost]
         public ActionResult<Resultado> Post( [FromBody]RecursoMaterial RecursoMaterial ) {
             if(_service.UserProjectCan((int)RecursoMaterial.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Incluir(RecursoMaterial);
+                var resultado = _service.Incluir(RecursoMaterial);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, (int)RecursoMaterial.ProjetoId, RecursoMaterial);
+                }
+                return resultado;
             }
             return Forbid();
         }
@@ -34,7 +38,13 @@ namespace APIGestor.Controllers {
         [HttpPut]
         public ActionResult<Resultado> Put( [FromBody]RecursoMaterial RecursoMaterial ) {
             if(_service.UserProjectCan((int)RecursoMaterial.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
-                return _service.Atualizar(RecursoMaterial);
+                var oldRecurso = _service.Obter(RecursoMaterial.Id);
+                _service._context.Entry(oldRecurso).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                var resultado = _service.Atualizar(RecursoMaterial);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, (int)RecursoMaterial.ProjetoId, _service.Obter(RecursoMaterial.Id), oldRecurso);
+                }
+                return resultado;
             }
             return Forbid();
         }
@@ -43,10 +53,18 @@ namespace APIGestor.Controllers {
         public ActionResult<Resultado> Delete( int id ) {
             var recurso = this._service._context.RecursoMateriais.Where(r => r.Id == id).FirstOrDefault();
             if(recurso != null) {
-                _service.UserProjectCan((int)recurso.ProjetoId, User, Authorizations.ProjectPermissions.Administrator);
-            }
+                if(_service.UserProjectCan((int)recurso.ProjetoId, User, Authorizations.ProjectPermissions.Administrator)) {
 
-            return _service.Excluir(id);
+                    var resultado = _service.Excluir(id);
+                    if(resultado.Sucesso) {
+                        this.CreateLog(_service, (int)recurso.ProjetoId, recurso);
+                    }
+                    return resultado;
+                }
+                return Forbid();
+            }
+            return NotFound();
+
         }
     }
 }

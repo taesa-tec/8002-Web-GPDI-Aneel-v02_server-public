@@ -23,6 +23,15 @@ namespace APIGestor.Business {
                 .ToList();
             return AlocacaoRm;
         }
+        public AlocacaoRm Obter( int id ) {
+            return _context.AlocacoesRm
+                .Include("RecursoMaterial.CategoriaContabilGestao")
+                .Include("RecursoMaterial.Atividade")
+                .Include("EmpresaFinanciadora.CatalogEmpresa")
+                .Include("EmpresaRecebedora.CatalogEmpresa")
+                .Include("Etapa")
+                .FirstOrDefault(a => a.Id == id);
+        }
         public Resultado Incluir( AlocacaoRm dados ) {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de AlocacaoRm";
