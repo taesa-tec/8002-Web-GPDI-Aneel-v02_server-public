@@ -23,6 +23,10 @@ namespace APIGestor.Controllers {
         }
 
         public static bool CreateLog( this ControllerBase controller, LogService service, int ProjetoId, object Entity, object oldEntity = null ) {
+
+            if(ProjetoId == 0) {
+                throw new Exception("Id de projeto inválida");
+            }
             LogProjeto log = new LogProjeto();
 
             log.Tela = controller.Request.Headers.ContainsKey("Referer") ? controller.Request.Headers.First(header => header.Key == "Referer").Value.First() : controller.Url.ToString();

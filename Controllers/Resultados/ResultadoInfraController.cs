@@ -32,8 +32,13 @@ namespace APIGestor.Controllers {
         [Route("[controller]")]
         [HttpPost]
         public ActionResult<Resultado> Post( [FromBody]ResultadoInfra ResultadoInfra ) {
-            if(_service.UserProjectCan(ResultadoInfra.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
-                return _service.Incluir(ResultadoInfra);
+            if(_service.UserProjectCan(ResultadoInfra.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                var resultado = _service.Incluir(ResultadoInfra);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, ResultadoInfra.ProjetoId, ResultadoInfra);
+                }
+                return resultado;
+            }
             return Forbid();
 
         }
@@ -41,17 +46,31 @@ namespace APIGestor.Controllers {
         [Route("[controller]")]
         [HttpPut]
         public ActionResult<Resultado> Put( [FromBody]ResultadoInfra ResultadoInfra ) {
-            var Resultado = _service._context.ResultadosInfra.Find(ResultadoInfra.Id);
-            if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
-                return _service.Atualizar(ResultadoInfra);
+            var Resultado = _service.Obter(ResultadoInfra.Id);
+            if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                _service._context.Entry(Resultado).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+
+                var resultado = _service.Atualizar(ResultadoInfra);
+
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, Resultado.ProjetoId, Resultado, ResultadoInfra);
+                }
+                return resultado;
+            }
             return Forbid();
         }
 
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
             var Resultado = _service._context.ResultadosInfra.Find(id);
-            if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.Administrator))
-                return _service.Excluir(id);
+            if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.Administrator)) {
+                var resultado = _service.Excluir(id);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, Resultado.ProjetoId, Resultado);
+                }
+                return resultado;
+
+            }
             return Forbid();
         }
     }

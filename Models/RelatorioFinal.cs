@@ -2,32 +2,44 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using APIGestor.Attributes;
 
-namespace APIGestor.Models
-{
-    public class RelatorioFinal
-    {
+namespace APIGestor.Models {
+    public class RelatorioFinal {
         private int _id;
 
         [Key]
-        public int Id
-        {
+        public int Id {
             get => _id;
             set => _id = value;
         }
+        [Logger("Produto Alcançado")]
         public bool? ProdutoAlcancado { get; set; }
-        public string JustificativaProduto { get;set; }
-        public string EspecificacaoProduto { get;set; }
+        [Logger("Justificativa do Produto")]
+        public string JustificativaProduto { get; set; }
+        [Logger("Especificação do produto")]
+        public string EspecificacaoProduto { get; set; }
+
+        [Logger("Técnica prevista implementada")]
         public bool? TecnicaPrevista { get; set; }
-        public string JustificativaTecnica { get;set; }
-        public string DescTecnica { get;set; }
+        [Logger("Justificativa da técnica")]
+        public string JustificativaTecnica { get; set; }
+        [Logger("Descrição técnica")]
+        public string DescTecnica { get; set; }
+        [Logger("Aplicabilidade prevista alcançada")]
         public bool? AplicabilidadePrevista { get; set; }
-        public string JustificativaAplicabilidade { get;set; }
-        public string DescTestes { get;set; }
-        public string DescAbrangencia { get;set; }
-        public string DescAmbito { get;set; }
-        public string DescAtividades { get;set; }
-        public int ProjetoId { get;set; }
+        [Logger("Justificativa da aplicabilidade")]
+        public string JustificativaAplicabilidade { get; set; }
+        [Logger("Descrição dos resultados dos testes")]
+        public string DescTestes { get; set; }
+        [Logger("Descrição da abrangência")]
+        public string DescAbrangencia { get; set; }
+        [Logger("Descrição do âmbito de aplicação")]
+        public string DescAmbito { get; set; }
+        [Logger("Descrição de atividades")]
+        public string DescAtividades { get; set; }
+
+        public int ProjetoId { get; set; }
         public ICollection<Upload> Uploads { get; set; }
     }
 }

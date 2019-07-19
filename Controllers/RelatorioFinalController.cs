@@ -50,7 +50,7 @@ namespace APIGestor.Controllers {
                     var resultado = _service.Atualizar(RelatorioFinal);
 
                     if(resultado.Sucesso) {
-                        this.CreateLog(_service, RelatorioFinal.ProjetoId, RelatorioFinal, Relatorio);
+                        this.CreateLog(_service, Relatorio.ProjetoId, RelatorioFinal, Relatorio);
                     }
                     return resultado;
                 }

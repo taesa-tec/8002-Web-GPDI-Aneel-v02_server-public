@@ -32,8 +32,13 @@ namespace APIGestor.Controllers {
         [Route("[controller]")]
         [HttpPost]
         public ActionResult<Resultado> Post( [FromBody]ResultadoSocioAmbiental ResultadoSocioAmbiental ) {
-            if(_service.UserProjectCan(ResultadoSocioAmbiental.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
-                return _service.Incluir(ResultadoSocioAmbiental);
+            if(_service.UserProjectCan(ResultadoSocioAmbiental.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                var resultado = _service.Incluir(ResultadoSocioAmbiental);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, ResultadoSocioAmbiental.ProjetoId, ResultadoSocioAmbiental);
+                }
+                return resultado;
+            }
             return Forbid();
         }
 
@@ -41,16 +46,27 @@ namespace APIGestor.Controllers {
         [HttpPut]
         public ActionResult<Resultado> Put( [FromBody]ResultadoSocioAmbiental ResultadoSocioAmbiental ) {
             var Resultado = _service._context.ResultadosSocioAmbiental.Find(ResultadoSocioAmbiental.Id);
-            if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
-                return _service.Atualizar(ResultadoSocioAmbiental);
+            if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                _service._context.Entry(Resultado).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                var resultado = _service.Atualizar(ResultadoSocioAmbiental);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, Resultado.ProjetoId, ResultadoSocioAmbiental, Resultado);
+                }
+                return resultado;
+            }
             return Forbid();
         }
 
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
             var Resultado = _service._context.ResultadosSocioAmbiental.Find(id);
-            if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.Administrator))
-                return _service.Excluir(id);
+            if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.Administrator)) {
+                var resultado = _service.Excluir(id);
+                if(resultado.Sucesso) {
+                    this.CreateLog(_service, Resultado.ProjetoId, Resultado);
+                }
+                return resultado;
+            }
             return Forbid();
         }
     }
