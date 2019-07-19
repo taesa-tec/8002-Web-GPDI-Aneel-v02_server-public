@@ -121,11 +121,10 @@ namespace APIGestor.Controllers {
         [HttpPost("prorrogar")]
         public ActionResult<Resultado> PostA( [FromBody]Projeto Projeto ) {
             if(this._service.UserProjectCan(Projeto.Id, User, ProjectPermissions.Administrator)) {
-                var ProjetoOld = _service.Obter(Projeto.Id);
-                _service._context.Entry(ProjetoOld).State = EntityState.Detached;
-                var result = _service.ProrrogarProjeto(Projeto);
+                Etapa etapa;
+                var result = _service.ProrrogarProjeto(Projeto, out etapa);
                 if(result.Sucesso) {
-                    this.CreateLog(this._service, Projeto.Id, _service.Obter(Projeto.Id), ProjetoOld);
+                    this.CreateLog(this._service, Projeto.Id, etapa);
                 }
                 return result;
             }

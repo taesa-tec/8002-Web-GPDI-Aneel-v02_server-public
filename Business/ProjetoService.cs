@@ -57,9 +57,12 @@ namespace APIGestor.Business {
                 .ToList();
             return UserProjetos;
         }
-
         public Resultado ProrrogarProjeto( Projeto dados ) {
+            return this.ProrrogarProjeto(dados, out Etapa etapa);
+        }
+        public Resultado ProrrogarProjeto( Projeto dados, out Etapa etapa ) {
             var resultado = new Resultado();
+            etapa = null;
             resultado.Acao = "Prorrogar projeto";
             var projeto = _context.Projetos.Include("Etapas").FirstOrDefault(p => p.Id == dados.Id);
             if(projeto == null) {
@@ -89,6 +92,7 @@ namespace APIGestor.Business {
                     };
                     _context.Etapas.Add(newEtapa);
                     _context.SaveChanges();
+                    etapa = newEtapa;
                     resultado.Id = newEtapa.Id.ToString();
                 }
             }
