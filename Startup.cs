@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
@@ -15,22 +16,32 @@ using System.Globalization;
 using APIGestor.Authorizations;
 using Microsoft.AspNetCore.Authorization;
 
-namespace APIGestor {
-    public class Startup {
-        public Startup( IConfiguration configuration ) {
+namespace APIGestor
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
-        public void ConfigureServices( IServiceCollection services ) {
+        public void ConfigureServices(IServiceCollection services)
+        {
             // Configurando o acesso a dados de projetos
-            if(System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Stage")
+            if (System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Stage")
+            {
+                var connectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
                 services.AddDbContext<GestorDbContext>(options =>
-                    options.UseSqlServer(System.Environment.GetEnvironmentVariable("ConnectionString")));
+                    options.UseSqlServer(connectionString));
+            }
             else
-                services.AddDbContext<GestorDbContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
+            {
+                var connectionString = Configuration.GetConnectionString("BaseGestor");
+                services.AddDbContext<GestorDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
+            }
+
             services.AddScoped<CatalogService>();
             services.AddScoped<MailService>();
             services.AddScoped<UserService>();
@@ -79,7 +90,8 @@ namespace APIGestor {
             // Ativando a utilização do ASP.NET Identity, a fim de
             // permitir a recuperação de seus objetos via injeção de
             // dependências
-            services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+/";
             })
                 .AddEntityFrameworkStores<GestorDbContext>()
@@ -109,14 +121,17 @@ namespace APIGestor {
             services.AddCors();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddSwaggerGen(c => {
+            services.AddSwaggerGen(c =>
+            {
 
                 c.SwaggerDoc("v1",
-                    new Info {
+                    new Info
+                    {
                         Title = "Taesa - Gestor P&D",
                         Version = "v1",
                         Description = "API REST criada com o ASP.NET Core 2.1 para comunição com o Gestor P&D",
-                        Contact = new Contact {
+                        Contact = new Contact
+                        {
                             Name = "Christiano de Chermont",
                             Url = "https://github.com/xerminada"
                         }
@@ -124,15 +139,18 @@ namespace APIGestor {
             });
         }
 
-        public void Configure( IApplicationBuilder app, IHostingEnvironment env,
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
             GestorDbContext context,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            MailService mailService ) {
-            if(env.IsDevelopment()) {
+            MailService mailService)
+        {
+            if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
             }
-            else {
+            else
+            {
                 app.UseHsts();
             }
             // Define Cultura Padrão
@@ -143,12 +161,13 @@ namespace APIGestor {
             // Criação de estruturas, usuários e permissões
             // na base do ASP.NET Identity Core (caso ainda não
             // existam)
-            new IdentityInitializer(context, userManager, roleManager, mailService)
+            new IdentityInitializer(context, userManager, roleManager, mailService, Configuration)
                 .Initialize();
 
             // Ativando middlewares para uso do Swagger
             app.UseSwagger();
-            app.UseSwaggerUI(c => {
+            app.UseSwaggerUI(c =>
+            {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
             });
             app.UseCors(builder => builder.AllowAnyMethod()
