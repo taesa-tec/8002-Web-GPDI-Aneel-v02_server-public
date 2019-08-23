@@ -29,13 +29,23 @@ cp ./appsettings.example.json appsettings.json
 dotnet restore
 ```
 
+### Para instalar o banco de dados
+
+Instale via linha de comando na máquina
+
+```bash
+dotnet ef database update
+```
+
+#### OU
+
 Gere o script de instalação do banco de dados:
 
 ```bash
 dotnet ef migrations script > install.sql
 ```
 
-Importe o arquivo gerado para o banco de dados
+E importe o arquivo gerado para o banco de dados
 
 ---
 
@@ -58,7 +68,7 @@ dotnet watch run
 ## Deployment
 
 ```bash
-dotnet publish -c Release
+dotnet publish -c Relaease
 ```
 
 ## Built With
