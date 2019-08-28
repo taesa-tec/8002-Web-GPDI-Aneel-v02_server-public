@@ -23,7 +23,9 @@ cp ./appsettings.example.json appsettings.json
 ```
 
 - Atualize a _ConnectionString.BaseGestor_
+- Defina o nome do aplicativo (*AppName*) e o email de contato (*ContactEmail*)
 - Defina o login e a senha inicial do usuário administrativo (_AdminUser.Email_ e _AdminUser.Password_)
+- Defina as credenciais do SendGrid para o disparo de emails (_SendGrid_.*)
 
 ```bash
 dotnet restore
