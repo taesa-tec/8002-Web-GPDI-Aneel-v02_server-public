@@ -10,16 +10,21 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace APIGestor.Business {
-    public class ProjetoService : BaseGestorService {
+namespace APIGestor.Business
+{
+    public class ProjetoService : BaseGestorService
+    {
         private EtapaService _etapaService;
 
-        public ProjetoService( GestorDbContext context, EtapaService etapaService, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
+        public ProjetoService(GestorDbContext context, EtapaService etapaService, IAuthorizationService authorization, LogService logService) : base(context, authorization, logService)
+        {
             _etapaService = etapaService;
         }
 
-        public Projeto Obter( int id ) {
-            if(id > 0) {
+        public Projeto Obter(int id)
+        {
+            if (id > 0)
+            {
                 return _context.Projetos
                     .Include(p => p.UsersProjeto)
                     .Include(p => p.CatalogEmpresa)
@@ -40,16 +45,19 @@ namespace APIGestor.Business {
                 return null;
         }
 
-        public List<Projeto> ListarTodos() {
+        public List<Projeto> ListarTodos(int statusId = 0)
+        {
             var Projetos = _context.Projetos
                 .Include(p => p.CatalogStatus)
                 .Include(p => p.CatalogEmpresa)
                 .OrderBy(p => p.Titulo)
+                .Where(p => statusId == 0 || p.CatalogStatusId == statusId)
                 .ToList();
             return Projetos;
         }
 
-        public List<UserProjeto> ObterUsuarios( int Id ) {
+        public List<UserProjeto> ObterUsuarios(int Id)
+        {
             var UserProjetos = _context.UserProjetos
                 .Include("ApplicationUser")
                 .Include("CatalogUserPermissao")
@@ -57,31 +65,40 @@ namespace APIGestor.Business {
                 .ToList();
             return UserProjetos;
         }
-        public Resultado ProrrogarProjeto( Projeto dados ) {
+        public Resultado ProrrogarProjeto(Projeto dados)
+        {
             return this.ProrrogarProjeto(dados, out Etapa etapa);
         }
-        public Resultado ProrrogarProjeto( Projeto dados, out Etapa etapa ) {
+        public Resultado ProrrogarProjeto(Projeto dados, out Etapa etapa)
+        {
             var resultado = new Resultado();
             etapa = null;
             resultado.Acao = "Prorrogar projeto";
             var projeto = _context.Projetos.Include("Etapas").FirstOrDefault(p => p.Id == dados.Id);
-            if(projeto == null) {
+            if (projeto == null)
+            {
                 resultado.Inconsistencias.Add("Projeto não localizado");
             }
-            else {
-                if(projeto.DataInicio == null) {
+            else
+            {
+                if (projeto.DataInicio == null)
+                {
                     resultado.Inconsistencias.Add("Data Inicio projeto não definida");
                 }
-                if(projeto.Etapas.Count() == 0) {
+                if (projeto.Etapas.Count() == 0)
+                {
                     resultado.Inconsistencias.Add("Projeto não possui etapas");
                 }
             }
-            if(resultado.Inconsistencias.Count() == 0) {
+            if (resultado.Inconsistencias.Count() == 0)
+            {
                 var LastEtapa = _etapaService.AddDataEtapas(projeto.Etapas).LastOrDefault();
-                if(LastEtapa.DataFim != null) {
+                if (LastEtapa.DataFim != null)
+                {
                     var duracao = Math.Abs(12 * (LastEtapa.DataFim.Value.Year - dados.DataFim.Value.Year) + LastEtapa.DataFim.Value.Month - dados.DataFim.Value.Month);
                     var newDate = LastEtapa.DataFim.Value.AddMonths(duracao);
-                    var newEtapa = new Etapa {
+                    var newEtapa = new Etapa
+                    {
                         ProjetoId = projeto.Id,
                         Nome = "Prorrogação",
                         Desc = "Prorrogação",
@@ -99,25 +116,29 @@ namespace APIGestor.Business {
             return resultado;
         }
 
-        public Resultado Incluir( Projeto dados, string userId ) {
+        public Resultado Incluir(Projeto dados, string userId)
+        {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de Projeto";
 
-            if(resultado.Inconsistencias.Count == 0 &&
+            if (resultado.Inconsistencias.Count == 0 &&
                 _context.Projetos.Where(
-                p => p.Numero == dados.Numero).Count() > 0) {
+                p => p.Numero == dados.Numero).Count() > 0)
+            {
                 resultado.Inconsistencias.Add(
                     "Projeto com Número já cadastrado");
             }
 
-            if(resultado.Inconsistencias.Count == 0) {
+            if (resultado.Inconsistencias.Count == 0)
+            {
                 dados.Tipo = obterTipoProjeto(dados.Numero.ToString());
                 dados.Empresas = new List<Empresa> { new Empresa { CatalogEmpresaId = dados.CatalogEmpresaId } };
                 _context.Projetos.Add(dados);
                 _context.SaveChanges();
                 resultado.Id = dados.Id.ToString();
                 // criar user projeto
-                var userProjeto = new UserProjeto {
+                var userProjeto = new UserProjeto
+                {
                     UserId = userId,
                     ProjetoId = dados.Id,
                     CatalogUserPermissaoId = 4
@@ -129,40 +150,48 @@ namespace APIGestor.Business {
             return resultado;
         }
 
-        private TipoProjeto obterTipoProjeto( string Numero ) {
+        private TipoProjeto obterTipoProjeto(string Numero)
+        {
             TipoProjeto Tipo = (TipoProjeto)1;
-            if(Convert.ToInt32(Numero.Substring(0, 4)) > 8999)
+            if (Convert.ToInt32(Numero.Substring(0, 4)) > 8999)
                 Tipo = (TipoProjeto)2;
             return Tipo;
         }
 
-        public Resultado Atualizar( Projeto dados ) {
+        public Resultado Atualizar(Projeto dados)
+        {
             //Resultado resultado = DadosValidos(dados);
             var resultado = new Resultado();
-            if(dados == null) {
+            if (dados == null)
+            {
                 resultado.Inconsistencias.Add(
                     "Preencha os Dados do Projeto");
             }
             resultado.Acao = "Atualização de Projeto";
 
-            if(resultado.Inconsistencias.Count == 0) {
+            if (resultado.Inconsistencias.Count == 0)
+            {
                 Projeto Projeto = _context.Projetos.Include("CatalogEmpresa").Where(
                     p => p.Id == dados.Id).FirstOrDefault();
 
-                if(Projeto == null) {
+                if (Projeto == null)
+                {
                     resultado.Inconsistencias.Add(
                         "Projeto não encontrado");
                 }
-                if(dados.CatalogStatusId != null) {
+                if (dados.CatalogStatusId != null)
+                {
                     CatalogStatus Status = _context.CatalogStatus.Where(
                         p => p.Id == dados.CatalogStatusId).FirstOrDefault();
 
-                    if(Status == null) {
+                    if (Status == null)
+                    {
                         resultado.Inconsistencias.Add(
                             "Status não encontrado");
                     }
                 }
-                if(resultado.Inconsistencias.Count == 0) {
+                if (resultado.Inconsistencias.Count == 0)
+                {
                     Projeto.CatalogStatusId = dados.CatalogStatusId == null ? Projeto.CatalogStatusId : dados.CatalogStatusId;
                     Projeto.Tipo = obterTipoProjeto(dados.Numero.ToString());
                     Projeto.Titulo = dados.Titulo == null ? Projeto.Titulo : dados.Titulo;
@@ -179,13 +208,16 @@ namespace APIGestor.Business {
                     Projeto.Razoabilidade = dados.Razoabilidade == null ? Projeto.Razoabilidade : dados.Razoabilidade;
                     Projeto.Pesquisas = dados.Pesquisas == null ? Projeto.Pesquisas : dados.Pesquisas;
 
-                    if(dados.CatalogEmpresaId != null) {
+                    if (dados.CatalogEmpresaId != null)
+                    {
                         Empresa empresa = _context.Empresas.Where(e => e.ProjetoId == dados.Id)
                                                     .Where(e => e.Classificacao == 0).FirstOrDefault();
-                        if(empresa != null) {
+                        if (empresa != null)
+                        {
                             empresa.CatalogEmpresaId = dados.CatalogEmpresaId;
                         }
-                        else {
+                        else
+                        {
                             Projeto.Empresas = new List<Empresa> { new Empresa { CatalogEmpresaId = dados.CatalogEmpresaId } };
                         }
                     }
@@ -196,27 +228,32 @@ namespace APIGestor.Business {
             }
             return resultado;
         }
-        public Resultado Excluir( int id ) {
+        public Resultado Excluir(int id)
+        {
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de Projeto";
 
             Projeto Projeto = Obter(id);
-            if(Projeto == null) {
+            if (Projeto == null)
+            {
                 resultado.Inconsistencias.Add(
                     "Projeto não encontrado");
             }
-            else {
+            else
+            {
                 _context.UserProjetos.RemoveRange(_context.UserProjetos.Where(t => t.ProjetoId == id));
                 _context.Empresas.RemoveRange(_context.Empresas.Where(t => t.ProjetoId == id));
 
                 // Remove Etapas e associados
-                foreach(var etapa in _context.Etapas.Where(t => t.ProjetoId == id)) {
+                foreach (var etapa in _context.Etapas.Where(t => t.ProjetoId == id))
+                {
                     _context.EtapaMeses.RemoveRange(_context.EtapaMeses.Where(t => t.EtapaId == etapa.Id));
                     _context.EtapaProdutos.RemoveRange(_context.EtapaProdutos.Where(t => t.EtapaId == etapa.Id));
                     _context.Etapas.Remove(etapa);
                 }
                 // Remove Temas e Arquivos
-                foreach(var tema in _context.Temas.Where(t => t.ProjetoId == id)) {
+                foreach (var tema in _context.Temas.Where(t => t.ProjetoId == id))
+                {
                     _context.Uploads.RemoveRange(_context.Uploads.Where(t => t.TemaId == tema.Id));
                     _context.TemaSubTemas.RemoveRange(_context.TemaSubTemas.Where(t => t.TemaId == tema.Id));
                     _context.Temas.Remove(tema);
@@ -228,7 +265,8 @@ namespace APIGestor.Business {
                 _context.AlocacoesRm.RemoveRange(_context.AlocacoesRm.Where(t => t.ProjetoId == id));
                 _context.RecursoMateriais.RemoveRange(_context.RecursoMateriais.Where(t => t.ProjetoId == id));
                 // Remove Registros Financeiros
-                foreach(var registro in _context.RegistrosFinanceiros.Where(t => t.ProjetoId == id).ToList()) {
+                foreach (var registro in _context.RegistrosFinanceiros.Where(t => t.ProjetoId == id).ToList())
+                {
                     _context.Uploads.RemoveRange(_context.Uploads.Where(t => t.RegistroFinanceiroId == registro.Id));
                     _context.RegistroObs.RemoveRange(_context.RegistroObs.Where(t => t.RegistroFinanceiroId == registro.Id));
                     _context.RegistrosFinanceiros.Remove(registro);
@@ -236,12 +274,14 @@ namespace APIGestor.Business {
                 _context.Uploads.RemoveRange(_context.Uploads.Where(t => t.ProjetoId == id));
 
                 // Remove Relatorio Final e Arquivos
-                foreach(var rf in _context.RelatorioFinal.Where(t => t.ProjetoId == id)) {
+                foreach (var rf in _context.RelatorioFinal.Where(t => t.ProjetoId == id))
+                {
                     _context.Uploads.RemoveRange(_context.Uploads.Where(t => t.RelatorioFinalId == rf.Id));
                     _context.RelatorioFinal.Remove(rf);
                 }
                 // Remove Resultado Capacitação e Arquivos
-                foreach(var rc in _context.ResultadosCapacitacao.Where(t => t.ProjetoId == id)) {
+                foreach (var rc in _context.ResultadosCapacitacao.Where(t => t.ProjetoId == id))
+                {
                     _context.Uploads.RemoveRange(_context.Uploads.Where(t => t.ResultadoCapacitacaoId == rc.Id));
                     _context.ResultadosCapacitacao.Remove(rc);
                 }
@@ -250,14 +290,16 @@ namespace APIGestor.Business {
                 _context.ResultadosIntelectual.RemoveRange(_context.ResultadosIntelectual.Where(t => t.ProjetoId == id));
 
                 // Remove Resultado Intelectual e associações
-                foreach(var ri in _context.ResultadosIntelectual.Where(t => t.ProjetoId == id)) {
+                foreach (var ri in _context.ResultadosIntelectual.Where(t => t.ProjetoId == id))
+                {
                     _context.ResultadoIntelectualInventores.RemoveRange(_context.ResultadoIntelectualInventores.Where(p => p.ResultadoIntelectualId == ri.Id));
                     _context.ResultadoIntelectualDepositantes.RemoveRange(_context.ResultadoIntelectualDepositantes.Where(p => p.ResultadoIntelectualId == ri.Id));
                     _context.ResultadosIntelectual.Remove(ri);
                 }
 
                 // Remove Resultado Produção e Arquivos
-                foreach(var rp in _context.ResultadosProducao.Where(t => t.ProjetoId == id)) {
+                foreach (var rp in _context.ResultadosProducao.Where(t => t.ProjetoId == id))
+                {
                     _context.Uploads.RemoveRange(_context.Uploads.Where(t => t.ResultadoProducaoId == rp.Id));
                     _context.ResultadosProducao.Remove(rp);
                 }
@@ -270,79 +312,97 @@ namespace APIGestor.Business {
             return resultado;
         }
 
-        private Resultado DadosValidos( Projeto Projeto ) {
+        private Resultado DadosValidos(Projeto Projeto)
+        {
             var resultado = new Resultado();
-            if(Projeto == null) {
+            if (Projeto == null)
+            {
                 resultado.Inconsistencias.Add(
                     "Preencha os Dados do Projeto");
             }
-            else {
-                if(Projeto.CatalogEmpresaId <= 0) {
+            else
+            {
+                if (Projeto.CatalogEmpresaId <= 0)
+                {
                     resultado.Inconsistencias.Add(
                         "Preencha a empresa Proponente do Projeto");
                 }
-                else {
+                else
+                {
                     CatalogEmpresa catalogEmpresa = _context.CatalogEmpresas
                                         .Where(e => e.Id == Projeto.CatalogEmpresaId)
                                         .FirstOrDefault();
-                    if(catalogEmpresa == null) {
+                    if (catalogEmpresa == null)
+                    {
                         resultado.Inconsistencias.Add(
                         "CatalogEmpresaId não localizado");
                     }
                 }
-                if(String.IsNullOrWhiteSpace(Projeto.Titulo)) {
+                if (String.IsNullOrWhiteSpace(Projeto.Titulo))
+                {
                     resultado.Inconsistencias.Add(
                         "Preencha o Título do Projeto");
                 }
-                if(String.IsNullOrWhiteSpace(Projeto.TituloDesc)) {
+                if (String.IsNullOrWhiteSpace(Projeto.TituloDesc))
+                {
                     resultado.Inconsistencias.Add(
                         "Preencha o título descrição do Projeto");
                 }
-                if(String.IsNullOrWhiteSpace(Projeto.Numero)) {
+                if (String.IsNullOrWhiteSpace(Projeto.Numero))
+                {
                     resultado.Inconsistencias.Add(
                         "Preencha o Número do Projeto");
                 }
-                if(Projeto.Numero != null)
-                    if(Projeto.Numero.Length > 5)
+                if (Projeto.Numero != null)
+                    if (Projeto.Numero.Length > 5)
                         resultado.Inconsistencias.Add("Maximo de 5 digitos campo Número do Projeto");
             }
 
             return resultado;
         }
-        public Resultado ValidaDadosData( Projeto dados ) {
+        public Resultado ValidaDadosData(Projeto dados)
+        {
             var resultado = new Resultado();
 
-            if(dados == null) {
+            if (dados == null)
+            {
                 resultado.Inconsistencias.Add(
                     "Preencha os Dados do Projeto");
             }
-            else {
-                if(dados.Id <= 0) {
+            else
+            {
+                if (dados.Id <= 0)
+                {
                     resultado.Inconsistencias.Add(
                         "Preencha o Id do Projeto");
                 }
                 DateTime DataInicio;
-                if(!DateTime.TryParse(dados.DataInicio.ToString(), out DataInicio)) {
+                if (!DateTime.TryParse(dados.DataInicio.ToString(), out DataInicio))
+                {
                     resultado.Inconsistencias.Add(
                         "Preencha a data de Início do Projeto");
                 }
             }
             return resultado;
         }
-        public Resultado AtualizaDataInicio( Projeto dados ) {
+        public Resultado AtualizaDataInicio(Projeto dados)
+        {
             Resultado resultado = ValidaDadosData(dados);
             resultado.Acao = "Atualização de Data Início do Projeto";
 
-            if(resultado.Inconsistencias.Count == 0) {
+            if (resultado.Inconsistencias.Count == 0)
+            {
                 Projeto Projeto = _context.Projetos
                         .Include("CatalogEmpresa")
                         .Where(p => p.Id == dados.Id).FirstOrDefault();
 
-                if(Projeto == null) {
+                if (Projeto == null)
+                {
                     resultado.Inconsistencias.Add(
                         "Projeto não encontrado");
                 }
-                else {
+                else
+                {
                     Projeto.DataInicio = dados.DataInicio;
                     var codigo = GerarCodigoProjeto(Projeto);
                     Projeto.Codigo = codigo;
@@ -352,7 +412,8 @@ namespace APIGestor.Business {
 
             return resultado;
         }
-        public string GerarCodigoProjeto( Projeto projeto ) {
+        public string GerarCodigoProjeto(Projeto projeto)
+        {
             var codigo = Enum.GetName(typeof(TipoProjeto), projeto.Tipo).ToString() + "-";
             codigo += projeto.CatalogEmpresa.Valor.ToString() + "-";
             codigo += projeto.Numero.ToString() + "/";

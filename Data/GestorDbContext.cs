@@ -2,6 +2,8 @@
 using APIGestor.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Linq;
+using APIGestor.Models.Demandas;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIGestor.Data
 {
@@ -27,7 +29,7 @@ namespace APIGestor.Data
         public DbSet<Projeto> Projetos { get; set; }
         public DbSet<Empresa> Empresas { get; set; }
         public DbSet<Produto> Produtos { get; set; }
-        public DbSet<Etapa> Etapas { get; set; }
+        public DbSet<Models.Etapa> Etapas { get; set; }
         public DbSet<EtapaProduto> EtapaProdutos { get; set; }
         public DbSet<Tema> Temas { get; set; }
         public DbSet<TemaSubTema> TemaSubTemas { get; set; }
@@ -54,6 +56,14 @@ namespace APIGestor.Data
         public DbSet<CatalogCategoriaContabilGestao> CatalogCategoriaContabilGestao { get; set; }
         public DbSet<CatalogAtividade> CatalogAtividade { get; set; }
         public DbSet<EtapaMes> EtapaMeses { get; set; }
+
+        /* Demandas */
+        public DbSet<Demanda> Demandas { get; set; }
+        public DbSet<DemandaComentario> DemandaComentarios { get; set; }
+        public DbSet<DemandaFile> DemandaFiles { get; set; }
+        public DbSet<DemandaFormValues> DemandaFormValues { get; set; }
+        public DbSet<SystemOption> SystemOptions { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Disable Cascate Delete
@@ -81,7 +91,7 @@ namespace APIGestor.Data
             modelBuilder.Entity<Projeto>()
                 .HasOne(p => p.CatalogEmpresa);
             //modelBuilder.Entity<Projeto>()
-              //  .HasOne(p => p.Tema);
+            //  .HasOne(p => p.Tema);
             modelBuilder.Entity<Projeto>()
                 .Property(b => b.Created)
                 .HasDefaultValueSql("getdate()");
@@ -103,7 +113,7 @@ namespace APIGestor.Data
                 .HasMany(p => p.Empresas);
 
             // Etapa
-            modelBuilder.Entity<Etapa>()
+            modelBuilder.Entity<Models.Etapa>()
                 .HasMany(p => p.EtapaProdutos);
             // Tema
             modelBuilder.Entity<CatalogTema>()
@@ -119,7 +129,16 @@ namespace APIGestor.Data
             modelBuilder.Entity<LogProjeto>()
                 .Property(b => b.Created)
                 .HasDefaultValueSql("getdate()");
-            
+
+            modelBuilder.Entity<Demanda>(_d =>
+            {
+                _d.Property(d => d.CreatedAt).HasDefaultValueSql("getdate()");
+            });
+            modelBuilder.Entity<DemandaComentario>(_dc =>
+            {
+                _dc.Property(dc => dc.CreatedAt).HasDefaultValueSql("getdate()");
+            });
+
             base.OnModelCreating(modelBuilder);
         }
     }
