@@ -6,16 +6,21 @@ using APIGestor.Data;
 using APIGestor.Models;
 using Microsoft.AspNetCore.Authorization;
 
-namespace APIGestor.Business {
-    public class UserProjetoService : BaseGestorService {
+namespace APIGestor.Business
+{
+    public class UserProjetoService : BaseGestorService
+    {
 
         public ProjetoService projetoService;
-        public UserProjetoService( ProjetoService service, GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
+        public UserProjetoService(ProjetoService service, GestorDbContext context, IAuthorizationService authorization, LogService logService) : base(context, authorization, logService)
+        {
             projetoService = service;
         }
 
-        public UserProjeto Obter( int projetoId ) {
-            if(projetoId > 0) {
+        public UserProjeto Obter(int projetoId)
+        {
+            if (projetoId > 0)
+            {
                 return _context.UserProjetos.Where(
                     p => p.ProjetoId == projetoId).FirstOrDefault();
             }
@@ -23,9 +28,11 @@ namespace APIGestor.Business {
                 return null;
         }
 
-        public List<UserProjeto> ListarTodos( string userId ) {
+        public List<UserProjeto> ListarTodos(string userId, int statusId = 0)
+        {
             var UserProjetos = _context.UserProjetos
                 .Where(y => y.UserId == userId)
+                .Where(p => statusId == 0 || p.Projeto.CatalogStatusId == statusId)
                 .Include("CatalogUserPermissao")
                 .Include("Projeto.CatalogStatus")
                 .Include("Projeto.CatalogEmpresa")
@@ -33,59 +40,72 @@ namespace APIGestor.Business {
                 .ToList();
             return UserProjetos;
         }
-        public Resultado IncluirProjeto( List<UserProjeto> dadosUserProjeto ) {
+        public Resultado IncluirProjeto(List<UserProjeto> dadosUserProjeto)
+        {
             Resultado resultado = new Resultado();
-            foreach(UserProjeto dados in dadosUserProjeto) {
+            foreach (UserProjeto dados in dadosUserProjeto)
+            {
                 resultado = DadosValidos(dados);
 
-                if(resultado.Inconsistencias.Count == 0) {
+                if (resultado.Inconsistencias.Count == 0)
+                {
                     // Verifica se já existe associação para o projeto e remove 
                     UserProjeto UserProjeto = _context.UserProjetos.Where(
                             p => p.ProjetoId == dados.ProjetoId).FirstOrDefault();
-                    if(UserProjeto != null) {
+                    if (UserProjeto != null)
+                    {
                         _context.UserProjetos.RemoveRange(_context.UserProjetos.Where(t => t.ProjetoId == dados.ProjetoId));
                     }
                     _context.UserProjetos.Add(dados);
                 }
             }
             resultado.Acao = "Inclusão de UserProjeto";
-            if(resultado.Inconsistencias.Count == 0) {
+            if (resultado.Inconsistencias.Count == 0)
+            {
                 _context.SaveChanges();
             }
             return resultado;
         }
-        public Resultado Incluir( List<UserProjeto> dadosUserProjeto ) {
+        public Resultado Incluir(List<UserProjeto> dadosUserProjeto)
+        {
             Resultado resultado = new Resultado();
-            foreach(UserProjeto dados in dadosUserProjeto) {
+            foreach (UserProjeto dados in dadosUserProjeto)
+            {
                 resultado = DadosValidos(dados);
 
-                if(resultado.Inconsistencias.Count == 0) {
+                if (resultado.Inconsistencias.Count == 0)
+                {
                     // Verifica se já existe associação para o projeto e remove 
                     UserProjeto UserProjeto = _context.UserProjetos.Where(
                             p => p.UserId == dados.UserId).FirstOrDefault();
-                    if(UserProjeto != null) {
+                    if (UserProjeto != null)
+                    {
                         _context.UserProjetos.RemoveRange(_context.UserProjetos.Where(t => t.UserId == dados.UserId));
                     }
                     _context.UserProjetos.Add(dados);
                 }
             }
             resultado.Acao = "Inclusão de UserProjeto";
-            if(resultado.Inconsistencias.Count == 0) {
+            if (resultado.Inconsistencias.Count == 0)
+            {
                 _context.SaveChanges();
             }
             return resultado;
         }
 
-        public Resultado Excluir( int projetoId ) {
+        public Resultado Excluir(int projetoId)
+        {
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de UserProjeto";
 
             UserProjeto UserProjeto = Obter(projetoId);
-            if(UserProjeto == null) {
+            if (UserProjeto == null)
+            {
                 resultado.Inconsistencias.Add(
                     "UserProjeto não encontrado");
             }
-            else {
+            else
+            {
                 _context.UserProjetos.Remove(UserProjeto);
                 _context.SaveChanges();
             }
@@ -93,43 +113,52 @@ namespace APIGestor.Business {
             return resultado;
         }
 
-        private Resultado DadosValidos( UserProjeto dados ) {
+        private Resultado DadosValidos(UserProjeto dados)
+        {
             var resultado = new Resultado();
-            if(dados == null) {
+            if (dados == null)
+            {
                 resultado.Inconsistencias.Add(
                     "Preencha os Dados do UserProjeto");
             }
-            else {
-                if(dados.ProjetoId <= 0) {
+            else
+            {
+                if (dados.ProjetoId <= 0)
+                {
                     resultado.Inconsistencias.Add(
                         "Preencha o ProjetoId");
                 }
-                if(dados.UserId == null) {
+                if (dados.UserId == null)
+                {
                     resultado.Inconsistencias.Add(
                         "Preencha o UserId");
                 }
-                if(dados.CatalogUserPermissaoId <= 0) {
+                if (dados.CatalogUserPermissaoId <= 0)
+                {
                     resultado.Inconsistencias.Add(
                         "Preencha o CatalogUserPermissaoId");
                 }
                 CatalogUserPermissao Permissao = _context.CatalogUserPermissoes.Where(
                    e => e.Id == dados.CatalogUserPermissaoId).FirstOrDefault();
 
-                if(Permissao == null) {
+                if (Permissao == null)
+                {
                     resultado.Inconsistencias.Add(
                         "Permissao não encontrada");
                 }
                 ApplicationUser User = _context.Users.Where(
                     e => e.Id == dados.UserId).FirstOrDefault();
 
-                if(User == null) {
+                if (User == null)
+                {
                     resultado.Inconsistencias.Add(
                         "Usuário não encontrado");
                 }
                 Projeto Projeto = _context.Projetos.Where(
                     e => e.Id == dados.ProjetoId).FirstOrDefault();
 
-                if(Projeto == null) {
+                if (Projeto == null)
+                {
                     resultado.Inconsistencias.Add(
                         "Projeto não encontrado");
                 }
