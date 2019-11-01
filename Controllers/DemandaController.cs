@@ -7,6 +7,11 @@ using Microsoft.AspNetCore.Authorization;
 using APIGestor.Models.Demandas;
 using APIGestor.Business;
 using APIGestor.Models.Demandas.Forms;
+using iText.Html2pdf;
+using System.IO;
+using iText.Kernel.Pdf;
+using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json.Linq;
 
 namespace APIGestor.Controllers
 {
@@ -17,6 +22,7 @@ namespace APIGestor.Controllers
     {
 
         AppService appService;
+        private IHostingEnvironment _hostingEnvironment;
         protected List<FieldList> _forms = new List<FieldList>(){
                 new EspecificacaoTecnicaForm()
         };
@@ -51,10 +57,11 @@ namespace APIGestor.Controllers
             return Ok();
         }
         protected DemandaService Service { get; }
-        public DemandaController(DemandaService DemandaService, AppService appService)
+        public DemandaController(DemandaService DemandaService, AppService appService, IHostingEnvironment hostingEnvironment)
         {
             this.Service = DemandaService;
             this.appService = appService;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [HttpGet("{etapa}")]
@@ -126,6 +133,27 @@ namespace APIGestor.Controllers
             }
             return default(object);
         }
+        [AllowAnonymous]
+        [HttpGet("{id}/Form/{form}/Pdf")]
+        public ActionResult<object> GetDemandaPDF(int id, string form)
+        {
+            var filename = Service.SaveDemandaFormPdf(id, form);
+            return PhysicalFile(filename, "application/pdf");
+
+        }
+        [AllowAnonymous]
+        [HttpGet("{id}/Form/{form}/Debug")]
+        public ActionResult<object> GetDemandaTeste(int id, string form)
+        {
+            var doc = Service.RenderDocument(id, form);
+            if (doc != null)
+            {
+                return doc;
+            }
+            return NotFound();
+
+        }
+
         [HttpPut("{id}/Form/{form}")]
         public ActionResult<object> SalvarDemandaFormValue(int id, string form, [FromBody] object data)
         {

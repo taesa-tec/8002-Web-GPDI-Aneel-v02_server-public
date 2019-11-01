@@ -9,8 +9,9 @@
     <PackageReference Include="ClosedXML" Version="0.94.2" />
     <PackageReference Include="ClosedXML.Extensions.WebApi" Version="0.2.1" />
     <PackageReference Include="CsvHelper" Version="12.1.2" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.16" />
+    <PackageReference Include="itext7.pdfhtml" Version="2.1.5" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
-
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
