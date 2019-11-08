@@ -18,29 +18,46 @@ using iText.Layout.Properties;
 using APIGestor.Models.Demandas.Forms;
 using Newtonsoft.Json.Linq;
 using HtmlAgilityPack;
+using Microsoft.EntityFrameworkCore;
+using APIGestor.Exceptions.Demandas;
+using APIGestor.Business.Sistema;
 
-namespace APIGestor.Business
+namespace APIGestor.Business.Demandas
 {
 
     public class DemandaService : BaseGestorService
     {
-
+        SistemaService sistemaService;
         protected static readonly List<FieldList> Forms = new List<FieldList>(){
                 new EspecificacaoTecnicaForm()
         };
+        protected delegate bool CanDemandaProgress(Demanda demanda, string userId);
+
+        protected Dictionary<Etapa, CanDemandaProgress> DemandaProgressCheck;
+
         public static FieldList GetForm(string key)
         {
             return DemandaService.Forms.FirstOrDefault(f => f.Key == key);
         }
         private IHostingEnvironment _hostingEnvironment;
-        public DemandaService(GestorDbContext context, IAuthorizationService authorization, LogService logService, IHostingEnvironment hostingEnvironment) : base(context, authorization, logService)
+        public DemandaService(
+            GestorDbContext context,
+            IAuthorizationService authorization,
+            LogService logService,
+            IHostingEnvironment hostingEnvironment,
+            SistemaService sistemaService
+            ) : base(context, authorization, logService)
         {
             this._hostingEnvironment = hostingEnvironment;
+            this.sistemaService = sistemaService;
         }
 
         public Demanda GetById(int id)
         {
-            return _context.Demandas.FirstOrDefault(d => d.Id == id);
+            return _context.Demandas
+            .Include("Criador")
+            .Include("SuperiorDireto")
+            .FirstOrDefault(d => d.Id == id);
         }
 
         public bool DemandaExist(int id)
@@ -107,9 +124,59 @@ namespace APIGestor.Business
             }
             return demanda;
         }
-        public void AprovarDemanda(int id)
+        public void ProximaEtapa(int id, string userId)
         {
             var demanda = GetById(id);
+            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
+            {
+                if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
+                {
+                    demanda.ProximaEtapa();
+                    demanda.EtapaStatus = EtapaStatus.EmElaboracao;
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new DemandaException("O usuário não é responsável pela continuidade da demanda");
+                }
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+
+        public void SetSuperiorDireto(int id, string SuperiorDiretoId)
+        {
+            if (DemandaExist(id))
+            {
+                GetById(id).SuperiorDiretoId = SuperiorDiretoId;
+                _context.SaveChanges();
+                return;
+            }
+            throw new DemandaException("Demanda Não existe");
+
+        }
+        public string GetSuperiorDireto(int id)
+        {
+            if (DemandaExist(id))
+            {
+                return GetById(id).SuperiorDiretoId;
+            }
+            return null;
+        }
+        public void ReiniciarDemanda(int id)
+        {
+
+        }
+        protected void AprovarDemanda(int id)
+        {
+            var demanda = GetById(id);
+            AprovarDemanda(demanda);
+            return;
+        }
+        protected void AprovarDemanda(Demanda demanda)
+        {
             if (demanda != null)
             {
                 demanda.ProximaEtapa();
@@ -130,52 +197,107 @@ namespace APIGestor.Business
             }
             return;
         }
-        public JObject GetDemandaFormData(int id, string form)
+
+        #region Progresso das demandas
+
+
+        protected bool ElaboracaoProgress(Demanda demanda, string userId)
         {
-            var data = _context.DemandaFormValues.FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
-            if (data != null)
-            {
-                return data.ToObject();
-            }
-            return null;
+            return demanda.CriadorId == userId;
         }
-        public void SalvarDemandaFormData(int id, string form, object data)
+
+        protected bool PreAprovacaoProgress(Demanda demanda, string userId)
         {
-            var df_data = _context.DemandaFormValues.FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
+            return demanda.SuperiorDiretoId == userId;
+        }
+        protected bool AprovacaoRevisorProgress(Demanda demanda, string userId)
+        {
+            return demanda.RevisorId == userId;
+        }
+        protected bool AprovacaoCoordenadorProgress(Demanda demanda, string userId)
+        {
+            return userId == sistemaService.GetEquipePeD().Coordenador;
+        }
+        protected bool AprovacaoGerenteProgress(Demanda demanda, string userId)
+        {
+            return userId == sistemaService.GetEquipePeD().Gerente;
+        }
+        protected bool AprovacaoDiretorProgress(Demanda demanda, string userId)
+        {
+            return userId == sistemaService.GetEquipePeD().Diretor;
+        }
+
+
+        #endregion
+
+        #region Documentos das demandas
+
+        public DemandaFormValues GetDemandaFormData(int id, string form)
+        {
+            return _context.DemandaFormValues.Include("Files.File").FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
+        }
+        public List<Models.FileUpload> GetDemandaFiles(int id)
+        {
+            return _context.DemandaFormValues
+            .Include("Files.File")
+            .Where(df => df.DemandaId == id)
+            .SelectMany(_dfv => _dfv.Files.Select(dff => dff.File))
+            .ToList();
+        }
+        public Models.FileUpload GetDemandaFile(int id, int file_id)
+        {
+            return GetDemandaFiles(id).First(file => file.Id == file_id);
+        }
+        public void SalvarDemandaFormData(int id, string form, JObject data)
+        {
+            var formdata = data.Value<JObject>("form");
+            var formanexos = data.Value<JArray>("anexos");
+            var df_data = _context.DemandaFormValues.Include("Files").FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
             if (df_data != null)
             {
-                df_data.SetValue(data);
+                df_data.SetValue(formdata);
+
+                df_data.Files = formanexos.ToList().Select(item => new DemandaFormFile()
+                {
+                    DemandaFormId = df_data.Id,
+                    FileId = item.Value<int>()
+                }).ToList();
             }
             else
             {
                 df_data = new DemandaFormValues();
                 df_data.DemandaId = id;
                 df_data.FormKey = form;
-                df_data.SetValue(data);
+                df_data.SetValue(formdata);
+                df_data.Files = formanexos.ToList().Select(item => new DemandaFormFile()
+                {
+                    FileId = item.Value<int>()
+                }).ToList();
                 _context.DemandaFormValues.Add(df_data);
             }
             _context.SaveChanges();
+            SaveDemandaFormPdf(id, form);
         }
-
-        protected IElement GerarHeader(string titulo, string documento, string folhas)
+        public string GetDemandaFormHTML(int id, string form)
         {
-            Table table = new Table(3, true).UseAllAvailableWidth();
-            //table.StartNewRow()
-            table.AddCell("A");
-            table.AddCell("B");
-            table.AddCell("C");
-
-            return table;
-        }
-
-        protected string GetDemandaFormHTML(int id, string form)
-        {
-
+            var _form = GetForm(form);
             string body = string.Empty;
             var document = new HtmlDocument();
             document.Load(Path.Combine(_hostingEnvironment.WebRootPath, "MailTemplates/pdf-template.html"));
 
             var mainContent = document.DocumentNode.SelectSingleNode("//div[@id='main-content']");
+            var formName = document.DocumentNode.SelectSingleNode("//span[@id='formulario']");
+            var titulo = document.DocumentNode.SelectSingleNode("//span[@id='titulo']");
+            var documento = document.DocumentNode.SelectSingleNode("//span[@id='documento']");
+
+            if (formName != null)
+            {
+                formName.AppendChild(HtmlNode.CreateNode(_form.Title));
+            }
+            if (documento != null)
+            {
+                documento.AppendChild(HtmlNode.CreateNode("Documento: 00000"));
+            }
 
             var demandaFormValue = RenderDocument(id, form);
             if (demandaFormValue != null && mainContent != null)
@@ -195,51 +317,44 @@ namespace APIGestor.Business
             var data = GetDemandaFormData(id, form);
             if (data != null && field != null)
             {
-                return field.Render(data);
+                return field.Render(data.Object);
             }
             return new FieldRendered("Error", "No data or Form found");
         }
 
         public string SaveDemandaFormPdf(int id, string form)
         {
-            string folderName = String.Format("uploads/demandas/{0}/{1}/", id, form);
-            string webRootPath = _hostingEnvironment.WebRootPath;
-            string newPath = Path.Combine(webRootPath, folderName);
-            string filename = String.Format("demanda-{0}-{1}.pdf", id, form);
-            string fullname = Path.Combine(newPath, filename);
-
-            if (!Directory.Exists(newPath))
-            {
-                Directory.CreateDirectory(newPath);
-            }
-
+            string fullname = GetDemandaFormPdfFilename(id, form, true);
             var html = GetDemandaFormHTML(id, form);
             var writer = new PdfWriter(fullname);
 
             HtmlConverter.ConvertToPdf(html, new FileStream(fullname, FileMode.Create));
-            var _form = GetForm(form);
-            UpdatePdf(fullname, "ABC-1234", _form.Title);
+
+            UpdatePdf(fullname);
 
             return fullname;
         }
 
-        protected void UpdatePdf(string filename, string demanda, string formname)
+        public string GetDemandaFormPdfFilename(int id, string form, bool createDirectory = false)
         {
-            var font = PdfFontFactory.CreateFont(StandardFontFamilies.HELVETICA);
+            string folderName = String.Format("uploads/demandas/{0}/{1}/", id, form);
+            string webRootPath = _hostingEnvironment.WebRootPath;
+            string newPath = Path.Combine(webRootPath, folderName);
+            string filename = String.Format("demanda-{0}-{1}.pdf", id, form);
+            if (createDirectory && !Directory.Exists(newPath))
+            {
+                Directory.CreateDirectory(newPath);
+            }
+            return Path.Combine(newPath, filename);
+        }
+
+        protected void UpdatePdf(string filename)
+        {
             var filetmp = filename + ".tmp";
             PdfDocument pdfDoc = new PdfDocument(new PdfReader(filename), new PdfWriter(filetmp));
             Document doc = new Document(pdfDoc);
-
-            Paragraph paragraphDemanda = new Paragraph("Documento: ").Add(new Paragraph(demanda).SetBold())
-            .SetFont(font)
-            .SetFontSize(12)
-            .SetFontColor(ColorConstants.BLACK);
-            Paragraph paragraphForm = new Paragraph(formname)
-                .SetFont(font)
-                .SetFontSize(13)
-                .SetBold()
-                .SetFontColor(ColorConstants.BLACK);
-
+            //var font = PdfFontFactory.CreateFont(Path.Combine(_hostingEnvironment.WebRootPath, "Assets/fonts/Roboto-Regular.ttf"));
+            //doc.SetFont(font);
             for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++)
             {
                 float width = pdfDoc.GetPage(i).GetPageSize().GetWidth();
@@ -250,13 +365,8 @@ namespace APIGestor.Business
                 float y = pdfDoc.GetPage(i).GetPageSize().GetBottom() + 20;
 
                 Paragraph pages = new Paragraph(String.Format("Folha {0} de {1}", i, pdfDoc.GetNumberOfPages()))
-                                .SetFont(font)
                                 .SetFontSize(12)
                                 .SetFontColor(ColorConstants.BLACK);
-
-                doc.ShowTextAligned(paragraphForm, width / 2, height - 75, i, TextAlignment.CENTER, VerticalAlignment.BOTTOM, 0);
-
-                doc.ShowTextAligned(paragraphDemanda, width - 120, height - 60, i, TextAlignment.CENTER, VerticalAlignment.BOTTOM, 0);
                 doc.ShowTextAligned(pages, width - 120, height - 90, i, TextAlignment.CENTER, VerticalAlignment.BOTTOM, 0);
                 //doc.ShowTextAligned(pages, width, top + 40, i, TextAlignment.RIGHT, VerticalAlignment.BOTTOM, 0);
 
@@ -315,7 +425,7 @@ namespace APIGestor.Business
             }
 
         }
-
+        #endregion
 
     }
 }

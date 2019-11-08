@@ -17,7 +17,12 @@ namespace APIGestor.Models.Demandas
         [Column(TypeName = "varchar(max)")]
         public string Data { get; set; }
 
-        public JObject ToObject()
+        [NotMapped]
+        public JObject Object { get { return this.ToJObject(); } }
+
+        public List<DemandaFormFile> Files { get; set; }
+
+        public JObject ToJObject()
         {
             if (this.Data != null)
             {

@@ -15,6 +15,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using System.Globalization;
 using APIGestor.Authorizations;
 using Microsoft.AspNetCore.Authorization;
+using APIGestor.Business.Sistema;
+using APIGestor.Business.Demandas;
 
 namespace APIGestor
 {
@@ -88,7 +90,7 @@ namespace APIGestor
             services.AddScoped<AtividadeGestaoService>();
 
             services.AddScoped<DemandaService>();
-            services.AddScoped<AppService>();
+            services.AddScoped<SistemaService>();
 
             // Ativando a utilização do ASP.NET Identity, a fim de
             // permitir a recuperação de seus objetos via injeção de

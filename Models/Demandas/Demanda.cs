@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-
+using APIGestor.Exceptions.Demandas;
 
 namespace APIGestor.Models.Demandas
 {
+    
     public enum EtapaStatus
     {
         EmElaboracao,
@@ -35,14 +36,21 @@ namespace APIGestor.Models.Demandas
         public ApplicationUser Criador { get; set; }
         public string SuperiorDiretoId { get; set; }
         public ApplicationUser SuperiorDireto { get; set; }
+
+        public string RevisorId { get; set; }
+        public ApplicationUser Revisor { get; set; }
         public Etapa EtapaAtual { get; set; }
         public EtapaStatus EtapaStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<DemandaComentario> Comentarios { get; set; }
-        public List<DemandaFile> Files { get; set; }
+        
 
         public void ProximaEtapa()
         {
+            if (this.EtapaAtual == Etapa.RevisorPendente && String.IsNullOrWhiteSpace(RevisorId))
+            {
+                throw new DemandaException("Não é possível avançar para a proxíma etapa sem revisor");
+            }
             if (this.EtapaAtual < Etapa.Captacao)
                 this.EtapaAtual++;
         }
@@ -52,5 +60,22 @@ namespace APIGestor.Models.Demandas
                 this.EtapaAtual--;
         }
 
+        public string EtapaStatusText
+        {
+            get
+            {
+                return Enum.GetName(typeof(EtapaStatus), this.EtapaStatus);
+            }
+        }
+        public string EtapaAtualText
+        {
+            get
+            {
+                return Enum.GetName(typeof(Etapa), this.EtapaAtual);
+            }
+        }
+
     }
+
+
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 
 namespace APIGestor.Models.Demandas.Forms
 {
@@ -12,12 +13,14 @@ namespace APIGestor.Models.Demandas.Forms
     {
         public string Title;
         public string Value;
+        public string Type;
         public List<FieldRendered> Children;
 
         public FieldRendered(string Title, string Value)
         {
             this.Title = Title;
             this.Value = Value;
+            this.Type = "";
             this.Children = new List<FieldRendered>();
         }
 
@@ -28,6 +31,7 @@ namespace APIGestor.Models.Demandas.Forms
             var value = HtmlNode.CreateNode($"<div>{Value}</div>");
 
             item.AddClass("field-item");
+            item.AddClass(Type.ToLower());
             title.AddClass("field-item-title");
             value.AddClass("field-item-value");
 
@@ -77,6 +81,8 @@ namespace APIGestor.Models.Demandas.Forms
         public Dictionary<string, string> Options { get; set; }
         public int Order { get; set; }
         public string Placeholder { get; set; }
+
+        [JsonIgnore]
         public Field Parent { get; set; }
         public DataRender RenderTemaHandler;
         public RenderHandler RenderHandler;
@@ -84,6 +90,7 @@ namespace APIGestor.Models.Demandas.Forms
         protected FieldRendered RenderForm(JToken data)
         {
             var fieldRendered = new FieldRendered(this.Title, "");
+            fieldRendered.Type = this.FieldType;
             return fieldRendered;
         }
         protected FieldRendered RenderText(JObject data)
@@ -103,7 +110,9 @@ namespace APIGestor.Models.Demandas.Forms
             }
 
 
-            return new FieldRendered(IsArray ? this.ItemTitle : this.Title, Value);
+            var fieldRendered = new FieldRendered(IsArray ? this.ItemTitle : this.Title, Value);
+            fieldRendered.Type = this.FieldType;
+            return fieldRendered;
         }
 
         public virtual FieldRendered Render(JObject data)
@@ -122,8 +131,8 @@ namespace APIGestor.Models.Demandas.Forms
                     break;
             }
 
+            fieldRendered.Type = this.FieldType;
             FieldRenderSanitizer(this, data, ref fieldRendered);
-
             return fieldRendered;
         }
 
@@ -142,6 +151,7 @@ namespace APIGestor.Models.Demandas.Forms
         {
             var fieldRendered = new FieldRendered(this.Title, "");
             fieldRendered.Children.AddRange(data.Children().Select(child => Render(child as JObject)));
+            fieldRendered.Type = this.FieldType;
             return fieldRendered;
         }
 
@@ -220,7 +230,7 @@ namespace APIGestor.Models.Demandas.Forms
             {
 
             }
-
+            fieldRendered.Type = this.FieldType;
             return fieldRendered;
         }
 
