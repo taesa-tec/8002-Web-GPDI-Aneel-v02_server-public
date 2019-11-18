@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using APIGestor.Data;
 using APIGestor.Core.Equipe;
+using APIGestor.Models;
 
 namespace APIGestor.Business.Sistema
 {
@@ -53,6 +54,17 @@ namespace APIGestor.Business.Sistema
             };
             SistemaService.EquipePeD = Equipe;
             return Equipe;
+        }
+        public object GetEquipePedUsers()
+        {
+            var equipe = GetEquipePeD();
+            return new
+            {
+                Diretor = context.Users.FirstOrDefault(u => u.Id == equipe.Diretor),
+                Gerente = context.Users.FirstOrDefault(u => u.Id == equipe.Gerente),
+                Coordenador = context.Users.FirstOrDefault(u => u.Id == equipe.Coordenador),
+                Outros = context.Users.Where(u => equipe.Outros.Contains(u.Id))
+            };
         }
         public void SetEquipePeD(string diretorId, string gerenteId, string coordenadorId, List<string> outros)
         {

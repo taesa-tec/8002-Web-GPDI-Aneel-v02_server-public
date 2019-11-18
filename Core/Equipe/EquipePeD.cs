@@ -15,6 +15,22 @@ namespace APIGestor.Core.Equipe
         public List<string> Outros { get; set; }
         public EquipePeD() { }
 
+        public List<string> CargosChavesIds
+        {
+            get
+            {
+                return new List<string>() { Diretor, Gerente, Coordenador };
+            }
+        }
+
+        public List<string> Ids
+        {
+            get
+            {
+                return CargosChavesIds.Concat(Outros).ToList();
+            }
+        }
+
 
     }
 }

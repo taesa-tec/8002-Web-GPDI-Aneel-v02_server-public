@@ -5,7 +5,7 @@ using APIGestor.Exceptions.Demandas;
 
 namespace APIGestor.Models.Demandas
 {
-    
+
     public enum EtapaStatus
     {
         EmElaboracao,
@@ -42,8 +42,9 @@ namespace APIGestor.Models.Demandas
         public Etapa EtapaAtual { get; set; }
         public EtapaStatus EtapaStatus { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? CaptacaoDate { get; set; }
         public List<DemandaComentario> Comentarios { get; set; }
-        
+
 
         public void ProximaEtapa()
         {
@@ -51,13 +52,31 @@ namespace APIGestor.Models.Demandas
             {
                 throw new DemandaException("Não é possível avançar para a proxíma etapa sem revisor");
             }
-            if (this.EtapaAtual < Etapa.Captacao)
+            if (this.EtapaAtual < Etapa.AprovacaoDiretor)
+            {
                 this.EtapaAtual++;
+                this.EtapaStatus = EtapaStatus.Pendente;
+            }
+            else
+            {
+                EtapaStatus = EtapaStatus.Aprovada;
+            }
+
+
         }
-        public void EtapaAnterior()
+        public void Reiniciar()
         {
-            if (this.EtapaAtual > Etapa.Elaboracao)
-                this.EtapaAtual--;
+            this.EtapaAtual = Etapa.Elaboracao;
+            this.EtapaStatus = EtapaStatus.Pendente;
+        }
+        public void ReprovarReiniciar()
+        {
+            this.EtapaAtual = Etapa.Elaboracao;
+            this.EtapaStatus = EtapaStatus.Reprovada;
+        }
+        public void ReprovarPermanente()
+        {
+            this.EtapaStatus = EtapaStatus.ReprovadaPermanente;
         }
 
         public string EtapaStatusText

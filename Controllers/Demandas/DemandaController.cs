@@ -14,6 +14,7 @@ using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json.Linq;
 using APIGestor.Business.Sistema;
+using Microsoft.EntityFrameworkCore;
 
 namespace APIGestor.Controllers.Demandas
 {
@@ -39,32 +40,32 @@ namespace APIGestor.Controllers.Demandas
         [HttpGet("{etapa:alpha}")]
         public List<Demanda> GetByEtapa(Etapa etapa)
         {
-            return this.Service.GetByEtapa(etapa);
+            return this.Service.GetByEtapa(etapa, this.userId());
         }
 
         [HttpGet("Reprovadas")]
         public List<Demanda> GetDemandasReprovadas()
         {
-            return this.Service.GetDemandasReprovadas();
+            return this.Service.GetDemandasReprovadas(this.userId());
         }
         [HttpGet("Aprovadas")]
         public List<Demanda> GetDemandasAprovadas()
         {
-            return this.Service.GetDemandasAprovadas();
+            return this.Service.GetDemandasAprovadas(this.userId());
         }
 
         [HttpGet("EmElaboracao")]
         public List<Demanda> GetDemandasEmElaboracao()
         {
-            return this.Service.GetDemandasEmElaboracao();
+            return this.Service.GetDemandasEmElaboracao(this.userId());
         }
 
         [HttpGet("Captacao")]
         public List<Demanda> GetDemandasCaptacao()
         {
-            return this.Service.GetDemandasCaptacao();
+            return this.Service.GetDemandasCaptacao(this.userId());
         }
 
-        
+
     }
 }

@@ -50,6 +50,15 @@ namespace APIGestor.Business.Demandas
         {
             this._hostingEnvironment = hostingEnvironment;
             this.sistemaService = sistemaService;
+            DemandaProgressCheck = new Dictionary<Etapa, CanDemandaProgress>(){
+                {Etapa.Elaboracao, ElaboracaoProgress},
+                {Etapa.PreAprovacao, PreAprovacaoProgress},
+                {Etapa.RevisorPendente, AprovacaoCoordenadorProgress},
+                {Etapa.AprovacaoRevisor, AprovacaoRevisorProgress },
+                {Etapa.AprovacaoCoordenador, AprovacaoCoordenadorProgress },
+                {Etapa.AprovacaoGerente, AprovacaoGerenteProgress },
+                {Etapa.AprovacaoDiretor, AprovacaoDiretorProgress },
+            };
         }
 
         public Demanda GetById(int id)
@@ -57,6 +66,7 @@ namespace APIGestor.Business.Demandas
             return _context.Demandas
             .Include("Criador")
             .Include("SuperiorDireto")
+            .Include("Comentarios")
             .FirstOrDefault(d => d.Id == id);
         }
 
@@ -64,34 +74,60 @@ namespace APIGestor.Business.Demandas
         {
             return _context.Demandas.Any(d => d.Id == id);
         }
+        public bool UserCanAccess(int id, string userId)
+        {
+            if (DemandaExist(id))
+            {
+                if (sistemaService.GetEquipePeD().Ids.Contains(userId))
+                    return true;
+                var demanda = _context.Demandas.Find(id);
+                return (demanda.CriadorId == userId || demanda.SuperiorDiretoId == userId || demanda.RevisorId == userId);
+            }
+            return false;
+        }
+        protected IQueryable<Demanda> QueryDemandas(string userId = null)
+        {
+            var CargosChavesIds = sistemaService.GetEquipePeD().CargosChavesIds;
+            return _context.Demandas
+            .Include("Criador")
+            .Include("SuperiorDireto")
+            .Include("Revisor")
+            .ByUser(CargosChavesIds.Contains(userId) ? null : userId);
+        }
+        public List<Demanda> GetByEtapa(Etapa etapa, string userId = null)
+        {
 
-        public List<Demanda> GetByEtapa(Etapa etapa)
-        {
-            return _context.Demandas.Where(d => d.EtapaAtual == etapa).ToList();
+            return QueryDemandas(userId).Where(d => d.EtapaAtual == etapa).ToList();
         }
-        public List<Demanda> GetByEtapaStatus(EtapaStatus status)
+        public List<Demanda> GetByEtapaStatus(EtapaStatus status, string userId = null)
         {
-            return _context.Demandas.Where(d => d.EtapaStatus == status).ToList();
+            return QueryDemandas(userId)
+            .Where(d => d.EtapaStatus == status).ToList();
         }
-        public List<Demanda> GetDemandasReprovadas()
+        public List<Demanda> GetDemandasReprovadas(string userId = null)
         {
-            return _context.Demandas.Where(d => d.EtapaStatus == EtapaStatus.Reprovada || d.EtapaStatus == EtapaStatus.ReprovadaPermanente).ToList();
+            return QueryDemandas(userId)
+            .Where(d => d.EtapaStatus == EtapaStatus.ReprovadaPermanente).ToList();
         }
-        public List<Demanda> GetDemandasAprovadas()
+        public List<Demanda> GetDemandasAprovadas(string userId = null)
         {
-            return _context.Demandas.Where(d => d.EtapaStatus == EtapaStatus.Aprovada && d.EtapaAtual == Etapa.AprovacaoDiretor).ToList();
+            return QueryDemandas(userId)
+            // .Where(d => d.EtapaAtual == Etapa.AprovacaoDiretor && (d.EtapaStatus == EtapaStatus.Aprovada && d.EtapaStatus == EtapaStatus.Concluido)).ToList();
+            .Where(d => d.EtapaAtual == Etapa.AprovacaoDiretor).ToList();
         }
-        public List<Demanda> GetDemandasEmElaboracao()
+        public List<Demanda> GetDemandasEmElaboracao(string userId = null)
         {
-            return _context.Demandas.Where(d => d.EtapaAtual == Etapa.Elaboracao || d.EtapaStatus == EtapaStatus.EmElaboracao).ToList();
+            return QueryDemandas(userId)
+            .Where(d => d.EtapaAtual == Etapa.Elaboracao || d.EtapaStatus == EtapaStatus.EmElaboracao).ToList();
         }
-        public List<Demanda> GetDemandasCaptacao()
+        public List<Demanda> GetDemandasCaptacao(string userId = null)
         {
-            return _context.Demandas.Where(d => d.EtapaAtual == Etapa.Captacao).ToList();
+            return QueryDemandas(userId)
+            .Where(d => d.EtapaAtual == Etapa.Captacao).ToList();
         }
-        public List<Demanda> GetDemandasPendentes()
+        public List<Demanda> GetDemandasPendentes(string userId = null)
         {
-            return GetByEtapaStatus(EtapaStatus.Pendente);
+            return GetByEtapaStatus(EtapaStatus.Pendente, userId);
         }
         public void EnviarCaptacao(int id)
         {
@@ -100,6 +136,8 @@ namespace APIGestor.Business.Demandas
             if (demanda != null)
             {
                 demanda.EtapaAtual = Etapa.Captacao;
+                demanda.EtapaStatus = EtapaStatus.Concluido;
+                demanda.CaptacaoDate = DateTime.Now;
                 _context.SaveChanges();
             }
         }
@@ -124,15 +162,20 @@ namespace APIGestor.Business.Demandas
             }
             return demanda;
         }
-        public void ProximaEtapa(int id, string userId)
+
+        public void ProximaEtapa(int id, string userId, string revisorId = null)
         {
             var demanda = GetById(id);
+            if (!String.IsNullOrWhiteSpace(revisorId) && _context.Users.Any(user => user.Id == revisorId))
+            {
+                demanda.RevisorId = revisorId;
+            }
             if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
             {
                 if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
                 {
                     demanda.ProximaEtapa();
-                    demanda.EtapaStatus = EtapaStatus.EmElaboracao;
+
                     _context.SaveChanges();
                 }
                 else
@@ -165,9 +208,49 @@ namespace APIGestor.Business.Demandas
             }
             return null;
         }
-        public void ReiniciarDemanda(int id)
+        public void ReprovarReiniciar(int id, string userId)
         {
+            if (!DemandaExist(id))
+            {
+                throw new DemandaException("Demanda Não existe");
+            }
+            var demanda = GetById(id);
 
+            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
+            {
+                if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
+                {
+                    demanda.ReprovarReiniciar();
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new DemandaException("Usuário não tem permissão para reiniciar essa demanda");
+                }
+            }
+
+        }
+        public void ReprovarPermanente(int id, string userId)
+        {
+            if (!DemandaExist(id))
+            {
+                throw new DemandaException("Demanda Não existe");
+            }
+
+            var demanda = GetById(id);
+
+            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
+            {
+                if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
+                {
+                    demanda.ReprovarPermanente();
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new DemandaException("Usuário não tem permissão para reiniciar essa demanda");
+                }
+            }
         }
         protected void AprovarDemanda(int id)
         {
@@ -185,17 +268,27 @@ namespace APIGestor.Business.Demandas
             }
             return;
         }
-        public void ReprovarDemanda(int id, DemandaComentario comentario, bool permanente)
+        public void AddComentario(int id, DemandaComentario comentario)
         {
             var demanda = GetById(id);
             if (demanda != null)
             {
-                demanda.EtapaStatus = permanente ? EtapaStatus.ReprovadaPermanente : EtapaStatus.Reprovada;
                 demanda.Comentarios = demanda.Comentarios != null ? demanda.Comentarios : new List<DemandaComentario>();
                 demanda.Comentarios.Add(comentario);
                 _context.SaveChanges();
             }
             return;
+        }
+
+        public void AddComentario(int id, string comentario, string userId)
+        {
+            AddComentario(id, new DemandaComentario()
+            {
+                Content = comentario,
+                DemandaId = id,
+                UserId = userId,
+                CreatedAt = DateTime.Now
+            });
         }
 
         #region Progresso das demandas
@@ -427,5 +520,12 @@ namespace APIGestor.Business.Demandas
         }
         #endregion
 
+    }
+    public static class DemandaExtension
+    {
+        public static IQueryable<Demanda> ByUser(this IQueryable<Demanda> dbSet, string userId)
+        {
+            return dbSet.Where(demanda => String.IsNullOrWhiteSpace(userId) || demanda.CriadorId == userId || demanda.SuperiorDiretoId == userId || demanda.RevisorId == userId);
+        }
     }
 }

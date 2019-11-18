@@ -41,6 +41,8 @@ namespace APIGestor.Models
 
     public class ApplicationUserConverter : JsonConverter
     {
+        public override bool CanRead { get { return false; } }
+
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(ApplicationUser);
@@ -48,6 +50,7 @@ namespace APIGestor.Models
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+
             serializer.Populate(reader, existingValue);
             return serializer.Deserialize(reader);
         }
@@ -58,20 +61,27 @@ namespace APIGestor.Models
             writer.WriteStartObject();
             writer.WritePropertyName("id");
             writer.WriteValue(user.Id);
+            writer.WritePropertyName("fotoPerfil");
+            writer.WriteValue(String.Format("/api/Users/{0}/Avatar", user.Id));
+
+            /*
+            writer.WriteStartObject();
             if (user.FotoPerfil != null)
             {
-
-                writer.WritePropertyName("fotoPerfil");
-
-                writer.WriteStartObject();
-
                 writer.WritePropertyName("id");
                 writer.WriteValue(user.FotoPerfil.Id);
                 writer.WritePropertyName("file");
                 writer.WriteValue(user.FotoPerfil.File);
-
-                writer.WriteEndObject();
             }
+            else
+            {
+                writer.WritePropertyName("id");
+                writer.WriteValue(0);
+                writer.WritePropertyName("file");
+                writer.WriteValue("");
+            }
+            writer.WriteEndObject();
+            */
             writer.WritePropertyName("nomeCompleto");
             writer.WriteValue(user.NomeCompleto);
             writer.WritePropertyName("userName");

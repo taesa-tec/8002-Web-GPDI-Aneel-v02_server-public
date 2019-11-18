@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Business.Sistema;
 using APIGestor.Core.Equipe;
+using APIGestor.Models;
 
 namespace APIGestor.Controllers.Sistema
 {
@@ -20,9 +21,9 @@ namespace APIGestor.Controllers.Sistema
         }
 
         [HttpGet]
-        public EquipePeD GetEquipePeD()
+        public object GetEquipePeD()
         {
-            return sistemaService.GetEquipePeD();
+            return sistemaService.GetEquipePedUsers();
         }
         [HttpPut]
         public ActionResult SetEquipePeD(EquipePeD equipePeD)
