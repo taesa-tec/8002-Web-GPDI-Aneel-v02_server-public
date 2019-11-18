@@ -4,14 +4,16 @@ using APIGestor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIGestor.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191106134832_DemandaRevisor")]
+    partial class DemandaRevisor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -458,8 +460,6 @@ namespace APIGestor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("CaptacaoDate");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("getdate()");
@@ -512,25 +512,23 @@ namespace APIGestor.Migrations
                     b.ToTable("DemandaComentarios");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Demandas.DemandaFormFile", b =>
+            modelBuilder.Entity("APIGestor.Models.Demandas.DemandaFile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("DemandaFormId");
+                    b.Property<int>("DemandaId");
 
-                    b.Property<int?>("DemandaFormValuesId");
+                    b.Property<string>("Filename");
 
-                    b.Property<int>("FileId");
+                    b.Property<string>("Path");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DemandaFormValuesId");
+                    b.HasIndex("DemandaId");
 
-                    b.HasIndex("FileId");
-
-                    b.ToTable("DemandaFormFiles");
+                    b.ToTable("DemandaFiles");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Demandas.DemandaFormValues", b =>
@@ -545,8 +543,6 @@ namespace APIGestor.Migrations
                     b.Property<int>("DemandaId");
 
                     b.Property<string>("FormKey");
-
-                    b.Property<int>("Revisao");
 
                     b.HasKey("Id");
 
@@ -645,33 +641,6 @@ namespace APIGestor.Migrations
                     b.HasIndex("ProdutoId");
 
                     b.ToTable("EtapaProdutos");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.FileUpload", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ContentType");
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("FileName");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("Path");
-
-                    b.Property<long>("Size");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("APIGestor.Models.FotoPerfil", b =>
@@ -1581,15 +1550,11 @@ namespace APIGestor.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Demandas.DemandaFormFile", b =>
+            modelBuilder.Entity("APIGestor.Models.Demandas.DemandaFile", b =>
                 {
-                    b.HasOne("APIGestor.Models.Demandas.DemandaFormValues")
+                    b.HasOne("APIGestor.Models.Demandas.Demanda")
                         .WithMany("Files")
-                        .HasForeignKey("DemandaFormValuesId");
-
-                    b.HasOne("APIGestor.Models.FileUpload", "File")
-                        .WithMany()
-                        .HasForeignKey("FileId")
+                        .HasForeignKey("DemandaId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -1635,13 +1600,6 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.Produto")
                         .WithMany("EtapaProduto")
                         .HasForeignKey("ProdutoId");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.FileUpload", b =>
-                {
-                    b.HasOne("APIGestor.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("APIGestor.Models.LogProjeto", b =>

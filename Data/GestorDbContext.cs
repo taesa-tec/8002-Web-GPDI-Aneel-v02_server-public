@@ -60,9 +60,10 @@ namespace APIGestor.Data
         /* Demandas */
         public DbSet<Demanda> Demandas { get; set; }
         public DbSet<DemandaComentario> DemandaComentarios { get; set; }
-        public DbSet<DemandaFile> DemandaFiles { get; set; }
+        public DbSet<DemandaFormFile> DemandaFormFiles { get; set; }
         public DbSet<DemandaFormValues> DemandaFormValues { get; set; }
         public DbSet<SystemOption> SystemOptions { get; set; }
+        public DbSet<FileUpload> Files { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

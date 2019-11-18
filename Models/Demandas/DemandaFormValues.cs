@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace APIGestor.Models.Demandas
 {
@@ -12,17 +13,23 @@ namespace APIGestor.Models.Demandas
         public int Id { get; set; }
         public int DemandaId { get; set; }
         public string FormKey { get; set; }
+        public int Revisao { get; set; }
 
         [Column(TypeName = "varchar(max)")]
         public string Data { get; set; }
 
-        public T ToObject<T>()
+        [NotMapped]
+        public JObject Object { get { return this.ToJObject(); } }
+
+        public List<DemandaFormFile> Files { get; set; }
+
+        public JObject ToJObject()
         {
             if (this.Data != null)
             {
-                return JsonConvert.DeserializeObject<T>(this.Data);
+                return JsonConvert.DeserializeObject<JObject>(this.Data);
             }
-            return JsonConvert.DeserializeObject<T>("{}");
+            return JsonConvert.DeserializeObject<JObject>("{}");
         }
         public void SetValue(object Value)
         {
