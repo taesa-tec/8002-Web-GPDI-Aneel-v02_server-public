@@ -13,6 +13,7 @@ namespace APIGestor.Models
         [NotMapped]
         public string StatusValor { get => (Status != null) ? Enum.GetName(typeof(UserStatus), Status) : null; }
         public string NomeCompleto { get; set; }
+        public string Cargo { get; set; }
         public int? CatalogEmpresaId;
         [ForeignKey("CatalogEmpresaId")]
         public CatalogEmpresa CatalogEmpresa { get; set; }
@@ -64,24 +65,6 @@ namespace APIGestor.Models
             writer.WritePropertyName("fotoPerfil");
             writer.WriteValue(String.Format("/api/Users/{0}/Avatar", user.Id));
 
-            /*
-            writer.WriteStartObject();
-            if (user.FotoPerfil != null)
-            {
-                writer.WritePropertyName("id");
-                writer.WriteValue(user.FotoPerfil.Id);
-                writer.WritePropertyName("file");
-                writer.WriteValue(user.FotoPerfil.File);
-            }
-            else
-            {
-                writer.WritePropertyName("id");
-                writer.WriteValue(0);
-                writer.WritePropertyName("file");
-                writer.WriteValue("");
-            }
-            writer.WriteEndObject();
-            */
             writer.WritePropertyName("nomeCompleto");
             writer.WriteValue(user.NomeCompleto);
             writer.WritePropertyName("userName");
@@ -92,6 +75,9 @@ namespace APIGestor.Models
             writer.WriteValue(user.Status);
             writer.WritePropertyName("dataCadastro");
             writer.WriteValue(user.DataCadastro);
+
+            writer.WritePropertyName("cargo");
+            writer.WriteValue(user.Cargo);
 
             writer.WritePropertyName("razaoSocial");
             writer.WriteValue(user.RazaoSocial);
