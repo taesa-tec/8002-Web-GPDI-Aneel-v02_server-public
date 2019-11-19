@@ -6,7 +6,7 @@ using APIGestor.Exceptions.Demandas;
 namespace APIGestor.Models.Demandas
 {
 
-    public enum EtapaStatus
+    public enum DemandaStatus
     {
         EmElaboracao,
         Reprovada,
@@ -40,7 +40,7 @@ namespace APIGestor.Models.Demandas
         public string RevisorId { get; set; }
         public ApplicationUser Revisor { get; set; }
         public Etapa EtapaAtual { get; set; }
-        public EtapaStatus EtapaStatus { get; set; }
+        public DemandaStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? CaptacaoDate { get; set; }
         public List<DemandaComentario> Comentarios { get; set; }
@@ -55,35 +55,30 @@ namespace APIGestor.Models.Demandas
             if (this.EtapaAtual < Etapa.AprovacaoDiretor)
             {
                 this.EtapaAtual++;
-                this.EtapaStatus = EtapaStatus.Pendente;
+                this.Status = DemandaStatus.EmElaboracao;
             }
             else
             {
-                EtapaStatus = EtapaStatus.Aprovada;
+                Status = DemandaStatus.Aprovada;
             }
 
 
-        }
-        public void Reiniciar()
-        {
-            this.EtapaAtual = Etapa.Elaboracao;
-            this.EtapaStatus = EtapaStatus.Pendente;
         }
         public void ReprovarReiniciar()
         {
             this.EtapaAtual = Etapa.Elaboracao;
-            this.EtapaStatus = EtapaStatus.Reprovada;
+            this.Status = DemandaStatus.Reprovada;
         }
         public void ReprovarPermanente()
         {
-            this.EtapaStatus = EtapaStatus.ReprovadaPermanente;
+            this.Status = DemandaStatus.ReprovadaPermanente;
         }
 
         public string EtapaStatusText
         {
             get
             {
-                return Enum.GetName(typeof(EtapaStatus), this.EtapaStatus);
+                return Enum.GetName(typeof(DemandaStatus), this.Status);
             }
         }
         public string EtapaAtualText

@@ -66,7 +66,7 @@ namespace APIGestor.Business.Demandas
             return _context.Demandas
             .Include("Criador")
             .Include("SuperiorDireto")
-            .Include("Comentarios")
+            .Include("Comentarios.User")
             .FirstOrDefault(d => d.Id == id);
         }
 
@@ -99,15 +99,15 @@ namespace APIGestor.Business.Demandas
 
             return QueryDemandas(userId).Where(d => d.EtapaAtual == etapa).ToList();
         }
-        public List<Demanda> GetByEtapaStatus(EtapaStatus status, string userId = null)
+        public List<Demanda> GetByEtapaStatus(DemandaStatus status, string userId = null)
         {
             return QueryDemandas(userId)
-            .Where(d => d.EtapaStatus == status).ToList();
+            .Where(d => d.Status == status).ToList();
         }
         public List<Demanda> GetDemandasReprovadas(string userId = null)
         {
             return QueryDemandas(userId)
-            .Where(d => d.EtapaStatus == EtapaStatus.ReprovadaPermanente).ToList();
+            .Where(d => d.Status == DemandaStatus.ReprovadaPermanente).ToList();
         }
         public List<Demanda> GetDemandasAprovadas(string userId = null)
         {
@@ -118,7 +118,7 @@ namespace APIGestor.Business.Demandas
         public List<Demanda> GetDemandasEmElaboracao(string userId = null)
         {
             return QueryDemandas(userId)
-            .Where(d => d.EtapaAtual == Etapa.Elaboracao || d.EtapaStatus == EtapaStatus.EmElaboracao).ToList();
+            .Where(d => d.EtapaAtual == Etapa.Elaboracao || d.Status == DemandaStatus.EmElaboracao || d.Status == DemandaStatus.Pendente).ToList();
         }
         public List<Demanda> GetDemandasCaptacao(string userId = null)
         {
@@ -127,7 +127,7 @@ namespace APIGestor.Business.Demandas
         }
         public List<Demanda> GetDemandasPendentes(string userId = null)
         {
-            return GetByEtapaStatus(EtapaStatus.Pendente, userId);
+            return GetByEtapaStatus(DemandaStatus.Pendente, userId);
         }
         public void EnviarCaptacao(int id)
         {
@@ -136,7 +136,7 @@ namespace APIGestor.Business.Demandas
             if (demanda != null)
             {
                 demanda.EtapaAtual = Etapa.Captacao;
-                demanda.EtapaStatus = EtapaStatus.Concluido;
+                demanda.Status = DemandaStatus.Concluido;
                 demanda.CaptacaoDate = DateTime.Now;
                 _context.SaveChanges();
             }
@@ -147,17 +147,17 @@ namespace APIGestor.Business.Demandas
             demanda.Titulo = titulo;
             demanda.CriadorId = userId;
             demanda.EtapaAtual = Etapa.Elaboracao;
-            demanda.EtapaStatus = EtapaStatus.EmElaboracao;
+            demanda.Status = DemandaStatus.EmElaboracao;
             _context.Demandas.Add(demanda);
             _context.SaveChanges();
             return demanda;
         }
-        public Demanda AlterarStatusDemanda(int id, APIGestor.Models.Demandas.EtapaStatus status)
+        public Demanda AlterarStatusDemanda(int id, APIGestor.Models.Demandas.DemandaStatus status)
         {
             var demanda = GetById(id);
             if (demanda != null)
             {
-                demanda.EtapaStatus = status;
+                demanda.Status = status;
                 _context.SaveChanges();
             }
             return demanda;
@@ -221,6 +221,10 @@ namespace APIGestor.Business.Demandas
                 if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
                 {
                     demanda.ReprovarReiniciar();
+                    _context.DemandaFormValues
+                    .Where(form => form.DemandaId == id)
+                    .ToList()
+                    .ForEach(f => f.Revisao++);
                     _context.SaveChanges();
                 }
                 else
@@ -263,7 +267,7 @@ namespace APIGestor.Business.Demandas
             if (demanda != null)
             {
                 demanda.ProximaEtapa();
-                demanda.EtapaStatus = EtapaStatus.EmElaboracao;
+                demanda.Status = DemandaStatus.EmElaboracao;
                 _context.SaveChanges();
             }
             return;
@@ -373,15 +377,35 @@ namespace APIGestor.Business.Demandas
         }
         public string GetDemandaFormHTML(int id, string form)
         {
+            // @todo Passar para cshtml
             var _form = GetForm(form);
+            var demanda = GetById(id);
             string body = string.Empty;
             var document = new HtmlDocument();
-            document.Load(Path.Combine(_hostingEnvironment.WebRootPath, "MailTemplates/pdf-template.html"));
+            var demandaFormValue = RenderDocument(id, form);
+            var formDemanda = _context.DemandaFormValues.FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
+
+            if (formDemanda == null)
+            {
+                throw new DemandaException("Não há formulário");
+            }
+
+            document.Load(Path.Combine(_hostingEnvironment.WebRootPath, "Templates/pdf-template.html"));
 
             var mainContent = document.DocumentNode.SelectSingleNode("//div[@id='main-content']");
             var formName = document.DocumentNode.SelectSingleNode("//span[@id='formulario']");
-            var titulo = document.DocumentNode.SelectSingleNode("//span[@id='titulo']");
+            var titulo = document.DocumentNode.SelectSingleNode("//span[@id='projeto-titulo']");
             var documento = document.DocumentNode.SelectSingleNode("//span[@id='documento']");
+            var revisao = document.DocumentNode.SelectSingleNode("//span[@id='revisao']");
+            var descricao = document.DocumentNode.SelectSingleNode("//span[@id='projeto-descricao']");
+            var data = document.DocumentNode.SelectSingleNode("//span[@id='data']");
+
+            var autor = document.DocumentNode.SelectSingleNode("//span[@id='autor']");
+            var autorFuncao = document.DocumentNode.SelectSingleNode("//span[@id='autor-funcao']");
+
+            var gerente = document.DocumentNode.SelectSingleNode("//span[@id='gerente']");
+            var gerenteFuncao = document.DocumentNode.SelectSingleNode("//span[@id='gerente-funcao']");
+
 
             if (formName != null)
             {
@@ -389,14 +413,40 @@ namespace APIGestor.Business.Demandas
             }
             if (documento != null)
             {
-                documento.AppendChild(HtmlNode.CreateNode("Documento: 00000"));
+                documento.AppendChild(HtmlNode.CreateNode(
+                    String.Format("Documento: PED-{0}/{1}", demanda.Id.ToString().PadLeft(3, '0'), demanda.CreatedAt.Year)));
+            }
+            if (titulo != null)
+            {
+                titulo.AppendChild(HtmlNode.CreateNode(demanda.Titulo));
+            }
+            if (revisao != null)
+            {
+                revisao.AppendChild(HtmlNode.CreateNode(formDemanda.Revisao.ToString()));
+            }
+            if (data != null)
+            {
+                data.AppendChild(HtmlNode.CreateNode(DateTime.Today.ToShortDateString()));
             }
 
-            var demandaFormValue = RenderDocument(id, form);
+            if (autor != null)
+            {
+                autor.AppendChild(HtmlNode.CreateNode(demanda.Criador.NomeCompleto));
+            }
+            if (gerente != null)
+            {
+                gerente.AppendChild(HtmlNode.CreateNode(demanda.SuperiorDireto.NomeCompleto));
+            }
+            if (descricao != null)
+            {
+                descricao.AppendChild(HtmlNode.CreateNode(demanda.Titulo));
+            }
+
+
             if (demandaFormValue != null && mainContent != null)
             {
-                var data = demandaFormValue.ToHtml();
-                mainContent.AppendChild(data);
+                var htmlform = demandaFormValue.ToHtml();
+                mainContent.AppendChild(htmlform);
 
             }
             return document.DocumentNode.InnerHtml;
