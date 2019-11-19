@@ -433,9 +433,17 @@ namespace APIGestor.Business.Demandas
             {
                 autor.AppendChild(HtmlNode.CreateNode(demanda.Criador.NomeCompleto));
             }
+            if (autorFuncao != null && !String.IsNullOrWhiteSpace(demanda.Criador.Cargo))
+            {
+                autorFuncao.AppendChild(HtmlNode.CreateNode(demanda.Criador.Cargo));
+            }
             if (gerente != null)
             {
                 gerente.AppendChild(HtmlNode.CreateNode(demanda.SuperiorDireto.NomeCompleto));
+            }
+            if (gerenteFuncao != null && !String.IsNullOrWhiteSpace(demanda.SuperiorDireto.Cargo))
+            {
+                gerenteFuncao.AppendChild(HtmlNode.CreateNode(demanda.SuperiorDireto.Cargo));
             }
             if (descricao != null)
             {
