@@ -48,10 +48,16 @@ namespace APIGestor.Models.Demandas
 
         public void ProximaEtapa()
         {
-            if (this.EtapaAtual == Etapa.RevisorPendente && String.IsNullOrWhiteSpace(RevisorId))
+            if (this.EtapaAtual > Etapa.Elaboracao && String.IsNullOrWhiteSpace(SuperiorDiretoId))
+            {
+                throw new DemandaException("A demanda não tem superior direto definido");
+            }
+
+            if (this.EtapaAtual >= Etapa.RevisorPendente && String.IsNullOrWhiteSpace(RevisorId))
             {
                 throw new DemandaException("Não é possível avançar para a proxíma etapa sem revisor");
             }
+
             if (this.EtapaAtual < Etapa.AprovacaoDiretor)
             {
                 this.EtapaAtual++;
@@ -61,8 +67,24 @@ namespace APIGestor.Models.Demandas
             {
                 Status = DemandaStatus.Aprovada;
             }
+        }
+        public void EtapaAnterior()
+        {
+            if (this.EtapaAtual > Etapa.Elaboracao)
+            {
+                this.EtapaAtual--;
+                this.Status = DemandaStatus.EmElaboracao;
+            }
+        }
+        public void IrParaEtapa(Etapa etapa)
+        {
+            if (etapa > EtapaAtual)
+                ProximaEtapa();
+            else if (etapa < EtapaAtual)
+                EtapaAnterior();
 
-
+            if (EtapaAtual != etapa)
+                IrParaEtapa(etapa);
         }
         public void ReprovarReiniciar()
         {

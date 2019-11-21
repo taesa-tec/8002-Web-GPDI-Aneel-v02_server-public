@@ -91,6 +91,7 @@ namespace APIGestor
 
             services.AddScoped<DemandaService>();
             services.AddScoped<SistemaService>();
+            services.AddScoped<MailerService>();
 
             // Ativando a utilização do ASP.NET Identity, a fim de
             // permitir a recuperação de seus objetos via injeção de
