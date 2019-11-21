@@ -135,6 +135,32 @@ namespace APIGestor.Controllers.Demandas
             return GetById(id);
         }
 
+        [HttpPut("{id}/Etapa")]
+        public ActionResult<Demanda> SetEtapa(int id, [FromBody] JObject data)
+        {
+            try
+            {
+                var etapa = (Etapa)data.Value<int>("status");
+                if (etapa < Etapa.Captacao)
+                {
+                    Service.SetEtapa(id, etapa, this.userId());
+                }
+                else
+                {
+                    Service.EnviarCaptacao(id);
+                }
+            }
+            catch (DemandaException exception)
+            {
+                return BadRequest(exception);
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+            return GetById(id);
+        }
+
         [HttpPut("{id:int}/Reiniciar")]
         public ActionResult<Demanda> Reiniciar(int id, [FromBody] JObject data)
         {

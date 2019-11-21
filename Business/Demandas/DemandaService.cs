@@ -28,6 +28,7 @@ namespace APIGestor.Business.Demandas
     public class DemandaService : BaseGestorService
     {
         SistemaService sistemaService;
+        MailerService mailer;
         protected static readonly List<FieldList> Forms = new List<FieldList>(){
                 new EspecificacaoTecnicaForm()
         };
@@ -42,6 +43,7 @@ namespace APIGestor.Business.Demandas
         private IHostingEnvironment _hostingEnvironment;
         public DemandaService(
             GestorDbContext context,
+            MailerService mailer,
             IAuthorizationService authorization,
             LogService logService,
             IHostingEnvironment hostingEnvironment,
@@ -50,6 +52,7 @@ namespace APIGestor.Business.Demandas
         {
             this._hostingEnvironment = hostingEnvironment;
             this.sistemaService = sistemaService;
+            this.mailer = mailer;
             DemandaProgressCheck = new Dictionary<Etapa, CanDemandaProgress>(){
                 {Etapa.Elaboracao, ElaboracaoProgress},
                 {Etapa.PreAprovacao, PreAprovacaoProgress},
@@ -133,7 +136,7 @@ namespace APIGestor.Business.Demandas
         {
 
             var demanda = GetById(id);
-            if (demanda != null)
+            if (demanda != null && demanda.EtapaAtual != Etapa.Captacao && demanda.CaptacaoDate == null)
             {
                 demanda.EtapaAtual = Etapa.Captacao;
                 demanda.Status = DemandaStatus.Concluido;
@@ -163,20 +166,31 @@ namespace APIGestor.Business.Demandas
             return demanda;
         }
 
+        public void SetEtapa(int id, Etapa etapa, string userId)
+        {
+            var demanda = GetById(id);
+            if (demanda == null)
+                return;
+            demanda.IrParaEtapa(etapa);
+            _context.SaveChanges();
+            NotificarResponsavel(demanda, userId);
+        }
         public void ProximaEtapa(int id, string userId, string revisorId = null)
         {
             var demanda = GetById(id);
-            if (!String.IsNullOrWhiteSpace(revisorId) && _context.Users.Any(user => user.Id == revisorId))
+
+
+            if (demanda != null)
             {
-                demanda.RevisorId = revisorId;
-            }
-            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
-            {
-                if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
+                if (!String.IsNullOrWhiteSpace(revisorId) && _context.Users.Any(user => user.Id == revisorId))
+                {
+                    demanda.RevisorId = revisorId;
+                }
+                if (GetResponsavelAtual(demanda) == userId)
                 {
                     demanda.ProximaEtapa();
-
                     _context.SaveChanges();
+                    NotificarResponsavel(demanda, userId);
                 }
                 else
                 {
@@ -226,6 +240,7 @@ namespace APIGestor.Business.Demandas
                     .ToList()
                     .ForEach(f => f.Revisao++);
                     _context.SaveChanges();
+                    NotificarReprovacao(demanda, _context.Users.Find(userId));
                 }
                 else
                 {
@@ -249,6 +264,7 @@ namespace APIGestor.Business.Demandas
                 {
                     demanda.ReprovarPermanente();
                     _context.SaveChanges();
+                    NotificarReprovacaoPermanente(demanda, _context.Users.Find(userId));
                 }
                 else
                 {
@@ -297,7 +313,28 @@ namespace APIGestor.Business.Demandas
 
         #region Progresso das demandas
 
+        protected string GetResponsavelAtual(Demanda demanda)
+        {
+            switch (demanda.EtapaAtual)
+            {
+                case Etapa.Elaboracao:
+                    return demanda.CriadorId;
+                case Etapa.PreAprovacao:
+                    return demanda.SuperiorDiretoId;
+                case Etapa.AprovacaoRevisor:
+                    return demanda.RevisorId;
+                case Etapa.RevisorPendente:
+                case Etapa.AprovacaoCoordenador:
+                    return sistemaService.GetEquipePeD().Coordenador;
+                case Etapa.AprovacaoGerente:
+                    return sistemaService.GetEquipePeD().Gerente;
+                case Etapa.AprovacaoDiretor:
+                    return sistemaService.GetEquipePeD().Diretor;
+                default:
+                    return null;
 
+            }
+        }
         protected bool ElaboracaoProgress(Demanda demanda, string userId)
         {
             return demanda.CriadorId == userId;
@@ -345,6 +382,7 @@ namespace APIGestor.Business.Demandas
         {
             return GetDemandaFiles(id).First(file => file.Id == file_id);
         }
+
         public void SalvarDemandaFormData(int id, string form, JObject data)
         {
             var formdata = data.Value<JObject>("form");
@@ -578,6 +616,87 @@ namespace APIGestor.Business.Demandas
         }
         #endregion
 
+        #region Notificação do usuários
+
+        public void NotificarResponsavel(Demanda demanda, string userId)
+        {
+            switch (demanda.EtapaAtual)
+            {
+                case Etapa.PreAprovacao:
+                    NotificarSuperior(demanda);
+                    break;
+
+                case Etapa.RevisorPendente:
+                    NotificarRevisorPendente(demanda);
+                    break;
+                case Etapa.AprovacaoRevisor:
+                    NotificarRevisor(demanda);
+                    break;
+                case Etapa.AprovacaoCoordenador:
+                case Etapa.AprovacaoGerente:
+                    NotificarAprovador(demanda, userId);
+                    break;
+                case Etapa.AprovacaoDiretor:
+                    if (demanda.Status != DemandaStatus.Aprovada)
+                        NotificarAprovador(demanda, userId);
+                    break;
+            }
+        }
+        public void NotificarSuperior(Demanda demanda)
+        {
+            var titulo = $"Nova Demanda para Pré-Aprovação:\"{demanda.Titulo}\"";
+
+            var body = $"O usuário {demanda.Criador.NomeCompleto} enviou a demanda \"{demanda.Titulo}\" para Pré-Aprovação pelo seu superior direto. Clique abaixo para mais detalhes.";
+
+            mailer.SendMailBase(demanda.SuperiorDireto, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+        }
+        public void NotificarReprovacao(Demanda demanda, Models.ApplicationUser avaliador)
+        {
+            var titulo = $"Foram solicitados ajustes para o \"{demanda.Titulo}\" na etapa de Revisão";
+
+            var body = $"O usuário {avaliador.NomeCompleto} revisor da sua demanda, inseriu alguns comentários e solicitou alterações no projeto. Clique abaixo para mais detalhes e enviar novamentepara revisão";
+
+            mailer.SendMailBase(demanda.Criador, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+        }
+        public void NotificarReprovacaoPermanente(Demanda demanda, Models.ApplicationUser avaliador)
+        {
+            var titulo = $"Sua demanda \"{demanda.Titulo}\" foi reprovada e arquivada na etapa de Revisão. Nova Demanda para Pré-Aprovação:";
+
+            var body = $"O usuário {avaliador.NomeCompleto} revisor da sua demanda, reprovou e arquivou sua demanda . Clique abaixo para mais detalhes:";
+
+            mailer.SendMailBase(demanda.Criador, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+        }
+
+        public void NotificarRevisorPendente(Demanda demanda)
+        {
+            var Coordenador = _context.Users.Find(sistemaService.GetEquipePeD().Coordenador);
+            var titulo = $"Nova Demanda para Definição de Revisor: \"{demanda.Titulo}\"";
+
+            var body = $"O usuário {demanda.Criador.NomeCompleto} cadastrou uma nova demanda \"{demanda.Titulo}\" que já foi pré-aprovada pelo seu superior direto. Precisamos agora que seja definido o revisor responsável pela demanda. Clique abaixo para mais detalhes.";
+
+            mailer.SendMailBase(Coordenador, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+        }
+        public void NotificarRevisor(Demanda demanda)
+        {
+            var Coordenador = _context.Users.Find(sistemaService.GetEquipePeD().Coordenador);
+            var titulo = $"Nova Demanda para Revisão: \"{demanda.Titulo}\"";
+
+            var body = $"O usuário {Coordenador.NomeCompleto} enviou a demanda \"{demanda.Titulo}\" para Revisão. Clique abaixo para mais detalhes.";
+
+            mailer.SendMailBase(demanda.Revisor, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+        }
+        public void NotificarAprovador(Demanda demanda, string avaliadorAnteriorId)
+        {
+            var avaliador = _context.Users.Find(avaliadorAnteriorId);
+            var responsavel = _context.Users.Find(GetResponsavelAtual(demanda));
+            var titulo = $"Nova Demanda para Aprovação: \"{demanda.Titulo}\"";
+            var body = $"O usuário {avaliador.NomeCompleto} enviou a demanda \"{demanda.Titulo}\" para Aprovação. Clique abaixo para mais detalhes.";
+            mailer.SendMailBase(responsavel, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+        }
+
+
+
+        #endregion
     }
     public static class DemandaExtension
     {
