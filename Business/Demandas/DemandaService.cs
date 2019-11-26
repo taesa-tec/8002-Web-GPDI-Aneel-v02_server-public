@@ -133,7 +133,7 @@ namespace APIGestor.Business.Demandas
         {
             return QueryDemandas(userId)
             // .Where(d => d.EtapaAtual == Etapa.AprovacaoDiretor && (d.EtapaStatus == EtapaStatus.Aprovada && d.EtapaStatus == EtapaStatus.Concluido)).ToList();
-            .Where(d => d.EtapaAtual == Etapa.AprovacaoDiretor).ToList();
+            .Where(d => d.EtapaAtual == Etapa.AprovacaoDiretor && d.Status == DemandaStatus.Aprovada).ToList();
         }
         public List<Demanda> GetDemandasEmElaboracao(string userId = null)
         {
