@@ -25,34 +25,48 @@ using APIGestor.Business.Sistema;
 namespace APIGestor.Business.Demandas
 {
 
-    public class DemandaService : BaseGestorService
+    public class DemandaService
     {
-        SistemaService sistemaService;
-        MailerService mailer;
+        protected delegate bool CanDemandaProgress(Demanda demanda, string userId);
+
+        #region Statics
         protected static readonly List<FieldList> Forms = new List<FieldList>(){
                 new EspecificacaoTecnicaForm()
         };
-        protected delegate bool CanDemandaProgress(Demanda demanda, string userId);
-
-        protected Dictionary<Etapa, CanDemandaProgress> DemandaProgressCheck;
-
         public static FieldList GetForm(string key)
         {
             return DemandaService.Forms.FirstOrDefault(f => f.Key == key);
         }
+        #endregion
+
+        #region Props
+        SistemaService sistemaService;
+        MailerService mailer;
+        GestorDbContext _context;
+        IAuthorizationService authorization;
+        public readonly DemandaLogService LogService;
+        protected Dictionary<Etapa, CanDemandaProgress> DemandaProgressCheck;
         private IHostingEnvironment _hostingEnvironment;
+        #endregion
+
+        #region Contructor
         public DemandaService(
             GestorDbContext context,
             MailerService mailer,
             IAuthorizationService authorization,
-            LogService logService,
+            DemandaLogService logService,
             IHostingEnvironment hostingEnvironment,
             SistemaService sistemaService
-            ) : base(context, authorization, logService)
+            )
         {
+            this._context = context;
+            this.authorization = authorization;
             this._hostingEnvironment = hostingEnvironment;
             this.sistemaService = sistemaService;
             this.mailer = mailer;
+            this.LogService = logService;
+
+
             DemandaProgressCheck = new Dictionary<Etapa, CanDemandaProgress>(){
                 {Etapa.Elaboracao, ElaboracaoProgress},
                 {Etapa.PreAprovacao, PreAprovacaoProgress},
@@ -63,7 +77,9 @@ namespace APIGestor.Business.Demandas
                 {Etapa.AprovacaoDiretor, AprovacaoDiretorProgress },
             };
         }
+        #endregion
 
+        #region Helpers
         public Demanda GetById(int id)
         {
             return _context.Demandas
@@ -72,7 +88,6 @@ namespace APIGestor.Business.Demandas
             .Include("Comentarios.User")
             .FirstOrDefault(d => d.Id == id);
         }
-
         public bool DemandaExist(int id)
         {
             return _context.Demandas.Any(d => d.Id == id);
@@ -88,6 +103,9 @@ namespace APIGestor.Business.Demandas
             }
             return false;
         }
+        #endregion
+
+        #region Listar Demandas
         protected IQueryable<Demanda> QueryDemandas(string userId = null)
         {
             var CargosChavesIds = sistemaService.GetEquipePeD().CargosChavesIds;
@@ -99,7 +117,6 @@ namespace APIGestor.Business.Demandas
         }
         public List<Demanda> GetByEtapa(Etapa etapa, string userId = null)
         {
-
             return QueryDemandas(userId).Where(d => d.EtapaAtual == etapa).ToList();
         }
         public List<Demanda> GetByEtapaStatus(DemandaStatus status, string userId = null)
@@ -132,18 +149,9 @@ namespace APIGestor.Business.Demandas
         {
             return GetByEtapaStatus(DemandaStatus.Pendente, userId);
         }
-        public void EnviarCaptacao(int id)
-        {
+        #endregion
 
-            var demanda = GetById(id);
-            if (demanda != null && demanda.EtapaAtual != Etapa.Captacao && demanda.CaptacaoDate == null)
-            {
-                demanda.EtapaAtual = Etapa.Captacao;
-                demanda.Status = DemandaStatus.Concluido;
-                demanda.CaptacaoDate = DateTime.Now;
-                _context.SaveChanges();
-            }
-        }
+        #region Criação e Alteração de Demandas
         public Demanda CriarDemanda(string titulo, string userId)
         {
             var demanda = new Demanda();
@@ -153,6 +161,8 @@ namespace APIGestor.Business.Demandas
             demanda.Status = DemandaStatus.EmElaboracao;
             _context.Demandas.Add(demanda);
             _context.SaveChanges();
+            demanda = GetById(demanda.Id);
+            LogService.Incluir(userId, demanda.Id, "Criou Demanda", String.Format(" {0} criou demanda \"{1}\"", demanda.Criador.NomeCompleto, demanda.Titulo));
             return demanda;
         }
         public Demanda AlterarStatusDemanda(int id, APIGestor.Models.Demandas.DemandaStatus status)
@@ -162,18 +172,28 @@ namespace APIGestor.Business.Demandas
             {
                 demanda.Status = status;
                 _context.SaveChanges();
+
             }
             return demanda;
         }
-
         public void SetEtapa(int id, Etapa etapa, string userId)
         {
             var demanda = GetById(id);
             if (demanda == null)
                 return;
+            var user = _context.Users.Find(userId);
             demanda.IrParaEtapa(etapa);
             _context.SaveChanges();
             NotificarResponsavel(demanda, userId);
+
+            if (demanda.EtapaAtual < Etapa.Captacao && demanda.Status == DemandaStatus.EmElaboracao)
+            {
+                LogService.Incluir(userId, demanda.Id, "Alterou Etapa", String.Format(" {0} alterou a etapa da demanda para \"{1}\"", user.NomeCompleto, demanda.EtapaDesc));
+            }
+            else if (demanda.EtapaAtual == Etapa.AprovacaoDiretor && demanda.Status == DemandaStatus.Concluido)
+            {
+                LogService.Incluir(userId, demanda.Id, "Aprovou a etapa", String.Format(" {0} aprovou a demanda.", user.NomeCompleto));
+            }
         }
         public void ProximaEtapa(int id, string userId, string revisorId = null)
         {
@@ -191,6 +211,15 @@ namespace APIGestor.Business.Demandas
                     demanda.ProximaEtapa();
                     _context.SaveChanges();
                     NotificarResponsavel(demanda, userId);
+                    var user = _context.Users.Find(userId);
+                    if (demanda.Status == DemandaStatus.Aprovada)
+                    {
+                        LogService.Incluir(userId, demanda.Id, "Aprovação de demanda", String.Format("O usuário {0} aprovou a demanda", user.NomeCompleto));
+                    }
+                    else
+                    {
+                        LogService.Incluir(userId, demanda.Id, "Avanço de Etapa", String.Format(" {0} alterou a etapa da demanda para \"{1}\"", user.NomeCompleto, demanda.EtapaDesc));
+                    }
                 }
                 else
                 {
@@ -202,13 +231,15 @@ namespace APIGestor.Business.Demandas
                 throw new Exception();
             }
         }
-
         public void SetSuperiorDireto(int id, string SuperiorDiretoId)
         {
             if (DemandaExist(id))
             {
-                GetById(id).SuperiorDiretoId = SuperiorDiretoId;
+                var demanda = GetById(id);
+                demanda.SuperiorDiretoId = SuperiorDiretoId;
                 _context.SaveChanges();
+                var user = _context.Users.Find(SuperiorDiretoId);
+                LogService.Incluir(demanda.CriadorId, demanda.Id, "Definiu Superior Direto", String.Format(" {0} definiu o usuário {1} como superior direto", demanda.Criador.NomeCompleto, user.NomeCompleto));
                 return;
             }
             throw new DemandaException("Demanda Não existe");
@@ -241,6 +272,8 @@ namespace APIGestor.Business.Demandas
                     .ForEach(f => f.Revisao++);
                     _context.SaveChanges();
                     NotificarReprovacao(demanda, _context.Users.Find(userId));
+                    var user = _context.Users.Find(userId);
+                    LogService.Incluir(userId, id, "Reiniciou a demanda", String.Format("O usuário {0} reiniciou a demanda", user.NomeCompleto));
                 }
                 else
                 {
@@ -265,28 +298,14 @@ namespace APIGestor.Business.Demandas
                     demanda.ReprovarPermanente();
                     _context.SaveChanges();
                     NotificarReprovacaoPermanente(demanda, _context.Users.Find(userId));
+                    var user = _context.Users.Find(userId);
+                    LogService.Incluir(userId, id, "Arquivou a demanda", String.Format("O usuário {0} reprovou e arquivou a demanda", user.NomeCompleto));
                 }
                 else
                 {
-                    throw new DemandaException("Usuário não tem permissão para reiniciar essa demanda");
+                    throw new DemandaException("Usuário não tem permissão para reprovar essa demanda");
                 }
             }
-        }
-        protected void AprovarDemanda(int id)
-        {
-            var demanda = GetById(id);
-            AprovarDemanda(demanda);
-            return;
-        }
-        protected void AprovarDemanda(Demanda demanda)
-        {
-            if (demanda != null)
-            {
-                demanda.ProximaEtapa();
-                demanda.Status = DemandaStatus.EmElaboracao;
-                _context.SaveChanges();
-            }
-            return;
         }
         public void AddComentario(int id, DemandaComentario comentario)
         {
@@ -299,7 +318,6 @@ namespace APIGestor.Business.Demandas
             }
             return;
         }
-
         public void AddComentario(int id, string comentario, string userId)
         {
             AddComentario(id, new DemandaComentario()
@@ -310,9 +328,24 @@ namespace APIGestor.Business.Demandas
                 CreatedAt = DateTime.Now
             });
         }
+        public void EnviarCaptacao(int id, string userId)
+        {
+
+            var demanda = GetById(id);
+            if (demanda != null && demanda.EtapaAtual != Etapa.Captacao)
+            {
+                demanda.EtapaAtual = Etapa.Captacao;
+                demanda.Status = DemandaStatus.Concluido;
+                demanda.CaptacaoDate = DateTime.Now;
+                _context.SaveChanges();
+                var user = _context.Users.Find(userId);
+                LogService.Incluir(userId, id, "Demanda para capacitação", String.Format("O usuário {0} enviou demanda para a capacitação", user.NomeCompleto));
+
+            }
+        }
+        #endregion
 
         #region Progresso das demandas
-
         protected string GetResponsavelAtual(Demanda demanda)
         {
             switch (demanda.EtapaAtual)
@@ -695,6 +728,14 @@ namespace APIGestor.Business.Demandas
         }
 
 
+
+        #endregion
+
+        #region Logs da demanda
+        public List<DemandaLog> GetDemandaLogs(int demandaId)
+        {
+            return _context.DemandaLogs.Include("User").Where(dl => dl.DemandaId == demandaId).OrderBy(dl => dl.Id).ToList();
+        }
 
         #endregion
     }

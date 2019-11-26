@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Reflection;
+using static APIGestor.Models.Log;
 
 namespace APIGestor.Controllers {
     public static class GestorControllerExtension {
@@ -33,8 +34,8 @@ namespace APIGestor.Controllers {
             log.ProjetoId = ProjetoId;
             log.UserId = controller.userId();
 
-            var logInfo = LogProjeto.logItems(Entity, oldEntity);
-            var oldInfo = LogProjeto.logItems(oldEntity, Entity);
+            var logInfo = LogItem.GerarItems(Entity, oldEntity);
+            var oldInfo = LogItem.GerarItems(oldEntity, Entity);
 
             switch(controller.Request.Method) {
                 case "POST":

@@ -30,6 +30,17 @@ namespace APIGestor.Models.Demandas
 
     public class Demanda
     {
+        protected static Dictionary<Etapa, string> _etapaDesc = new Dictionary<Etapa, string>()
+                {
+                    {Etapa.Elaboracao, "Elaboração"},
+                    {Etapa.PreAprovacao, "Pre-Aprovação"},
+                    {Etapa.RevisorPendente, "Revisor Pendente"},
+                    {Etapa.AprovacaoRevisor, "Aprovação Revisor"},
+                    {Etapa.AprovacaoCoordenador, "Aprovação Coordenador"},
+                    {Etapa.AprovacaoGerente, "Aprovação Gerente"},
+                    {Etapa.AprovacaoDiretor, "Aprovação Diretor"},
+                    {Etapa.Captacao, "Enviado para captação"}
+                };
         public int Id { get; set; }
         public string Titulo { get; set; }
         public string CriadorId { get; set; }
@@ -108,6 +119,14 @@ namespace APIGestor.Models.Demandas
             get
             {
                 return Enum.GetName(typeof(Etapa), this.EtapaAtual);
+            }
+        }
+
+        public string EtapaDesc
+        {
+            get
+            {
+                return Demanda._etapaDesc[EtapaAtual];
             }
         }
 

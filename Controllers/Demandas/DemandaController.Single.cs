@@ -51,7 +51,7 @@ namespace APIGestor.Controllers.Demandas
         [HttpPut("{id}/Captacao")]
         public ActionResult EnviarCaptacao(int id)
         {
-            Service.EnviarCaptacao(id);
+            Service.EnviarCaptacao(id, this.userId());
             return Ok();
         }
         [HttpPut("{id}/EquipeValidacao")]
@@ -119,6 +119,7 @@ namespace APIGestor.Controllers.Demandas
             {
                 var comentario = data.Value<string>("comentario");
                 Service.ProximaEtapa(id, this.userId());
+
                 if (!String.IsNullOrWhiteSpace(comentario))
                 {
                     Service.AddComentario(id, comentario, this.userId());
@@ -147,7 +148,7 @@ namespace APIGestor.Controllers.Demandas
                 }
                 else
                 {
-                    Service.EnviarCaptacao(id);
+                    Service.EnviarCaptacao(id, this.userId());
                 }
             }
             catch (DemandaException exception)
@@ -248,8 +249,9 @@ namespace APIGestor.Controllers.Demandas
         {
             if (Service.DemandaExist(id))
             {
-
                 Service.SalvarDemandaFormData(id, form, data);
+                var formName = DemandaService.GetForm(form).Title;
+                Service.LogService.Incluir(this.userId(), id, String.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");
                 return Ok();
             }
             else
@@ -258,8 +260,6 @@ namespace APIGestor.Controllers.Demandas
             }
 
         }
-
-
 
         [HttpGet("{id:int}/Form/{form}/Pdf")]
         public ActionResult<object> GetDemandaPDF(int id, string form)
@@ -282,6 +282,7 @@ namespace APIGestor.Controllers.Demandas
             }
 
         }
+
         [HttpGet("{id:int}/Form/{form}/Debug")]
         public ActionResult<object> GetDemandaTeste(int id, string form)
         {
@@ -294,6 +295,16 @@ namespace APIGestor.Controllers.Demandas
 
         }
 
+
+        [HttpGet("{id:int}/Logs")]
+        public ActionResult<List<DemandaLog>> GetDemandaLog(int id)
+        {
+            if (Service.UserCanAccess(id, this.userId()))
+            {
+                return Service.GetDemandaLogs(id);
+            }
+            return Forbid();
+        }
 
     }
 }
