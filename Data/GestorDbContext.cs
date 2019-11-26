@@ -64,6 +64,7 @@ namespace APIGestor.Data
         public DbSet<DemandaFormValues> DemandaFormValues { get; set; }
         public DbSet<SystemOption> SystemOptions { get; set; }
         public DbSet<FileUpload> Files { get; set; }
+        public DbSet<DemandaLog> DemandaLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

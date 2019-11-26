@@ -90,6 +90,7 @@ namespace APIGestor
             services.AddScoped<AtividadeGestaoService>();
 
             services.AddScoped<DemandaService>();
+            services.AddScoped<DemandaLogService>();
             services.AddScoped<SistemaService>();
             services.AddScoped<MailerService>();
 

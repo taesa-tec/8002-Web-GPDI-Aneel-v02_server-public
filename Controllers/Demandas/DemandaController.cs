@@ -25,6 +25,7 @@ namespace APIGestor.Controllers.Demandas
     {
         SistemaService sistemaService;
         protected DemandaService Service { get; }
+        protected DemandaLogService LogService { get; }
         private IHostingEnvironment _hostingEnvironment;
         protected List<FieldList> _forms = new List<FieldList>(){
                 new EspecificacaoTecnicaForm()
@@ -32,6 +33,7 @@ namespace APIGestor.Controllers.Demandas
         public DemandaController(DemandaService DemandaService, SistemaService sistemaService, IHostingEnvironment hostingEnvironment)
         {
             this.Service = DemandaService;
+            
             this.sistemaService = sistemaService;
             _hostingEnvironment = hostingEnvironment;
         }
