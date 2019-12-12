@@ -21,10 +21,9 @@ namespace APIGestor.Controllers.Demandas
     public partial class DemandaController : Controller
     {
         [HttpPost("Criar")]
-        public ActionResult CriarDemanda([FromBody]string titulo)
+        public ActionResult<Demanda> CriarDemanda([FromBody]string titulo)
         {
-            Service.CriarDemanda(titulo, this.userId());
-            return Ok();
+            return Service.CriarDemanda(titulo, this.userId());
         }
 
         [HttpHead("{id:int}")]

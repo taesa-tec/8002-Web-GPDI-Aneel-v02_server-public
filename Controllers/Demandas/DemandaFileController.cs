@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Business;
 using APIGestor.Models;
+using APIGestor.Models.Demandas;
 using APIGestor.Security;
 using System.IdentityModel.Tokens.Jwt;
 using System;
@@ -16,36 +17,39 @@ using System.Linq;
 
 namespace APIGestor.Controllers
 {
-    [Route("api/File/")]
+    [Route("api/Demandas/")]
     [ApiController]
     [Authorize("Bearer")]
-    public class FileController : FileBaseController<FileUpload>
+    public class DemandaFileController : FileBaseController<DemandaFile>
     {
-        public FileController(GestorDbContext context, IHostingEnvironment hostingEnvironment) : base(context, hostingEnvironment)
+        public DemandaFileController(GestorDbContext context, IHostingEnvironment hostingEnvironment) : base(context, hostingEnvironment)
         {
         }
 
 
-        [HttpGet]
-        public ActionResult<List<FileUpload>> GetFiles()
+        [HttpGet("{id}/Files")]
+        public ActionResult<List<DemandaFile>> GetFiles(int id)
         {
 
             return context
-            .Files
-            .Where(file => file.UserId == this.userId())
+            .DemandaFiles
+            .Where(file => file.DemandaId == id)
             .ToList();
         }
-
-        [HttpPost]
+        [HttpPost("{id}/Files")]
         [RequestSizeLimit(1073741824)]
-        public async Task<ActionResult<List<FileUpload>>> Upload()
+        public async Task<ActionResult<List<DemandaFile>>> Upload(int id)
         {
-            return await base.Upload();
+            return await base.Upload(file =>
+            {
+                file.DemandaId = id;
+                return file;
+            });
         }
 
-        protected override FileUpload FromFormFile(IFormFile file, string filename)
+        protected override DemandaFile FromFormFile(IFormFile file, string filename)
         {
-            return new FileUpload()
+            return new DemandaFile()
             {
                 FileName = file.FileName,
                 Name = file.FileName,

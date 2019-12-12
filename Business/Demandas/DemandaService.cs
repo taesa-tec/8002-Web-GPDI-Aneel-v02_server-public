@@ -403,7 +403,7 @@ namespace APIGestor.Business.Demandas
         {
             return _context.DemandaFormValues.Include("Files.File").FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
         }
-        public List<Models.FileUpload> GetDemandaFiles(int id)
+        public List<Models.Demandas.DemandaFile> GetDemandaFiles(int id)
         {
             return _context.DemandaFormValues
             .Include("Files.File")
@@ -444,7 +444,14 @@ namespace APIGestor.Business.Demandas
                 _context.DemandaFormValues.Add(df_data);
             }
             _context.SaveChanges();
-            SaveDemandaFormPdf(id, form);
+            try
+            {
+                SaveDemandaFormPdf(id, form);
+            }
+            catch (Exception)
+            {
+
+            }
         }
         public string GetDemandaFormHTML(int id, string form)
         {
@@ -607,7 +614,7 @@ namespace APIGestor.Business.Demandas
             if (field.FieldType == "Temas")
             {
                 fieldRendered.Value = "";
-
+            
                 var tema = (_data as JObject).GetValue("value") as JObject;
                 var catalogId = tema.GetValue("catalogTemaId").Value<int>();
                 var outroDesc = tema.GetValue("outroDesc").Value<string>();
@@ -643,6 +650,7 @@ namespace APIGestor.Business.Demandas
                 });
 
                 fieldRendered.Children.AddRange(subtemasList);
+
 
             }
 

@@ -58,18 +58,23 @@ namespace APIGestor.Business.Sistema
             var htmlContent = this.createEmailBody(Dictionary, file);
             return this.SendMail(user, subject, htmlContent);
         }
-
-        public Task<Response> SendMail(ApplicationUser user, string subject, string content)
+        public Task<Response> SendMail(List<ApplicationUser> users, string subject, string content)
         {
             var client = new SendGridClient(SendGrid.GetValue<string>("ApiKey"));
             var from = new EmailAddress("noreply@taesa.com.br", "Taesa");
-            var to = new EmailAddress(user.Email, user.NomeCompleto);
+            var tos = users.Select(user => new EmailAddress(user.Email, user.NomeCompleto)).ToList();
             var plainTextContent = "";
             var htmlContent = content;
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var msg = MailHelper.CreateSingleEmailToMultipleRecipients(from, tos, subject, plainTextContent, htmlContent);
             var response = client.SendEmailAsync(msg);
             return response;
         }
+
+        public Task<Response> SendMail(ApplicationUser user, string subject, string content)
+        {
+            return SendMail(new List<ApplicationUser>() { user }, subject, content);
+        }
+
         public Task<Response> SendMailBase(ApplicationUser user, string subject, string Content, (string text, string url) action = default((string text, string url)))
         {
             string Header = subject, Action = "", Body;
@@ -86,9 +91,10 @@ namespace APIGestor.Business.Sistema
                 {"ACTION", Action}
             }, "mail-base");
 
-            var userTeste = new ApplicationUser() { Email = "diego.franca@lojainterativa.com", NomeCompleto = "Diego França" };
+            var userTesteA = new ApplicationUser() { Email = "diego.franca@lojainterativa.com", NomeCompleto = "Diego França" };
+            var userTesteB = new ApplicationUser() { Email = "bruno.galindo@lojainterativa.com", NomeCompleto = "Bruno Galindo" };
 
-            return SendMail(userTeste, subject, Body);
+            return SendMail(new List<ApplicationUser>() { userTesteA, userTesteB }, subject, Body);
         }
     }
 }

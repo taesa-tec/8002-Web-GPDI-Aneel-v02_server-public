@@ -10,6 +10,6 @@ namespace APIGestor.Models.Demandas
         public int Id { get; set; }
         public int DemandaFormId { get; set; }
         public int FileId { get; set; }
-        public FileUpload File { get; set; }
+        public DemandaFile File { get; set; }
     }
 }

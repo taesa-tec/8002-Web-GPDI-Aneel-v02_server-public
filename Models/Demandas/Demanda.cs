@@ -72,6 +72,10 @@ namespace APIGestor.Models.Demandas
             if (this.EtapaAtual < Etapa.AprovacaoDiretor)
             {
                 this.EtapaAtual++;
+                if (this.EtapaAtual == Etapa.RevisorPendente && !String.IsNullOrWhiteSpace(RevisorId))
+                {
+                    this.EtapaAtual++;
+                }
                 this.Status = DemandaStatus.EmElaboracao;
             }
             else

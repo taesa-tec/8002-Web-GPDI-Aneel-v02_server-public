@@ -140,7 +140,14 @@ namespace APIGestor.Models.Demandas.Forms
         {
             if (RenderHandler != null)
             {
-                RenderHandler(field, data, ref fieldRendered);
+                try
+                {
+                    RenderHandler(field, data, ref fieldRendered);
+                }
+                catch (Exception)
+                {
+
+                }
             }
             if (Parent != null)
             {
