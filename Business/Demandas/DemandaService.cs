@@ -409,6 +409,7 @@ namespace APIGestor.Business.Demandas
             .Include("Files.File")
             .Where(df => df.DemandaId == id)
             .SelectMany(_dfv => _dfv.Files.Select(dff => dff.File))
+            .Distinct<DemandaFile>()
             .ToList();
         }
         public Models.FileUpload GetDemandaFile(int id, int file_id)
