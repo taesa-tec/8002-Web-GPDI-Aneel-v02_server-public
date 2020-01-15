@@ -45,12 +45,13 @@ namespace APIGestor.Business.Sistema
             {
                 return SistemaService.EquipePeD;
             }
+            var EquipeOutros = GetOption<List<string>>("equipe-ped-outros");
             var Equipe = new EquipePeD()
             {
                 Diretor = GetOption<string>("equipe-ped-diretor"),
                 Gerente = GetOption<string>("equipe-ped-gerente"),
                 Coordenador = GetOption<string>("equipe-ped-coordenador"),
-                Outros = GetOption<List<string>>("equipe-ped-outros")
+                Outros = EquipeOutros != null ? EquipeOutros : new List<string>()
             };
             SistemaService.EquipePeD = Equipe;
             return Equipe;
