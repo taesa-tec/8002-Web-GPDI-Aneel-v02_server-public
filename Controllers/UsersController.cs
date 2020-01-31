@@ -6,70 +6,88 @@ using APIGestor.Models;
 using APIGestor.Security;
 using System.IdentityModel.Tokens.Jwt;
 using System;
+using APIGestor.Dtos;
+using AutoMapper;
 using Microsoft.Extensions.FileProviders;
 
-namespace APIGestor.Controllers {
+namespace APIGestor.Controllers
+{
     [Route("api/[controller]")]
     [ApiController]
     [Authorize("Bearer")]
-    public class UsersController : ControllerBase {
+    public class UsersController : ControllerBase
+    {
         private UserService _service;
+        private IMapper mapper;
 
-        public UsersController( UserService service ) {
+        public UsersController(UserService service, IMapper mapper)
+        {
             _service = service;
+            this.mapper = mapper;
         }
 
         [HttpGet]
-        public IEnumerable<ApplicationUser> Get() {
-            return _service.ListarTodos();
+        public IEnumerable<ApplicationUserDto> Get()
+        {
+            //return _service.ListarTodos();
+            return mapper.Map<IEnumerable<ApplicationUserDto>>(_service.ListarTodos());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ApplicationUser> Get( string id ) {
+        public ActionResult<ApplicationUserDto> Get(string id)
+        {
             var User = _service.Obter(id);
-            if(User != null)
-                return User;
+            if (User != null)
+                return mapper.Map<ApplicationUserDto>(User);
             else
                 return NotFound();
         }
+
         [AllowAnonymous]
         [HttpGet("{id}/avatar")]
-        [ResponseCache(Duration = 120)]
-
-        public FileResult Download( string id ) {
+        [ResponseCache(Duration = 60)]
+        public FileResult Download(string id)
+        {
             byte[] image;
             var user = _service.Obter(id);
 
-            if(user == null || user.FotoPerfil == null || user.FotoPerfil.File.Length < 1) {
+            if (user == null || user.FotoPerfil == null || user.FotoPerfil.File.Length < 1)
+            {
                 image = System.IO.File.ReadAllBytes("wwwroot/Assets/default_avatar.jpg");
             }
-            else {
+            else
+            {
                 image = user.FotoPerfil.File;
             }
+
             return File(image, System.Net.Mime.MediaTypeNames.Image.Jpeg);
         }
 
         [HttpGet("me")]
-        public ActionResult<ApplicationUser> GetA() {
-            return _service.Obter(this.userId());
+        public ActionResult<ApplicationUserDto> GetA()
+        {
+            return mapper.Map<ApplicationUserDto>(_service.Obter(this.userId()));
         }
 
         [HttpPost]
-        public ActionResult<Resultado> Post( [FromBody]ApplicationUser User ) {
-            if(this.isAdmin())
+        public ActionResult<Resultado> Post([FromBody] ApplicationUser User)
+        {
+            if (this.isAdmin())
                 return _service.Incluir(User);
             return Forbid();
         }
 
         [HttpPut]
-        public ActionResult<Resultado> Put( [FromBody]ApplicationUser User ) {
-            if(this.isAdmin())
+        public ActionResult<Resultado> Put([FromBody] ApplicationUser User)
+        {
+            if (this.isAdmin())
                 return _service.Atualizar(User);
             return Forbid();
         }
 
         [HttpPut("me")]
-        public ActionResult<Resultado> PutA( [FromBody]ApplicationUser _user ) {
+        public ActionResult<Resultado> PutA([FromBody] ApplicationUser _user)
+        {
             var me = _service.Obter(this.userId());
             _user.Id = this.userId();
             _user.Email = me.Email;
@@ -78,8 +96,9 @@ namespace APIGestor.Controllers {
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Resultado> Delete( string id ) {
-            if(this.isAdmin())
+        public ActionResult<Resultado> Delete(string id)
+        {
+            if (this.isAdmin())
                 return _service.Excluir(id);
             return Forbid();
         }

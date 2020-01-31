@@ -6,17 +6,20 @@ using Newtonsoft.Json;
 
 namespace APIGestor.Models
 {
-    [JsonConverter(typeof(ApplicationUserConverter))]
     public class ApplicationUser : IdentityUser
     {
         public UserStatus? Status { get; set; }
+
         [NotMapped]
-        public string StatusValor { get => (Status != null) ? Enum.GetName(typeof(UserStatus), Status) : null; }
+        public string StatusValor
+        {
+            get => (Status != null) ? Enum.GetName(typeof(UserStatus), Status) : null;
+        }
+
         public string NomeCompleto { get; set; }
         public string Cargo { get; set; }
         public int? CatalogEmpresaId;
-        [ForeignKey("CatalogEmpresaId")]
-        public CatalogEmpresa CatalogEmpresa { get; set; }
+        [ForeignKey("CatalogEmpresaId")] public CatalogEmpresa CatalogEmpresa { get; set; }
         public string RazaoSocial { get; set; }
         public FotoPerfil FotoPerfil { get; set; }
         public string Role { get; set; }
@@ -25,33 +28,35 @@ namespace APIGestor.Models
         public DateTime DataCadastro { get; set; }
         public DateTime? DataAtualizacao { get; set; }
     }
+
     public class FotoPerfil
     {
-        [Key]
-        public int Id { get; set; }
+        [Key] public int Id { get; set; }
         public string UserId { get; set; }
         public byte[] File { get; set; }
-
     }
+
     public enum UserStatus
     {
         Inativo,
         Ativo
-
     }
 
     public class ApplicationUserConverter : JsonConverter
     {
-        public override bool CanRead { get { return false; } }
+        public override bool CanRead
+        {
+            get { return false; }
+        }
 
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(ApplicationUser);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
-
             serializer.Populate(reader, existingValue);
             return serializer.Deserialize(reader);
         }

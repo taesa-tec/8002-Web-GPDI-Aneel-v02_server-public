@@ -17,6 +17,7 @@ using APIGestor.Authorizations;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Business.Sistema;
 using APIGestor.Business.Demandas;
+using AutoMapper;
 
 namespace APIGestor
 {
@@ -31,6 +32,7 @@ namespace APIGestor
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(Startup));
             // Configurando o acesso a dados de projetos
             if (System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Stage")
             {
@@ -41,7 +43,8 @@ namespace APIGestor
             else
             {
                 var connectionString = Configuration.GetConnectionString("BaseGestor");
-                services.AddDbContext<GestorDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
+                services.AddDbContext<GestorDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
             }
 
             services.AddScoped<CatalogService>();
@@ -98,9 +101,10 @@ namespace APIGestor
             // permitir a recuperação de seus objetos via injeção de
             // dependências
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+/";
-            })
+                {
+                    options.User.AllowedUserNameCharacters =
+                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+/";
+                })
                 .AddEntityFrameworkStores<GestorDbContext>()
                 .AddDefaultTokenProviders()
                 .AddErrorDescriber<PortugueseIdentityErrorDescriber>();
@@ -114,8 +118,8 @@ namespace APIGestor
 
             var tokenConfigurations = new TokenConfigurations();
             new ConfigureFromConfigurationOptions<TokenConfigurations>(
-                Configuration.GetSection("TokenConfigurations"))
-                    .Configure(tokenConfigurations);
+                    Configuration.GetSection("TokenConfigurations"))
+                .Configure(tokenConfigurations);
             services.AddSingleton(tokenConfigurations);
 
             services.AddSingleton<IAuthorizationHandler, ProjectAuthorizationHandler>();
@@ -130,7 +134,6 @@ namespace APIGestor
 
             services.AddSwaggerGen(c =>
             {
-
                 c.SwaggerDoc("v1",
                     new Info
                     {
@@ -160,6 +163,7 @@ namespace APIGestor
             {
                 app.UseHsts();
             }
+
             // Define Cultura Padrão
             var cultureInfo = new CultureInfo("pt-BR");
             cultureInfo.NumberFormat.CurrencySymbol = "R$";
@@ -173,14 +177,11 @@ namespace APIGestor
 
             // Ativando middlewares para uso do Swagger
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1"); });
             app.UseCors(builder => builder.AllowAnyMethod()
-                                          .AllowAnyOrigin()
-                                          .AllowAnyHeader()
-                                          .AllowCredentials());
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowCredentials());
             app.UseHttpsRedirection();
             app.UseMvc();
         }
