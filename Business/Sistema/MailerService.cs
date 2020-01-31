@@ -93,7 +93,7 @@ namespace APIGestor.Business.Sistema
 
             var userTesteA = new ApplicationUser() { Email = "diego.franca@lojainterativa.com", NomeCompleto = "Diego França" };
             var userTesteB = new ApplicationUser() { Email = "bruno.galindo@lojainterativa.com", NomeCompleto = "Bruno Galindo" };
-            var userTesteC = new ApplicationUser() { Email = "marcio.barony@taesa.com.br", NomeCompleto = "Marcio Barony" };
+            var userTesteC = new ApplicationUser() { Email = "juliano.caldeira@taesa.com.br", NomeCompleto = "Juliano Caldeira" };
 
             return SendMail(new List<ApplicationUser>() { userTesteA, userTesteB, userTesteC }, subject, Body);
         }
