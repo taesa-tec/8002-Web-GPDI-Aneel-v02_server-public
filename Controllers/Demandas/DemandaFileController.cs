@@ -22,20 +22,32 @@ namespace APIGestor.Controllers
     [Authorize("Bearer")]
     public class DemandaFileController : FileBaseController<DemandaFile>
     {
-        public DemandaFileController(GestorDbContext context, IHostingEnvironment hostingEnvironment) : base(context, hostingEnvironment)
+        public DemandaFileController(GestorDbContext context, IHostingEnvironment hostingEnvironment) : base(context,
+            hostingEnvironment)
         {
         }
 
+        [HttpDelete("{id}/Files/{fileId}")]
+        public IActionResult RemoveFile(int id, int fileId)
+        {
+            var file = context.DemandaFiles.FirstOrDefault(df => df.DemandaId == id && df.Id == fileId);
+            if (file == null) return NotFound();
+
+            context.DemandaFiles.Remove(file);
+            System.IO.File.Delete(file.Path);
+            context.SaveChanges();
+            return Ok();
+        }
 
         [HttpGet("{id}/Files")]
         public ActionResult<List<DemandaFile>> GetFiles(int id)
         {
-
             return context
-            .DemandaFiles
-            .Where(file => file.DemandaId == id)
-            .ToList();
+                .DemandaFiles
+                .Where(file => file.DemandaId == id)
+                .ToList();
         }
+
         [HttpPost("{id}/Files")]
         [RequestSizeLimit(1073741824)]
         public async Task<ActionResult<List<DemandaFile>>> Upload(int id)

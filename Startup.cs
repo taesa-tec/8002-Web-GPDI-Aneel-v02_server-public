@@ -13,11 +13,16 @@ using APIGestor.Security;
 using APIGestor.Business;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Globalization;
+using System.Net;
 using APIGestor.Authorizations;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Business.Sistema;
 using APIGestor.Business.Demandas;
+using APIGestor.Exceptions.Demandas;
 using AutoMapper;
+using GlobalExceptionHandler.WebApi;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Cms;
 
 namespace APIGestor
 {
@@ -112,7 +117,8 @@ namespace APIGestor
             // Configurando a dependência para a classe de validação
             // de credenciais e geração de tokens
             services.AddScoped<AccessManager>();
-
+            
+            
             var signingConfigurations = new SigningConfigurations();
             services.AddSingleton(signingConfigurations);
 
@@ -163,6 +169,24 @@ namespace APIGestor
             {
                 app.UseHsts();
             }
+
+            #region GlobalExceptionHandler
+
+            app.UseGlobalExceptionHandler(configuration =>
+            {
+                configuration.ContentType = "application/json";
+                configuration.ResponseBody(exception => JsonConvert.SerializeObject(new
+                    {
+                        exception.Message,
+
+                        exception.Source,
+                    })
+                );
+                configuration.Map<DemandaException>().ToStatusCode(HttpStatusCode.PreconditionFailed);
+            });
+
+            #endregion
+
 
             // Define Cultura Padrão
             var cultureInfo = new CultureInfo("pt-BR");

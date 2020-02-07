@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
 using APIGestor.Models.Demandas;
 using APIGestor.Business;
 using APIGestor.Business.Demandas;
@@ -21,7 +20,7 @@ namespace APIGestor.Controllers.Demandas
     public partial class DemandaController : Controller
     {
         [HttpPost("Criar")]
-        public ActionResult<Demanda> CriarDemanda([FromBody]string titulo)
+        public ActionResult<Demanda> CriarDemanda([FromBody] string titulo)
         {
             return Service.CriarDemanda(titulo, this.userId());
         }
@@ -36,6 +35,7 @@ namespace APIGestor.Controllers.Demandas
                 else
                     return Forbid();
             }
+
             return NotFound();
         }
 
@@ -53,6 +53,7 @@ namespace APIGestor.Controllers.Demandas
             Service.EnviarCaptacao(id, this.userId());
             return Ok();
         }
+
         [HttpPut("{id}/EquipeValidacao")]
         public ActionResult SetEquipeValidacao(int id, [FromBody] JObject data)
         {
@@ -61,6 +62,7 @@ namespace APIGestor.Controllers.Demandas
             {
                 return BadRequest("Superior Direto não informado!");
             }
+
             if (!Service.DemandaExist(id))
             {
                 return NotFound();
@@ -70,6 +72,7 @@ namespace APIGestor.Controllers.Demandas
 
             return Ok();
         }
+
         [HttpGet("{id}/EquipeValidacao")]
         public ActionResult<object> GetEquipeValidacao(int id)
         {
@@ -77,21 +80,22 @@ namespace APIGestor.Controllers.Demandas
             {
                 superiorDireto = Service.GetSuperiorDireto(id)
             };
-
         }
+
         [HttpPut("{id}/Revisor")]
         public ActionResult<Demanda> SetRevisor(int id, [FromBody] JObject data)
         {
-
             var revisorId = data.Value<string>("revisorId");
             if (String.IsNullOrWhiteSpace(revisorId))
             {
                 return BadRequest("Rivisor não informado!");
             }
+
             if (!Service.DemandaExist(id))
             {
                 return NotFound();
             }
+
             if (sistemaService.GetEquipePeD().Coordenador == this.userId())
             {
                 try
@@ -106,58 +110,41 @@ namespace APIGestor.Controllers.Demandas
                 {
                     throw;
                 }
+
                 return GetById(id);
             }
+
             return Forbid();
         }
 
         [HttpPut("{id}/ProximaEtapa")]
         public ActionResult<Demanda> AlterarStatusDemanda(int id, [FromBody] JObject data)
         {
-            try
-            {
-                var comentario = data.Value<string>("comentario");
-                Service.ProximaEtapa(id, this.userId());
+            var comentario = data.Value<string>("comentario");
+            Service.ProximaEtapa(id, this.userId());
 
-                if (!String.IsNullOrWhiteSpace(comentario))
-                {
-                    Service.AddComentario(id, comentario, this.userId());
-                }
-            }
-            catch (DemandaException exception)
+            if (!String.IsNullOrWhiteSpace(comentario))
             {
-                return BadRequest(exception);
+                Service.AddComentario(id, comentario, this.userId());
             }
-            catch (System.Exception)
-            {
-                throw;
-            }
+
             return GetById(id);
         }
 
         [HttpPut("{id}/Etapa")]
         public ActionResult<Demanda> SetEtapa(int id, [FromBody] JObject data)
         {
-            try
+            var etapa = (Etapa) data.Value<int>("status");
+            if (etapa < Etapa.Captacao)
             {
-                var etapa = (Etapa)data.Value<int>("status");
-                if (etapa < Etapa.Captacao)
-                {
-                    Service.SetEtapa(id, etapa, this.userId());
-                }
-                else
-                {
-                    Service.EnviarCaptacao(id, this.userId());
-                }
+                Service.SetEtapa(id, etapa, this.userId());
             }
-            catch (DemandaException exception)
+            else
             {
-                return BadRequest(exception);
+                Service.EnviarCaptacao(id, this.userId());
             }
-            catch (System.Exception)
-            {
-                throw;
-            }
+
+
             return GetById(id);
         }
 
@@ -169,28 +156,18 @@ namespace APIGestor.Controllers.Demandas
 
             var motivo = data.Value<string>("motivo");
 
-            try
+            if (string.IsNullOrWhiteSpace(motivo))
             {
-                if (String.IsNullOrWhiteSpace(motivo))
-                {
-                    motivo = "Motivo não informado";
-                }
-                Service.ReprovarReiniciar(id, this.userId());
-                Service.AddComentario(id, motivo, this.userId());
+                motivo = "Motivo não informado";
+            }
+
+            Service.ReprovarReiniciar(id, this.userId());
+            Service.AddComentario(id, motivo, this.userId());
 
 
-            }
-            catch (DemandaException exception)
-            {
-                return BadRequest(exception);
-            }
-            catch (System.Exception)
-            {
-
-                throw;
-            }
             return GetById(id);
         }
+
         [HttpPut("{id:int}/ReprovarPermanente")]
         public ActionResult<Demanda> Finalizar(int id, [FromBody] JObject data)
         {
@@ -200,28 +177,18 @@ namespace APIGestor.Controllers.Demandas
             var motivo = data.Value<string>("motivo");
 
 
-
-            try
-            {
-                Service.ReprovarPermanente(id, this.userId());
-                Service.AddComentario(id, motivo, this.userId());
-            }
-            catch (DemandaException exception)
-            {
-                return BadRequest(exception);
-            }
-            catch (System.Exception)
-            {
-
-                throw;
-            }
-            return CreatedAtAction(nameof(GetById), new { id });
+            Service.ReprovarPermanente(id, this.userId());
+            Service.AddComentario(id, motivo, this.userId());
+            
+            return CreatedAtAction(nameof(GetById), new {id});
         }
+
         [HttpGet("{id:int}/File/")]
         public ActionResult<object> GetDemandaFiles(int id)
         {
             return Service.GetDemandaFiles(id);
         }
+
         [HttpGet("{id:int}/File/{file_id:int}")]
         public ActionResult<object> GetDemandaFile(int id, int file_id)
         {
@@ -230,6 +197,7 @@ namespace APIGestor.Controllers.Demandas
             {
                 return PhysicalFile(file.Path, file.ContentType, file.Name);
             }
+
             return NotFound();
         }
 
@@ -241,8 +209,10 @@ namespace APIGestor.Controllers.Demandas
             {
                 return data;
             }
+
             return default(object);
         }
+
         [HttpPut("{id}/Form/{form}")]
         public ActionResult<object> SalvarDemandaFormValue(int id, string form, [FromBody] JObject data)
         {
@@ -250,14 +220,14 @@ namespace APIGestor.Controllers.Demandas
             {
                 Service.SalvarDemandaFormData(id, form, data);
                 var formName = DemandaService.GetForm(form).Title;
-                Service.LogService.Incluir(this.userId(), id, String.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");
+                Service.LogService.Incluir(this.userId(), id,
+                    String.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");
                 return Ok();
             }
             else
             {
                 return NotFound();
             }
-
         }
 
         [HttpGet("{id:int}/Form/{form}/Pdf")]
@@ -266,20 +236,19 @@ namespace APIGestor.Controllers.Demandas
             var filename = Service.GetDemandaFormPdfFilename(id, form);
             if (System.IO.File.Exists(filename))
             {
-
                 var name = String.Format("demanda-{0}-{1}.pdf", id, form);
                 var response = PhysicalFile(filename, "application/pdf", name);
                 if (Request.Query["dl"] == "1")
                 {
                     response.FileDownloadName = name;
                 }
+
                 return response;
             }
             else
             {
                 return NotFound(filename);
             }
-
         }
 
         [HttpGet("{id:int}/Form/{form}/Debug")]
@@ -290,8 +259,8 @@ namespace APIGestor.Controllers.Demandas
             {
                 return Content(doc, "text/html");
             }
-            return NotFound();
 
+            return NotFound();
         }
 
 
@@ -302,8 +271,8 @@ namespace APIGestor.Controllers.Demandas
             {
                 return Service.GetDemandaLogs(id);
             }
+
             return Forbid();
         }
-
     }
 }
