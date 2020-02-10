@@ -32,10 +32,24 @@ namespace APIGestor.Controllers
         {
             var file = context.DemandaFiles.FirstOrDefault(df => df.DemandaId == id && df.Id == fileId);
             if (file == null) return NotFound();
+            try
+            {
+                context.DemandaFormFiles.RemoveRange(context.DemandaFormFiles.Where(df => df.FileId == fileId));
+                context.DemandaFiles.Remove(file);
+                context.SaveChanges();
+                System.IO.File.Delete(file.Path);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new
+                {
+                    e.Message,
+                    e.StackTrace,
+                    file.Name,
+                    file.Path
+                });
+            }
 
-            context.DemandaFiles.Remove(file);
-            System.IO.File.Delete(file.Path);
-            context.SaveChanges();
             return Ok();
         }
 
