@@ -117,8 +117,8 @@ namespace APIGestor
             // Configurando a dependência para a classe de validação
             // de credenciais e geração de tokens
             services.AddScoped<AccessManager>();
-            
-            
+
+
             var signingConfigurations = new SigningConfigurations();
             services.AddSingleton(signingConfigurations);
 
@@ -172,18 +172,24 @@ namespace APIGestor
 
             #region GlobalExceptionHandler
 
+            //*
             app.UseGlobalExceptionHandler(configuration =>
             {
                 configuration.ContentType = "application/json";
-                configuration.ResponseBody(exception => JsonConvert.SerializeObject(new
+                configuration.ResponseBody((exception, httpContext) =>
+                {
+                    httpContext.Response.Headers["Access-Control-Allow-Origin"] = "*";
+                    return JsonConvert.SerializeObject(new
                     {
                         exception.Message,
-
                         exception.Source,
-                    })
-                );
-                configuration.Map<DemandaException>().ToStatusCode(HttpStatusCode.PreconditionFailed);
+                    });
+                    
+                });
+                configuration.Map<DemandaException>()
+                    .ToStatusCode(HttpStatusCode.UnprocessableEntity);
             });
+            // */
 
             #endregion
 
