@@ -254,7 +254,7 @@ namespace APIGestor.Controllers.Demandas
         [HttpGet("{id:int}/Form/{form}/Debug")]
         public ActionResult<object> GetDemandaTeste(int id, string form)
         {
-            var doc = Service.GetDemandaFormHTML(id, form);
+            var doc = Service.GetDemandaFormHtml(id, form);
             if (doc != null)
             {
                 return Content(doc, "text/html");

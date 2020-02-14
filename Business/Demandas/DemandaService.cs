@@ -503,16 +503,10 @@ namespace APIGestor.Business.Demandas
             }
 
             _context.SaveChanges();
-            try
-            {
-                SaveDemandaFormPdf(id, form);
-            }
-            catch (Exception)
-            {
-            }
+            SaveDemandaFormPdf(id, form);
         }
 
-        public string GetDemandaFormHTML(int id, string form)
+        public string GetDemandaFormHtml(int id, string form)
         {
             // @todo Passar para cshtml
             var _form = GetForm(form);
@@ -586,7 +580,7 @@ namespace APIGestor.Business.Demandas
             {
                 if (gerente != null)
                 {
-                    gerente.AppendChild(HtmlNode.CreateNode(demanda.SuperiorDireto.NomeCompleto));
+                    gerente.AppendChild(HtmlNode.CreateNode(demanda.SuperiorDireto?.NomeCompleto));
                 }
 
                 if (gerenteFuncao != null && !String.IsNullOrWhiteSpace(demanda.SuperiorDireto.Cargo))
@@ -632,7 +626,7 @@ namespace APIGestor.Business.Demandas
         public string SaveDemandaFormPdf(int id, string form)
         {
             string fullname = GetDemandaFormPdfFilename(id, form, true);
-            var html = GetDemandaFormHTML(id, form);
+            var html = GetDemandaFormHtml(id, form);
             var writer = new PdfWriter(fullname);
 
             HtmlConverter.ConvertToPdf(html, new FileStream(fullname, FileMode.Create));
