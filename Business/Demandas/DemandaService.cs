@@ -503,6 +503,9 @@ namespace APIGestor.Business.Demandas
             }
 
             _context.SaveChanges();
+            var demanda = _context.Demandas.FirstOrDefault(d => d.Id == id);
+            if (string.IsNullOrWhiteSpace(demanda?.SuperiorDiretoId))
+                throw new DemandaException("Defina o superior direto antes de continuar");
             SaveDemandaFormPdf(id, form);
         }
 
@@ -627,10 +630,11 @@ namespace APIGestor.Business.Demandas
         {
             string fullname = GetDemandaFormPdfFilename(id, form, true);
             var html = GetDemandaFormHtml(id, form);
-            var writer = new PdfWriter(fullname);
+            var stream = new FileStream(fullname, FileMode.Create);
+            HtmlConverter.ConvertToPdf(html, stream);
 
-            HtmlConverter.ConvertToPdf(html, new FileStream(fullname, FileMode.Create));
-
+            stream.Close();
+            
             UpdatePdf(fullname);
 
             return fullname;
