@@ -631,6 +631,7 @@ namespace APIGestor.Business.Demandas
             string fullname = GetDemandaFormPdfFilename(id, form, true);
             var html = GetDemandaFormHtml(id, form);
             var stream = new FileStream(fullname, FileMode.Create);
+            // var properties = new ConverterProperties();
             HtmlConverter.ConvertToPdf(html, stream);
 
             stream.Close();

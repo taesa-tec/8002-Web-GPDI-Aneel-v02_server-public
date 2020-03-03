@@ -14,6 +14,10 @@
       box-sizing: border-box;
     }
 
+    @page {
+      size: A4;
+    }
+
     body {
       margin: 0;
       padding: 0;
@@ -48,15 +52,23 @@
     #main-content img {
       width: 99% !important;
       height: auto !important;
-      margin: 0;
+      max-height: 21cm !important;
+      margin: 0 auto;
       padding: 0;
-      display: inline-block;
+      display: block;
+      page-break-after: avoid;
+      page-break-before: avoid;
+      break-after: avoid;
+      break-before: avoid;
+      break-inside: avoid;
+      object-fit: contain;
     }
 
     .bPage {
       page-break-before: always !important;
       break-before: always !important;
     }
+
 
     .cinza {
       color: #c5c5c5;
