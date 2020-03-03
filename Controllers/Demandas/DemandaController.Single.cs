@@ -179,7 +179,7 @@ namespace APIGestor.Controllers.Demandas
 
             Service.ReprovarPermanente(id, this.userId());
             Service.AddComentario(id, motivo, this.userId());
-            
+
             return CreatedAtAction(nameof(GetById), new {id});
         }
 

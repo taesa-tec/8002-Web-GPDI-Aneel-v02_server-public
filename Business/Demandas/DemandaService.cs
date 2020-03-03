@@ -634,8 +634,9 @@ namespace APIGestor.Business.Demandas
             HtmlConverter.ConvertToPdf(html, stream);
 
             stream.Close();
-            
+
             UpdatePdf(fullname);
+            Console.WriteLine(fullname);
 
             return fullname;
         }

@@ -1,140 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link
-      href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap"
-      rel="stylesheet"
-    />
-    <title></title>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+  <link
+          href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap"
+          rel="stylesheet"
+  />
+  <title></title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: "Roboto", "Gill Sans", "Gill Sans MT", Calibri,
-          "Trebuchet MS" sans-serif;
-      }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Roboto", "Gill Sans", "Gill Sans MT", Calibri,
+      "Trebuchet MS" sans-serif;
+    }
 
-      .page:after {
-        content: counter(page);
-      }
+    .page:after {
+      content: counter(page);
+    }
 
-      table {
-        width: 100%;
-        border: 1px solid #555;
-        margin: 0;
-      }
+    table {
+      width: 100%;
+      border: 1px solid #555;
+      margin: 0;
+    }
 
-      .tabela th,
-      .tabela td {
-        border: none;
-      }
+    .tabela th,
+    .tabela td {
+      border: none;
+    }
 
-      nav,
-      footer,
-      video,
-      audio,
-      object,
-      embed {
-        display: none;
-      }
+    nav,
+    footer,
+    video,
+    audio,
+    object,
+    embed {
+      display: none;
+    }
 
-      .bPage {
-        page-break-before: always !important;
-        break-before: always !important;
-      }
+    #main-content img {
+      width: 99% !important;
+      height: auto !important;
+      margin: 0;
+      padding: 0;
+      display: inline-block;
+    }
 
-      .cinza {
-        color: #c5c5c5;
-      }
+    .bPage {
+      page-break-before: always !important;
+      break-before: always !important;
+    }
 
-      .cabecalho {
-        padding: 0px;
-        border-collapse: collapse;
-      }
+    .cinza {
+      color: #c5c5c5;
+    }
 
-      .cabecalho td {
-        border-right: 1px solid #555;
-        text-align: center;
-      }
+    .cabecalho {
+      padding: 0px;
+      border-collapse: collapse;
+    }
 
-      .cabecalho td:last-child {
-        border-right: none;
-        text-align: center;
-      }
+    .cabecalho td {
+      border-right: 1px solid #555;
+      text-align: center;
+    }
 
-      .info-header {
-        padding: 0;
-      }
+    .cabecalho td:last-child {
+      border-right: none;
+      text-align: center;
+    }
 
-      .info-header table,
-      .info-header tr,
-      .info-header td {
-        border: none;
-      }
+    .info-header {
+      padding: 0;
+    }
 
-      .info-header .paginas,
-      .info-header .codigo {
-        border: none;
-        justify-content: center;
-        align-items: center;
-      }
+    .info-header table,
+    .info-header tr,
+    .info-header td {
+      border: none;
+    }
 
-      .info-header .codigo {
-        border-bottom: 1px solid #555;
-      }
+    .info-header .paginas,
+    .info-header .codigo {
+      border: none;
+      justify-content: center;
+      align-items: center;
+    }
 
-      .border-collapse {
-        border-collapse: collapse;
-      }
-      .text-center {
-        text-align: center;
-      }
+    .info-header .codigo {
+      border-bottom: 1px solid #555;
+    }
 
-      .field-item.form .field-item {
-        counter-increment: fielditem;
-      }
+    .border-collapse {
+      border-collapse: collapse;
+    }
 
-      .field-item.form .field-item .field-item-title::before {
-        content: counters(fielditem, ".") " ";
-      }
-      .field-item-children {
-        counter-reset: fielditem;
-      }
+    .text-center {
+      text-align: center;
+    }
 
-      .field-item-title {
-        font-weight: bold;
-        margin: 16px 0;
-      }
+    .field-item.form .field-item {
+      counter-increment: fielditem;
+    }
 
-      .field-item.form .field-item .field-item-children {
-        margin: 0 32px 48px;
-      }
-    </style>
-  </head>
+    .field-item.form .field-item .field-item-title::before {
+      content: counters(fielditem, ".") " ";
+    }
 
-  <body>
-    <table
-      width="100%"
-      style="border: none; max-width: 21cm; margin: 0 auto;"
-      cellpadding="0"
-    >
-      <thead style="border: none">
-        <tr style="border: none">
-          <td style="border: none">
-            <table class="cabecalho" width="100%" height="64" border="1">
-              <tr height="32">
-                <td width="33%" rowspan="2">
-                  <div class="logo" style="padding: 8px;">
-                    <?xml version="1.0" encoding="utf-8"?>
-                    <!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-                    <svg
+    .field-item-children {
+      counter-reset: fielditem;
+    }
+
+    .field-item-title {
+      font-weight: bold;
+      margin: 16px 0;
+    }
+
+    .field-item.form .field-item .field-item-children {
+      margin: 0 32px 48px;
+    }
+  </style>
+</head>
+
+<body>
+<table
+        width="100%"
+        style="border: none; max-width: 21cm; margin: 0 auto;"
+        cellpadding="0"
+>
+  <thead style="border: none">
+  <tr style="border: none">
+    <td style="border: none">
+      <table class="cabecalho" width="100%" height="64" border="1">
+        <tr height="32">
+          <td width="33%" rowspan="2">
+            <div class="logo" style="padding: 8px;">
+              <?xml version="1.0" encoding="utf-8"?>
+              <!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+              <svg
                       version="1.1"
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
@@ -146,37 +156,37 @@
                       viewBox="0 0 821.8 301.5"
                       enable-background="new 0 0 821.8 301.5"
                       xml:space="preserve"
-                    >
+              >
                       <g>
                         <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          fill="#249829"
-                          d="M703.9,119.7L809.8,32c3.1-2.6,7.7-2.1,10.3,1v0
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                fill="#249829"
+                                d="M703.9,119.7L809.8,32c3.1-2.6,7.7-2.1,10.3,1v0
 c2.6,3.1,2.1,7.7-1,10.3l-106,87.8c-3.1,2.6-7.7,2.1-10.3-1l0,0C700.3,126.9,700.8,122.3,703.9,119.7"
                         />
                         <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          fill="#F4A312"
-                          d="M644.5,96.8h137.6c4,0,7.3,3.3,7.3,7.3v0c0,4-3.3,7.3-7.3,7.3
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                fill="#F4A312"
+                                d="M644.5,96.8h137.6c4,0,7.3,3.3,7.3,7.3v0c0,4-3.3,7.3-7.3,7.3
 H644.5c-4,0-7.3-3.3-7.3-7.3v0C637.2,100.1,640.5,96.8,644.5,96.8"
                         />
                         <path
-                          fill="#002969"
-                          d="M622.4,1.6l147.7,120c3.1,2.5,3.6,7.2,1.1,10.3v0c-2.5,3.1-7.2,3.6-10.3,1.1L613.2,13
+                                fill="#002969"
+                                d="M622.4,1.6l147.7,120c3.1,2.5,3.6,7.2,1.1,10.3v0c-2.5,3.1-7.2,3.6-10.3,1.1L613.2,13
 c-3.1-2.5-3.6-7.2-1.1-10.3l0,0C614.6-0.4,619.3-0.9,622.4,1.6"
                         />
                         <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          fill="#EB6E03"
-                          d="M730.5,58.2l33.9,133.3c1,3.9-1.4,7.9-5.3,8.9h0
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                fill="#EB6E03"
+                                d="M730.5,58.2l33.9,133.3c1,3.9-1.4,7.9-5.3,8.9h0
 c-3.9,1-7.9-1.4-8.9-5.3L716.3,61.8c-1-3.9,1.4-7.9,5.3-8.9h0C725.5,51.9,729.5,54.3,730.5,58.2"
                         />
                         <path
-                          fill="#002969"
-                          d="M117.6,291.6c-6.8-5.4-10.9-10.6-14.3-18.6c-2.3-6.4-3-11.3-3.2-18.1c0.2-14.5,2.7-24.9,13.8-34.7
+                                fill="#002969"
+                                d="M117.6,291.6c-6.8-5.4-10.9-10.6-14.3-18.6c-2.3-6.4-3-11.3-3.2-18.1c0.2-14.5,2.7-24.9,13.8-34.7
 c7.6-6.3,16.2-9.8,25.6-12.4c16.8-4.7,41.9-6.6,60.6-7.9l11.1-0.8v-11l-0.2-4.5c-0.7-5.1-1.2-8.2-3.4-12.9l-1.1-1.9
 c-4.4-6.3-8.3-9.1-15.3-12.1c-6-2.3-11.2-3.4-17.6-4.2c-4.4-0.5-8.6-0.7-13.1-0.8c-6.6-0.1-11.9,0.4-18.3,1.6
 c-3.5,0.7-6.8,1.5-10.2,2.4c-5.2,1.4-10.3,3.1-15.4,4.9l-1.5,0.6v-20.6l0.8-0.2l1.6-0.3c3.7-0.8,7.4-1.5,11.1-2.2
@@ -211,79 +221,79 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
                         />
                       </g>
                     </svg>
-                  </div>
-                </td>
-                <td width="34%" rowspan="2">
-                  <h5><span id="formulario">&nbsp;</span></h5>
-                </td>
-                <td width="33%" height="32">
-                  <span id="documento"> &nbsp; </span>
-                </td>
-              </tr>
-              <tr height="32">
-                <td>
-                  <span>&nbsp;</span>
-                </td>
-              </tr>
-            </table>
+            </div>
+          </td>
+          <td width="34%" rowspan="2">
+            <h5><span id="formulario">&nbsp;</span></h5>
+          </td>
+          <td width="33%" height="32">
+            <span id="documento"> &nbsp; </span>
           </td>
         </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td>&nbsp;</td>
-        </tr>
-        <tr>
+        <tr height="32">
           <td>
-            <table
+            <span>&nbsp;</span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>
+      <table
               align=" center"
               width="100%"
               border="1"
               style="padding: 25px;"
-            >
-              <tr align="center">
-                <td style="border:none" class="text-center">
-                  <strong>TÍTULO DO DOCUMENTO:</strong>
-                </td>
-              </tr>
-              <tr align="center">
-                <td style="border:none" class="text-center">
-                  <span>Contratação de Projeto de P&D</span>
-                </td>
-              </tr>
-            </table>
+      >
+        <tr align="center">
+          <td style="border:none" class="text-center">
+            <strong>TÍTULO DO DOCUMENTO:</strong>
+          </td>
+        </tr>
+        <tr align="center">
+          <td style="border:none" class="text-center">
+            <span>Contratação de Projeto de P&D</span>
+          </td>
+        </tr>
+      </table>
 
-            <table
+      <table
               align="center"
               width="100%"
               border="1"
               style="padding: 25px;border-top: none;"
-            >
-              <tr align="center">
-                <td style="border:none" class="text-center">
-                  PROJETO: <span id="descricao"></span>
-                </td>
-              </tr>
-              <tr align="center">
-                <td style="border:none" class="text-center">
+      >
+        <tr align="center">
+          <td style="border:none" class="text-center">
+            PROJETO: <span id="descricao"></span>
+          </td>
+        </tr>
+        <tr align="center">
+          <td style="border:none" class="text-center">
                   <span>
                     <strong id="projeto-titulo"></strong>
                     <span id="projeto-descricao"></span>
                   </span>
-                </td>
-              </tr>
-            </table>
           </td>
         </tr>
-        <tr>
-          <td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td>
-            <table
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>
+      <table
               align="center"
               width="100%"
               border="1"
@@ -291,36 +301,36 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
               cellpadding="0"
               cellspacing="0"
               style="border-collapse:collapse"
-            >
-              <thead>
-                <tr>
-                  <th scope="col">Revisão</th>
-                  <th scope="col">Descrição</th>
-                  <th scope="col">Data</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr align="center">
-                  <td scope="col" class="text-center">
-                    <span id="revisao"></span>
-                  </td>
-                  <td scope="col" class="text-center">
-                    Emissão inicial
-                  </td>
-                  <td scope="col" class="text-center">
-                    <span id="data"></span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+      >
+        <thead>
+        <tr>
+          <th scope="col">Revisão</th>
+          <th scope="col">Descrição</th>
+          <th scope="col">Data</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr align="center">
+          <td scope="col" class="text-center">
+            <span id="revisao"></span>
+          </td>
+          <td scope="col" class="text-center">
+            Emissão inicial
+          </td>
+          <td scope="col" class="text-center">
+            <span id="data"></span>
           </td>
         </tr>
-        <tr>
-          <td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td>
-            <table
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>
+      <table
               align="center"
               border="1"
               width="790"
@@ -328,73 +338,73 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
               cellpadding="5"
               cellspacing="0"
               style="border-collapse:collapse; text-align: center;"
-            >
-              <thead>
-                <tr>
-                  <th width="10%" scope="col">&nbsp;</th>
-                  <th width="18%" scope="col">Autor</th>
-                  <th width="18%" scope="col">Revisor</th>
-                  <th scope="col" colspan="3">Autorizado por</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td width="10%"><strong>Nome</strong></td>
-                  <td>
-                    <span id="autor"></span>
-                  </td>
-                  <td>Marcio Barony</td>
-                  <td>Francisco de Assis Pereira</td>
-                  <td>
-                    <span id="gerente"></span>
-                  </td>
-                  <td>Marco Antônio Resende Faria</td>
-                </tr>
-                <tr>
-                  <td><strong>Função</strong></td>
-                  <td>
-                    <span id="autor-funcao"></span>
-                  </td>
-                  <td>Coordenador de Pesquisa e Desenvolvimento</td>
-                  <td>Gerente de Gestão de Ativos</td>
-                  <td><span id="gerente-funcao"></span></td>
-                  <td>Diretor Técnico</td>
-                </tr>
-                <tr>
-                  <td height="72"><strong>Assinatura</strong></td>
-                  <td>&nbsp;</td>
-                  <td>&nbsp;</td>
-                  <td>&nbsp;</td>
-                  <td>&nbsp;</td>
-                  <td>&nbsp;</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="bPage">&nbsp;</div>
-
-            <div class="content" id="main-content"></div>
-          </td>
-        </tr>
-      </tbody>
-      <tfoot id="foot">
+      >
+        <thead>
         <tr>
+          <th width="10%" scope="col">&nbsp;</th>
+          <th width="18%" scope="col">Autor</th>
+          <th width="18%" scope="col">Revisor</th>
+          <th scope="col" colspan="3">Autorizado por</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td width="10%"><strong>Nome</strong></td>
           <td>
-            <div
+            <span id="autor"></span>
+          </td>
+          <td>Marcio Barony</td>
+          <td>Francisco de Assis Pereira</td>
+          <td>
+            <span id="gerente"></span>
+          </td>
+          <td>Marco Antônio Resende Faria</td>
+        </tr>
+        <tr>
+          <td><strong>Função</strong></td>
+          <td>
+            <span id="autor-funcao"></span>
+          </td>
+          <td>Coordenador de Pesquisa e Desenvolvimento</td>
+          <td>Gerente de Gestão de Ativos</td>
+          <td><span id="gerente-funcao"></span></td>
+          <td>Diretor Técnico</td>
+        </tr>
+        <tr>
+          <td height="72"><strong>Assinatura</strong></td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="bPage">&nbsp;</div>
+
+      <div class="content" id="main-content"></div>
+    </td>
+  </tr>
+  </tbody>
+  <tfoot id="foot">
+  <tr>
+    <td>
+      <div
               style="text-align: center; text-decoration: underline;"
               class="cinza"
-            >
-              <strong>
-                <small>
-                  "O conteúdo deste documento é material reservado e de
-                  propriedade da TAESA sendo vedada a cópia ou edição por
-                  qualquer meio e/ou utilização sem autorização da mesma.”
-                </small>
-              </strong>
-            </div>
-          </td>
-        </tr>
-      </tfoot>
-    </table>
-  </body>
+      >
+        <strong>
+          <small>
+            "O conteúdo deste documento é material reservado e de
+            propriedade da TAESA sendo vedada a cópia ou edição por
+            qualquer meio e/ou utilização sem autorização da mesma.”
+          </small>
+        </strong>
+      </div>
+    </td>
+  </tr>
+  </tfoot>
+</table>
+</body>
 </html>
