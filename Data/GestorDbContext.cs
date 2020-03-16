@@ -11,7 +11,9 @@ namespace APIGestor.Data
     {
         public GestorDbContext(
             DbContextOptions<GestorDbContext> options) : base(options)
-        { }
+        {
+        }
+
         public DbSet<FotoPerfil> FotoPerfil { get; set; }
         public DbSet<LogProjeto> LogProjetos { get; set; }
         public DbSet<Upload> Uploads { get; set; }
@@ -62,6 +64,7 @@ namespace APIGestor.Data
         public DbSet<DemandaComentario> DemandaComentarios { get; set; }
         public DbSet<DemandaFormFile> DemandaFormFiles { get; set; }
         public DbSet<DemandaFormValues> DemandaFormValues { get; set; }
+        public DbSet<DemandaFormHistorico> DemandaFormHistoricos { get; set; }
         public DbSet<SystemOption> SystemOptions { get; set; }
         public DbSet<FileUpload> Files { get; set; }
         public DbSet<DemandaFile> DemandaFiles { get; set; }
@@ -133,10 +136,7 @@ namespace APIGestor.Data
                 .Property(b => b.Created)
                 .HasDefaultValueSql("getdate()");
 
-            modelBuilder.Entity<Demanda>(_d =>
-            {
-                _d.Property(d => d.CreatedAt).HasDefaultValueSql("getdate()");
-            });
+            modelBuilder.Entity<Demanda>(_d => { _d.Property(d => d.CreatedAt).HasDefaultValueSql("getdate()"); });
             modelBuilder.Entity<DemandaComentario>(_dc =>
             {
                 _dc.Property(dc => dc.CreatedAt).HasDefaultValueSql("getdate()");
