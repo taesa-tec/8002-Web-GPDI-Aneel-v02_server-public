@@ -11,6 +11,7 @@ namespace APIGestor.Models.Demandas
         public string Content { get; set; }
 
         public int FormValuesId { get; set; }
+        public int Revisao { get; set; }
         public DemandaFormValues FormValues { get; set; }
     }
 }

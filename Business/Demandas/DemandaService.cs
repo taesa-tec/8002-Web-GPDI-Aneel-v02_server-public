@@ -461,12 +461,17 @@ namespace APIGestor.Business.Demandas
                 .FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
         }
 
-        public List<DemandaFormHistorico> GetDemandaFormHistorico(int id, string form)
+        public List<DemandaFormHistorico> GetDemandaFormHistoricos(int id, string form)
         {
             return _context.DemandaFormValues.Include("Historico")
                 .FirstOrDefault(df => df.DemandaId == id && df.FormKey == form)?.Historico
                 .OrderBy(hist => hist.CreatedAt)
                 .ToList();
+        }
+
+        public DemandaFormHistorico GetDemandaFormHistorico(int id)
+        {
+            return _context.DemandaFormHistoricos.FirstOrDefault(h => h.Id == id);
         }
 
         public List<Models.Demandas.DemandaFile> GetDemandaFiles(int id)
@@ -578,6 +583,7 @@ namespace APIGestor.Business.Demandas
             {
                 FormValuesId = demandaFormView.DemandaFormValues.Id,
                 Content = html,
+                Revisao = demandaFormView.DemandaFormValues.Revisao,
                 CreatedAt = DateTime.Now,
             };
             _context.DemandaFormHistoricos.Add(historico);

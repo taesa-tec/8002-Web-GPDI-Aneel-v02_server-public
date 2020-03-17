@@ -10,6 +10,7 @@ namespace APIGestor.Mapping
     {
         public DemandaMapping()
         {
+            CreateMap<DemandaFormHistorico, DemandaFormHistoricoListItemDto>().ReverseMap();
             CreateMap<DemandaFormHistorico, DemandaFormHistoricoDto>().ReverseMap();
         }
     }
