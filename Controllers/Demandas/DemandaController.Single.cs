@@ -30,6 +30,8 @@ namespace APIGestor.Controllers.Demandas
 {
     public partial class DemandaController : Controller
     {
+        private const string patt = "(<[\\w|\\d]+(?:\\b[^>]*)?>\\s*|\\s*</[\\w|\\d]+>\\s*)";
+
         [HttpPost("Criar")]
         public ActionResult<Demanda> CriarDemanda([FromBody] string titulo)
         {
@@ -289,8 +291,8 @@ namespace APIGestor.Controllers.Demandas
             if (historico == null)
                 return NotFound(new
                 {
-                    from = "",
-                    to = ""
+                    revisaoAtual = 0,
+                    html = ""
                 });
 
             htmlNew.LoadHtml(demandaForm.Html);
@@ -305,20 +307,13 @@ namespace APIGestor.Controllers.Demandas
                 true,
                 chunker
             );
-            var diffTo = diffBuilder.BuildDiffModel(
-                bodyOld.InnerHtml, //HttpUtility.HtmlDecode(htmlOld.DocumentNode.InnerText),
-                bodyNew.InnerHtml,
-                true,
-                true,
-                chunker
-            ); // HttpUtility.HtmlDecode(htmlNew.DocumentNode.InnerText));
             var from = await viewRenderService.RenderToStringAsync("Pdf/Diff", diffFrom);
-            var to = await viewRenderService.RenderToStringAsync("Pdf/Diff", diffTo);
-            // return Ok(diff);
+
             return Ok(new
             {
-                from,
-                to
+                revisaoAtual = demandaForm.Revisao,
+                lastUpdate = demandaForm.LastUpdate,
+                html = from, //bodyNew.InnerHtml,
             });
         }
 
@@ -343,7 +338,7 @@ namespace APIGestor.Controllers.Demandas
             var diffBuilder = new InlineDiffBuilder(new Differ());
             var demandaForm = Service.GetDemandaFormData(id, form);
             var historico = mapper.Map<List<DemandaFormHistoricoDto>>(Service.GetDemandaFormHistoricos(id, form));
-            var htmlOld = new HtmlDocument();
+            var html = new HtmlDocument();
             var htmlNew = new HtmlDocument();
             IChunker chunker;
 
@@ -351,16 +346,16 @@ namespace APIGestor.Controllers.Demandas
                 Regex.Split(s, "(<[\\w|\\d]+(?:\\b[^>]*)?>\\s*|\\s*</[\\w|\\d]+>\\s*)"));
             //chunker = new CustomFunctionChunker(s => Regex.Split(s, "(?=(?:<[\\w|\\d]+\\b[^>]*>|</[\\w|\\d]+>))"));
             // chunker = new CustomFunctionChunker(s => Regex.Split(s, "(?=[\\.;!\\?]|\\n{2,})\\s*?"));
-            // chunker = new LineChunker();
+            //chunker = new LineChunker();
             //chunker = new DelimiterChunker(new[] {'.', ';', '!', '?'});
 
 
             if (historico == null || historico.Count < version) return Ok();
 
             htmlNew.LoadHtml(demandaForm.Html);
-            htmlOld.LoadHtml(historico.ElementAt(version).Content);
+            html.LoadHtml(historico.ElementAt(version).Content);
             var bodyNew = htmlNew.DocumentNode.SelectSingleNode("//body");
-            var bodyOld = htmlOld.DocumentNode.SelectSingleNode("//body");
+            var bodyOld = html.DocumentNode.SelectSingleNode("//body");
 
             var diff = diffBuilder.BuildDiffModel(
                 bodyOld.InnerHtml, //HttpUtility.HtmlDecode(htmlOld.DocumentNode.InnerText),
@@ -369,9 +364,9 @@ namespace APIGestor.Controllers.Demandas
                 true,
                 chunker
             ); // HttpUtility.HtmlDecode(htmlNew.DocumentNode.InnerText));
+            return Ok(diff);
             var content = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
-            // return Ok(diff);
-            return Content(content, "text/html");
+            //return Content(content, "text/html");
         }
 
 

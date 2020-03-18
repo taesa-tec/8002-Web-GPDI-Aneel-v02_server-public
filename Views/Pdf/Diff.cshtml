@@ -65,11 +65,14 @@
             @Html.Raw(line.Text)
             @Html.Raw("</span>")
         }
+        else
+        {
+            @Html.Raw(line.Text)
+        }
     }
-    else
+    else if (line.Type != ChangeType.Deleted)
     {
         @Html.Raw(line.Text)
     }
 }
 </body>
-</html>

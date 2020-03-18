@@ -465,7 +465,8 @@ namespace APIGestor.Business.Demandas
         {
             return _context.DemandaFormValues.Include("Historico")
                 .FirstOrDefault(df => df.DemandaId == id && df.FormKey == form)?.Historico
-                .OrderBy(hist => hist.CreatedAt)
+                .Where(hist => hist.Revisao != hist.FormValues.Revisao)
+                .OrderByDescending(hist => hist.CreatedAt)
                 .ToList();
         }
 
@@ -498,16 +499,17 @@ namespace APIGestor.Business.Demandas
             if (dfData != null)
             {
                 dfData.SetValue(formdata);
-
                 dfData.Files = formanexos.ToList().Select(item => new DemandaFormFile()
                 {
                     DemandaFormId = dfData.Id,
                     FileId = item.Value<int>()
                 }).ToList();
+                dfData.Revisao++;
             }
             else
             {
                 dfData = new DemandaFormValues();
+                dfData.Revisao = 1;
                 dfData.DemandaId = id;
                 dfData.FormKey = form;
                 dfData.SetValue(formdata);
@@ -517,6 +519,8 @@ namespace APIGestor.Business.Demandas
                 }).ToList();
                 _context.DemandaFormValues.Add(dfData);
             }
+
+            dfData.LastUpdate = DateTime.Now;
 
             _context.SaveChanges();
 

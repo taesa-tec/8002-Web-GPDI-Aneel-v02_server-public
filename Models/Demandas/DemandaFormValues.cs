@@ -13,6 +13,8 @@ namespace APIGestor.Models.Demandas
         public int DemandaId { get; set; }
         public string FormKey { get; set; }
         public int Revisao { get; set; }
+        
+        public DateTime LastUpdate { get; set; }
 
         [Column(TypeName = "varchar(max)")] public string Data { get; set; }
 
