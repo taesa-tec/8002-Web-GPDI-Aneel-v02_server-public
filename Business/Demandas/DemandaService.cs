@@ -6,6 +6,7 @@ using APIGestor.Data;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using System.IO;
+using System.Threading.Tasks;
 using iText.Html2pdf;
 using iText.Layout.Element;
 using Microsoft.AspNetCore.Hosting;
@@ -21,6 +22,7 @@ using HtmlAgilityPack;
 using Microsoft.EntityFrameworkCore;
 using APIGestor.Exceptions.Demandas;
 using APIGestor.Business.Sistema;
+using APIGestor.Views.Pdf;
 
 namespace APIGestor.Business.Demandas
 {
@@ -48,6 +50,7 @@ namespace APIGestor.Business.Demandas
         MailerService mailer;
         GestorDbContext _context;
         IAuthorizationService authorization;
+        private IViewRenderService _viewRender;
         public readonly DemandaLogService LogService;
         protected Dictionary<Etapa, CanDemandaProgress> DemandaProgressCheck;
         private IHostingEnvironment _hostingEnvironment;
@@ -62,13 +65,13 @@ namespace APIGestor.Business.Demandas
             IAuthorizationService authorization,
             DemandaLogService logService,
             IHostingEnvironment hostingEnvironment,
-            SistemaService sistemaService
-        )
+            SistemaService sistemaService, IViewRenderService viewRender)
         {
             this._context = context;
             this.authorization = authorization;
             this._hostingEnvironment = hostingEnvironment;
             this.sistemaService = sistemaService;
+            this._viewRender = viewRender;
             this.mailer = mailer;
             this.LogService = logService;
 
@@ -458,6 +461,20 @@ namespace APIGestor.Business.Demandas
                 .FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
         }
 
+        public List<DemandaFormHistorico> GetDemandaFormHistoricos(int id, string form)
+        {
+            return _context.DemandaFormValues.Include("Historico")
+                .FirstOrDefault(df => df.DemandaId == id && df.FormKey == form)?.Historico
+                .Where(hist => hist.Revisao != hist.FormValues.Revisao)
+                .OrderByDescending(hist => hist.CreatedAt)
+                .ToList();
+        }
+
+        public DemandaFormHistorico GetDemandaFormHistorico(int id)
+        {
+            return _context.DemandaFormHistoricos.FirstOrDefault(h => h.Id == id);
+        }
+
         public List<Models.Demandas.DemandaFile> GetDemandaFiles(int id)
         {
             return _context.DemandaFormValues
@@ -473,143 +490,70 @@ namespace APIGestor.Business.Demandas
             return GetDemandaFiles(id).First(file => file.Id == file_id);
         }
 
-        public void SalvarDemandaFormData(int id, string form, JObject data)
+        public async Task SalvarDemandaFormData(int id, string form, JObject data)
         {
             var formdata = data.Value<JObject>("form");
             var formanexos = data.Value<JArray>("anexos");
-            var df_data = _context.DemandaFormValues.Include("Files")
+            var dfData = _context.DemandaFormValues.Include("Files")
                 .FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
-            if (df_data != null)
+            if (dfData != null)
             {
-                df_data.SetValue(formdata);
-
-                df_data.Files = formanexos.ToList().Select(item => new DemandaFormFile()
+                dfData.SetValue(formdata);
+                dfData.Files = formanexos.ToList().Select(item => new DemandaFormFile()
                 {
-                    DemandaFormId = df_data.Id,
+                    DemandaFormId = dfData.Id,
                     FileId = item.Value<int>()
                 }).ToList();
+                dfData.Revisao++;
+                _context.DemandaFormValues.Update(dfData);
             }
             else
             {
-                df_data = new DemandaFormValues();
-                df_data.DemandaId = id;
-                df_data.FormKey = form;
-                df_data.SetValue(formdata);
-                df_data.Files = formanexos.ToList().Select(item => new DemandaFormFile()
+                dfData = new DemandaFormValues();
+                dfData.Revisao = 1;
+                dfData.DemandaId = id;
+                dfData.FormKey = form;
+                dfData.SetValue(formdata);
+                dfData.Files = formanexos.ToList().Select(item => new DemandaFormFile()
                 {
                     FileId = item.Value<int>()
                 }).ToList();
-                _context.DemandaFormValues.Add(df_data);
+                _context.DemandaFormValues.Add(dfData);
             }
 
+            dfData.LastUpdate = DateTime.Now;
+
             _context.SaveChanges();
+
             var demanda = _context.Demandas.FirstOrDefault(d => d.Id == id);
             if (string.IsNullOrWhiteSpace(demanda?.SuperiorDiretoId))
                 throw new DemandaException("Defina o superior direto antes de continuar");
-            SaveDemandaFormPdf(id, form);
+
+            var demandaFormView = GetDemandaFormView(id, form);
+            var versao = await SaveDemandaFormHistorico(demandaFormView);
+            dfData.Html = versao.Content;
+            SaveDemandaFormPdf(id, form, versao.Content);
         }
 
-        public string GetDemandaFormHtml(int id, string form)
+        public DemandaFormView GetDemandaFormView(int id, string form)
         {
-            // @todo Passar para cshtml
-            var _form = GetForm(form);
+            var mainForm = GetForm(form);
             var demanda = GetById(id);
-            string body = string.Empty;
-            var document = new HtmlDocument();
-            var demandaFormValue = RenderDocument(id, form);
+            var renderDocument = RenderDocument(id, form);
             var formDemanda = _context.DemandaFormValues.FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
 
-            if (formDemanda == null)
+            return new DemandaFormView()
             {
-                throw new DemandaException("Não há formulário");
-            }
+                Demanda = demanda,
+                Form = mainForm,
+                Rendered = renderDocument,
+                DemandaFormValues = formDemanda
+            };
+        }
 
-            document.Load(Path.Combine(_hostingEnvironment.WebRootPath, "Templates/pdf-template.html"));
-
-            var mainContent = document.DocumentNode.SelectSingleNode("//div[@id='main-content']");
-            var formName = document.DocumentNode.SelectSingleNode("//span[@id='formulario']");
-            var titulo = document.DocumentNode.SelectSingleNode("//span[@id='projeto-titulo']");
-            var documento = document.DocumentNode.SelectSingleNode("//span[@id='documento']");
-            var revisao = document.DocumentNode.SelectSingleNode("//span[@id='revisao']");
-            var descricao = document.DocumentNode.SelectSingleNode("//span[@id='projeto-descricao']");
-            var data = document.DocumentNode.SelectSingleNode("//span[@id='data']");
-
-            var autor = document.DocumentNode.SelectSingleNode("//span[@id='autor']");
-            var autorFuncao = document.DocumentNode.SelectSingleNode("//span[@id='autor-funcao']");
-
-            var gerente = document.DocumentNode.SelectSingleNode("//span[@id='gerente']");
-            var gerenteFuncao = document.DocumentNode.SelectSingleNode("//span[@id='gerente-funcao']");
-
-
-            if (formName != null)
-            {
-                formName.AppendChild(HtmlNode.CreateNode(_form.Title));
-            }
-
-            if (documento != null)
-            {
-                documento.AppendChild(HtmlNode.CreateNode(
-                    String.Format("Documento: PED-{0}/{1}", demanda.Id.ToString().PadLeft(3, '0'),
-                        demanda.CreatedAt.Year)));
-            }
-
-            if (titulo != null)
-            {
-                titulo.AppendChild(HtmlNode.CreateNode(demanda.Titulo));
-            }
-
-            if (revisao != null)
-            {
-                revisao.AppendChild(HtmlNode.CreateNode(formDemanda.Revisao.ToString()));
-            }
-
-            if (data != null)
-            {
-                data.AppendChild(HtmlNode.CreateNode(DateTime.Today.ToShortDateString()));
-            }
-
-            if (autor != null)
-            {
-                autor.AppendChild(HtmlNode.CreateNode(demanda.Criador.NomeCompleto));
-            }
-
-            if (autorFuncao != null && !String.IsNullOrWhiteSpace(demanda.Criador.Cargo))
-            {
-                autorFuncao.AppendChild(HtmlNode.CreateNode(demanda.Criador.Cargo));
-            }
-
-
-            if (demanda.SuperiorDireto != null)
-            {
-                if (gerente != null)
-                {
-                    gerente.AppendChild(HtmlNode.CreateNode(demanda.SuperiorDireto?.NomeCompleto));
-                }
-
-                if (gerenteFuncao != null && !String.IsNullOrWhiteSpace(demanda.SuperiorDireto.Cargo))
-                {
-                    gerenteFuncao.AppendChild(HtmlNode.CreateNode(demanda.SuperiorDireto.Cargo));
-                }
-            }
-            else
-            {
-                gerente.AppendChild(HtmlNode.CreateNode("SUPERIOR NÃO CADASTRADO"));
-                gerenteFuncao.AppendChild(HtmlNode.CreateNode("SUPERIOR NÃO CADASTRADO"));
-            }
-
-            if (descricao != null)
-            {
-                descricao.AppendChild(HtmlNode.CreateNode(demanda.Titulo));
-            }
-
-
-            if (demandaFormValue != null && mainContent != null)
-            {
-                var htmlform = demandaFormValue.ToHtml();
-                mainContent.AppendChild(htmlform);
-            }
-
-            return document.DocumentNode.InnerHtml;
+        public async Task<string> DemandaFormHtml(DemandaFormView demandaFormView)
+        {
+            return await _viewRender.RenderToStringAsync("Pdf/DemandaFormView", demandaFormView);
         }
 
         public FieldRendered RenderDocument(int id, string form)
@@ -626,28 +570,40 @@ namespace APIGestor.Business.Demandas
             return new FieldRendered("Error", "No data or Form found");
         }
 
-        public string SaveDemandaFormPdf(int id, string form)
+        public string SaveDemandaFormPdf(int id, string form, string html)
         {
-            string fullname = GetDemandaFormPdfFilename(id, form, true);
-            var html = GetDemandaFormHtml(id, form);
+            var fullname = GetDemandaFormPdfFilename(id, form, true);
             var stream = new FileStream(fullname, FileMode.Create);
-            // var properties = new ConverterProperties();
             HtmlConverter.ConvertToPdf(html, stream);
-
             stream.Close();
-
             UpdatePdf(fullname);
-            Console.WriteLine(fullname);
 
             return fullname;
         }
 
+        public async Task<DemandaFormHistorico> SaveDemandaFormHistorico(DemandaFormView demandaFormView)
+        {
+            var html = await DemandaFormHtml(demandaFormView);
+            var historico = new DemandaFormHistorico()
+            {
+                FormValuesId = demandaFormView.DemandaFormValues.Id,
+                Content = html,
+                Revisao = demandaFormView.DemandaFormValues.Revisao,
+                CreatedAt = DateTime.Now,
+            };
+            _context.DemandaFormHistoricos.Add(historico);
+            Console.WriteLine(historico.FormValuesId);
+            _context.SaveChanges();
+
+            return historico;
+        }
+
         public string GetDemandaFormPdfFilename(int id, string form, bool createDirectory = false)
         {
-            string folderName = String.Format("uploads/demandas/{0}/{1}/", id, form);
-            string webRootPath = _hostingEnvironment.WebRootPath;
-            string newPath = Path.Combine(webRootPath, folderName);
-            string filename = String.Format("demanda-{0}-{1}.pdf", id, form);
+            var folderName = String.Format("uploads/demandas/{0}/{1}/", id, form);
+            var webRootPath = _hostingEnvironment.WebRootPath;
+            var newPath = Path.Combine(webRootPath, folderName);
+            var filename = String.Format("demanda-{0}-{1}.pdf", id, form);
             if (createDirectory && !Directory.Exists(newPath))
             {
                 Directory.CreateDirectory(newPath);

@@ -8,7 +8,9 @@ using Newtonsoft.Json;
 namespace APIGestor.Models.Demandas.Forms
 {
     public delegate FieldRendered DataRender(JToken data);
+
     public delegate void RenderHandler(Field field, JToken data, ref FieldRendered fieldRendered);
+
     public class FieldRendered
     {
         public string Title;
@@ -46,12 +48,12 @@ namespace APIGestor.Models.Demandas.Forms
                 {
                     children.AppendChild(field.ToHtml());
                 }
+
                 item.AppendChild(children);
             }
 
             return item;
         }
-
     }
 
     public class Field
@@ -66,24 +68,23 @@ namespace APIGestor.Models.Demandas.Forms
             RichText,
             Temas
         }
+
         public readonly string Title;
         public readonly string Key;
         protected readonly Type _FieldType;
         public bool IsArray { get; set; }
         public string ItemTitle { get; set; }
+
         public string FieldType
         {
-            get
-            {
-                return Enum.GetName(typeof(Type), this._FieldType);
-            }
+            get { return Enum.GetName(typeof(Type), this._FieldType); }
         }
+
         public Dictionary<string, string> Options { get; set; }
         public int Order { get; set; }
         public string Placeholder { get; set; }
 
-        [JsonIgnore]
-        public Field Parent { get; set; }
+        [JsonIgnore] public Field Parent { get; set; }
         public DataRender RenderTemaHandler;
         public RenderHandler RenderHandler;
 
@@ -93,6 +94,7 @@ namespace APIGestor.Models.Demandas.Forms
             fieldRendered.Type = this.FieldType;
             return fieldRendered;
         }
+
         protected FieldRendered RenderText(JObject data)
         {
             string Value = String.Empty;
@@ -105,7 +107,6 @@ namespace APIGestor.Models.Demandas.Forms
             }
             catch (System.Exception)
             {
-
                 throw;
             }
 
@@ -117,8 +118,6 @@ namespace APIGestor.Models.Demandas.Forms
 
         public virtual FieldRendered Render(JObject data)
         {
-            string Value = String.Empty;
-
             FieldRendered fieldRendered;
 
             switch (this.FieldType)
@@ -146,14 +145,15 @@ namespace APIGestor.Models.Demandas.Forms
                 }
                 catch (Exception)
                 {
-
                 }
             }
+
             if (Parent != null)
             {
                 Parent.FieldRenderSanitizer(field, data, ref fieldRendered);
             }
         }
+
         public virtual FieldRendered Render(JArray data)
         {
             var fieldRendered = new FieldRendered(this.Title, "");
@@ -177,31 +177,37 @@ namespace APIGestor.Models.Demandas.Forms
         {
             return new FieldList(Key, Title, Type.Form);
         }
+
         public static Field Text(string Key, string Title)
         {
             return new Field(Key, Title, Type.Text);
         }
+
         public static Field RichText(string Key, string Title)
         {
             return new Field(Key, Title, Type.RichText);
         }
+
         public static Field Date(string Key, string Title)
         {
             return new Field(Key, Title, Type.Date);
         }
+
         public static Field OptionsField(string Key, string Title, Dictionary<string, string> Options)
         {
             var field = new Field(Key, Title, Type.Options);
             field.Options = Options;
             return field;
         }
-
     }
+
     public class FieldList : Field
     {
         public List<Field> Children { get; set; }
         public bool HasFixedSize { get; set; }
-        public FieldList(string Key, string Title, Type FieldType = Type.Empty, bool HasFixedSize = true) : base(Key, Title, FieldType)
+
+        public FieldList(string Key, string Title, Type FieldType = Type.Empty, bool HasFixedSize = true) : base(Key,
+            Title, FieldType)
         {
             Children = new List<Field>();
             this.HasFixedSize = HasFixedSize;
@@ -218,7 +224,6 @@ namespace APIGestor.Models.Demandas.Forms
                 {
                     this.Children.ForEach(field =>
                     {
-
                         if (children.TryGetValue(field.Key, out JToken child))
                         {
                             if (field.IsArray)
@@ -235,64 +240,72 @@ namespace APIGestor.Models.Demandas.Forms
             }
             finally
             {
-
             }
+
             fieldRendered.Type = this.FieldType;
             return fieldRendered;
         }
 
 
         #region Add methods
+
         public Field Add(Field field)
         {
             field.Parent = this;
             this.Children.Add(field);
             return field;
         }
+
         public Field AddText(string Key, string Title, string Placeholder = "")
         {
             var field = Field.Text(Key, Title);
             field.Placeholder = Placeholder;
             return Add(field);
         }
+
         public Field AddTextList(string Key, string Title, string Placeholder = "")
         {
             var field = AddText(Key, Title, Placeholder);
             field.IsArray = true;
             return field;
         }
+
         public Field AddRichText(string Key, string Title, string Placeholder = "")
         {
             var field = Field.RichText(Key, Title);
             field.Placeholder = Placeholder;
             return Add(field);
         }
+
         public Field AddRichTextList(string Key, string Title, string Placeholder = "")
         {
             var field = AddRichText(Key, Title, Placeholder);
             field.IsArray = true;
             return field;
         }
+
         public Field AddEmpty(string Key, string Title)
         {
             var field = new Field(Key, Title, Type.Empty);
             return Add(field);
         }
+
         public FieldList AddFieldList(string Key, string Title, Type Type = Type.Empty, bool HasFixedSize = true)
         {
             var field = new FieldList(Key, Title, Type, HasFixedSize);
             return Add(field) as FieldList;
         }
+
         public FieldList AddFieldList(string Key, string Title, bool HasFixedSize = true)
         {
             return AddFieldList(Key, Title, Type.Empty, HasFixedSize);
         }
+
         public FieldList AddFieldList(string Key, string Title)
         {
             return AddFieldList(Key, Title, Type.Empty);
         }
+
         #endregion
-
     }
-
 }

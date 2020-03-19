@@ -1,0 +1,78 @@
+@using System.Text.RegularExpressions
+@using DiffPlex.DiffBuilder.Model
+@model DiffPlex.DiffBuilder.Model.DiffPaneModel
+
+<body>
+<style>
+    :root{
+        --background:transparent;
+        --diffback:transparent;
+    }
+        .unchanged{
+                
+        }
+        .modified{
+            background-color: orange;        
+            color:white;
+        }
+        .inserted{
+            color:#96aa96 !important;
+            --diffback: #e1f5e1;
+            position: relative;        
+        }
+        .inserted::before{
+            content: "+ ";
+        }
+        .deleted{
+            --diffback: #f7dfdf !important;
+            color:#7c6464 !important;
+        }
+        .deleted::after{
+            content: "- ";        
+        }
+        .diff-text{
+            display: inline-block;
+            position: relative;
+            z-index: 0;
+            
+        }
+        .diff-text::after{
+            content: " ";
+            display: block;
+            padding: 1em;
+            position: absolute;
+            top: -2px;
+            bottom: -2px;
+            left: -2px;
+            right: -2px;
+            background: var(--diffback);
+            z-index: -1;
+            border-radius: 3px;
+        }
+        td{
+            background-color: inherit;
+            color: inherit;
+        }
+    </style>
+@Html.Partial("Pdf/_Style")
+@foreach (var line in @Model.Lines)
+{
+    if (!Regex.IsMatch(line.Text, "<[\\w|\\d]+(?:\\b[^>]*)?>\\s*|\\s*</[\\w|\\d]+>\\s*"))
+    {
+        if (!string.IsNullOrWhiteSpace(line.Text))
+        {
+            @Html.Raw($"<span class=\"diff-text {line.Type.ToString().ToLower()}\">")
+            @Html.Raw(line.Text)
+            @Html.Raw("</span>")
+        }
+        else
+        {
+            @Html.Raw(line.Text)
+        }
+    }
+    else if (line.Type != ChangeType.Deleted)
+    {
+        @Html.Raw(line.Text)
+    }
+}
+</body>

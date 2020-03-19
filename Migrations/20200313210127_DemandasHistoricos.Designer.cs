@@ -4,14 +4,16 @@ using APIGestor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIGestor.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200313210127_DemandasHistoricos")]
+    partial class DemandasHistoricos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -547,8 +549,6 @@ namespace APIGestor.Migrations
 
                     b.Property<int>("FormValuesId");
 
-                    b.Property<int>("Revisao");
-
                     b.HasKey("Id");
 
                     b.HasIndex("FormValuesId");
@@ -570,8 +570,6 @@ namespace APIGestor.Migrations
                     b.Property<string>("FormKey");
 
                     b.Property<string>("Html");
-
-                    b.Property<DateTime>("LastUpdate");
 
                     b.Property<int>("Revisao");
 

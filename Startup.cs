@@ -38,6 +38,7 @@ namespace APIGestor
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IViewRenderService, ViewRenderService>();
             // Configurando o acesso a dados de projetos
             if (System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Stage")
             {
