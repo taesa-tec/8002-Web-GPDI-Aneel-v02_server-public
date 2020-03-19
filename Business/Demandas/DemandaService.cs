@@ -505,6 +505,7 @@ namespace APIGestor.Business.Demandas
                     FileId = item.Value<int>()
                 }).ToList();
                 dfData.Revisao++;
+                _context.DemandaFormValues.Update(dfData);
             }
             else
             {
