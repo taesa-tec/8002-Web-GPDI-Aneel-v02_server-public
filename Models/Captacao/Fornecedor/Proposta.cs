@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-
+using TaesaCore.Models;
 namespace APIGestor.Models.Captacao.Fornecedor
 {
     public class Proposta : BaseEntity

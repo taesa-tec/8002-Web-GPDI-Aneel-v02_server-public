@@ -1,6 +1,8 @@
+using TaesaCore.Models;
+
 namespace APIGestor.Models.Captacao.Fornecedor
 {
-    public class CoExecutor
+    public class CoExecutor : BaseEntity
     {
         public int FornecedorId { get; set; }
         public Fornecedor Fornecedor { get; set; }

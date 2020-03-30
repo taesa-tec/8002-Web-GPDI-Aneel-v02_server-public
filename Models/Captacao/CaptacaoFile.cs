@@ -1,3 +1,4 @@
+
 namespace APIGestor.Models.Captacao
 {
     public class CaptacaoFile : FileUpload

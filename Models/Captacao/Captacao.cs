@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using TaesaCore.Models;
 
 namespace APIGestor.Models.Captacao
 {

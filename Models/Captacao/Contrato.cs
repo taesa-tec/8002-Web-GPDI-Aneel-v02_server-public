@@ -1,3 +1,5 @@
+using TaesaCore.Models;
+
 namespace APIGestor.Models.Captacao
 {
     public class Contrato : BaseEntity
