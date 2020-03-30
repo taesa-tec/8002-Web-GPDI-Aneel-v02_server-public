@@ -52,8 +52,8 @@ namespace APIGestor.Business.Demandas
         IAuthorizationService authorization;
         private IViewRenderService _viewRender;
         public readonly DemandaLogService LogService;
-        protected Dictionary<Etapa, CanDemandaProgress> DemandaProgressCheck;
-        private IHostingEnvironment _hostingEnvironment;
+        protected Dictionary<DemandaEtapa, CanDemandaProgress> DemandaProgressCheck;
+        private IWebHostEnvironment _hostingEnvironment;
 
         #endregion
 
@@ -64,7 +64,7 @@ namespace APIGestor.Business.Demandas
             MailerService mailer,
             IAuthorizationService authorization,
             DemandaLogService logService,
-            IHostingEnvironment hostingEnvironment,
+            IWebHostEnvironment hostingEnvironment,
             SistemaService sistemaService, IViewRenderService viewRender)
         {
             this._context = context;
@@ -76,15 +76,15 @@ namespace APIGestor.Business.Demandas
             this.LogService = logService;
 
 
-            DemandaProgressCheck = new Dictionary<Etapa, CanDemandaProgress>()
+            DemandaProgressCheck = new Dictionary<DemandaEtapa, CanDemandaProgress>()
             {
-                {Etapa.Elaboracao, ElaboracaoProgress},
-                {Etapa.PreAprovacao, PreAprovacaoProgress},
-                {Etapa.RevisorPendente, AprovacaoCoordenadorProgress},
-                {Etapa.AprovacaoRevisor, AprovacaoRevisorProgress},
-                {Etapa.AprovacaoCoordenador, AprovacaoCoordenadorProgress},
-                {Etapa.AprovacaoGerente, AprovacaoGerenteProgress},
-                {Etapa.AprovacaoDiretor, AprovacaoDiretorProgress},
+                {DemandaEtapa.Elaboracao, ElaboracaoProgress},
+                {DemandaEtapa.PreAprovacao, PreAprovacaoProgress},
+                {DemandaEtapa.RevisorPendente, AprovacaoCoordenadorProgress},
+                {DemandaEtapa.AprovacaoRevisor, AprovacaoRevisorProgress},
+                {DemandaEtapa.AprovacaoCoordenador, AprovacaoCoordenadorProgress},
+                {DemandaEtapa.AprovacaoGerente, AprovacaoGerenteProgress},
+                {DemandaEtapa.AprovacaoDiretor, AprovacaoDiretorProgress},
             };
         }
 
@@ -134,9 +134,9 @@ namespace APIGestor.Business.Demandas
                 .ByUser(CargosChavesIds.Contains(userId) ? null : userId);
         }
 
-        public List<Demanda> GetByEtapa(Etapa etapa, string userId = null)
+        public List<Demanda> GetByEtapa(DemandaEtapa demandaEtapa, string userId = null)
         {
-            return QueryDemandas(userId).Where(d => d.EtapaAtual == etapa).ToList();
+            return QueryDemandas(userId).Where(d => d.DemandaEtapaAtual == demandaEtapa).ToList();
         }
 
         public List<Demanda> GetByEtapaStatus(DemandaStatus status, string userId = null)
@@ -155,20 +155,20 @@ namespace APIGestor.Business.Demandas
         {
             return QueryDemandas(userId)
                 // .Where(d => d.EtapaAtual == Etapa.AprovacaoDiretor && (d.EtapaStatus == EtapaStatus.Aprovada && d.EtapaStatus == EtapaStatus.Concluido)).ToList();
-                .Where(d => d.EtapaAtual == Etapa.AprovacaoDiretor && d.Status == DemandaStatus.Aprovada).ToList();
+                .Where(d => d.DemandaEtapaAtual == DemandaEtapa.AprovacaoDiretor && d.Status == DemandaStatus.Aprovada).ToList();
         }
 
         public List<Demanda> GetDemandasEmElaboracao(string userId = null)
         {
             return QueryDemandas(userId)
-                .Where(d => d.EtapaAtual == Etapa.Elaboracao || d.Status == DemandaStatus.EmElaboracao ||
+                .Where(d => d.DemandaEtapaAtual == DemandaEtapa.Elaboracao || d.Status == DemandaStatus.EmElaboracao ||
                             d.Status == DemandaStatus.Pendente).ToList();
         }
 
         public List<Demanda> GetDemandasCaptacao(string userId = null)
         {
             return QueryDemandas(userId)
-                .Where(d => d.EtapaAtual == Etapa.Captacao).ToList();
+                .Where(d => d.DemandaEtapaAtual == DemandaEtapa.Captacao).ToList();
         }
 
         public List<Demanda> GetDemandasPendentes(string userId = null)
@@ -185,7 +185,7 @@ namespace APIGestor.Business.Demandas
             var demanda = new Demanda();
             demanda.Titulo = titulo;
             demanda.CriadorId = userId;
-            demanda.EtapaAtual = Etapa.Elaboracao;
+            demanda.DemandaEtapaAtual = DemandaEtapa.Elaboracao;
             demanda.Status = DemandaStatus.EmElaboracao;
             _context.Demandas.Add(demanda);
             _context.SaveChanges();
@@ -207,23 +207,23 @@ namespace APIGestor.Business.Demandas
             return demanda;
         }
 
-        public void SetEtapa(int id, Etapa etapa, string userId)
+        public void SetEtapa(int id, DemandaEtapa demandaEtapa, string userId)
         {
             var demanda = GetById(id);
             if (demanda == null)
                 return;
             var user = _context.Users.Find(userId);
-            demanda.IrParaEtapa(etapa);
+            demanda.IrParaEtapa(demandaEtapa);
             _context.SaveChanges();
             NotificarResponsavel(demanda, userId);
 
-            if (demanda.EtapaAtual < Etapa.Captacao && demanda.Status == DemandaStatus.EmElaboracao)
+            if (demanda.DemandaEtapaAtual < DemandaEtapa.Captacao && demanda.Status == DemandaStatus.EmElaboracao)
             {
                 LogService.Incluir(userId, demanda.Id, "Alterou Etapa",
                     String.Format(" {0} alterou a etapa da demanda para \"{1}\"", user.NomeCompleto,
                         demanda.EtapaDesc));
             }
-            else if (demanda.EtapaAtual == Etapa.AprovacaoDiretor && demanda.Status == DemandaStatus.Concluido)
+            else if (demanda.DemandaEtapaAtual == DemandaEtapa.AprovacaoDiretor && demanda.Status == DemandaStatus.Concluido)
             {
                 LogService.Incluir(userId, demanda.Id, "Aprovou a etapa",
                     String.Format(" {0} aprovou a demanda.", user.NomeCompleto));
@@ -307,9 +307,9 @@ namespace APIGestor.Business.Demandas
 
             var demanda = GetById(id);
 
-            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
+            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.DemandaEtapaAtual))
             {
-                if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
+                if (this.DemandaProgressCheck[demanda.DemandaEtapaAtual](demanda, userId))
                 {
                     demanda.ReprovarReiniciar();
                     _context.DemandaFormValues
@@ -338,9 +338,9 @@ namespace APIGestor.Business.Demandas
 
             var demanda = GetById(id);
 
-            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
+            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.DemandaEtapaAtual))
             {
-                if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
+                if (this.DemandaProgressCheck[demanda.DemandaEtapaAtual](demanda, userId))
                 {
                     demanda.ReprovarPermanente();
                     _context.SaveChanges();
@@ -383,9 +383,9 @@ namespace APIGestor.Business.Demandas
         public void EnviarCaptacao(int id, string userId)
         {
             var demanda = GetById(id);
-            if (demanda != null && demanda.EtapaAtual != Etapa.Captacao)
+            if (demanda != null && demanda.DemandaEtapaAtual != DemandaEtapa.Captacao)
             {
-                demanda.EtapaAtual = Etapa.Captacao;
+                demanda.DemandaEtapaAtual = DemandaEtapa.Captacao;
                 demanda.Status = DemandaStatus.Concluido;
                 demanda.CaptacaoDate = DateTime.Now;
                 _context.SaveChanges();
@@ -401,20 +401,20 @@ namespace APIGestor.Business.Demandas
 
         protected string GetResponsavelAtual(Demanda demanda)
         {
-            switch (demanda.EtapaAtual)
+            switch (demanda.DemandaEtapaAtual)
             {
-                case Etapa.Elaboracao:
+                case DemandaEtapa.Elaboracao:
                     return demanda.CriadorId;
-                case Etapa.PreAprovacao:
+                case DemandaEtapa.PreAprovacao:
                     return demanda.SuperiorDiretoId;
-                case Etapa.AprovacaoRevisor:
+                case DemandaEtapa.AprovacaoRevisor:
                     return demanda.RevisorId;
-                case Etapa.RevisorPendente:
-                case Etapa.AprovacaoCoordenador:
+                case DemandaEtapa.RevisorPendente:
+                case DemandaEtapa.AprovacaoCoordenador:
                     return sistemaService.GetEquipePeD().Coordenador;
-                case Etapa.AprovacaoGerente:
+                case DemandaEtapa.AprovacaoGerente:
                     return sistemaService.GetEquipePeD().Gerente;
-                case Etapa.AprovacaoDiretor:
+                case DemandaEtapa.AprovacaoDiretor:
                     return sistemaService.GetEquipePeD().Diretor;
                 default:
                     return null;
@@ -692,23 +692,23 @@ namespace APIGestor.Business.Demandas
 
         public void NotificarResponsavel(Demanda demanda, string userId)
         {
-            switch (demanda.EtapaAtual)
+            switch (demanda.DemandaEtapaAtual)
             {
-                case Etapa.PreAprovacao:
+                case DemandaEtapa.PreAprovacao:
                     NotificarSuperior(demanda);
                     break;
 
-                case Etapa.RevisorPendente:
+                case DemandaEtapa.RevisorPendente:
                     NotificarRevisorPendente(demanda);
                     break;
-                case Etapa.AprovacaoRevisor:
+                case DemandaEtapa.AprovacaoRevisor:
                     NotificarRevisor(demanda);
                     break;
-                case Etapa.AprovacaoCoordenador:
-                case Etapa.AprovacaoGerente:
+                case DemandaEtapa.AprovacaoCoordenador:
+                case DemandaEtapa.AprovacaoGerente:
                     NotificarAprovador(demanda, userId);
                     break;
-                case Etapa.AprovacaoDiretor:
+                case DemandaEtapa.AprovacaoDiretor:
                     if (demanda.Status != DemandaStatus.Aprovada)
                         NotificarAprovador(demanda, userId);
                     break;

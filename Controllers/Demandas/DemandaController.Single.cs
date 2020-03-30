@@ -147,8 +147,8 @@ namespace APIGestor.Controllers.Demandas
         [HttpPut("{id}/Etapa")]
         public ActionResult<Demanda> SetEtapa(int id, [FromBody] JObject data)
         {
-            var etapa = (Etapa) data.Value<int>("status");
-            if (etapa < Etapa.Captacao)
+            var etapa = (DemandaEtapa) data.Value<int>("status");
+            if (etapa < DemandaEtapa.Captacao)
             {
                 Service.SetEtapa(id, etapa, this.userId());
             }

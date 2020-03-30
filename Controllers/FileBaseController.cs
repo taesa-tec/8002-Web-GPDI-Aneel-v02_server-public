@@ -20,7 +20,7 @@ namespace APIGestor.Controllers
     public abstract class FileBaseController<T> : Controller where T : FileUpload, new()
     {
         protected GestorDbContext context;
-        protected IHostingEnvironment hostingEnvironment;
+        protected IWebHostEnvironment hostingEnvironment;
 
         protected string ActualPath
         {
@@ -31,7 +31,7 @@ namespace APIGestor.Controllers
                 return Path.Combine(webRootPath, folderName);
             }
         }
-        public FileBaseController(GestorDbContext context, IHostingEnvironment hostingEnvironment)
+        public FileBaseController(GestorDbContext context, IWebHostEnvironment hostingEnvironment)
         {
             this.context = context;
             this.hostingEnvironment = hostingEnvironment;

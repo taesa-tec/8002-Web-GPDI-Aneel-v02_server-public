@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 namespace APIGestor.Business {
     public class XmlProjetoGestaoService : IXmlService<XmlProjetoGestao> {
         private GestorDbContext _context;
-        private IHostingEnvironment _hostingEnvironment;
-        public XmlProjetoGestaoService( GestorDbContext context, IHostingEnvironment hostingEnvironment ) {
+        private IWebHostEnvironment _hostingEnvironment;
+        public XmlProjetoGestaoService( GestorDbContext context, IWebHostEnvironment hostingEnvironment ) {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
         }

@@ -16,7 +16,7 @@ namespace APIGestor.Models.Demandas
         Pendente
 
     }
-    public enum Etapa
+    public enum DemandaEtapa
     {
         Elaboracao = 0,
         PreAprovacao = 1,
@@ -30,16 +30,16 @@ namespace APIGestor.Models.Demandas
 
     public class Demanda
     {
-        protected static Dictionary<Etapa, string> _etapaDesc = new Dictionary<Etapa, string>()
+        protected static Dictionary<DemandaEtapa, string> _etapaDesc = new Dictionary<DemandaEtapa, string>()
                 {
-                    {Etapa.Elaboracao, "Elaboração"},
-                    {Etapa.PreAprovacao, "Pre-Aprovação"},
-                    {Etapa.RevisorPendente, "Revisor Pendente"},
-                    {Etapa.AprovacaoRevisor, "Aprovação Revisor"},
-                    {Etapa.AprovacaoCoordenador, "Aprovação Coordenador"},
-                    {Etapa.AprovacaoGerente, "Aprovação Gerente"},
-                    {Etapa.AprovacaoDiretor, "Aprovação Diretor"},
-                    {Etapa.Captacao, "Enviado para captação"}
+                    {DemandaEtapa.Elaboracao, "Elaboração"},
+                    {DemandaEtapa.PreAprovacao, "Pre-Aprovação"},
+                    {DemandaEtapa.RevisorPendente, "Revisor Pendente"},
+                    {DemandaEtapa.AprovacaoRevisor, "Aprovação Revisor"},
+                    {DemandaEtapa.AprovacaoCoordenador, "Aprovação Coordenador"},
+                    {DemandaEtapa.AprovacaoGerente, "Aprovação Gerente"},
+                    {DemandaEtapa.AprovacaoDiretor, "Aprovação Diretor"},
+                    {DemandaEtapa.Captacao, "Enviado para captação"}
                 };
         public int Id { get; set; }
         public string Titulo { get; set; }
@@ -50,7 +50,7 @@ namespace APIGestor.Models.Demandas
 
         public string RevisorId { get; set; }
         public ApplicationUser Revisor { get; set; }
-        public Etapa EtapaAtual { get; set; }
+        public DemandaEtapa DemandaEtapaAtual { get; set; }
         public DemandaStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? CaptacaoDate { get; set; }
@@ -59,22 +59,22 @@ namespace APIGestor.Models.Demandas
 
         public void ProximaEtapa()
         {
-            if (this.EtapaAtual > Etapa.Elaboracao && String.IsNullOrWhiteSpace(SuperiorDiretoId))
+            if (this.DemandaEtapaAtual > DemandaEtapa.Elaboracao && String.IsNullOrWhiteSpace(SuperiorDiretoId))
             {
                 throw new DemandaException("A demanda não tem superior direto definido");
             }
 
-            if (this.EtapaAtual >= Etapa.RevisorPendente && String.IsNullOrWhiteSpace(RevisorId))
+            if (this.DemandaEtapaAtual >= DemandaEtapa.RevisorPendente && String.IsNullOrWhiteSpace(RevisorId))
             {
                 throw new DemandaException("Não é possível avançar para a proxíma etapa sem revisor");
             }
 
-            if (this.EtapaAtual < Etapa.AprovacaoDiretor)
+            if (this.DemandaEtapaAtual < DemandaEtapa.AprovacaoDiretor)
             {
-                this.EtapaAtual++;
-                if (this.EtapaAtual == Etapa.RevisorPendente && !String.IsNullOrWhiteSpace(RevisorId))
+                this.DemandaEtapaAtual++;
+                if (this.DemandaEtapaAtual == DemandaEtapa.RevisorPendente && !String.IsNullOrWhiteSpace(RevisorId))
                 {
-                    this.EtapaAtual++;
+                    this.DemandaEtapaAtual++;
                 }
                 this.Status = DemandaStatus.EmElaboracao;
             }
@@ -85,25 +85,25 @@ namespace APIGestor.Models.Demandas
         }
         public void EtapaAnterior()
         {
-            if (this.EtapaAtual > Etapa.Elaboracao)
+            if (this.DemandaEtapaAtual > DemandaEtapa.Elaboracao)
             {
-                this.EtapaAtual--;
+                this.DemandaEtapaAtual--;
                 this.Status = DemandaStatus.EmElaboracao;
             }
         }
-        public void IrParaEtapa(Etapa etapa)
+        public void IrParaEtapa(DemandaEtapa demandaEtapa)
         {
-            if (etapa > EtapaAtual)
+            if (demandaEtapa > DemandaEtapaAtual)
                 ProximaEtapa();
-            else if (etapa < EtapaAtual)
+            else if (demandaEtapa < DemandaEtapaAtual)
                 EtapaAnterior();
 
-            if (EtapaAtual != etapa)
-                IrParaEtapa(etapa);
+            if (DemandaEtapaAtual != demandaEtapa)
+                IrParaEtapa(demandaEtapa);
         }
         public void ReprovarReiniciar()
         {
-            this.EtapaAtual = Etapa.Elaboracao;
+            this.DemandaEtapaAtual = DemandaEtapa.Elaboracao;
             this.Status = DemandaStatus.Reprovada;
         }
         public void ReprovarPermanente()
@@ -122,7 +122,7 @@ namespace APIGestor.Models.Demandas
         {
             get
             {
-                return Enum.GetName(typeof(Etapa), this.EtapaAtual);
+                return Enum.GetName(typeof(DemandaEtapa), this.DemandaEtapaAtual);
             }
         }
 
@@ -130,7 +130,7 @@ namespace APIGestor.Models.Demandas
         {
             get
             {
-                return Demanda._etapaDesc[EtapaAtual];
+                return Demanda._etapaDesc[DemandaEtapaAtual];
             }
         }
 

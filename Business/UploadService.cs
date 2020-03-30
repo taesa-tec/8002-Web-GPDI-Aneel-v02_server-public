@@ -20,8 +20,8 @@ namespace APIGestor.Business
     public class UploadService
     {
         private GestorDbContext _context;
-        private IHostingEnvironment _hostingEnvironment;
-        public UploadService(GestorDbContext context, IHostingEnvironment hostingEnvironment)
+        private IWebHostEnvironment _hostingEnvironment;
+        public UploadService(GestorDbContext context, IWebHostEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
             _context = context;

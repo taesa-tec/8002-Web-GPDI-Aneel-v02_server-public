@@ -21,7 +21,7 @@ namespace APIGestor.Controllers
     [Authorize("Bearer")]
     public class FileController : FileBaseController<FileUpload>
     {
-        public FileController(GestorDbContext context, IHostingEnvironment hostingEnvironment) : base(context, hostingEnvironment)
+        public FileController(GestorDbContext context, IWebHostEnvironment hostingEnvironment) : base(context, hostingEnvironment)
         {
         }
 

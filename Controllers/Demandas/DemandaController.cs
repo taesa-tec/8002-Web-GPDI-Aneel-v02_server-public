@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
 using APIGestor.Models.Demandas;
 using APIGestor.Business;
 using APIGestor.Business.Demandas;
@@ -26,23 +25,27 @@ namespace APIGestor.Controllers.Demandas
         SistemaService sistemaService;
         protected DemandaService Service { get; }
         protected DemandaLogService LogService { get; }
-        private IHostingEnvironment _hostingEnvironment;
-        protected List<FieldList> _forms = new List<FieldList>(){
-                new EspecificacaoTecnicaForm()
+        private IWebHostEnvironment _hostingEnvironment;
+
+        protected List<FieldList> _forms = new List<FieldList>()
+        {
+            new EspecificacaoTecnicaForm()
         };
-        public DemandaController(DemandaService DemandaService, SistemaService sistemaService, IHostingEnvironment hostingEnvironment)
+
+        public DemandaController(DemandaService DemandaService, SistemaService sistemaService,
+            IWebHostEnvironment hostingEnvironment)
         {
             this.Service = DemandaService;
-            
+
             this.sistemaService = sistemaService;
             _hostingEnvironment = hostingEnvironment;
         }
 
 
         [HttpGet("{etapa:alpha}")]
-        public List<Demanda> GetByEtapa(Etapa etapa)
+        public List<Demanda> GetByEtapa(DemandaEtapa demandaEtapa)
         {
-            return this.Service.GetByEtapa(etapa, this.userId());
+            return this.Service.GetByEtapa(demandaEtapa, this.userId());
         }
 
         [HttpGet("Reprovadas")]
@@ -50,6 +53,7 @@ namespace APIGestor.Controllers.Demandas
         {
             return this.Service.GetDemandasReprovadas(this.userId());
         }
+
         [HttpGet("Aprovadas")]
         public List<Demanda> GetDemandasAprovadas()
         {
@@ -67,7 +71,5 @@ namespace APIGestor.Controllers.Demandas
         {
             return this.Service.GetDemandasCaptacao(this.userId());
         }
-
-
     }
 }

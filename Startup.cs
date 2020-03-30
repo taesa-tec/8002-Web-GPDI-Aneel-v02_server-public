@@ -11,7 +11,6 @@ using APIGestor.Data;
 using APIGestor.Models;
 using APIGestor.Security;
 using APIGestor.Business;
-using Swashbuckle.AspNetCore.Swagger;
 using System.Globalization;
 using System.Net;
 using APIGestor.Authorizations;
@@ -21,8 +20,9 @@ using APIGestor.Business.Demandas;
 using APIGestor.Exceptions.Demandas;
 using AutoMapper;
 using GlobalExceptionHandler.WebApi;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.Cms;
 
 namespace APIGestor
 {
@@ -130,6 +130,7 @@ namespace APIGestor
             services.AddSingleton(tokenConfigurations);
 
             services.AddSingleton<IAuthorizationHandler, ProjectAuthorizationHandler>();
+            services.AddSingleton<IdentityInitializer>();
 
             // Aciona a extensão que irá configurar o uso de
             // autenticação e autorização via tokens
@@ -137,30 +138,29 @@ namespace APIGestor
                 signingConfigurations, tokenConfigurations);
 
             services.AddCors();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1",
-                    new Info
+                    new OpenApiInfo()
                     {
                         Title = "Taesa - Gestor P&D",
-                        Version = "v1",
-                        Description = "API REST criada com o ASP.NET Core 2.1 para comunição com o Gestor P&D",
-                        Contact = new Contact
-                        {
-                            Name = "Christiano de Chermont",
-                            Url = "https://github.com/xerminada"
-                        }
+                        Version = "2.2",
+                        Description = "API REST criada com o ASP.NET Core 3.1 para comunição com o Gestor P&D",
                     });
+            });
+            services.ConfigureSwaggerGen(options =>
+            {
+                options.CustomSchemaIds(t =>
+                {
+                    Console.WriteLine(t.FullName);
+                    return t.FullName;
+                });
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
-            GestorDbContext context,
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            MailService mailService)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -185,7 +185,6 @@ namespace APIGestor
                         exception.Message,
                         exception.Source,
                     });
-                    
                 });
                 configuration.Map<DemandaException>()
                     .ToStatusCode(HttpStatusCode.UnprocessableEntity);
@@ -203,18 +202,25 @@ namespace APIGestor
             // Criação de estruturas, usuários e permissões
             // na base do ASP.NET Identity Core (caso ainda não
             // existam)
-            new IdentityInitializer(context, userManager, roleManager, mailService, Configuration)
-                .Initialize();
+
+            app.UseRouting();
+
 
             // Ativando middlewares para uso do Swagger
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1"); });
-            app.UseCors(builder => builder.AllowAnyMethod()
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowCredentials());
+
+            app.UseCors(builder =>
+                    builder.AllowAnyMethod()
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                //.AllowCredentials()
+            );
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+
+            // identityInitializer.Initialize();
         }
     }
 }

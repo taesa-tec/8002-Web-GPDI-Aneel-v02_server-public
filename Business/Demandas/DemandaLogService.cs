@@ -32,12 +32,12 @@ namespace APIGestor.Business.Demandas
     {
         GestorDbContext context;
         IAuthorizationService authorization;
-        IHostingEnvironment hostingEnvironment;
+        IWebHostEnvironment hostingEnvironment;
         SistemaService sistemaService;
         public DemandaLogService(
             GestorDbContext context,
             IAuthorizationService authorization,
-            IHostingEnvironment hostingEnvironment,
+            IWebHostEnvironment hostingEnvironment,
             SistemaService sistemaService
             )
         {
