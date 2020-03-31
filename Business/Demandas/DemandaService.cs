@@ -136,7 +136,7 @@ namespace APIGestor.Business.Demandas
 
         public List<Demanda> GetByEtapa(DemandaEtapa demandaEtapa, string userId = null)
         {
-            return QueryDemandas(userId).Where(d => d.DemandaEtapaAtual == demandaEtapa).ToList();
+            return QueryDemandas(userId).Where(d => d.EtapaAtual == demandaEtapa).ToList();
         }
 
         public List<Demanda> GetByEtapaStatus(DemandaStatus status, string userId = null)
@@ -155,20 +155,20 @@ namespace APIGestor.Business.Demandas
         {
             return QueryDemandas(userId)
                 // .Where(d => d.EtapaAtual == Etapa.AprovacaoDiretor && (d.EtapaStatus == EtapaStatus.Aprovada && d.EtapaStatus == EtapaStatus.Concluido)).ToList();
-                .Where(d => d.DemandaEtapaAtual == DemandaEtapa.AprovacaoDiretor && d.Status == DemandaStatus.Aprovada).ToList();
+                .Where(d => d.EtapaAtual == DemandaEtapa.AprovacaoDiretor && d.Status == DemandaStatus.Aprovada).ToList();
         }
 
         public List<Demanda> GetDemandasEmElaboracao(string userId = null)
         {
             return QueryDemandas(userId)
-                .Where(d => d.DemandaEtapaAtual == DemandaEtapa.Elaboracao || d.Status == DemandaStatus.EmElaboracao ||
+                .Where(d => d.EtapaAtual == DemandaEtapa.Elaboracao || d.Status == DemandaStatus.EmElaboracao ||
                             d.Status == DemandaStatus.Pendente).ToList();
         }
 
         public List<Demanda> GetDemandasCaptacao(string userId = null)
         {
             return QueryDemandas(userId)
-                .Where(d => d.DemandaEtapaAtual == DemandaEtapa.Captacao).ToList();
+                .Where(d => d.EtapaAtual == DemandaEtapa.Captacao).ToList();
         }
 
         public List<Demanda> GetDemandasPendentes(string userId = null)
@@ -185,7 +185,7 @@ namespace APIGestor.Business.Demandas
             var demanda = new Demanda();
             demanda.Titulo = titulo;
             demanda.CriadorId = userId;
-            demanda.DemandaEtapaAtual = DemandaEtapa.Elaboracao;
+            demanda.EtapaAtual = DemandaEtapa.Elaboracao;
             demanda.Status = DemandaStatus.EmElaboracao;
             _context.Demandas.Add(demanda);
             _context.SaveChanges();
@@ -217,13 +217,13 @@ namespace APIGestor.Business.Demandas
             _context.SaveChanges();
             NotificarResponsavel(demanda, userId);
 
-            if (demanda.DemandaEtapaAtual < DemandaEtapa.Captacao && demanda.Status == DemandaStatus.EmElaboracao)
+            if (demanda.EtapaAtual < DemandaEtapa.Captacao && demanda.Status == DemandaStatus.EmElaboracao)
             {
                 LogService.Incluir(userId, demanda.Id, "Alterou Etapa",
                     String.Format(" {0} alterou a etapa da demanda para \"{1}\"", user.NomeCompleto,
                         demanda.EtapaDesc));
             }
-            else if (demanda.DemandaEtapaAtual == DemandaEtapa.AprovacaoDiretor && demanda.Status == DemandaStatus.Concluido)
+            else if (demanda.EtapaAtual == DemandaEtapa.AprovacaoDiretor && demanda.Status == DemandaStatus.Concluido)
             {
                 LogService.Incluir(userId, demanda.Id, "Aprovou a etapa",
                     String.Format(" {0} aprovou a demanda.", user.NomeCompleto));
@@ -307,9 +307,9 @@ namespace APIGestor.Business.Demandas
 
             var demanda = GetById(id);
 
-            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.DemandaEtapaAtual))
+            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
             {
-                if (this.DemandaProgressCheck[demanda.DemandaEtapaAtual](demanda, userId))
+                if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
                 {
                     demanda.ReprovarReiniciar();
                     _context.DemandaFormValues
@@ -338,9 +338,9 @@ namespace APIGestor.Business.Demandas
 
             var demanda = GetById(id);
 
-            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.DemandaEtapaAtual))
+            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
             {
-                if (this.DemandaProgressCheck[demanda.DemandaEtapaAtual](demanda, userId))
+                if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
                 {
                     demanda.ReprovarPermanente();
                     _context.SaveChanges();
@@ -383,9 +383,9 @@ namespace APIGestor.Business.Demandas
         public void EnviarCaptacao(int id, string userId)
         {
             var demanda = GetById(id);
-            if (demanda != null && demanda.DemandaEtapaAtual != DemandaEtapa.Captacao)
+            if (demanda != null && demanda.EtapaAtual != DemandaEtapa.Captacao)
             {
-                demanda.DemandaEtapaAtual = DemandaEtapa.Captacao;
+                demanda.EtapaAtual = DemandaEtapa.Captacao;
                 demanda.Status = DemandaStatus.Concluido;
                 demanda.CaptacaoDate = DateTime.Now;
                 _context.SaveChanges();
@@ -401,7 +401,7 @@ namespace APIGestor.Business.Demandas
 
         protected string GetResponsavelAtual(Demanda demanda)
         {
-            switch (demanda.DemandaEtapaAtual)
+            switch (demanda.EtapaAtual)
             {
                 case DemandaEtapa.Elaboracao:
                     return demanda.CriadorId;
@@ -692,7 +692,7 @@ namespace APIGestor.Business.Demandas
 
         public void NotificarResponsavel(Demanda demanda, string userId)
         {
-            switch (demanda.DemandaEtapaAtual)
+            switch (demanda.EtapaAtual)
             {
                 case DemandaEtapa.PreAprovacao:
                     NotificarSuperior(demanda);

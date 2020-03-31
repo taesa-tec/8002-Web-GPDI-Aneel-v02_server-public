@@ -20,7 +20,7 @@ namespace APIGestor.Controllers.Demandas
     [Route("api/Demandas/")]
     [ApiController]
     [Authorize("Bearer")]
-    public partial class DemandaController : Controller
+    public partial class DemandaController : ControllerBase
     {
         SistemaService sistemaService;
         protected DemandaService Service { get; }

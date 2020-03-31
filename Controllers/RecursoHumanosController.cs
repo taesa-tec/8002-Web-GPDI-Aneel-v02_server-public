@@ -21,8 +21,8 @@ namespace APIGestor.Controllers {
             return _service.ListarTodos(projetoId);
         }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]RecursoHumano RecursoHumano ) {
             if(_service.UserProjectCan((int)RecursoHumano.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(RecursoHumano);
@@ -34,8 +34,8 @@ namespace APIGestor.Controllers {
             return Forbid();
         }
 
-        [Route("[controller]")]
-        [HttpPut]
+         // CONTROLLER
+        [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]RecursoHumano RecursoHumano ) {
             if(_service.UserProjectCan((int)RecursoHumano.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var oldRecurso = _service.Obter(RecursoHumano.Id);

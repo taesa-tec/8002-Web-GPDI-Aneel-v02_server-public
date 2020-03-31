@@ -23,8 +23,8 @@ namespace APIGestor.Controllers {
         //     return _service.ListarTodos(projetoId);
         // }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]RegistroFinanceiro RegistroFinanceiro ) {
             var Registro = _service._context.RegistrosFinanceiros.Where(r => r.Id == RegistroFinanceiro.Id).FirstOrDefault();
             if(_service.UserProjectCan((int)RegistroFinanceiro.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
@@ -37,8 +37,8 @@ namespace APIGestor.Controllers {
             return Forbid();
         }
 
-        [Route("[controller]")]
-        [HttpPut]
+         // CONTROLLER
+        [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]RegistroFinanceiro RegistroFinanceiro ) {
             var Registro = _service.Obter(RegistroFinanceiro.Id);
             if(_service.UserProjectCan((int)Registro.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {

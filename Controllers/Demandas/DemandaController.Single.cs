@@ -28,7 +28,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace APIGestor.Controllers.Demandas
 {
-    public partial class DemandaController : Controller
+    public partial class DemandaController
     {
         private const string patt = "(<[\\w|\\d]+(?:\\b[^>]*)?>\\s*|\\s*</[\\w|\\d]+>\\s*)";
 
@@ -38,7 +38,7 @@ namespace APIGestor.Controllers.Demandas
             return Service.CriarDemanda(titulo, this.userId());
         }
 
-        [HttpHead("{id:int}")]
+        [HttpHead("{id:int}/Access")]
         public ActionResult HasAccess(int id)
         {
             if (Service.DemandaExist(id))
@@ -231,7 +231,7 @@ namespace APIGestor.Controllers.Demandas
         {
             if (Service.DemandaExist(id))
             {
-                Service.SalvarDemandaFormData(id, form, data);
+                Service.SalvarDemandaFormData(id, form, data).RunSynchronously();
                 var formName = DemandaService.GetForm(form).Title;
                 Service.LogService.Incluir(this.userId(), id,
                     String.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");
@@ -332,7 +332,7 @@ namespace APIGestor.Controllers.Demandas
 
         [AllowAnonymous]
         [HttpGet("{id:int}/Form/{form}/DiffPlex/{version}")]
-        public async Task<ActionResult> TestDiffPlex(int id, string form, int version, [FromServices] IMapper mapper,
+        public ActionResult TestDiffPlex(int id, string form, int version, [FromServices] IMapper mapper,
             [FromServices] IViewRenderService viewRenderService)
         {
             var diffBuilder = new InlineDiffBuilder(new Differ());
@@ -364,8 +364,8 @@ namespace APIGestor.Controllers.Demandas
                 true,
                 chunker
             ); // HttpUtility.HtmlDecode(htmlNew.DocumentNode.InnerText));
+            //var content = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
             return Ok(diff);
-            var content = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
             //return Content(content, "text/html");
         }
 

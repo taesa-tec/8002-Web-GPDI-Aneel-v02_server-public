@@ -50,7 +50,7 @@ namespace APIGestor.Models.Demandas
 
         public string RevisorId { get; set; }
         public ApplicationUser Revisor { get; set; }
-        public DemandaEtapa DemandaEtapaAtual { get; set; }
+        public DemandaEtapa EtapaAtual { get; set; }
         public DemandaStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? CaptacaoDate { get; set; }
@@ -59,22 +59,22 @@ namespace APIGestor.Models.Demandas
 
         public void ProximaEtapa()
         {
-            if (this.DemandaEtapaAtual > DemandaEtapa.Elaboracao && String.IsNullOrWhiteSpace(SuperiorDiretoId))
+            if (this.EtapaAtual > DemandaEtapa.Elaboracao && String.IsNullOrWhiteSpace(SuperiorDiretoId))
             {
                 throw new DemandaException("A demanda não tem superior direto definido");
             }
 
-            if (this.DemandaEtapaAtual >= DemandaEtapa.RevisorPendente && String.IsNullOrWhiteSpace(RevisorId))
+            if (this.EtapaAtual >= DemandaEtapa.RevisorPendente && String.IsNullOrWhiteSpace(RevisorId))
             {
                 throw new DemandaException("Não é possível avançar para a proxíma etapa sem revisor");
             }
 
-            if (this.DemandaEtapaAtual < DemandaEtapa.AprovacaoDiretor)
+            if (this.EtapaAtual < DemandaEtapa.AprovacaoDiretor)
             {
-                this.DemandaEtapaAtual++;
-                if (this.DemandaEtapaAtual == DemandaEtapa.RevisorPendente && !String.IsNullOrWhiteSpace(RevisorId))
+                this.EtapaAtual++;
+                if (this.EtapaAtual == DemandaEtapa.RevisorPendente && !String.IsNullOrWhiteSpace(RevisorId))
                 {
-                    this.DemandaEtapaAtual++;
+                    this.EtapaAtual++;
                 }
                 this.Status = DemandaStatus.EmElaboracao;
             }
@@ -85,25 +85,25 @@ namespace APIGestor.Models.Demandas
         }
         public void EtapaAnterior()
         {
-            if (this.DemandaEtapaAtual > DemandaEtapa.Elaboracao)
+            if (this.EtapaAtual > DemandaEtapa.Elaboracao)
             {
-                this.DemandaEtapaAtual--;
+                this.EtapaAtual--;
                 this.Status = DemandaStatus.EmElaboracao;
             }
         }
         public void IrParaEtapa(DemandaEtapa demandaEtapa)
         {
-            if (demandaEtapa > DemandaEtapaAtual)
+            if (demandaEtapa > EtapaAtual)
                 ProximaEtapa();
-            else if (demandaEtapa < DemandaEtapaAtual)
+            else if (demandaEtapa < EtapaAtual)
                 EtapaAnterior();
 
-            if (DemandaEtapaAtual != demandaEtapa)
+            if (EtapaAtual != demandaEtapa)
                 IrParaEtapa(demandaEtapa);
         }
         public void ReprovarReiniciar()
         {
-            this.DemandaEtapaAtual = DemandaEtapa.Elaboracao;
+            this.EtapaAtual = DemandaEtapa.Elaboracao;
             this.Status = DemandaStatus.Reprovada;
         }
         public void ReprovarPermanente()
@@ -122,7 +122,7 @@ namespace APIGestor.Models.Demandas
         {
             get
             {
-                return Enum.GetName(typeof(DemandaEtapa), this.DemandaEtapaAtual);
+                return Enum.GetName(typeof(DemandaEtapa), this.EtapaAtual);
             }
         }
 
@@ -130,7 +130,7 @@ namespace APIGestor.Models.Demandas
         {
             get
             {
-                return Demanda._etapaDesc[DemandaEtapaAtual];
+                return Demanda._etapaDesc[EtapaAtual];
             }
         }
 

@@ -37,8 +37,8 @@ namespace APIGestor.Controllers {
                 return NotFound();
         }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]Produto Produto ) {
             if(this._service.UserProjectCan(Produto.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(Produto);
@@ -50,8 +50,8 @@ namespace APIGestor.Controllers {
             return Forbid();
         }
 
-        [Route("[controller]")]
-        [HttpPut]
+         // CONTROLLER
+        [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]Produto Produto ) {
             if(this._service.UserProjectCan(Produto.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var oldProduto = _service.Obter(Produto.Id);

@@ -21,8 +21,8 @@ namespace APIGestor.Controllers {
             return _service.ListarTodos(projetoId);
         }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]AlocacaoRm AlocacaoRm ) {
             if(_service.UserProjectCan((int)AlocacaoRm.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(AlocacaoRm);
@@ -34,8 +34,8 @@ namespace APIGestor.Controllers {
             return Forbid();
         }
 
-        [Route("[controller]")]
-        [HttpPut]
+         // CONTROLLER
+        [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]AlocacaoRm AlocacaoRm ) {
             if(_service.UserProjectCan((int)AlocacaoRm.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var oldAlocacao = _service.Obter(AlocacaoRm.Id);

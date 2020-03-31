@@ -6,8 +6,10 @@ using APIGestor.Models;
 using APIGestor.Security;
 using System.IdentityModel.Tokens.Jwt;
 using System;
+using System.Linq;
 using APIGestor.Dtos;
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.FileProviders;
 
 namespace APIGestor.Controllers
@@ -24,6 +26,20 @@ namespace APIGestor.Controllers
         {
             _service = service;
             this.mapper = mapper;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("routes")]
+        public IActionResult GetRoutes([FromServices] IActionDescriptorCollectionProvider _provider)
+        {
+            var routes = _provider.ActionDescriptors.Items.Select(x => new
+            {
+                Action = x.RouteValues["Action"],
+                Controller = x.RouteValues["Controller"],
+                Name = x.AttributeRouteInfo.Name,
+                Template = x.AttributeRouteInfo.Template
+            }).OrderBy(i => i.Template).ToList();
+            return Ok(routes);
         }
 
         [HttpGet]

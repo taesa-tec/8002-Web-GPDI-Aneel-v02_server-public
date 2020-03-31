@@ -37,7 +37,11 @@ namespace APIGestor
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IStartupFilter, IdentityInitializer>();
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddControllers();
+
             services.AddScoped<IViewRenderService, ViewRenderService>();
             // Configurando o acesso a dados de projetos
             if (System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Stage")
@@ -52,6 +56,20 @@ namespace APIGestor
                 services.AddDbContext<GestorDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
             }
+
+            services.AddCors();
+            services.AddMvc();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1",
+                    new OpenApiInfo()
+                    {
+                        Title = "Taesa - Gestor P&D",
+                        Version = "2.2",
+                        Description = "API REST criada com o ASP.NET Core 3.1 para comunição com o Gestor P&D",
+                    });
+            });
 
             services.AddScoped<CatalogService>();
             services.AddScoped<MailService>();
@@ -136,28 +154,6 @@ namespace APIGestor
             // autenticação e autorização via tokens
             services.AddJwtSecurity(
                 signingConfigurations, tokenConfigurations);
-
-            services.AddCors();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1",
-                    new OpenApiInfo()
-                    {
-                        Title = "Taesa - Gestor P&D",
-                        Version = "2.2",
-                        Description = "API REST criada com o ASP.NET Core 3.1 para comunição com o Gestor P&D",
-                    });
-            });
-            services.ConfigureSwaggerGen(options =>
-            {
-                options.CustomSchemaIds(t =>
-                {
-                    Console.WriteLine(t.FullName);
-                    return t.FullName;
-                });
-            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -203,12 +199,13 @@ namespace APIGestor
             // na base do ASP.NET Identity Core (caso ainda não
             // existam)
 
-            app.UseRouting();
-
 
             // Ativando middlewares para uso do Swagger
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1"); });
+
+            app.UseRouting();
+            app.UseAuthorization();
 
             app.UseCors(builder =>
                     builder.AllowAnyMethod()
@@ -218,9 +215,6 @@ namespace APIGestor
             );
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.UseHttpsRedirection();
-
-
-            // identityInitializer.Initialize();
         }
     }
 }
