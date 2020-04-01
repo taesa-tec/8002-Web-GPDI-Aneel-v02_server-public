@@ -41,7 +41,7 @@ namespace APIGestor.Security
             services.AddAuthorization(auth =>
             {
                 auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser().Build());
             });
 

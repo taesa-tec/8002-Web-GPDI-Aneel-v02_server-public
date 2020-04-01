@@ -4,17 +4,10 @@ using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Collections.Generic;
-using SendGrid;
-using SendGrid.Helpers.Mail;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
-using APIGestor.Data;
 using APIGestor.Models;
-using APIGestor.Security;
 using APIGestor.Business;
 
 namespace APIGestor.Security {
@@ -23,14 +16,14 @@ namespace APIGestor.Security {
         private SignInManager<ApplicationUser> _signInManager;
         private SigningConfigurations _signingConfigurations;
         private TokenConfigurations _tokenConfigurations;
-        private IHostingEnvironment _hostingEnvironment;
+        private IWebHostEnvironment _hostingEnvironment;
         private MailService _mailService;
 
         public AccessManager(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             SigningConfigurations signingConfigurations,
-            IHostingEnvironment hostingEnvironment,
+            IWebHostEnvironment hostingEnvironment,
             TokenConfigurations tokenConfigurations,
             MailService mailService ) {
             _userManager = userManager;

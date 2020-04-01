@@ -54,7 +54,7 @@
             color: inherit;
         }
     </style>
-@Html.Partial("Pdf/_Style")
+<partial name="Pdf/_Style"/>
 @foreach (var line in @Model.Lines)
 {
     if (!Regex.IsMatch(line.Text, "<[\\w|\\d]+(?:\\b[^>]*)?>\\s*|\\s*</[\\w|\\d]+>\\s*"))

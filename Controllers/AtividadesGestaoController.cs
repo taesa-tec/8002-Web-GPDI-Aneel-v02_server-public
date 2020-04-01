@@ -24,15 +24,15 @@ namespace APIGestor.Controllers
             return _service.Obter(projetoId);
         }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post([FromBody]AtividadesGestao dados)
         {
             return _service.Incluir(dados);
         }
 
-        [Route("[controller]")]
-        [HttpPut]
+         // CONTROLLER
+        [HttpPut("[controller]")]
         public ActionResult<Resultado> Put([FromBody]AtividadesGestao dados)
         {
             return _service.Atualizar(dados);

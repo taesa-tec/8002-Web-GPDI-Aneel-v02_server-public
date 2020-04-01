@@ -21,8 +21,8 @@ namespace APIGestor.Controllers {
             return _service.ListarTodos(projetoId);
         }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]Etapa Etapa ) {
             if(_service.UserProjectCan(Etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(Etapa);
@@ -34,8 +34,8 @@ namespace APIGestor.Controllers {
             return Forbid();
         }
 
-        [Route("[controller]")]
-        [HttpPut]
+         // CONTROLLER
+        [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]Etapa Etapa ) {
             var etapa = _service.Obter(Etapa.Id);
             if(_service.UserProjectCan(etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {

@@ -9,7 +9,7 @@
         href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap"
         rel="stylesheet"/>
     <title></title>
-    @Html.Partial("Pdf/_Style")
+    <partial name="Pdf/_Style"/>
 </head>
 
 <body>
@@ -270,7 +270,7 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
         <div class="bPage">&nbsp;</div>
 
         <div class="content" id="main-content">
-            @Html.Partial("Pdf/_FieldItem", @Model.Rendered)
+            <partial name="Pdf/_FieldItem" for="Rendered" />
         </div>
     </td>
 </tr>

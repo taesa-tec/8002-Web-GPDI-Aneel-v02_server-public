@@ -22,7 +22,7 @@ namespace APIGestor.Controllers
     [Authorize("Bearer")]
     public class DemandaFileController : FileBaseController<DemandaFile>
     {
-        public DemandaFileController(GestorDbContext context, IHostingEnvironment hostingEnvironment) : base(context,
+        public DemandaFileController(GestorDbContext context, IWebHostEnvironment hostingEnvironment) : base(context,
             hostingEnvironment)
         {
         }

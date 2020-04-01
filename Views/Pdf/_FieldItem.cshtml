@@ -5,7 +5,7 @@
     <div class="field-item-children">
         @foreach (var item in Model.Children)
         {
-            @Html.Partial("Pdf/_FieldItem", item)
+            <partial name="Pdf/_FieldItem" for="@item"/>
         }
     </div>
 </div>

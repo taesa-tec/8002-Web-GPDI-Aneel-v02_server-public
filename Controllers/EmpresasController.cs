@@ -22,8 +22,8 @@ namespace APIGestor.Controllers {
             return _service.ListarTodos(projetoId);
         }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]Empresa Empresa ) {
             if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
 
@@ -36,8 +36,8 @@ namespace APIGestor.Controllers {
             return Forbid();
         }
 
-        [Route("[controller]")]
-        [HttpPut]
+         // CONTROLLER
+        [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]Empresa Empresa ) {
             if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var empresaOld = _service.Obter(Empresa.Id);

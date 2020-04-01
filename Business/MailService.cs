@@ -16,7 +16,7 @@ namespace APIGestor.Business
     public class MailService
     {
         private UserManager<ApplicationUser> _userManager;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly IConfiguration configuration;
         private readonly string urlSite;
         private readonly string contactEmail;
@@ -24,7 +24,7 @@ namespace APIGestor.Business
         private readonly IConfigurationSection SendGrid;
         public MailService(
             UserManager<ApplicationUser> userManager,
-            IHostingEnvironment hostingEnvironment,
+            IWebHostEnvironment hostingEnvironment,
             IConfiguration configuration)
         {
             _userManager = userManager;

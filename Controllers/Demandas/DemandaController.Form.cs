@@ -17,7 +17,7 @@ using APIGestor.Business.Sistema;
 
 namespace APIGestor.Controllers.Demandas
 {
-    public partial class DemandaController : Controller
+    public partial class DemandaController
     {
         [AllowAnonymous]
         [HttpGet("Forms")]

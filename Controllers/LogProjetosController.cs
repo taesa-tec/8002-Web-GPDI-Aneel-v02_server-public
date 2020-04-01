@@ -28,8 +28,8 @@ namespace APIGestor.Controllers {
             };
         }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]LogProjeto LogProjeto ) {
             return Ok();
         }

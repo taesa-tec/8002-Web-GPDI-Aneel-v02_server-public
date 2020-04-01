@@ -99,14 +99,14 @@ namespace APIGestor.Models
             }
         }
 
-        public new decimal Valor
+        public decimal ValorOrcamento
         {
             get
             {
                 decimal t = 0;
                 foreach (var empresa in Empresas)
                 {
-                    t += empresa.Valor;
+                    t += empresa.ValorOrcamento;
                 }
 
                 return t;
@@ -184,14 +184,14 @@ namespace APIGestor.Models
             }
         }
 
-        public new decimal Valor
+        public decimal ValorOrcamento
         {
             get
             {
                 decimal valor = 0;
                 foreach (var item in Relatorios)
                 {
-                    valor += (decimal) item.Valor;
+                    valor += (decimal) item.ValorOrcamento;
                 }
 
                 return valor;
@@ -220,7 +220,7 @@ namespace APIGestor.Models
         {
         }
 
-        public new decimal Valor
+        public decimal ValorOrcamento
         {
             get
             {
@@ -277,9 +277,9 @@ namespace APIGestor.Models
             get { return this.orcamentoEmpresas.Total; }
         }
 
-        public new decimal Valor
+        public decimal ValorOrcamento
         {
-            get { return this.orcamentoEmpresas.Valor; }
+            get { return this.orcamentoEmpresas.ValorOrcamento; }
         }
 
         public int TotalAprovado
@@ -305,7 +305,7 @@ namespace APIGestor.Models
 
         public decimal Desvio
         {
-            get { return 100m * (this.Valor > 0 ? this.ValorAprovado / this.Valor : 0); }
+            get { return 100m * (this.ValorOrcamento > 0 ? this.ValorAprovado / this.ValorOrcamento : 0); }
         }
 
         public List<ExtratoEmpresaItem> ExtratoEmpresaItens
@@ -392,7 +392,7 @@ namespace APIGestor.Models
         public ExtratoEmpresa(Empresa e, OrcamentoEmpresa orcamento) : base(e)
         {
             this.orcamento = orcamento != null ? orcamento : new OrcamentoEmpresa(e);
-            this.Valor = this.orcamento.Valor;
+            this.Valor = this.orcamento.ValorOrcamento;
             this.Total = this.orcamento.Total;
         }
 
@@ -452,7 +452,7 @@ namespace APIGestor.Models
         {
             if (orcamento != null)
             {
-                this.Valor = orcamento.Valor;
+                this.Valor = orcamento.ValorOrcamento;
                 this.Total = orcamento.Total;
             }
             else

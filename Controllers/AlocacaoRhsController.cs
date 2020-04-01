@@ -6,9 +6,9 @@ using APIGestor.Business;
 using APIGestor.Models;
 
 namespace APIGestor.Controllers {
-    [Route("api/projeto/")]
     [ApiController]
     [Authorize("Bearer")]
+    [Route("api/projeto/")]
     public class AlocacaoRhsController : ControllerBase {
         private AlocacaoRhService _service;
 
@@ -22,8 +22,8 @@ namespace APIGestor.Controllers {
             return _service.ListarTodos(projetoId);
         }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]AlocacaoRh AlocacaoRh ) {
             if(_service.UserProjectCan((int)AlocacaoRh.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(AlocacaoRh);
@@ -35,8 +35,8 @@ namespace APIGestor.Controllers {
             return Forbid();
         }
 
-        [Route("[controller]")]
-        [HttpPut]
+         // CONTROLLER
+        [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]AlocacaoRh AlocacaoRh ) {
             if(_service.UserProjectCan((int)AlocacaoRh.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var oldAlocacao = _service.Obter(AlocacaoRh.Id);

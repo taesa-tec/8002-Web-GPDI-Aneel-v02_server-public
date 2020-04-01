@@ -25,8 +25,8 @@ namespace APIGestor.Controllers {
                 return NotFound();
         }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]RelatorioFinal RelatorioFinal ) {
             if(_service.UserProjectCan(RelatorioFinal.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(RelatorioFinal);
@@ -38,8 +38,8 @@ namespace APIGestor.Controllers {
             return Forbid();
         }
 
-        [Route("[controller]")]
-        [HttpPut]
+         // CONTROLLER
+        [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]RelatorioFinal RelatorioFinal ) {
             var Relatorio = _service._context.RelatorioFinal.Find(RelatorioFinal.Id);
             if(Relatorio != null) {

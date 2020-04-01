@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using APIGestor.Business;
 using APIGestor.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace APIGestor.Controllers {
+namespace APIGestor.Controllers.Resultados {
     [Route("api/projeto/")]
     [ApiController]
     [Authorize("Bearer")]
@@ -29,8 +29,8 @@ namespace APIGestor.Controllers {
                 return NotFound();
         }
 
-        [Route("[controller]")]
-        [HttpPost]
+         // CONTROLLER
+        [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]ResultadoEconomico ResultadoEconomico ) {
 
             if(_service.UserProjectCan(ResultadoEconomico.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
@@ -44,8 +44,8 @@ namespace APIGestor.Controllers {
 
         }
 
-        [Route("[controller]")]
-        [HttpPut]
+         // CONTROLLER
+        [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]ResultadoEconomico ResultadoEconomico ) {
             var Resultado = _service._context.ResultadosEconomico.Find(ResultadoEconomico.Id);
             if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {

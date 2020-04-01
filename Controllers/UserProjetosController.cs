@@ -11,9 +11,7 @@ using System.Linq;
 namespace APIGestor.Controllers
 {
     [ApiController]
-
     [Authorize("Bearer")]
-
     public class UserProjetosController : ControllerBase
     {
         private UserProjetoService _service;
@@ -25,7 +23,6 @@ namespace APIGestor.Controllers
             _service = service;
         }
 
-        //[Route("api/UserProjetos")]
         [HttpGet("api/UserProjetos/me")]
         public List<Projeto> Get()
         {
@@ -39,7 +36,6 @@ namespace APIGestor.Controllers
             }
         }
 
-        //[Route("api/UserProjetos")]
         [HttpGet("api/UserProjetos/{userId}")]
         public IEnumerable<UserProjeto> GetA(string userId)
         {
@@ -49,9 +45,9 @@ namespace APIGestor.Controllers
                 return null;
         }
 
-        [Route("api/UserProjetos")]
-        [HttpPost]
-        public ActionResult<Resultado> Post([FromBody]List<UserProjeto> UserProjeto)
+
+        [HttpPost("api/UserProjetos")]
+        public ActionResult<Resultado> Post([FromBody] List<UserProjeto> UserProjeto)
         {
             var pids = UserProjeto.GroupBy(p => p.ProjetoId).Select(p => p.Key).ToList();
             var auth = true;
@@ -66,12 +62,12 @@ namespace APIGestor.Controllers
             {
                 return _service.Incluir(UserProjeto);
             }
+
             return Forbid();
         }
 
-        [Route("api/ProjetoUsers")]
-        [HttpPost]
-        public ActionResult<Resultado> PostA([FromBody]List<UserProjeto> UserProjeto)
+        [HttpPost("api/ProjetoUsers")]
+        public ActionResult<Resultado> PostA([FromBody] List<UserProjeto> UserProjeto)
         {
             var pids = UserProjeto.GroupBy(p => p.ProjetoId).Select(p => p.Key).ToList();
             var auth = true;
@@ -80,10 +76,12 @@ namespace APIGestor.Controllers
             {
                 auth = auth && (_service.UserProjectCan(id, User, Authorizations.ProjectPermissions.Administrator));
             }
+
             if (auth)
             {
                 return _service.IncluirProjeto(UserProjeto);
             }
+
             return Forbid();
         }
 

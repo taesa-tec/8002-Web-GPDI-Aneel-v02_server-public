@@ -24,11 +24,11 @@ namespace APIGestor.Business {
         private XmlRelatorioFinalGestaoService _relatorioFinalGestao;
         private XmlRelatorioAuditoriaGestaoService _relatorioAuditoriaGestao;
         private XmlProjetoGestaoService _projetoGestao;
-        private IHostingEnvironment _hostingEnvironment;
+        private IWebHostEnvironment _hostingEnvironment;
 
         public GeradorXmlService(
             GestorDbContext context,
-            IHostingEnvironment hostingEnvironment,
+            IWebHostEnvironment hostingEnvironment,
             XmlProjetoPedService projetoPed,
             XmlInteressePedService interessePed,
             XmlInicioExecService inicioExec,
