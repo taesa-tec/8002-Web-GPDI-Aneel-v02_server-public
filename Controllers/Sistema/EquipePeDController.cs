@@ -1,11 +1,7 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using APIGestor.Business.Sistema;
 using APIGestor.Core.Equipe;
-using APIGestor.Models;
+using APIGestor.Services.Sistema;
 
 namespace APIGestor.Controllers.Sistema
 {

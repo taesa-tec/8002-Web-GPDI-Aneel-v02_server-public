@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,19 +9,28 @@ using Microsoft.EntityFrameworkCore;
 using APIGestor.Data;
 using APIGestor.Models;
 using APIGestor.Security;
-using APIGestor.Business;
 using System.Globalization;
+using System.IO;
 using System.Net;
+using System.Reflection;
 using APIGestor.Authorizations;
 using Microsoft.AspNetCore.Authorization;
-using APIGestor.Business.Sistema;
-using APIGestor.Business.Demandas;
 using APIGestor.Exceptions.Demandas;
+using APIGestor.Services;
+using APIGestor.Services.Demandas;
+using APIGestor.Services.Relatorios;
+using APIGestor.Services.Resultados;
+using APIGestor.Services.Sistema;
+using APIGestor.Services.XmlProjeto;
 using AutoMapper;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using TaesaCore.Data;
+using TaesaCore.Interfaces;
+using TaesaCore.Services;
 
 namespace APIGestor
 {
@@ -57,19 +65,28 @@ namespace APIGestor
                     options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
             }
 
+            services.AddScoped<DbContext, GestorDbContext>();
+
             services.AddCors();
             services.AddMvc();
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1",
+                c.SwaggerDoc("v2",
                     new OpenApiInfo()
                     {
                         Title = "Taesa - Gestor P&D",
                         Version = "2.2",
                         Description = "API REST criada com o ASP.NET Core 3.1 para comunição com o Gestor P&D",
                     });
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+                c.EnableAnnotations();
             });
+
+            #region Serviços
 
             services.AddScoped<CatalogService>();
             services.AddScoped<MailService>();
@@ -121,6 +138,8 @@ namespace APIGestor
             services.AddScoped<SistemaService>();
             services.AddScoped<MailerService>();
 
+            #endregion
+
             // Ativando a utilização do ASP.NET Identity, a fim de
             // permitir a recuperação de seus objetos via injeção de
             // dependências
@@ -136,6 +155,13 @@ namespace APIGestor
             // Configurando a dependência para a classe de validação
             // de credenciais e geração de tokens
             services.AddScoped<AccessManager>();
+
+            #region Genéricos
+
+            services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+            services.AddScoped(typeof(IService<>), typeof(BaseService<>));
+
+            #endregion
 
 
             var signingConfigurations = new SigningConfigurations();
@@ -202,7 +228,15 @@ namespace APIGestor
 
             // Ativando middlewares para uso do Swagger
             app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1"); });
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "API V2");
+                c.DocExpansion(DocExpansion.None);
+                c.ShowExtensions();
+                c.EnableFilter();
+                c.EnableDeepLinking();
+                c.EnableValidator();
+            });
 
             app.UseRouting();
             app.UseAuthorization();

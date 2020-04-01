@@ -1,6 +1,6 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using APIGestor.Models;
+using APIGestor.Models.Catalogs;
 
 namespace APIGestor.Dtos
 {

@@ -4,27 +4,18 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Models.Demandas;
-using APIGestor.Business;
-using APIGestor.Business.Demandas;
-using APIGestor.Models.Demandas.Forms;
-using iText.Html2pdf;
-using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
-using iText.Kernel.Pdf;
-using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json.Linq;
-using APIGestor.Business.Sistema;
 using APIGestor.Dtos;
 using APIGestor.Exceptions.Demandas;
+using APIGestor.Services;
+using APIGestor.Services.Demandas;
 using AutoMapper;
 using DiffPlex;
 using DiffPlex.Chunkers;
 using DiffPlex.DiffBuilder;
-using DiffPlex.DiffBuilder.Model;
 using HtmlAgilityPack;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace APIGestor.Controllers.Demandas
 {

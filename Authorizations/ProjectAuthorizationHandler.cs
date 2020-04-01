@@ -1,12 +1,8 @@
-﻿using APIGestor.Business;
-using APIGestor.Models;
+﻿using APIGestor.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
-using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Threading.Tasks;
+using APIGestor.Models.Projetos;
 
 namespace APIGestor.Authorizations {
     public class ProjectAuthorizationHandler : AuthorizationHandler<ProjectAccessRequirement, UserProjeto> {

@@ -1,21 +1,15 @@
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using APIGestor.Business;
-using APIGestor.Models;
-using APIGestor.Models.Demandas;
-using APIGestor.Security;
-using System.IdentityModel.Tokens.Jwt;
 using System;
-using Microsoft.Extensions.FileProviders;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using APIGestor.Data;
+using APIGestor.Models.Demandas;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Threading.Tasks;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
-namespace APIGestor.Controllers
+namespace APIGestor.Controllers.Demandas
 {
     [Route("api/Demandas/")]
     [ApiController]

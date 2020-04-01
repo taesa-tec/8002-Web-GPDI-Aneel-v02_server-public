@@ -1,16 +1,13 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using APIGestor.Business;
 using APIGestor.Models;
-using APIGestor.Security;
-using System.IdentityModel.Tokens.Jwt;
-using System;
 using System.Linq;
 using APIGestor.Dtos;
+using APIGestor.Models.Projetos;
+using APIGestor.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.FileProviders;
 
 namespace APIGestor.Controllers
 {

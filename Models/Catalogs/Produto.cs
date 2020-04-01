@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using APIGestor.Attributes;
 
-namespace APIGestor.Models {
+namespace APIGestor.Models.Catalogs {
     public class CatalogProdutoFaseCadeia {
         [Key]
         public int Id { get; set; }

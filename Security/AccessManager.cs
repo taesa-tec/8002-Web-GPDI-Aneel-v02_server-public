@@ -8,7 +8,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using APIGestor.Models;
-using APIGestor.Business;
+using APIGestor.Models.Projetos;
+using APIGestor.Services;
 
 namespace APIGestor.Security {
     public class AccessManager {

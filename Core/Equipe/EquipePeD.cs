@@ -1,7 +1,5 @@
-using System;
 using System.Linq;
 using System.Collections.Generic;
-using APIGestor.Models;
 
 namespace APIGestor.Core.Equipe
 {

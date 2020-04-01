@@ -1,19 +1,8 @@
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
-using APIGestor.Models.Demandas;
-using APIGestor.Business;
-using APIGestor.Business.Demandas;
 using APIGestor.Models.Demandas.Forms;
-using iText.Html2pdf;
-using System.IO;
-using iText.Kernel.Pdf;
-using Microsoft.AspNetCore.Hosting;
-using Newtonsoft.Json.Linq;
-using APIGestor.Business.Sistema;
 
 namespace APIGestor.Controllers.Demandas
 {

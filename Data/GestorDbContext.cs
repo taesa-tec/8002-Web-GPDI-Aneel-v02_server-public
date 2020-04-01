@@ -2,8 +2,12 @@
 using APIGestor.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Linq;
+using APIGestor.Models.Captacao;
+using APIGestor.Models.Catalogs;
 using APIGestor.Models.Demandas;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using APIGestor.Models.Fornecedores;
+using APIGestor.Models.Projetos;
+using APIGestor.Models.Projetos.Resultados;
 
 namespace APIGestor.Data
 {
@@ -13,6 +17,8 @@ namespace APIGestor.Data
             DbContextOptions<GestorDbContext> options) : base(options)
         {
         }
+
+        #region DbSet's
 
         public DbSet<FotoPerfil> FotoPerfil { get; set; }
         public DbSet<LogProjeto> LogProjetos { get; set; }
@@ -31,7 +37,7 @@ namespace APIGestor.Data
         public DbSet<Projeto> Projetos { get; set; }
         public DbSet<Empresa> Empresas { get; set; }
         public DbSet<Produto> Produtos { get; set; }
-        public DbSet<Models.Etapa> Etapas { get; set; }
+        public DbSet<Etapa> Etapas { get; set; }
         public DbSet<EtapaProduto> EtapaProdutos { get; set; }
         public DbSet<Tema> Temas { get; set; }
         public DbSet<TemaSubTema> TemaSubTemas { get; set; }
@@ -69,6 +75,8 @@ namespace APIGestor.Data
         public DbSet<FileUpload> Files { get; set; }
         public DbSet<DemandaFile> DemandaFiles { get; set; }
         public DbSet<DemandaLog> DemandaLogs { get; set; }
+
+        #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -119,7 +127,7 @@ namespace APIGestor.Data
                 .HasMany(p => p.Empresas);
 
             // Etapa
-            modelBuilder.Entity<Models.Etapa>()
+            modelBuilder.Entity<Etapa>()
                 .HasMany(p => p.EtapaProdutos);
             // Tema
             modelBuilder.Entity<CatalogTema>()
@@ -141,8 +149,15 @@ namespace APIGestor.Data
             {
                 _dc.Property(dc => dc.CreatedAt).HasDefaultValueSql("getdate()");
             });
-
+            AddEntities(modelBuilder);
             base.OnModelCreating(modelBuilder);
+        }
+
+        protected void AddEntities(ModelBuilder builder)
+        {
+            builder.Entity<Fornecedor>().ToTable("fornecedores");
+            builder.Entity<Contrato>().ToTable("contratos");
+            builder.Entity<Clausula>().ToTable("clausulas");
         }
     }
 }

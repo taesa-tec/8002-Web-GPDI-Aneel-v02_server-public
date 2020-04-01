@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace APIGestor.Models
+namespace APIGestor.Models.Catalogs
 {
     public class CatalogEstado
     {   

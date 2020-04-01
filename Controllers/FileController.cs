@@ -1,16 +1,11 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using APIGestor.Business;
 using APIGestor.Models;
-using APIGestor.Security;
-using System.IdentityModel.Tokens.Jwt;
 using System;
-using Microsoft.Extensions.FileProviders;
 using APIGestor.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 

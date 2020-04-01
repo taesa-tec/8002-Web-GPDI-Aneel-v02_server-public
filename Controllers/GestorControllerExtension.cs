@@ -1,5 +1,4 @@
-﻿using APIGestor.Business;
-using APIGestor.Models;
+﻿using APIGestor.Models;
 using APIGestor.Security;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -8,9 +7,8 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Reflection;
-using static APIGestor.Models.Log;
+using APIGestor.Models.Projetos;
+using APIGestor.Services;
 
 namespace APIGestor.Controllers {
     public static class GestorControllerExtension {

@@ -10,6 +10,13 @@ namespace APIGestor.Models.Captacao
             CoExecutor
         }
 
+        public enum Status
+        {
+            Pendente,
+            Rascunho,
+            Finalizado
+        }
+
         public string Titulo { get; set; }
         public string Conteudo { get; set; }
         public TipoContrato Tipo { get; set; }

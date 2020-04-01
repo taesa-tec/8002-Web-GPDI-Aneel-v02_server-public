@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace APIGestor
+namespace APIGestor.Security
 {
     public class PortugueseIdentityErrorDescriber : IdentityErrorDescriber
     {
