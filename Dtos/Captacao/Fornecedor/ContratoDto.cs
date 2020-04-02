@@ -1,5 +1,4 @@
 using APIGestor.Models.Captacao;
-using APIGestor.Models.Captacao.Fornecedor;
 using TaesaCore.Models;
 
 namespace APIGestor.Dtos.Captacao.Fornecedor

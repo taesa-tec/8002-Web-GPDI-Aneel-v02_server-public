@@ -3,6 +3,7 @@ using System.Linq;
 using APIGestor.Models;
 using APIGestor.Models.Projetos;
 using APIGestor.Services;
+using APIGestor.Services.Projetos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

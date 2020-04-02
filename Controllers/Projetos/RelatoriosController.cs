@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using APIGestor.Models.Projetos;
-using APIGestor.Services.Relatorios;
+using APIGestor.Services.Projetos.Relatorios;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

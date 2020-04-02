@@ -4,6 +4,7 @@ using APIGestor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APIGestor.Migrations
 {
@@ -14,180 +15,93 @@ namespace APIGestor.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("APIGestor.Models.AlocacaoRh", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("EmpresaId");
-
-                    b.Property<int?>("EtapaId");
-
-                    b.Property<int>("HrsMes1");
-
-                    b.Property<int?>("HrsMes10");
-
-                    b.Property<int?>("HrsMes11");
-
-                    b.Property<int?>("HrsMes12");
-
-                    b.Property<int?>("HrsMes13");
-
-                    b.Property<int?>("HrsMes14");
-
-                    b.Property<int?>("HrsMes15");
-
-                    b.Property<int?>("HrsMes16");
-
-                    b.Property<int?>("HrsMes17");
-
-                    b.Property<int?>("HrsMes18");
-
-                    b.Property<int?>("HrsMes19");
-
-                    b.Property<int>("HrsMes2");
-
-                    b.Property<int?>("HrsMes20");
-
-                    b.Property<int?>("HrsMes21");
-
-                    b.Property<int?>("HrsMes22");
-
-                    b.Property<int?>("HrsMes23");
-
-                    b.Property<int?>("HrsMes24");
-
-                    b.Property<int>("HrsMes3");
-
-                    b.Property<int>("HrsMes4");
-
-                    b.Property<int>("HrsMes5");
-
-                    b.Property<int>("HrsMes6");
-
-                    b.Property<int?>("HrsMes7");
-
-                    b.Property<int?>("HrsMes8");
-
-                    b.Property<int?>("HrsMes9");
-
-                    b.Property<string>("Justificativa");
-
-                    b.Property<int?>("ProjetoId");
-
-                    b.Property<int?>("RecursoHumanoId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmpresaId");
-
-                    b.HasIndex("EtapaId");
-
-                    b.HasIndex("ProjetoId");
-
-                    b.HasIndex("RecursoHumanoId");
-
-                    b.ToTable("AlocacoesRh");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.AlocacaoRm", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("EmpresaFinanciadoraId");
-
-                    b.Property<int?>("EmpresaRecebedoraId");
-
-                    b.Property<int?>("EtapaId");
-
-                    b.Property<string>("Justificativa");
-
-                    b.Property<int?>("ProjetoId");
-
-                    b.Property<int>("Qtd");
-
-                    b.Property<int?>("RecursoMaterialId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmpresaFinanciadoraId");
-
-                    b.HasIndex("EmpresaRecebedoraId");
-
-                    b.HasIndex("EtapaId");
-
-                    b.HasIndex("ProjetoId");
-
-                    b.HasIndex("RecursoMaterialId");
-
-                    b.ToTable("AlocacoesRm");
-                });
 
             modelBuilder.Entity("APIGestor.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("AccessFailedCount");
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
 
-                    b.Property<string>("CPF");
+                    b.Property<string>("CPF")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Cargo");
+                    b.Property<string>("Cargo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CatalogEmpresaId");
+                    b.Property<int?>("CatalogEmpresaId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DataAtualizacao");
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DataCadastro");
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
-                    b.Property<bool>("EmailConfirmed");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
 
-                    b.Property<int?>("FotoPerfilId");
+                    b.Property<int?>("FotoPerfilId")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("LockoutEnabled");
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd");
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("NomeCompleto");
+                    b.Property<string>("NomeCompleto")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
-                    b.Property<string>("PasswordHash");
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("PhoneNumberConfirmed");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("RazaoSocial");
+                    b.Property<string>("RazaoSocial")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role");
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SecurityStamp");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Status");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("TwoFactorEnabled");
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("UltimoLogin");
+                    b.Property<DateTime?>("UltimoLogin")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
@@ -207,69 +121,60 @@ namespace APIGestor.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.AtividadesGestao", b =>
+            modelBuilder.Entity("APIGestor.Models.Captacao.Clausula", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ApoioCitenel");
+                    b.Property<string>("Conteudo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BuscaAnterioridade");
-
-                    b.Property<string>("ContratacaoAuditoria");
-
-                    b.Property<string>("DedicacaoHorario");
-
-                    b.Property<string>("DesenvFerramenta");
-
-                    b.Property<string>("DivulgacaoResultados");
-
-                    b.Property<string>("ParticipacaoMembros");
-
-                    b.Property<string>("ParticipacaoTecnicos");
-
-                    b.Property<int>("ProjetoId");
-
-                    b.Property<string>("ProspTecnologica");
-
-                    b.Property<string>("ResApoioCitenel");
-
-                    b.Property<string>("ResBuscaAnterioridade");
-
-                    b.Property<string>("ResContratacaoAuditoria");
-
-                    b.Property<string>("ResDedicacaoHorario");
-
-                    b.Property<string>("ResDesenvFerramenta");
-
-                    b.Property<string>("ResDivulgacaoResultados");
-
-                    b.Property<string>("ResParticipacaoMembros");
-
-                    b.Property<string>("ResParticipacaoTecnicos");
-
-                    b.Property<string>("ResProspTecnologica");
+                    b.Property<int>("Ordem")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjetoId")
-                        .IsUnique();
-
-                    b.ToTable("AtividadesGestao");
+                    b.ToTable("clausulas");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogAtividade", b =>
+            modelBuilder.Entity("APIGestor.Models.Captacao.Contrato", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CatalogCategoriaContabilGestaoId");
+                    b.Property<string>("Conteudo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Nome");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Valor");
+                    b.Property<string>("Titulo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("contratos");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogAtividade", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CatalogCategoriaContabilGestaoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -278,92 +183,111 @@ namespace APIGestor.Migrations
                     b.ToTable("CatalogAtividade");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogCategoriaContabilGestao", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogCategoriaContabilGestao", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Valor");
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("CatalogCategoriaContabilGestao");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogEmpresa", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogEmpresa", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Cnpj");
+                    b.Property<string>("Cnpj")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Valor");
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("CatalogEmpresas");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogEstado", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogEstado", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Valor");
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("CatalogEstados");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogPais", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogPais", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("CatalogPaises");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogProdutoFaseCadeia", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogProdutoFaseCadeia", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Valor");
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("CatalogProdutoFaseCadeia");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogProdutoTipoDetalhado", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogProdutoTipoDetalhado", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CatalogProdutoFaseCadeiaId");
+                    b.Property<int>("CatalogProdutoFaseCadeiaId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Valor");
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -372,47 +296,57 @@ namespace APIGestor.Migrations
                     b.ToTable("CatalogProdutoTipoDetalhado");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogSegmento", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogSegmento", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Valor");
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("CatalogSegmentos");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogStatus", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Status");
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("CatalogStatus");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogSubTema", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogSubTema", b =>
                 {
                     b.Property<int>("SubTemaId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CatalogTemaId");
+                    b.Property<int>("CatalogTemaId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Order");
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Valor");
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SubTemaId");
 
@@ -421,61 +355,59 @@ namespace APIGestor.Migrations
                     b.ToTable("CatalogSubTemas");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogTema", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogTema", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Order");
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Valor");
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("CatalogTema");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogUserPermissao", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Nome");
-
-                    b.Property<string>("Valor");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CatalogUserPermissoes");
-                });
-
             modelBuilder.Entity("APIGestor.Models.Demandas.Demanda", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("CaptacaoDate");
+                    b.Property<DateTime?>("CaptacaoDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<string>("CriadorId");
+                    b.Property<string>("CriadorId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("EtapaAtual");
+                    b.Property<int>("EtapaAtual")
+                        .HasColumnType("int");
 
-                    b.Property<string>("RevisorId");
+                    b.Property<string>("RevisorId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Status");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
-                    b.Property<string>("SuperiorDiretoId");
+                    b.Property<string>("SuperiorDiretoId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Titulo");
+                    b.Property<string>("Titulo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -492,17 +424,22 @@ namespace APIGestor.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Content");
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<int>("DemandaId");
+                    b.Property<int>("DemandaId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -517,13 +454,17 @@ namespace APIGestor.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("DemandaFormId");
+                    b.Property<int>("DemandaFormId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("DemandaFormValuesId");
+                    b.Property<int?>("DemandaFormValuesId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("FileId");
+                    b.Property<int>("FileId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -538,15 +479,20 @@ namespace APIGestor.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Content");
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("FormValuesId");
+                    b.Property<int>("FormValuesId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Revisao");
+                    b.Property<int>("Revisao")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -559,20 +505,26 @@ namespace APIGestor.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Data")
                         .HasColumnType("varchar(max)");
 
-                    b.Property<int>("DemandaId");
+                    b.Property<int>("DemandaId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("FormKey");
+                    b.Property<string>("FormKey")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Html");
+                    b.Property<string>("Html")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("LastUpdate");
+                    b.Property<DateTime>("LastUpdate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("Revisao");
+                    b.Property<int>("Revisao")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -583,21 +535,29 @@ namespace APIGestor.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Acao");
+                    b.Property<int>("Acao")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("DemandaId");
+                    b.Property<int>("DemandaId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("StatusAnterior");
+                    b.Property<string>("StatusAnterior")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StatusNovo");
+                    b.Property<string>("StatusNovo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Tela");
+                    b.Property<string>("Tela")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -608,23 +568,381 @@ namespace APIGestor.Migrations
                     b.ToTable("DemandaLogs");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Empresa", b =>
+            modelBuilder.Entity("APIGestor.Models.FileUpload", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CatalogEmpresaId");
+                    b.Property<string>("ContentType")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CatalogEstadoId");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("Classificacao");
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Cnpj");
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RazaoSocial");
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Files");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("FileUpload");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Fornecedores.CoExecutor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CNPJ")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FornecedorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RazaoSocial")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UF")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FornecedorId");
+
+                    b.ToTable("coexecutores");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Fornecedores.Fornecedor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CNPJ")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponsavelId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResponsavelId");
+
+                    b.ToTable("fornecedores");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.FotoPerfil", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("File")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FotoPerfil");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.AlocacaoRh", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("EmpresaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EtapaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HrsMes1")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes10")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes11")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes12")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes13")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes14")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes15")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes16")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes17")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes18")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes19")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HrsMes2")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes20")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes21")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes22")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes23")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes24")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HrsMes3")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HrsMes4")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HrsMes5")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HrsMes6")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes7")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes8")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HrsMes9")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Justificativa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RecursoHumanoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.HasIndex("EtapaId");
+
+                    b.HasIndex("ProjetoId");
+
+                    b.HasIndex("RecursoHumanoId");
+
+                    b.ToTable("AlocacoesRh");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.AlocacaoRm", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("EmpresaFinanciadoraId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmpresaRecebedoraId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EtapaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Justificativa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Qtd")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RecursoMaterialId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaFinanciadoraId");
+
+                    b.HasIndex("EmpresaRecebedoraId");
+
+                    b.HasIndex("EtapaId");
+
+                    b.HasIndex("ProjetoId");
+
+                    b.HasIndex("RecursoMaterialId");
+
+                    b.ToTable("AlocacoesRm");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.AtividadesGestao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApoioCitenel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuscaAnterioridade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContratacaoAuditoria")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DedicacaoHorario")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DesenvFerramenta")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DivulgacaoResultados")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ParticipacaoMembros")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ParticipacaoTecnicos")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProspTecnologica")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResApoioCitenel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResBuscaAnterioridade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResContratacaoAuditoria")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResDedicacaoHorario")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResDesenvFerramenta")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResDivulgacaoResultados")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResParticipacaoMembros")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResParticipacaoTecnicos")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResProspTecnologica")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjetoId")
+                        .IsUnique();
+
+                    b.ToTable("AtividadesGestao");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.CatalogUserPermissao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CatalogUserPermissoes");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.Empresa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CatalogEmpresaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CatalogEstadoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Classificacao")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Cnpj")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RazaoSocial")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -637,13 +955,15 @@ namespace APIGestor.Migrations
                     b.ToTable("Empresas");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Etapa", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Etapa", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AtividadesRealizadas");
+                    b.Property<string>("AtividadesRealizadas")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DataFim")
                         .HasColumnType("date");
@@ -651,13 +971,17 @@ namespace APIGestor.Migrations
                     b.Property<DateTime?>("DataInicio")
                         .HasColumnType("date");
 
-                    b.Property<string>("Desc");
+                    b.Property<string>("Desc")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Duracao");
+                    b.Property<int>("Duracao")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -666,15 +990,18 @@ namespace APIGestor.Migrations
                     b.ToTable("Etapas");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.EtapaMes", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.EtapaMes", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("EtapaId");
+                    b.Property<int>("EtapaId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("Mes");
+                    b.Property<DateTime>("Mes")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -683,15 +1010,18 @@ namespace APIGestor.Migrations
                     b.ToTable("EtapaMeses");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.EtapaProduto", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.EtapaProduto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("EtapaId");
+                    b.Property<int>("EtapaId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("ProdutoId");
+                    b.Property<int?>("ProdutoId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -702,74 +1032,35 @@ namespace APIGestor.Migrations
                     b.ToTable("EtapaProdutos");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.FileUpload", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.LogProjeto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ContentType");
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
-                    b.Property<string>("FileName");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("Path");
-
-                    b.Property<long>("Size");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Files");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("FileUpload");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.FotoPerfil", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<byte[]>("File");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FotoPerfil");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.LogProjeto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Acao");
+                    b.Property<int>("Acao")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("StatusAnterior");
+                    b.Property<string>("StatusAnterior")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StatusNovo");
+                    b.Property<string>("StatusNovo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Tela");
+                    b.Property<string>("Tela")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -780,31 +1071,41 @@ namespace APIGestor.Migrations
                     b.ToTable("LogProjetos");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Produto", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Produto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CatalogProdutoFaseCadeiaId");
+                    b.Property<int?>("CatalogProdutoFaseCadeiaId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("CatalogProdutoTipoDetalhadoId");
+                    b.Property<int?>("CatalogProdutoTipoDetalhadoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Classificacao");
+                    b.Property<int>("Classificacao")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<string>("Desc");
+                    b.Property<string>("Desc")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("FaseCadeia");
+                    b.Property<int?>("FaseCadeia")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Tipo");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Titulo");
+                    b.Property<string>("Titulo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -817,49 +1118,68 @@ namespace APIGestor.Migrations
                     b.ToTable("Produtos");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Projeto", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Projeto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Aplicabilidade");
+                    b.Property<string>("Aplicabilidade")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("AvaliacaoInicial");
+                    b.Property<bool?>("AvaliacaoInicial")
+                        .HasColumnType("bit");
 
-                    b.Property<int?>("CatalogEmpresaId");
+                    b.Property<int?>("CatalogEmpresaId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("CatalogSegmentoId");
+                    b.Property<int?>("CatalogSegmentoId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("CatalogStatusId");
+                    b.Property<int?>("CatalogStatusId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Codigo");
+                    b.Property<string>("Codigo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CompartResultados");
+                    b.Property<int?>("CompartResultados")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<DateTime?>("DataInicio");
+                    b.Property<DateTime?>("DataInicio")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Motivacao");
+                    b.Property<string>("Motivacao")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Numero");
+                    b.Property<string>("Numero")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Originalidade");
+                    b.Property<string>("Originalidade")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Pesquisas");
+                    b.Property<string>("Pesquisas")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Razoabilidade");
+                    b.Property<string>("Razoabilidade")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Relevancia");
+                    b.Property<string>("Relevancia")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Tipo");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Titulo");
+                    b.Property<string>("Titulo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TituloDesc");
+                    b.Property<string>("TituloDesc")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -872,31 +1192,42 @@ namespace APIGestor.Migrations
                     b.ToTable("Projetos");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.RecursoHumano", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.RecursoHumano", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("CPF");
+                    b.Property<string>("CPF")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EmpresaId");
+                    b.Property<int>("EmpresaId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Funcao");
+                    b.Property<int>("Funcao")
+                        .HasColumnType("int");
 
-                    b.Property<bool?>("GerenteProjeto");
+                    b.Property<bool?>("GerenteProjeto")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("Nacionalidade");
+                    b.Property<int>("Nacionalidade")
+                        .HasColumnType("int");
 
-                    b.Property<string>("NomeCompleto");
+                    b.Property<string>("NomeCompleto")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Passaporte");
+                    b.Property<string>("Passaporte")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProjetoId");
+                    b.Property<int?>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Titulacao");
+                    b.Property<int>("Titulacao")
+                        .HasColumnType("int");
 
-                    b.Property<string>("UrlCurriculo");
+                    b.Property<string>("UrlCurriculo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ValorHora")
                         .HasColumnType("decimal(18, 2)");
@@ -910,23 +1241,30 @@ namespace APIGestor.Migrations
                     b.ToTable("RecursoHumanos");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.RecursoMaterial", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.RecursoMaterial", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CatalogAtividadeId");
+                    b.Property<int?>("CatalogAtividadeId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("CatalogCategoriaContabilGestaoId");
+                    b.Property<int?>("CatalogCategoriaContabilGestaoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("CategoriaContabil");
+                    b.Property<int>("CategoriaContabil")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Especificacao");
+                    b.Property<string>("Especificacao")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProjetoId");
+                    b.Property<int?>("ProjetoId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("ValorUnitario")
                         .HasColumnType("decimal(18, 2)");
@@ -942,63 +1280,87 @@ namespace APIGestor.Migrations
                     b.ToTable("RecursoMateriais");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.RegistroFinanceiro", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.RegistroFinanceiro", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AtividadeRealizada");
+                    b.Property<string>("AtividadeRealizada")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Beneficiado");
+                    b.Property<string>("Beneficiado")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CatalogAtividadeId");
+                    b.Property<int?>("CatalogAtividadeId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("CatalogCategoriaContabilGestaoId");
+                    b.Property<int?>("CatalogCategoriaContabilGestaoId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("CategoriaContabil");
+                    b.Property<int?>("CategoriaContabil")
+                        .HasColumnType("int");
 
-                    b.Property<string>("CnpjBeneficiado");
+                    b.Property<string>("CnpjBeneficiado")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DataDocumento")
                         .HasColumnType("date");
 
-                    b.Property<int?>("EmpresaFinanciadoraId");
+                    b.Property<int?>("EmpresaFinanciadoraId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("EmpresaRecebedoraId");
+                    b.Property<int?>("EmpresaRecebedoraId")
+                        .HasColumnType("int");
 
-                    b.Property<bool?>("EquiparLabExistente");
+                    b.Property<bool?>("EquiparLabExistente")
+                        .HasColumnType("bit");
 
-                    b.Property<bool?>("EquiparLabNovo");
+                    b.Property<bool?>("EquiparLabNovo")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("EspecificacaoTecnica");
+                    b.Property<string>("EspecificacaoTecnica")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FuncaoRecurso");
+                    b.Property<string>("FuncaoRecurso")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("ItemNacional");
+                    b.Property<bool?>("ItemNacional")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("Mes")
                         .HasColumnType("date");
 
-                    b.Property<string>("NomeItem");
+                    b.Property<string>("NomeItem")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NumeroDocumento");
+                    b.Property<string>("NumeroDocumento")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProjetoId");
+                    b.Property<int?>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("QtdHrs");
+                    b.Property<int?>("QtdHrs")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("QtdItens");
+                    b.Property<int?>("QtdItens")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("RecursoHumanoId");
+                    b.Property<int?>("RecursoHumanoId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("RecursoMaterialId");
+                    b.Property<int?>("RecursoMaterialId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("Status");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("Tipo");
+                    b.Property<int?>("Tipo")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("TipoDocumento");
+                    b.Property<int?>("TipoDocumento")
+                        .HasColumnType("int");
 
                     b.Property<decimal?>("ValorUnitario")
                         .HasColumnType("decimal(18, 2)");
@@ -1022,19 +1384,24 @@ namespace APIGestor.Migrations
                     b.ToTable("RegistrosFinanceiros");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.RegistroObs", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.RegistroObs", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("RegistroFinanceiroId");
+                    b.Property<int>("RegistroFinanceiroId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Texto");
+                    b.Property<string>("Texto")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -1045,37 +1412,51 @@ namespace APIGestor.Migrations
                     b.ToTable("RegistroObs");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.RelatorioFinal", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.RelatorioFinal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool?>("AplicabilidadePrevista");
+                    b.Property<bool?>("AplicabilidadePrevista")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("DescAbrangencia");
+                    b.Property<string>("DescAbrangencia")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DescAmbito");
+                    b.Property<string>("DescAmbito")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DescAtividades");
+                    b.Property<string>("DescAtividades")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DescTecnica");
+                    b.Property<string>("DescTecnica")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DescTestes");
+                    b.Property<string>("DescTestes")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EspecificacaoProduto");
+                    b.Property<string>("EspecificacaoProduto")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("JustificativaAplicabilidade");
+                    b.Property<string>("JustificativaAplicabilidade")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("JustificativaProduto");
+                    b.Property<string>("JustificativaProduto")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("JustificativaTecnica");
+                    b.Property<string>("JustificativaTecnica")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("ProdutoAlcancado");
+                    b.Property<bool?>("ProdutoAlcancado")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<bool?>("TecnicaPrevista");
+                    b.Property<bool?>("TecnicaPrevista")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -1085,27 +1466,36 @@ namespace APIGestor.Migrations
                     b.ToTable("RelatorioFinal");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoCapacitacao", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoCapacitacao", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AreaPesquisa");
+                    b.Property<string>("AreaPesquisa")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CnpjInstituicao");
+                    b.Property<string>("CnpjInstituicao")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("Conclusao");
+                    b.Property<bool?>("Conclusao")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime>("DataConclusao");
+                    b.Property<DateTime>("DataConclusao")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("RecursoHumanoId");
+                    b.Property<int>("RecursoHumanoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Tipo");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
 
-                    b.Property<string>("TituloTrabalho");
+                    b.Property<string>("TituloTrabalho")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1116,22 +1506,27 @@ namespace APIGestor.Migrations
                     b.ToTable("ResultadosCapacitacao");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoEconomico", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoEconomico", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Desc");
+                    b.Property<string>("Desc")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("Percentagem")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Tipo");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
 
-                    b.Property<string>("UnidadeBase");
+                    b.Property<string>("UnidadeBase")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("ValorBeneficio")
                         .HasColumnType("decimal(18, 2)");
@@ -1146,23 +1541,30 @@ namespace APIGestor.Migrations
                     b.ToTable("ResultadosEconomico");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoInfra", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoInfra", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AreaPesquisa");
+                    b.Property<string>("AreaPesquisa")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CnpjReceptora");
+                    b.Property<string>("CnpjReceptora")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ListaMateriais");
+                    b.Property<string>("ListaMateriais")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NomeLaboratorio");
+                    b.Property<string>("NomeLaboratorio")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Tipo");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1171,21 +1573,27 @@ namespace APIGestor.Migrations
                     b.ToTable("ResultadosInfra");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoIntelectual", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoIntelectual", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("DataPedido");
+                    b.Property<DateTime>("DataPedido")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("NumeroPedido");
+                    b.Property<string>("NumeroPedido")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Tipo");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Titulo");
+                    b.Property<string>("Titulo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1194,18 +1602,21 @@ namespace APIGestor.Migrations
                     b.ToTable("ResultadosIntelectual");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoIntelectualDepositante", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoIntelectualDepositante", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("EmpresaId");
+                    b.Property<int>("EmpresaId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Entidade")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int>("ResultadoIntelectualId");
+                    b.Property<int>("ResultadoIntelectualId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1216,15 +1627,18 @@ namespace APIGestor.Migrations
                     b.ToTable("ResultadoIntelectualDepositantes");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoIntelectualInventor", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoIntelectualInventor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("RecursoHumanoId");
+                    b.Property<int>("RecursoHumanoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ResultadoIntelectualId");
+                    b.Property<int>("ResultadoIntelectualId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1235,29 +1649,39 @@ namespace APIGestor.Migrations
                     b.ToTable("ResultadoIntelectualInventores");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoProducao", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoProducao", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CatalogPaisId");
+                    b.Property<int>("CatalogPaisId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Cidade");
+                    b.Property<string>("Cidade")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("Confirmacao");
+                    b.Property<bool?>("Confirmacao")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime>("DataPublicacao");
+                    b.Property<DateTime>("DataPublicacao")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Nome");
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Tipo");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Titulo");
+                    b.Property<string>("Titulo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Url");
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1268,21 +1692,27 @@ namespace APIGestor.Migrations
                     b.ToTable("ResultadosProducao");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoSocioAmbiental", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoSocioAmbiental", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Desc");
+                    b.Property<string>("Desc")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("Positivo");
+                    b.Property<bool?>("Positivo")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<bool?>("TecnicaPrevista");
+                    b.Property<bool?>("TecnicaPrevista")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("Tipo");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1291,33 +1721,21 @@ namespace APIGestor.Migrations
                     b.ToTable("ResultadosSocioAmbiental");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.SystemOption", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Tema", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Key");
+                    b.Property<int>("CatalogTemaId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("varchar(max)");
+                    b.Property<string>("OutroDesc")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("SystemOptions");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.Tema", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CatalogTemaId");
-
-                    b.Property<string>("OutroDesc");
-
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1329,17 +1747,21 @@ namespace APIGestor.Migrations
                     b.ToTable("Temas");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.TemaSubTema", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.TemaSubTema", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CatalogSubTemaId");
+                    b.Property<int>("CatalogSubTemaId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("OutroDesc");
+                    b.Property<string>("OutroDesc")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TemaId");
+                    b.Property<int?>("TemaId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1350,35 +1772,47 @@ namespace APIGestor.Migrations
                     b.ToTable("TemaSubTemas");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Upload", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Upload", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("Categoria");
+                    b.Property<int?>("Categoria")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<string>("NomeArquivo");
+                    b.Property<string>("NomeArquivo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProjetoId");
+                    b.Property<int?>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("RegistroFinanceiroId");
+                    b.Property<int?>("RegistroFinanceiroId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("RelatorioFinalId");
+                    b.Property<int?>("RelatorioFinalId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("ResultadoCapacitacaoId");
+                    b.Property<int?>("ResultadoCapacitacaoId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("ResultadoProducaoId");
+                    b.Property<int?>("ResultadoProducaoId")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("TemaId");
+                    b.Property<int?>("TemaId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Url");
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -1397,17 +1831,21 @@ namespace APIGestor.Migrations
                     b.ToTable("Uploads");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.UserProjeto", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.UserProjeto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CatalogUserPermissaoId");
+                    b.Property<int>("CatalogUserPermissaoId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ProjetoId");
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -1420,18 +1858,39 @@ namespace APIGestor.Migrations
                     b.ToTable("UserProjetos");
                 });
 
+            modelBuilder.Entity("APIGestor.Models.SystemOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("varchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemOptions");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedName")
+                        .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
@@ -1448,14 +1907,18 @@ namespace APIGestor.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ClaimType");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -1468,14 +1931,18 @@ namespace APIGestor.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ClaimType");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -1486,14 +1953,18 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.Property<string>("LoginProvider");
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderKey");
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderDisplayName");
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -1504,9 +1975,11 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("RoleId");
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -1517,13 +1990,17 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("LoginProvider");
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Value");
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -1534,58 +2011,17 @@ namespace APIGestor.Migrations
                 {
                     b.HasBaseType("APIGestor.Models.FileUpload");
 
-                    b.Property<int>("DemandaId");
+                    b.Property<int>("DemandaId")
+                        .HasColumnType("int");
 
                     b.HasIndex("DemandaId");
 
                     b.HasDiscriminator().HasValue("DemandaFile");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.AlocacaoRh", b =>
-                {
-                    b.HasOne("APIGestor.Models.Empresa", "Empresa")
-                        .WithMany()
-                        .HasForeignKey("EmpresaId");
-
-                    b.HasOne("APIGestor.Models.Etapa", "Etapa")
-                        .WithMany()
-                        .HasForeignKey("EtapaId");
-
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("AlocacoesRh")
-                        .HasForeignKey("ProjetoId");
-
-                    b.HasOne("APIGestor.Models.RecursoHumano", "RecursoHumano")
-                        .WithMany()
-                        .HasForeignKey("RecursoHumanoId");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.AlocacaoRm", b =>
-                {
-                    b.HasOne("APIGestor.Models.Empresa", "EmpresaFinanciadora")
-                        .WithMany()
-                        .HasForeignKey("EmpresaFinanciadoraId");
-
-                    b.HasOne("APIGestor.Models.Empresa", "EmpresaRecebedora")
-                        .WithMany()
-                        .HasForeignKey("EmpresaRecebedoraId");
-
-                    b.HasOne("APIGestor.Models.Etapa", "Etapa")
-                        .WithMany()
-                        .HasForeignKey("EtapaId");
-
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("AlocacoesRm")
-                        .HasForeignKey("ProjetoId");
-
-                    b.HasOne("APIGestor.Models.RecursoMaterial", "RecursoMaterial")
-                        .WithMany()
-                        .HasForeignKey("RecursoMaterialId");
-                });
-
             modelBuilder.Entity("APIGestor.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogEmpresa", "CatalogEmpresa")
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogEmpresa", "CatalogEmpresa")
                         .WithMany()
                         .HasForeignKey("CatalogEmpresaId");
 
@@ -1594,35 +2030,29 @@ namespace APIGestor.Migrations
                         .HasForeignKey("FotoPerfilId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.AtividadesGestao", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogAtividade", b =>
                 {
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithOne("Atividades")
-                        .HasForeignKey("APIGestor.Models.AtividadesGestao", "ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("APIGestor.Models.CatalogAtividade", b =>
-                {
-                    b.HasOne("APIGestor.Models.CatalogCategoriaContabilGestao")
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogCategoriaContabilGestao", null)
                         .WithMany("Atividades")
                         .HasForeignKey("CatalogCategoriaContabilGestaoId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogProdutoTipoDetalhado", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogProdutoTipoDetalhado", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogProdutoFaseCadeia")
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogProdutoFaseCadeia", null)
                         .WithMany("TiposDetalhados")
                         .HasForeignKey("CatalogProdutoFaseCadeiaId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("APIGestor.Models.CatalogSubTema", b =>
+            modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogSubTema", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogTema")
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogTema", null)
                         .WithMany("SubTemas")
                         .HasForeignKey("CatalogTemaId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("APIGestor.Models.Demandas.Demanda", b =>
@@ -1642,10 +2072,11 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("APIGestor.Models.Demandas.DemandaComentario", b =>
                 {
-                    b.HasOne("APIGestor.Models.Demandas.Demanda")
+                    b.HasOne("APIGestor.Models.Demandas.Demanda", null)
                         .WithMany("Comentarios")
                         .HasForeignKey("DemandaId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("APIGestor.Models.ApplicationUser", "User")
                         .WithMany()
@@ -1654,14 +2085,15 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("APIGestor.Models.Demandas.DemandaFormFile", b =>
                 {
-                    b.HasOne("APIGestor.Models.Demandas.DemandaFormValues")
+                    b.HasOne("APIGestor.Models.Demandas.DemandaFormValues", null)
                         .WithMany("Files")
                         .HasForeignKey("DemandaFormValuesId");
 
                     b.HasOne("APIGestor.Models.Demandas.DemandaFile", "File")
                         .WithMany()
                         .HasForeignKey("FileId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("APIGestor.Models.Demandas.DemandaFormHistorico", b =>
@@ -1669,7 +2101,8 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.Demandas.DemandaFormValues", "FormValues")
                         .WithMany("Historico")
                         .HasForeignKey("FormValuesId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("APIGestor.Models.Demandas.DemandaLog", b =>
@@ -1677,55 +2110,12 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.Demandas.Demanda", "Demanda")
                         .WithMany()
                         .HasForeignKey("DemandaId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("APIGestor.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.Empresa", b =>
-                {
-                    b.HasOne("APIGestor.Models.CatalogEmpresa", "CatalogEmpresa")
-                        .WithMany()
-                        .HasForeignKey("CatalogEmpresaId");
-
-                    b.HasOne("APIGestor.Models.CatalogEstado", "Estado")
-                        .WithMany()
-                        .HasForeignKey("CatalogEstadoId");
-
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("Empresas")
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("APIGestor.Models.Etapa", b =>
-                {
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("Etapas")
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("APIGestor.Models.EtapaMes", b =>
-                {
-                    b.HasOne("APIGestor.Models.Etapa")
-                        .WithMany("EtapaMeses")
-                        .HasForeignKey("EtapaId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("APIGestor.Models.EtapaProduto", b =>
-                {
-                    b.HasOne("APIGestor.Models.Etapa")
-                        .WithMany("EtapaProdutos")
-                        .HasForeignKey("EtapaId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("APIGestor.Models.Produto")
-                        .WithMany("EtapaProduto")
-                        .HasForeignKey("ProdutoId");
                 });
 
             modelBuilder.Entity("APIGestor.Models.FileUpload", b =>
@@ -1735,255 +2125,390 @@ namespace APIGestor.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.LogProjeto", b =>
+            modelBuilder.Entity("APIGestor.Models.Fornecedores.CoExecutor", b =>
                 {
-                    b.HasOne("APIGestor.Models.Projeto", "Projeto")
-                        .WithMany()
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("APIGestor.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                    b.HasOne("APIGestor.Models.Fornecedores.Fornecedor", "Fornecedor")
+                        .WithMany("CoExecutores")
+                        .HasForeignKey("FornecedorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Produto", b =>
+            modelBuilder.Entity("APIGestor.Models.Fornecedores.Fornecedor", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogProdutoFaseCadeia", "CatalogProdutoFaseCadeia")
+                    b.HasOne("APIGestor.Models.ApplicationUser", "Responsavel")
                         .WithMany()
-                        .HasForeignKey("CatalogProdutoFaseCadeiaId");
-
-                    b.HasOne("APIGestor.Models.CatalogProdutoTipoDetalhado", "CatalogProdutoTipoDetalhado")
-                        .WithMany()
-                        .HasForeignKey("CatalogProdutoTipoDetalhadoId");
-
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("Produtos")
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ResponsavelId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Projeto", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.AlocacaoRh", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogEmpresa", "CatalogEmpresa")
+                    b.HasOne("APIGestor.Models.Projetos.Empresa", "Empresa")
                         .WithMany()
-                        .HasForeignKey("CatalogEmpresaId");
+                        .HasForeignKey("EmpresaId");
 
-                    b.HasOne("APIGestor.Models.CatalogSegmento", "CatalogSegmento")
+                    b.HasOne("APIGestor.Models.Projetos.Etapa", "Etapa")
                         .WithMany()
-                        .HasForeignKey("CatalogSegmentoId");
+                        .HasForeignKey("EtapaId");
 
-                    b.HasOne("APIGestor.Models.CatalogStatus", "CatalogStatus")
-                        .WithMany()
-                        .HasForeignKey("CatalogStatusId");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.RecursoHumano", b =>
-                {
-                    b.HasOne("APIGestor.Models.Empresa", "Empresa")
-                        .WithMany()
-                        .HasForeignKey("EmpresaId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("RecursosHumanos")
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("AlocacoesRh")
                         .HasForeignKey("ProjetoId");
+
+                    b.HasOne("APIGestor.Models.Projetos.RecursoHumano", "RecursoHumano")
+                        .WithMany()
+                        .HasForeignKey("RecursoHumanoId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.RecursoMaterial", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.AlocacaoRm", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogAtividade", "Atividade")
-                        .WithMany()
-                        .HasForeignKey("CatalogAtividadeId");
-
-                    b.HasOne("APIGestor.Models.CatalogCategoriaContabilGestao", "CategoriaContabilGestao")
-                        .WithMany()
-                        .HasForeignKey("CatalogCategoriaContabilGestaoId");
-
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("RecursosMateriais")
-                        .HasForeignKey("ProjetoId");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.RegistroFinanceiro", b =>
-                {
-                    b.HasOne("APIGestor.Models.CatalogAtividade", "Atividade")
-                        .WithMany()
-                        .HasForeignKey("CatalogAtividadeId");
-
-                    b.HasOne("APIGestor.Models.CatalogCategoriaContabilGestao", "CategoriaContabilGestao")
-                        .WithMany()
-                        .HasForeignKey("CatalogCategoriaContabilGestaoId");
-
-                    b.HasOne("APIGestor.Models.Empresa", "EmpresaFinanciadora")
+                    b.HasOne("APIGestor.Models.Projetos.Empresa", "EmpresaFinanciadora")
                         .WithMany()
                         .HasForeignKey("EmpresaFinanciadoraId");
 
-                    b.HasOne("APIGestor.Models.Empresa", "EmpresaRecebedora")
+                    b.HasOne("APIGestor.Models.Projetos.Empresa", "EmpresaRecebedora")
                         .WithMany()
                         .HasForeignKey("EmpresaRecebedoraId");
 
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("RegistroFinanceiro")
+                    b.HasOne("APIGestor.Models.Projetos.Etapa", "Etapa")
+                        .WithMany()
+                        .HasForeignKey("EtapaId");
+
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("AlocacoesRm")
                         .HasForeignKey("ProjetoId");
 
-                    b.HasOne("APIGestor.Models.RecursoHumano", "RecursoHumano")
-                        .WithMany()
-                        .HasForeignKey("RecursoHumanoId");
-
-                    b.HasOne("APIGestor.Models.RecursoMaterial", "RecursoMaterial")
+                    b.HasOne("APIGestor.Models.Projetos.RecursoMaterial", "RecursoMaterial")
                         .WithMany()
                         .HasForeignKey("RecursoMaterialId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.RegistroObs", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.AtividadesGestao", b =>
                 {
-                    b.HasOne("APIGestor.Models.RegistroFinanceiro")
-                        .WithMany("ObsInternas")
-                        .HasForeignKey("RegistroFinanceiroId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithOne("Atividades")
+                        .HasForeignKey("APIGestor.Models.Projetos.AtividadesGestao", "ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.Empresa", b =>
+                {
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogEmpresa", "CatalogEmpresa")
+                        .WithMany()
+                        .HasForeignKey("CatalogEmpresaId");
+
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogEstado", "Estado")
+                        .WithMany()
+                        .HasForeignKey("CatalogEstadoId");
+
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("Empresas")
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.Etapa", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("Etapas")
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.EtapaMes", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.Etapa", null)
+                        .WithMany("EtapaMeses")
+                        .HasForeignKey("EtapaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.EtapaProduto", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.Etapa", null)
+                        .WithMany("EtapaProdutos")
+                        .HasForeignKey("EtapaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("APIGestor.Models.Projetos.Produto", null)
+                        .WithMany("EtapaProduto")
+                        .HasForeignKey("ProdutoId");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.LogProjeto", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", "Projeto")
+                        .WithMany()
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("APIGestor.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.RelatorioFinal", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Produto", b =>
                 {
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithOne("RelatorioFinal")
-                        .HasForeignKey("APIGestor.Models.RelatorioFinal", "ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("APIGestor.Models.ResultadoCapacitacao", b =>
-                {
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("ResultadosCapacitacao")
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("APIGestor.Models.RecursoHumano", "RecursoHumano")
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogProdutoFaseCadeia", "CatalogProdutoFaseCadeia")
                         .WithMany()
-                        .HasForeignKey("RecursoHumanoId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
+                        .HasForeignKey("CatalogProdutoFaseCadeiaId");
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoEconomico", b =>
-                {
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("ResultadosEconomico")
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogProdutoTipoDetalhado", "CatalogProdutoTipoDetalhado")
+                        .WithMany()
+                        .HasForeignKey("CatalogProdutoTipoDetalhadoId");
+
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("Produtos")
                         .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoInfra", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Projeto", b =>
                 {
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("ResultadosInfra")
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogEmpresa", "CatalogEmpresa")
+                        .WithMany()
+                        .HasForeignKey("CatalogEmpresaId");
+
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogSegmento", "CatalogSegmento")
+                        .WithMany()
+                        .HasForeignKey("CatalogSegmentoId");
+
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogStatus", "CatalogStatus")
+                        .WithMany()
+                        .HasForeignKey("CatalogStatusId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoIntelectual", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.RecursoHumano", b =>
                 {
-                    b.HasOne("APIGestor.Models.Projeto")
-                        .WithMany("ResultadosIntelectual")
-                        .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("APIGestor.Models.ResultadoIntelectualDepositante", b =>
-                {
-                    b.HasOne("APIGestor.Models.Empresa", "Empresa")
+                    b.HasOne("APIGestor.Models.Projetos.Empresa", "Empresa")
                         .WithMany()
                         .HasForeignKey("EmpresaId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("APIGestor.Models.ResultadoIntelectual")
-                        .WithMany("Depositantes")
-                        .HasForeignKey("ResultadoIntelectualId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("RecursosHumanos")
+                        .HasForeignKey("ProjetoId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoIntelectualInventor", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.RecursoMaterial", b =>
                 {
-                    b.HasOne("APIGestor.Models.RecursoHumano", "RecursoHumano")
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogAtividade", "Atividade")
+                        .WithMany()
+                        .HasForeignKey("CatalogAtividadeId");
+
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogCategoriaContabilGestao", "CategoriaContabilGestao")
+                        .WithMany()
+                        .HasForeignKey("CatalogCategoriaContabilGestaoId");
+
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("RecursosMateriais")
+                        .HasForeignKey("ProjetoId");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.RegistroFinanceiro", b =>
+                {
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogAtividade", "Atividade")
+                        .WithMany()
+                        .HasForeignKey("CatalogAtividadeId");
+
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogCategoriaContabilGestao", "CategoriaContabilGestao")
+                        .WithMany()
+                        .HasForeignKey("CatalogCategoriaContabilGestaoId");
+
+                    b.HasOne("APIGestor.Models.Projetos.Empresa", "EmpresaFinanciadora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaFinanciadoraId");
+
+                    b.HasOne("APIGestor.Models.Projetos.Empresa", "EmpresaRecebedora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaRecebedoraId");
+
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("RegistroFinanceiro")
+                        .HasForeignKey("ProjetoId");
+
+                    b.HasOne("APIGestor.Models.Projetos.RecursoHumano", "RecursoHumano")
+                        .WithMany()
+                        .HasForeignKey("RecursoHumanoId");
+
+                    b.HasOne("APIGestor.Models.Projetos.RecursoMaterial", "RecursoMaterial")
+                        .WithMany()
+                        .HasForeignKey("RecursoMaterialId");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.RegistroObs", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.RegistroFinanceiro", null)
+                        .WithMany("ObsInternas")
+                        .HasForeignKey("RegistroFinanceiroId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("APIGestor.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.RelatorioFinal", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithOne("RelatorioFinal")
+                        .HasForeignKey("APIGestor.Models.Projetos.RelatorioFinal", "ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoCapacitacao", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("ResultadosCapacitacao")
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("APIGestor.Models.Projetos.RecursoHumano", "RecursoHumano")
                         .WithMany()
                         .HasForeignKey("RecursoHumanoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
 
-                    b.HasOne("APIGestor.Models.ResultadoIntelectual")
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoEconomico", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("ResultadosEconomico")
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoInfra", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("ResultadosInfra")
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoIntelectual", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
+                        .WithMany("ResultadosIntelectual")
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoIntelectualDepositante", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.Empresa", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("APIGestor.Models.Projetos.Resultados.ResultadoIntelectual", null)
+                        .WithMany("Depositantes")
+                        .HasForeignKey("ResultadoIntelectualId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoIntelectualInventor", b =>
+                {
+                    b.HasOne("APIGestor.Models.Projetos.RecursoHumano", "RecursoHumano")
+                        .WithMany()
+                        .HasForeignKey("RecursoHumanoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("APIGestor.Models.Projetos.Resultados.ResultadoIntelectual", null)
                         .WithMany("Inventores")
                         .HasForeignKey("ResultadoIntelectualId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoProducao", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoProducao", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogPais", "Pais")
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogPais", "Pais")
                         .WithMany()
                         .HasForeignKey("CatalogPaisId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("APIGestor.Models.Projeto")
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
                         .WithMany("ResultadosProducao")
                         .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("APIGestor.Models.ResultadoSocioAmbiental", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Resultados.ResultadoSocioAmbiental", b =>
                 {
-                    b.HasOne("APIGestor.Models.Projeto")
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
                         .WithMany("ResultadosSocioAmbiental")
                         .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Tema", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Tema", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogTema", "CatalogTema")
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogTema", "CatalogTema")
                         .WithMany()
                         .HasForeignKey("CatalogTemaId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("APIGestor.Models.Projeto")
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", null)
                         .WithOne("Tema")
-                        .HasForeignKey("APIGestor.Models.Tema", "ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("APIGestor.Models.Projetos.Tema", "ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("APIGestor.Models.TemaSubTema", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.TemaSubTema", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogSubTema", "CatalogSubTema")
+                    b.HasOne("APIGestor.Models.Catalogs.CatalogSubTema", "CatalogSubTema")
                         .WithMany()
                         .HasForeignKey("CatalogSubTemaId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("APIGestor.Models.Tema")
+                    b.HasOne("APIGestor.Models.Projetos.Tema", null)
                         .WithMany("SubTemas")
                         .HasForeignKey("TemaId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Upload", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.Upload", b =>
                 {
-                    b.HasOne("APIGestor.Models.RegistroFinanceiro")
+                    b.HasOne("APIGestor.Models.Projetos.RegistroFinanceiro", null)
                         .WithMany("Uploads")
                         .HasForeignKey("RegistroFinanceiroId");
 
-                    b.HasOne("APIGestor.Models.RelatorioFinal")
+                    b.HasOne("APIGestor.Models.Projetos.RelatorioFinal", null)
                         .WithMany("Uploads")
                         .HasForeignKey("RelatorioFinalId");
 
-                    b.HasOne("APIGestor.Models.ResultadoCapacitacao")
+                    b.HasOne("APIGestor.Models.Projetos.Resultados.ResultadoCapacitacao", null)
                         .WithMany("Uploads")
                         .HasForeignKey("ResultadoCapacitacaoId");
 
-                    b.HasOne("APIGestor.Models.ResultadoProducao")
+                    b.HasOne("APIGestor.Models.Projetos.Resultados.ResultadoProducao", null)
                         .WithMany("Uploads")
                         .HasForeignKey("ResultadoProducaoId");
 
-                    b.HasOne("APIGestor.Models.Tema")
+                    b.HasOne("APIGestor.Models.Projetos.Tema", null)
                         .WithMany("Uploads")
                         .HasForeignKey("TemaId");
 
@@ -1992,17 +2517,19 @@ namespace APIGestor.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.UserProjeto", b =>
+            modelBuilder.Entity("APIGestor.Models.Projetos.UserProjeto", b =>
                 {
-                    b.HasOne("APIGestor.Models.CatalogUserPermissao", "CatalogUserPermissao")
+                    b.HasOne("APIGestor.Models.Projetos.CatalogUserPermissao", "CatalogUserPermissao")
                         .WithMany()
                         .HasForeignKey("CatalogUserPermissaoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("APIGestor.Models.Projeto", "Projeto")
+                    b.HasOne("APIGestor.Models.Projetos.Projeto", "Projeto")
                         .WithMany("UsersProjeto")
                         .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("APIGestor.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
@@ -2011,47 +2538,53 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("APIGestor.Models.ApplicationUser")
+                    b.HasOne("APIGestor.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("APIGestor.Models.ApplicationUser")
+                    b.HasOne("APIGestor.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("APIGestor.Models.ApplicationUser")
+                    b.HasOne("APIGestor.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("APIGestor.Models.ApplicationUser")
+                    b.HasOne("APIGestor.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("APIGestor.Models.Demandas.DemandaFile", b =>
@@ -2059,7 +2592,8 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.Demandas.Demanda", "Demanda")
                         .WithMany()
                         .HasForeignKey("DemandaId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,7 @@ using APIGestor.Models;
 using APIGestor.Security;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using APIGestor.Authorizations;
@@ -18,10 +20,11 @@ using Microsoft.AspNetCore.Authorization;
 using APIGestor.Exceptions.Demandas;
 using APIGestor.Services;
 using APIGestor.Services.Demandas;
-using APIGestor.Services.Relatorios;
-using APIGestor.Services.Resultados;
+using APIGestor.Services.Projetos;
+using APIGestor.Services.Projetos.Relatorios;
+using APIGestor.Services.Projetos.Resultados;
+using APIGestor.Services.Projetos.XmlProjeto;
 using APIGestor.Services.Sistema;
-using APIGestor.Services.XmlProjeto;
 using AutoMapper;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.Extensions.Hosting;
@@ -79,6 +82,36 @@ namespace APIGestor
                         Version = "2.2",
                         Description = "API REST criada com o ASP.NET Core 3.1 para comunição com o Gestor P&D",
                     });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
+                      Enter 'Bearer' [space] and then your token in the text input below.
+                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        },
+                        new List<string>()
+                    }
+                });
+
+
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);

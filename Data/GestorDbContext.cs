@@ -158,6 +158,7 @@ namespace APIGestor.Data
             builder.Entity<Fornecedor>().ToTable("fornecedores");
             builder.Entity<Contrato>().ToTable("contratos");
             builder.Entity<Clausula>().ToTable("clausulas");
+            builder.Entity<CoExecutor>().ToTable("coexecutores");
         }
     }
 }

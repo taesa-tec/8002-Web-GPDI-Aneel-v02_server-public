@@ -9,6 +9,7 @@ using System.Linq;
 using System.Security.Claims;
 using APIGestor.Models.Projetos;
 using APIGestor.Services;
+using APIGestor.Services.Projetos;
 
 namespace APIGestor.Controllers {
     public static class GestorControllerExtension {

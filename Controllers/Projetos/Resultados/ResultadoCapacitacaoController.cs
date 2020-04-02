@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using APIGestor.Models.Projetos;
 using APIGestor.Models.Projetos.Resultados;
-using APIGestor.Services.Resultados;
+using APIGestor.Services.Projetos.Resultados;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

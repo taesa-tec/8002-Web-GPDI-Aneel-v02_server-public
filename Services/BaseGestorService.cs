@@ -5,6 +5,7 @@ using APIGestor.Authorizations;
 using APIGestor.Data;
 using APIGestor.Models.Projetos;
 using APIGestor.Security;
+using APIGestor.Services.Projetos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 

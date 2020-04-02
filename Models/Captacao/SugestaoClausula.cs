@@ -1,6 +1,6 @@
 using TaesaCore.Models;
 
-namespace APIGestor.Models.Captacao.Fornecedor
+namespace APIGestor.Models.Captacao
 {
     public class SugestaoClausula : BaseEntity
     {
