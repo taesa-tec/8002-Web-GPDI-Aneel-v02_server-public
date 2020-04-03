@@ -1,9 +1,11 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using APIGestor.Models;
 using APIGestor.Models.Fornecedores;
 using APIGestor.Requests.Sistema.Fornecedores;
+using APIGestor.Security;
 using APIGestor.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -22,15 +24,17 @@ namespace APIGestor.Controllers.Sistema
     public class FornecedoresController : ControllerServiceBase<Fornecedor, Fornecedor, FornecedorCreateRequest>
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        protected AccessManager AccessManager;
 
         public FornecedoresController(IService<Fornecedor> service, IMapper mapper,
-            UserManager<ApplicationUser> userManager) : base(
+            UserManager<ApplicationUser> userManager, AccessManager accessManager) : base(
             service, mapper)
         {
             _userManager = userManager;
+            AccessManager = accessManager;
         }
 
-        protected void UpdateResponsavelFornecedor(Fornecedor fornecedor, string email, string nome)
+        protected async Task UpdateResponsavelFornecedor(Fornecedor fornecedor, string email, string nome)
         {
             var responsavel = _userManager.FindByEmailAsync(email).Result;
 
@@ -39,6 +43,9 @@ namespace APIGestor.Controllers.Sistema
                 responsavel = new ApplicationUser()
                 {
                     Email = email,
+                    UserName = email,
+                    EmailConfirmed = true,
+                    DataCadastro = DateTime.Now,
                     NomeCompleto = nome,
                 };
 
@@ -51,9 +58,22 @@ namespace APIGestor.Controllers.Sistema
                 }
 
                 //_userManager.CreateAsync(responsavel, sBuilder.ToString());
-                _userManager.CreateAsync(responsavel, "Pass@123");
-                // @todo Mandar email
-                // @todo Atualizar o Role 
+                var userResult = await _userManager.CreateAsync(responsavel, "Pass@123");
+                if (userResult.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(responsavel, Roles.Fornecedor);
+                    await AccessManager.SendRecoverAccountEmail(responsavel.Email, true,
+                        "Seja bem-vindo ao Gerenciador P&D Taesa");
+                }
+                else
+                {
+                    foreach (var userResultError in userResult.Errors)
+                    {
+                        Console.WriteLine(userResultError.Description);
+                    }
+
+                    throw new Exception("Erros na criação do usuário do responsável");
+                }
             }
 
             fornecedor.ResponsavelId = responsavel.Id;
@@ -69,7 +89,7 @@ namespace APIGestor.Controllers.Sistema
             };
 
 
-            UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome);
+            UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
             Service.Post(fornecedor);
 
             return Ok(fornecedor);

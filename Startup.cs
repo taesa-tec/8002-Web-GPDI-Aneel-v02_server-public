@@ -16,6 +16,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using APIGestor.Authorizations;
+using APIGestor.Core;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Exceptions.Demandas;
 using APIGestor.Services;
@@ -121,6 +122,7 @@ namespace APIGestor
 
             #region Serviços
 
+            services.AddScoped<SendGridService>();
             services.AddScoped<CatalogService>();
             services.AddScoped<MailService>();
             services.AddScoped<UserService>();
@@ -207,6 +209,14 @@ namespace APIGestor
             // Aciona a extensão que irá configurar o uso de
             // autenticação e autorização via tokens
             services.AddJwtSecurity(signingConfigurations, tokenConfigurations);
+            var sendgrid = Configuration.GetSection("SendGrid");
+            var emailConfig = new EmailConfig()
+            {
+                ApiKey = sendgrid.GetValue<string>("ApiKey"),
+                SenderEmail = sendgrid.GetValue<string>("SenderEmail"),
+                SenderName = sendgrid.GetValue<string>("SenderName"),
+            };
+            services.AddSingleton(emailConfig);
 
             services.AddSingleton<IAuthorizationHandler, ProjectAuthorizationHandler>();
             services.AddSingleton<IdentityInitializer>();

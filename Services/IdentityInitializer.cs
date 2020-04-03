@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using APIGestor.Data;
 using APIGestor.Models;
 using APIGestor.Models.Catalogs;
@@ -33,7 +34,8 @@ namespace APIGestor.Services
             _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             _mailService = scope.ServiceProvider.GetRequiredService<MailService>();
-            _userService = new UserService(_context, _userManager, _roleManager, _mailService);
+            _userService = new UserService(_context, _userManager, _roleManager, _mailService,
+                scope.ServiceProvider.GetService<AccessManager>());
             _catalogService = new CatalogService(_context);
             this.Configuration = Configuration;
         }
@@ -48,7 +50,7 @@ namespace APIGestor.Services
         {
             if (!_context.Database.EnsureCreated())
             {
-                CreateRoles();
+                CreateRoles().Wait();
                 CreateAdminUser();
                 CreateCatalog();
             }
@@ -60,24 +62,19 @@ namespace APIGestor.Services
             }
         }
 
-        protected void CreateRoles()
+        protected async Task CreateRoles()
         {
-            if (!_roleManager.RoleExistsAsync(Roles.ROLE_ADMIN_GESTOR).Result)
-            {
-                var resultado = _roleManager.CreateAsync(
-                    new IdentityRole(Roles.ROLE_ADMIN_GESTOR)).Result;
-                if (!resultado.Succeeded)
-                {
-                    throw new Exception(
-                        $"Erro durante a criação da role {Roles.ROLE_ADMIN_GESTOR}.");
-                }
+            Console.WriteLine("Tentando criar as funções de usuário (Roles)");
 
-                resultado = _roleManager.CreateAsync(
-                    new IdentityRole(Roles.ROLE_USER_GESTOR)).Result;
-                if (!resultado.Succeeded)
+            foreach (var role in Roles.AllRoles)
+            {
+                if (!await _roleManager.RoleExistsAsync(Roles.Fornecedor))
                 {
-                    throw new Exception(
-                        $"Erro durante a criação da role {Roles.ROLE_USER_GESTOR}.");
+                    var result = await _roleManager.CreateAsync(new IdentityRole(Roles.Fornecedor));
+                    if (!result.Succeeded)
+                    {
+                        result.Errors.ToList().ForEach(error => { Console.WriteLine(error.Description); });
+                    }
                 }
             }
         }
@@ -85,7 +82,7 @@ namespace APIGestor.Services
         protected void CreateAdminUser()
         {
             // Verifica se já termos um administrador cadastrado
-            if (_context.Users.Any(User => User.Role == Roles.ROLE_ADMIN_GESTOR))
+            if (_context.Users.Any(User => User.Role == Roles.AdminGestor))
                 return;
 
             var adminSection = Configuration.GetSection("AdminUser");
@@ -101,7 +98,7 @@ namespace APIGestor.Services
                         EmailConfirmed = true,
                         Status = UserStatus.Ativo,
                         Role = "Admin-APIGestor"
-                    }, adminPass, Roles.ROLE_ADMIN_GESTOR);
+                    }, adminPass, Roles.AdminGestor);
             }
         }
 

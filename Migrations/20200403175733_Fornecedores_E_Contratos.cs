@@ -7,7 +7,7 @@ namespace APIGestor.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "clausulas",
+                name: "Clausulas",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -17,11 +17,11 @@ namespace APIGestor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_clausulas", x => x.Id);
+                    table.PrimaryKey("PK_Clausulas", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "contratos",
+                name: "Contratos",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -32,11 +32,11 @@ namespace APIGestor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_contratos", x => x.Id);
+                    table.PrimaryKey("PK_Contratos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "fornecedores",
+                name: "Fornecedores",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -48,9 +48,9 @@ namespace APIGestor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_fornecedores", x => x.Id);
+                    table.PrimaryKey("PK_Fornecedores", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_fornecedores_AspNetUsers_ResponsavelId",
+                        name: "FK_Fornecedores_AspNetUsers_ResponsavelId",
                         column: x => x.ResponsavelId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -58,7 +58,7 @@ namespace APIGestor.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "coexecutores",
+                name: "CoExecutores",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -70,39 +70,39 @@ namespace APIGestor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_coexecutores", x => x.Id);
+                    table.PrimaryKey("PK_CoExecutores", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_coexecutores_fornecedores_FornecedorId",
+                        name: "FK_CoExecutores_Fornecedores_FornecedorId",
                         column: x => x.FornecedorId,
-                        principalTable: "fornecedores",
+                        principalTable: "Fornecedores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_coexecutores_FornecedorId",
-                table: "coexecutores",
+                name: "IX_CoExecutores_FornecedorId",
+                table: "CoExecutores",
                 column: "FornecedorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_fornecedores_ResponsavelId",
-                table: "fornecedores",
+                name: "IX_Fornecedores_ResponsavelId",
+                table: "Fornecedores",
                 column: "ResponsavelId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "clausulas");
+                name: "Clausulas");
 
             migrationBuilder.DropTable(
-                name: "coexecutores");
+                name: "CoExecutores");
 
             migrationBuilder.DropTable(
-                name: "contratos");
+                name: "Contratos");
 
             migrationBuilder.DropTable(
-                name: "fornecedores");
+                name: "Fornecedores");
         }
     }
 }

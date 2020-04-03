@@ -155,10 +155,10 @@ namespace APIGestor.Data
 
         protected void AddEntities(ModelBuilder builder)
         {
-            builder.Entity<Fornecedor>().ToTable("fornecedores");
-            builder.Entity<Contrato>().ToTable("contratos");
-            builder.Entity<Clausula>().ToTable("clausulas");
-            builder.Entity<CoExecutor>().ToTable("coexecutores");
+            builder.Entity<Fornecedor>().ToTable("Fornecedores");
+            builder.Entity<Contrato>().ToTable("Contratos");
+            builder.Entity<Clausula>().ToTable("Clausulas");
+            builder.Entity<CoExecutor>().ToTable("CoExecutores");
         }
     }
 }

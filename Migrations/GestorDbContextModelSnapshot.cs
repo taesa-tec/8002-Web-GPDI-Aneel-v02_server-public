@@ -136,7 +136,7 @@ namespace APIGestor.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("clausulas");
+                    b.ToTable("Clausulas");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Captacao.Contrato", b =>
@@ -157,7 +157,7 @@ namespace APIGestor.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("contratos");
+                    b.ToTable("Contratos");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogAtividade", b =>
@@ -632,7 +632,7 @@ namespace APIGestor.Migrations
 
                     b.HasIndex("FornecedorId");
 
-                    b.ToTable("coexecutores");
+                    b.ToTable("CoExecutores");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Fornecedores.Fornecedor", b =>
@@ -658,7 +658,7 @@ namespace APIGestor.Migrations
 
                     b.HasIndex("ResponsavelId");
 
-                    b.ToTable("fornecedores");
+                    b.ToTable("Fornecedores");
                 });
 
             modelBuilder.Entity("APIGestor.Models.FotoPerfil", b =>

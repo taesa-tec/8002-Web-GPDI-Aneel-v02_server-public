@@ -1,0 +1,114 @@
+@using APIGestor.Core
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{
+    Layout = null;
+}
+@{
+    var url = Configuration.GetValue<string>("Url");
+    var contato = Configuration.GetValue<string>("ContactEmail");
+}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Taesa</title>
+</head>
+
+<body>
+<table
+    align="center"
+    width="800"
+    border="0"
+    style="font-family: Roboto, Arial, sans-serif; color:#989898"
+    cellspacing="0"
+    cellpadding="0">
+    <tr>
+        <td width="36"></td>
+        <td width="728">
+            <table
+                width="100%"
+                style="border: solid 1px #CCC;"
+                cellspacing="0"
+                cellpadding="0">
+                <tr>
+                    <td height="104" colspan="3">
+                        <img
+                            style="display: block;"
+                            width="728"
+                            src="https://via.placeholder.com/728x104/7879a7/FFFFFF?text=Taesa"
+                            alt="Taesa"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="48">&nbsp;</td>
+                    <td>
+                        <center>
+                            <h3 style="color:@EmailConfig.PrimaryColor; font-weight: 500; font-size: 24px;">
+                                <font face="Roboto, Arial, sans-serif" color="@EmailConfig.PrimaryColor">
+                                    @RenderSection("Header", required: false)
+                                </font>
+                            </h3>
+                        </center>
+                    </td>
+                    <td width="48">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="48">&nbsp;</td>
+                    <td>
+                        <div style="font-size: 18px;">
+                            <font face="Roboto, Arial, sans-serif">
+                                @RenderBody()
+                            </font>
+                        </div>
+                    </td>
+                    <td width="48">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3" height="32">&nbsp;</td>
+                </tr>
+                @if (IsSectionDefined("Action"))
+                {
+                    <tr>
+                        <td width="48">&nbsp;</td>
+                        <td>
+                            <center>
+                                @RenderSection("Action", required: false)
+                            </center>
+                        </td>
+                        <td width="48">&nbsp;</td>
+                    </tr>
+                }
+                <!-- 
+                <a ref="#" style="display: inline-block; background: #042769; font-weight: bold; color:#FFF; border-radius: 4px; padding: 8px 16px; text-decoration: none; text-transform: uppercase;">
+                    Exemplo
+                </a>
+                -->
+                <tr>
+                    <td colspan="3" height="32">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="48">&nbsp;</td>
+                    <td>
+                        <font face="Roboto, Arial, sans-serif">
+                            <center>
+                                Em caso de dúvidas, por favor entrar em contato com
+                                <a style="color:#989898" href="mailto:@(contato)">
+                                    <font color="#989898">@(contato)</font>
+                                </a>
+                            </center>
+                        </font>
+                    </td>
+                    <td width="48">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3" height="28">&nbsp;</td>
+                </tr>
+            </table>
+        </td>
+        <td width="36"></td>
+    </tr>
+</table>
+</body>
+</html>

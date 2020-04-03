@@ -7,6 +7,7 @@ using APIGestor.Models.Catalogs;
 using APIGestor.Models.Projetos;
 using APIGestor.Security;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace APIGestor.Services
@@ -17,17 +18,19 @@ namespace APIGestor.Services
         private MailService _mailService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private AccessManager accessManager;
 
         public UserService(
             GestorDbContext context,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            MailService mailService)
+            MailService mailService, AccessManager accessManager)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
             _mailService = mailService;
+            this.accessManager = accessManager;
         }
 
         public ApplicationUser Obter(string userId)
@@ -58,25 +61,33 @@ namespace APIGestor.Services
 
             if (resultado.Inconsistencias.Count == 0 &&
                 _context.Users.Where(
-                p => p.Email == dadosUser.Email).Count() > 0)
+                    p => p.Email == dadosUser.Email).Count() > 0)
             {
                 resultado.Inconsistencias.Add(
                     "E-mail já cadastrado");
             }
 
-            if (resultado.Inconsistencias.Count == 0)
+            if (resultado.Sucesso)
             {
                 string Password = "ApiTaesa@2019";
                 dadosUser.EmailConfirmed = true;
                 dadosUser.DataCadastro = DateTime.Now;
                 resultado = CreateUser(dadosUser, Password, dadosUser.Role);
                 string UserId = resultado.Id;
-                if (resultado.Inconsistencias.Count == 0)
+                if (resultado.Sucesso)
                 {
-                    resultado = _mailService.SendMail(dadosUser, "Seja bem-vindo ao Gerenciador P&D Taesa", "mail-cadastro");
+                    try
+                    {
+                        accessManager.SendRecoverAccountEmail(dadosUser.Email, true,
+                            "Seja bem-vindo ao Gerenciador P&D Taesa").Wait(10000);
+                    }
+                    catch (Exception e)
+                    {
+                        resultado.Inconsistencias.Add(e.Message);
+                    }
+
                     resultado.Id = UserId;
                 }
-
             }
 
             return resultado;
@@ -88,26 +99,34 @@ namespace APIGestor.Services
             resultado.Acao = "Atualização de User";
 
             ApplicationUser User = _context.Users
-            .Where(u => u.Id == dadosUser.Id)
-            .FirstOrDefault();
+                .Where(u => u.Id == dadosUser.Id)
+                .FirstOrDefault();
 
             if (User == null)
             {
                 resultado.Inconsistencias.Add("User não encontrado");
             }
+
             if (resultado.Inconsistencias.Count == 0)
             {
-                User.Status = (dadosUser.Status != null && Enum.IsDefined(typeof(UserStatus), dadosUser.Status)) ? dadosUser.Status : User.Status;
+                User.Status = (dadosUser.Status != null && Enum.IsDefined(typeof(UserStatus), dadosUser.Status))
+                    ? dadosUser.Status
+                    : User.Status;
                 User.NomeCompleto = dadosUser.NomeCompleto == null ? User.NomeCompleto : dadosUser.NomeCompleto;
-                User.CatalogEmpresaId = dadosUser.CatalogEmpresaId == null ? User.CatalogEmpresaId : dadosUser.CatalogEmpresaId;
+                User.CatalogEmpresaId = dadosUser.CatalogEmpresaId == null
+                    ? User.CatalogEmpresaId
+                    : dadosUser.CatalogEmpresaId;
                 User.RazaoSocial = dadosUser.RazaoSocial == null ? User.RazaoSocial : dadosUser.RazaoSocial;
-                User.FotoPerfil = dadosUser.FotoPerfil == null || dadosUser.FotoPerfil.File.Length == 0 ? User.FotoPerfil : dadosUser.FotoPerfil;
+                User.FotoPerfil = dadosUser.FotoPerfil == null || dadosUser.FotoPerfil.File.Length == 0
+                    ? User.FotoPerfil
+                    : dadosUser.FotoPerfil;
                 User.Role = dadosUser.Role == null ? User.Role : dadosUser.Role;
                 User.CPF = dadosUser.CPF == null ? User.CPF : dadosUser.CPF;
                 User.Cargo = dadosUser.Cargo == null ? User.Cargo : dadosUser.Cargo;
                 User.DataAtualizacao = DateTime.Now;
                 _context.SaveChanges();
             }
+
             return resultado;
         }
 
@@ -148,11 +167,13 @@ namespace APIGestor.Services
                     resultado.Inconsistencias.Add(
                         "Preencha o E-mail do Usuário");
                 }
+
                 if (String.IsNullOrWhiteSpace(User.NomeCompleto))
                 {
                     resultado.Inconsistencias.Add(
                         "Preencha o Nome Completo do Usuário");
                 }
+
                 if (String.IsNullOrWhiteSpace(User.Role))
                 {
                     resultado.Inconsistencias.Add(
@@ -160,12 +181,13 @@ namespace APIGestor.Services
                 }
                 else
                 {
-                    if (User.Role != Roles.ROLE_ADMIN_GESTOR & User.Role != Roles.ROLE_USER_GESTOR)
+                    if (User.Role != Roles.AdminGestor & User.Role != Roles.UserGestor)
                     {
                         resultado.Inconsistencias.Add(
-                        "Role do usuário não identificada.");
+                            "Role do usuário não identificada.");
                     }
                 }
+
                 if (User.CatalogEmpresaId > 0)
                 {
                     CatalogEmpresa Empresa = _context.CatalogEmpresas.Where(
@@ -179,6 +201,7 @@ namespace APIGestor.Services
 
             return resultado;
         }
+
         public Resultado CreateUser(
             ApplicationUser user,
             string password,
@@ -199,6 +222,7 @@ namespace APIGestor.Services
                     resultado.Id = user.Id;
                     _userManager.AddToRoleAsync(user, initialRole).Wait();
                 }
+
                 if (result.Errors.Count() > 0)
                 {
                     foreach (var error in result.Errors)
@@ -207,6 +231,7 @@ namespace APIGestor.Services
                     }
                 }
             }
+
             return resultado;
         }
     }

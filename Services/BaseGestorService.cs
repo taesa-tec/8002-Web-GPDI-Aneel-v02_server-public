@@ -25,7 +25,7 @@ namespace APIGestor.Services {
         public bool UserProjectCan( int projeto_id, ClaimsPrincipal User, ProjectAccessRequirement projectAccess = null ) {
             var user_role = User.FindFirst(ClaimTypes.Role).Value;
 
-            if(user_role == Roles.ROLE_ADMIN_GESTOR) {
+            if(user_role == Roles.AdminGestor) {
                 return true;
             }
 

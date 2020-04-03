@@ -1,0 +1,37 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model APIGestor.Views.Email.RecoverAccount;
+@{
+    Layout = "_EmailBase";
+}
+@{
+    var appName = Configuration.GetValue<string>("AppName");
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+
+    Seja bem-vindo ao
+    <br>
+    @appName
+}
+
+@section Action
+{
+    <a href="@url/login/nova-senha/?email=@Model.Email&token=@Model.Token">
+        <img src="https://projetosped.taesa.com.br/images/gerar-senha.png" alt="Taesa">
+    </a>
+}
+
+<p>
+    Seu usuário no @appName foi criado com sucesso. Abaixo dados do
+    seu login.
+</p>
+<p>
+    <span style="color: #042769">Usuário: @Model.Email</span>
+</p>
+<p>
+    Para acessar o sistema clique no botão abaixo para criar uma senha e acessar
+    o sistema:
+</p>

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIGestor.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20200402162040_Fornecedores_E_Contratos")]
+    [Migration("20200403175733_Fornecedores_E_Contratos")]
     partial class Fornecedores_E_Contratos
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -138,7 +138,7 @@ namespace APIGestor.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("clausulas");
+                    b.ToTable("Clausulas");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Captacao.Contrato", b =>
@@ -159,7 +159,7 @@ namespace APIGestor.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("contratos");
+                    b.ToTable("Contratos");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogAtividade", b =>
@@ -634,7 +634,7 @@ namespace APIGestor.Migrations
 
                     b.HasIndex("FornecedorId");
 
-                    b.ToTable("coexecutores");
+                    b.ToTable("CoExecutores");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Fornecedores.Fornecedor", b =>
@@ -660,7 +660,7 @@ namespace APIGestor.Migrations
 
                     b.HasIndex("ResponsavelId");
 
-                    b.ToTable("fornecedores");
+                    b.ToTable("Fornecedores");
                 });
 
             modelBuilder.Entity("APIGestor.Models.FotoPerfil", b =>

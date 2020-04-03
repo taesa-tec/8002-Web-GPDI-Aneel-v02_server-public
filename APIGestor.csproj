@@ -40,6 +40,13 @@
         </Reference>
     </ItemGroup>
 
+
+    <ItemGroup>
+      <Compile Update="Views\Email\RecoverAccount.cshtml.cs">
+        <DependentUpon>RecoverAccount.cshtml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
     <ProjectExtensions>
         <VisualStudio>
             <UserProperties />

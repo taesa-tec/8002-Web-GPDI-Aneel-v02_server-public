@@ -19,7 +19,7 @@ namespace APIGestor.Controllers {
         }
 
         public static bool isAdmin( this ControllerBase controller ) {
-            return controller.User.FindFirst(ClaimTypes.Role).Value == Roles.ROLE_ADMIN_GESTOR;
+            return controller.User.FindFirst(ClaimTypes.Role).Value == Roles.AdminGestor;
         }
 
         public static bool CreateLog( this ControllerBase controller, LogService service, int ProjetoId, object Entity, object oldEntity = null ) {
