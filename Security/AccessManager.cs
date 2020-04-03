@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using APIGestor.Models;
 using APIGestor.Models.Projetos;
+using APIGestor.Requests;
 using APIGestor.Services;
 
 namespace APIGestor.Security {

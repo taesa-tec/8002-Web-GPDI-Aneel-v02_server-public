@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
 namespace APIGestor.Security
@@ -15,8 +16,15 @@ namespace APIGestor.Security
                 Key = new RsaSecurityKey(provider.ExportParameters(true));
             }
 
-            SigningCredentials = new SigningCredentials(
-                Key, SecurityAlgorithms.RsaSha256Signature);
+            SigningCredentials = new SigningCredentials(Key, SecurityAlgorithms.RsaSha256Signature);
+        }
+
+        public SigningConfigurations(string basehash)
+        {
+            var md5Hash = MD5.Create();
+            var data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(basehash));
+            Key = new SymmetricSecurityKey(data);
+            SigningCredentials = new SigningCredentials(Key, SecurityAlgorithms.HmacSha256);
         }
     }
 }

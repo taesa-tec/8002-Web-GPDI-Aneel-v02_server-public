@@ -197,22 +197,19 @@ namespace APIGestor
             #endregion
 
 
-            var signingConfigurations = new SigningConfigurations();
-            services.AddSingleton(signingConfigurations);
-
             var tokenConfigurations = new TokenConfigurations();
             new ConfigureFromConfigurationOptions<TokenConfigurations>(
                     Configuration.GetSection("TokenConfigurations"))
                 .Configure(tokenConfigurations);
+            var signingConfigurations = new SigningConfigurations(tokenConfigurations.BaseHash);
+            services.AddSingleton(signingConfigurations);
             services.AddSingleton(tokenConfigurations);
+            // Aciona a extensão que irá configurar o uso de
+            // autenticação e autorização via tokens
+            services.AddJwtSecurity(signingConfigurations, tokenConfigurations);
 
             services.AddSingleton<IAuthorizationHandler, ProjectAuthorizationHandler>();
             services.AddSingleton<IdentityInitializer>();
-
-            // Aciona a extensão que irá configurar o uso de
-            // autenticação e autorização via tokens
-            services.AddJwtSecurity(
-                signingConfigurations, tokenConfigurations);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
