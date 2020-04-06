@@ -159,6 +159,17 @@ namespace APIGestor.Data
             builder.Entity<Contrato>().ToTable("Contratos");
             builder.Entity<Clausula>().ToTable("Clausulas");
             builder.Entity<CoExecutor>().ToTable("CoExecutores");
+            builder.Entity<Captacao>().ToTable("Captacoes");
+
+            builder.Entity<CaptacaoArquivo>();
+            builder.Entity<CaptacaoFornecedor>()
+                .ToTable("CaptacoesFornecedores")
+                .HasKey(a => new {a.FornecedorId, a.PropostaConfiguracaoId});
+            builder.Entity<CaptacaoSugestaoFornecedor>()
+                .ToTable("CaptacaoSugestoesFornecedores")
+                .HasKey(a => new {a.FornecedorId, a.CaptacaoId});
+            builder.Entity<PropostaConfiguracao>().ToTable("PropostaConfiguracoes");
+            //builder.Entity<PropostaFornecedor>().ToTable("PropostaFornecedores");
         }
     }
 }

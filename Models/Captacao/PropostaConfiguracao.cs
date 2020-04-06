@@ -10,6 +10,6 @@ namespace APIGestor.Models.Captacao
         public Captacao Captacao { get; set; }
         public string Consideracoes { get; set; }
         public DateTime DataMaxima { get; set; }
-        public List<Fornecedores.Fornecedor> Fornecedores { get; set; }
+        public List<CaptacaoFornecedor> Fornecedores { get; set; }
     }
 }

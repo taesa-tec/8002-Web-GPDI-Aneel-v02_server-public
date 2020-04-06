@@ -3,7 +3,7 @@ using TaesaCore.Models;
 
 namespace APIGestor.Models.Captacao
 {
-    public class Proposta : BaseEntity
+    public class PropostaFornecedor : BaseEntity
     {
         public enum StatusParticipacao
         {

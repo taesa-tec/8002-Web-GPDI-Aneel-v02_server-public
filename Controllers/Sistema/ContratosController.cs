@@ -12,7 +12,7 @@ namespace APIGestor.Controllers.Sistema
     [Route("api/Sistema/Contratos")]
     [ApiController]
     [Authorize("Bearer")]
-    public class ContratosController : ControllerServiceBase<Contrato>
+    public class ContratosController : ControllerCrudBase<Contrato>
     {
         public ContratosController(IService<Contrato> service, IMapper mapper) : base(service, mapper)
         {

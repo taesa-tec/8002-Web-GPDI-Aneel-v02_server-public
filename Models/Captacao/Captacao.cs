@@ -17,7 +17,8 @@ namespace APIGestor.Models.Captacao
         public string Observacoes { get; set; }
         public DateTime DataTermino { get; set; }
         public CaptacaoStatus Status { get; set; }
-        public List<CaptacaoFornecedor> FornecedorsSugeridos { get; set; }
-        public List<CaptacaoFile> Files { get; set; }
+        public PropostaConfiguracao Configuracao { get; set; }
+        public List<CaptacaoSugestaoFornecedor> FornecedoresSugeridos { get; set; }
+        public List<CaptacaoArquivo> Files { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace APIGestor.Models.Captacao
         public int CoExecutorId { get; set; }
         public CoExecutor CoExecutor { get; set; }
         public int PropostaId { get; set; }
-        public Proposta Proposta { get; set; }
+        public PropostaFornecedor PropostaFornecedor { get; set; }
         public string Conteudo { get; set; }
         public Contrato.Status Status { get; set; }
     }

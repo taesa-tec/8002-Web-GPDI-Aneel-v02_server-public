@@ -22,7 +22,7 @@ namespace APIGestor.Controllers.Sistema
     [Route("api/Sistema/Fornecedores")]
     [ApiController]
     [Authorize("Bearer")]
-    public class FornecedoresController : ControllerServiceBase<Fornecedor, FornecedorDto, FornecedorCreateRequest,
+    public class FornecedoresController : ControllerCrudBase<Fornecedor, FornecedorDto, FornecedorCreateRequest,
         FornecedorEditRequest>
     {
         private readonly UserManager<ApplicationUser> _userManager;

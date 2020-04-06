@@ -6,15 +6,15 @@ using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
 
-namespace APIGestor.Controllers.Sistema
+namespace APIGestor.Controllers.Captacoes
 {
-    [SwaggerTag("Contrato Base")]
-    [Route("api/Sistema/Clausulas")]
+    [SwaggerTag("Captacao")]
+    [Route("api/Captacoes")]
     [ApiController]
     [Authorize("Bearer")]
-    public class ClausulasController : ControllerCrudBase<Clausula>
+    public class CaptacaoController : ControllerServiceBase<Captacao>
     {
-        public ClausulasController(IService<Clausula> service, IMapper mapper) : base(service, mapper)
+        public CaptacaoController(IService<Captacao> service, IMapper mapper) : base(service, mapper)
         {
         }
     }

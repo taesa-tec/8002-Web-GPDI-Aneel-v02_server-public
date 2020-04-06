@@ -2,6 +2,9 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Title>PeD</Title>
+        <Authors>Loja Interativa</Authors>
+        <AssemblyVersion>2.2</AssemblyVersion>
     </PropertyGroup>
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -35,18 +38,10 @@
 
 
     <ItemGroup>
-        <Reference Include="TaesaCore, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="TaesaCore, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>TaesaCore.dll</HintPath>
         </Reference>
     </ItemGroup>
-
-
-    <ItemGroup>
-        <Compile Update="Views\Email\RecoverAccount.cshtml.cs">
-            <DependentUpon>RecoverAccount.cshtml</DependentUpon>
-        </Compile>
-    </ItemGroup>
-
     <ProjectExtensions>
         <VisualStudio>
             <UserProperties />

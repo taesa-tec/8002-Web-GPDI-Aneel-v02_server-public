@@ -1,13 +1,12 @@
-using TaesaCore.Models;
+using APIGestor.Models.Fornecedores;
 
 namespace APIGestor.Models.Captacao
 {
-    public class CaptacaoFornecedor : BaseEntity
+    public class CaptacaoFornecedor
     {
-        // @todo Chave dessa tabela deve ser os ids combinados -> HasKey(a => new {a.FornecedorId, a.CaptacaoId});
+        public int PropostaConfiguracaoId { get; set; }
+        public PropostaConfiguracao PropostaConfiguracao { get; set; }
         public int FornecedorId { get; set; }
-        public Fornecedores.Fornecedor Fornecedor { get; set; }
-        public int CaptacaoId { get; set; }
-        public Captacao Captacao { get; set; }
+        public Fornecedor Fornecedor { get; set; }
     }
 }

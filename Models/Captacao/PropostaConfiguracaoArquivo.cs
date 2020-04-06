@@ -1,8 +1,8 @@
 namespace APIGestor.Models.Captacao
 {
-    public class PropostaConfiguracaoArquivos : FileUpload
+    public class PropostaConfiguracaoArquivo : FileUpload
     {
-        public int PropostaConfiguracaoId { get; set; }
+        public int CaptacaoPropostaConfiguracaoId { get; set; }
         public PropostaConfiguracao PropostaConfiguracao { get; set; }
     }
 }
