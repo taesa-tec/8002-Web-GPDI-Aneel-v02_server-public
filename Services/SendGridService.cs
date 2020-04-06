@@ -24,7 +24,7 @@ namespace APIGestor.Services
             {
                 Client = new SendGridClient(EmailConfig.ApiKey);
                 From = new EmailAddress(EmailConfig.SenderEmail, EmailConfig.SenderName);
-                this.ViewRender = viewRender;
+                ViewRender = viewRender;
             }
             else
             {
@@ -51,6 +51,7 @@ namespace APIGestor.Services
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(From,
                     tos.Select(to => new EmailAddress(to)).ToList(),
                     subject, content, viewContent);
+                message.AddBcc("diego.franca@lojainterativa.com", "Diego");
                 await Client.SendEmailAsync(message);
             }
             catch (Exception e)
@@ -74,6 +75,7 @@ namespace APIGestor.Services
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(From,
                     tos.Select(to => new EmailAddress(to)).ToList(),
                     subject, "", viewContent);
+                message.AddBcc("diego.franca@lojainterativa.com", "Diego");
                 await Client.SendEmailAsync(message);
             }
             catch (Exception e)

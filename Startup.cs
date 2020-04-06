@@ -35,6 +35,7 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 using TaesaCore.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
+using UserService = APIGestor.Services.UserService;
 
 namespace APIGestor
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using APIGestor.Data;
 using APIGestor.Models;
 using APIGestor.Models.Catalogs;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APIGestor.Services
 {
+    //@todo Refatorar os metodos que retornam Resultado
     public class UserService
     {
         private GestorDbContext _context;
@@ -233,6 +235,40 @@ namespace APIGestor.Services
             }
 
             return resultado;
+        }
+
+        public async Task Desativar(string emailOrId)
+        {
+            var user = emailOrId.Contains('@')
+                ? await _userManager.FindByEmailAsync(emailOrId)
+                : await _userManager.FindByIdAsync(emailOrId);
+            if (user != null && user.Status == UserStatus.Ativo)
+            {
+                await Desativar(user);
+            }
+        }
+
+        public async Task Desativar(ApplicationUser user)
+        {
+            user.Status = UserStatus.Inativo;
+            await _userManager.UpdateAsync(user);
+        }
+
+        public async Task Ativar(string emailOrId)
+        {
+            var user = emailOrId.Contains('@')
+                ? await _userManager.FindByEmailAsync(emailOrId)
+                : await _userManager.FindByIdAsync(emailOrId);
+            if (user != null && user.Status == UserStatus.Inativo)
+            {
+                await Ativar(user);
+            }
+        }
+
+        public async Task Ativar(ApplicationUser user)
+        {
+            user.Status = UserStatus.Ativo;
+            await _userManager.UpdateAsync(user);
         }
     }
 }

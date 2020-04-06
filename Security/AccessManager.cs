@@ -44,9 +44,9 @@ namespace APIGestor.Security
             SendGridService = sendGridService;
         }
 
+        // @todo retornar o status do usuário
         public bool ValidateCredentials(Login user)
         {
-            bool credenciaisValidas = false;
             if (user != null && !String.IsNullOrWhiteSpace(user.Email))
             {
                 // Verifica a existência do usuário nas tabelas do
@@ -56,22 +56,16 @@ namespace APIGestor.Security
                 if (userIdentity != null)
                 {
                     // Efetua o login com base no Id do usuário e sua senha
-                    var resultadoLogin = _signInManager
-                        .CheckPasswordSignInAsync(userIdentity, user.Password, false)
+                    var resultadoLogin = _signInManager.CheckPasswordSignInAsync(userIdentity, user.Password, false)
                         .Result;
                     if (resultadoLogin.Succeeded)
                     {
-                        // Verifica se o usuário em questão possui
-                        // a role Acesso-APIGestor
-                        // credenciaisValidas = _userManager.IsInRoleAsync(
-                        //     userIdentity, Roles.ROLE_ADMIN_GESTOR).Result;
-                        //Verifica se o usuário está Ativo
-                        credenciaisValidas = (userIdentity.Status > 0) ? true : false;
+                        return userIdentity.Status > 0;
                     }
                 }
             }
 
-            return credenciaisValidas;
+            return false;
         }
 
         public Token GenerateToken(Login user)
@@ -85,7 +79,8 @@ namespace APIGestor.Security
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, userIdentity.Id),
                     new Claim(JwtRegisteredClaimNames.UniqueName, user.Email),
-                    new Claim(ClaimTypes.Role, userIdentity.Role),
+                    new Claim(ClaimTypes.Role,
+                        userIdentity.Role ?? ""), // @todo Remover do sistema o uso do Role da tabela de usuários
                 }
             );
 
