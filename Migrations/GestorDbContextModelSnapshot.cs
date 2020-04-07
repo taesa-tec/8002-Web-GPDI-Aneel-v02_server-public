@@ -128,8 +128,22 @@ namespace APIGestor.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("DataTermino")
+                    b.Property<DateTime?>("Cancelamento")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Consideracoes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<string>("CriadorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("DemandaId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Observacoes")
                         .HasColumnType("nvarchar(max)");
@@ -137,9 +151,79 @@ namespace APIGestor.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("Termino")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Titulo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("CriadorId");
+
+                    b.HasIndex("DemandaId");
+
                     b.ToTable("Captacoes");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Captacao.CaptacaoArquivo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("AcessoFornecedor")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CaptacaoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CaptacaoId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CaptacaoArquivos");
+
+                    b.HasDiscriminator();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Captacao.CaptacaoContrato", b =>
+                {
+                    b.Property<int>("CaptacaoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContratoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CaptacaoId", "ContratoId");
+
+                    b.HasIndex("ContratoId");
+
+                    b.ToTable("CaptacaoContratos");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Captacao.CaptacaoFornecedor", b =>
@@ -147,12 +231,12 @@ namespace APIGestor.Migrations
                     b.Property<int>("FornecedorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PropostaConfiguracaoId")
+                    b.Property<int>("CaptacaoId")
                         .HasColumnType("int");
 
-                    b.HasKey("FornecedorId", "PropostaConfiguracaoId");
+                    b.HasKey("FornecedorId", "CaptacaoId");
 
-                    b.HasIndex("PropostaConfiguracaoId");
+                    b.HasIndex("CaptacaoId");
 
                     b.ToTable("CaptacoesFornecedores");
                 });
@@ -209,30 +293,6 @@ namespace APIGestor.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contratos");
-                });
-
-            modelBuilder.Entity("APIGestor.Models.Captacao.PropostaConfiguracao", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CaptacaoId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Consideracoes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DataMaxima")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CaptacaoId")
-                        .IsUnique();
-
-                    b.ToTable("PropostaConfiguracoes");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogAtividade", b =>
@@ -2082,18 +2142,6 @@ namespace APIGestor.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Captacao.CaptacaoArquivo", b =>
-                {
-                    b.HasBaseType("APIGestor.Models.FileUpload");
-
-                    b.Property<int>("CaptacaoId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("CaptacaoId");
-
-                    b.HasDiscriminator().HasValue("CaptacaoArquivo");
-                });
-
             modelBuilder.Entity("APIGestor.Models.Demandas.DemandaFile", b =>
                 {
                     b.HasBaseType("APIGestor.Models.FileUpload");
@@ -2117,17 +2165,58 @@ namespace APIGestor.Migrations
                         .HasForeignKey("FotoPerfilId");
                 });
 
-            modelBuilder.Entity("APIGestor.Models.Captacao.CaptacaoFornecedor", b =>
+            modelBuilder.Entity("APIGestor.Models.Captacao.Captacao", b =>
                 {
-                    b.HasOne("APIGestor.Models.Fornecedores.Fornecedor", "Fornecedor")
+                    b.HasOne("APIGestor.Models.ApplicationUser", "Criador")
                         .WithMany()
-                        .HasForeignKey("FornecedorId")
+                        .HasForeignKey("CriadorId");
+
+                    b.HasOne("APIGestor.Models.Demandas.Demanda", "Demanda")
+                        .WithMany()
+                        .HasForeignKey("DemandaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Captacao.CaptacaoArquivo", b =>
+                {
+                    b.HasOne("APIGestor.Models.Captacao.Captacao", "Captacao")
+                        .WithMany("Arquivos")
+                        .HasForeignKey("CaptacaoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("APIGestor.Models.Captacao.PropostaConfiguracao", "PropostaConfiguracao")
-                        .WithMany("Fornecedores")
-                        .HasForeignKey("PropostaConfiguracaoId")
+                    b.HasOne("APIGestor.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Captacao.CaptacaoContrato", b =>
+                {
+                    b.HasOne("APIGestor.Models.Captacao.Captacao", "Captacao")
+                        .WithMany("Contratos")
+                        .HasForeignKey("CaptacaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APIGestor.Models.Captacao.Contrato", "Contrato")
+                        .WithMany()
+                        .HasForeignKey("ContratoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Captacao.CaptacaoFornecedor", b =>
+                {
+                    b.HasOne("APIGestor.Models.Captacao.Captacao", "Captacao")
+                        .WithMany("FornecedoresConvidados")
+                        .HasForeignKey("CaptacaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APIGestor.Models.Fornecedores.Fornecedor", "Fornecedor")
+                        .WithMany()
+                        .HasForeignKey("FornecedorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2143,15 +2232,6 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.Fornecedores.Fornecedor", "Fornecedor")
                         .WithMany()
                         .HasForeignKey("FornecedorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("APIGestor.Models.Captacao.PropostaConfiguracao", b =>
-                {
-                    b.HasOne("APIGestor.Models.Captacao.Captacao", "Captacao")
-                        .WithOne("Configuracao")
-                        .HasForeignKey("APIGestor.Models.Captacao.PropostaConfiguracao", "CaptacaoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2709,15 +2789,6 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("APIGestor.Models.Captacao.CaptacaoArquivo", b =>
-                {
-                    b.HasOne("APIGestor.Models.Captacao.Captacao", "Captacao")
-                        .WithMany("Files")
-                        .HasForeignKey("CaptacaoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

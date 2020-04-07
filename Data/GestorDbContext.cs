@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using APIGestor.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Linq;
@@ -159,17 +160,24 @@ namespace APIGestor.Data
             builder.Entity<Contrato>().ToTable("Contratos");
             builder.Entity<Clausula>().ToTable("Clausulas");
             builder.Entity<CoExecutor>().ToTable("CoExecutores");
-            builder.Entity<Captacao>().ToTable("Captacoes");
 
-            builder.Entity<CaptacaoArquivo>();
+            builder.Entity<Captacao>(eb =>
+            {
+                eb.Property(c => c.CreatedAt).HasDefaultValueSql("getdate()");
+                eb.ToTable("Captacoes");
+            });
+            builder.Entity<CaptacaoArquivo>().HasBaseType((Type) null).ToTable("CaptacaoArquivos");
+
+            builder.Entity<CaptacaoContrato>().ToTable("CaptacaoContratos")
+                .HasKey(cc => new {cc.CaptacaoId, cc.ContratoId});
+
             builder.Entity<CaptacaoFornecedor>()
                 .ToTable("CaptacoesFornecedores")
-                .HasKey(a => new {a.FornecedorId, a.PropostaConfiguracaoId});
+                .HasKey(a => new {a.FornecedorId, PropostaConfiguracaoId = a.CaptacaoId});
+
             builder.Entity<CaptacaoSugestaoFornecedor>()
                 .ToTable("CaptacaoSugestoesFornecedores")
                 .HasKey(a => new {a.FornecedorId, a.CaptacaoId});
-            builder.Entity<PropostaConfiguracao>().ToTable("PropostaConfiguracoes");
-            //builder.Entity<PropostaFornecedor>().ToTable("PropostaFornecedores");
         }
     }
 }

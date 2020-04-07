@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIGestor.Data;
 using APIGestor.Exceptions.Demandas;
+using APIGestor.Models.Captacao;
 using APIGestor.Models.Demandas;
 using APIGestor.Models.Demandas.Forms;
 using APIGestor.Services.Sistema;
@@ -19,6 +20,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using TaesaCore.Interfaces;
 
 namespace APIGestor.Services.Demandas
 {
@@ -43,6 +45,7 @@ namespace APIGestor.Services.Demandas
         #region Props
 
         SistemaService sistemaService;
+        private IService<Captacao> _serviceCaptacao;
         MailerService mailer;
         GestorDbContext _context;
         IAuthorizationService authorization;
@@ -61,13 +64,14 @@ namespace APIGestor.Services.Demandas
             IAuthorizationService authorization,
             DemandaLogService logService,
             IWebHostEnvironment hostingEnvironment,
-            SistemaService sistemaService, IViewRenderService viewRender)
+            SistemaService sistemaService, IViewRenderService viewRender, IService<Captacao> serviceCaptacao)
         {
             this._context = context;
             this.authorization = authorization;
             this._hostingEnvironment = hostingEnvironment;
             this.sistemaService = sistemaService;
             this._viewRender = viewRender;
+            _serviceCaptacao = serviceCaptacao;
             this.mailer = mailer;
             this.LogService = logService;
 
@@ -151,7 +155,8 @@ namespace APIGestor.Services.Demandas
         {
             return QueryDemandas(userId)
                 // .Where(d => d.EtapaAtual == Etapa.AprovacaoDiretor && (d.EtapaStatus == EtapaStatus.Aprovada && d.EtapaStatus == EtapaStatus.Concluido)).ToList();
-                .Where(d => d.EtapaAtual == DemandaEtapa.AprovacaoDiretor && d.Status == DemandaStatus.Aprovada).ToList();
+                .Where(d => d.EtapaAtual == DemandaEtapa.AprovacaoDiretor && d.Status == DemandaStatus.Aprovada)
+                .ToList();
         }
 
         public List<Demanda> GetDemandasEmElaboracao(string userId = null)
@@ -381,11 +386,21 @@ namespace APIGestor.Services.Demandas
             var demanda = GetById(id);
             if (demanda != null && demanda.EtapaAtual != DemandaEtapa.Captacao)
             {
+                var captacao = new Captacao()
+                {
+                    DemandaId = id,
+                    CriadorId = userId,
+                    Titulo = demanda.Titulo,
+                    Status = Captacao.CaptacaoStatus.Pendente
+                };
                 demanda.EtapaAtual = DemandaEtapa.Captacao;
                 demanda.Status = DemandaStatus.Concluido;
                 demanda.CaptacaoDate = DateTime.Now;
                 _context.SaveChanges();
+                _serviceCaptacao.Post(captacao);
                 var user = _context.Users.Find(userId);
+
+
                 LogService.Incluir(userId, id, "Demanda para capacitação",
                     String.Format("O usuário {0} enviou demanda para a capacitação", user.NomeCompleto));
             }

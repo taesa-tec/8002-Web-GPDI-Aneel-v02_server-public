@@ -1,9 +1,10 @@
 namespace APIGestor.Models.Captacao
 {
-    public class CaptacaoArquivo : FileUpload
+    public class CaptacaoContrato
     {
-        public bool AcessoFornecedor { get; set; }
         public int CaptacaoId { get; set; }
+        public int ContratoId { get; set; }
         public Captacao Captacao { get; set; }
+        public Contrato Contrato { get; set; }
     }
 }
