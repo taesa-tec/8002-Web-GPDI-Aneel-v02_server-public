@@ -108,8 +108,23 @@ namespace APIGestor.Controllers.Captacoes
         public ActionResult Cancelar(BaseEntity request)
         {
             var captacao = Service.Get(request.Id);
+
             captacao.Status = Captacao.CaptacaoStatus.Cancelada;
             captacao.Cancelamento = DateTime.Now;
+            Service.Put(captacao);
+            return Ok();
+        }
+
+        public class CaptacaoPrazoRequest : BaseEntity
+        {
+            public DateTime Termino { get; set; }
+        }
+
+        [HttpPut("AlterarPrazo")]
+        public ActionResult AlterarPrazo(CaptacaoPrazoRequest request)
+        {
+            var captacao = Service.Get(request.Id);
+            captacao.Termino = request.Termino;
             Service.Put(captacao);
             return Ok();
         }
