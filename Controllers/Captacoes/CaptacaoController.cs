@@ -155,7 +155,65 @@ namespace APIGestor.Controllers.Captacoes
             Service.Put(captacao);
             return Ok();
         }
-        
-        
+
+        // @todo Authorization GetCaptacao
+        [HttpGet("{id}")]
+        public ActionResult<CaptacaoDetalhesDto> GetCaptacao(int id, [FromServices] IUrlHelper urlHelper)
+        {
+            var captacao = Service.Get(id);
+            var detalhes = Mapper.Map<CaptacaoDetalhesDto>(captacao);
+            detalhes.EspecificacaoTecnicaUrl = urlHelper.Link("DemandaPdf",
+                new {id = captacao.DemandaId, form = "especificao-tecnica"});
+
+            return Ok(detalhes);
+        }
+
+        // @todo Authorization ConfigurarCaptacao
+        [HttpPut("{id}")]
+        public ActionResult ConfigurarCaptacao(int id, ConfiguracaoRequest request,
+            [FromServices] GestorDbContext context)
+        {
+            var captacao = Service.Get(id);
+            var arquivoDbSet = context.Set<CaptacaoArquivo>();
+            var fornecedorDbSet = context.Set<CaptacaoFornecedor>();
+            var contratosDbSet = context.Set<CaptacaoContrato>();
+            captacao.Termino = request.Termino;
+            captacao.Consideracoes = request.Consideracoes;
+
+
+            #region Arquivos
+
+            var arquivos = arquivoDbSet.Where(ca => ca.CaptacaoId == id).ToList();
+            arquivos.ForEach(arquivo => arquivo.AcessoFornecedor = request.Arquivos.Contains(arquivo.Id));
+            arquivoDbSet.UpdateRange(arquivos);
+
+            #endregion
+
+            #region Fornecedores
+
+            var fornecedores = request.Convidados.Select(fid => new CaptacaoFornecedor
+                {CaptacaoId = id, FornecedorId = fid});
+
+            var captacaoFornecedors = fornecedorDbSet.Where(f => f.CaptacaoId == id).ToList();
+            fornecedorDbSet.RemoveRange(captacaoFornecedors);
+            fornecedorDbSet.AddRange(fornecedores);
+
+            #endregion
+
+            #region Contratos
+
+            var contratosOld = contratosDbSet.Where(c => c.CaptacaoId == id).ToList();
+            contratosDbSet.RemoveRange(contratosOld);
+            contratosDbSet.AddRange(request.Contratos.Select(cid => new CaptacaoContrato()
+            {
+                CaptacaoId = id, ContratoId = cid
+            }));
+
+            #endregion
+
+            context.SaveChanges();
+
+            return Ok();
+        }
     }
 }

@@ -15,6 +15,11 @@ namespace APIGestor.Mapping
             CreateMap<Captacao, CaptacaoElaboracaoDto>();
             CreateMap<Captacao, CaptacaoDto>()
                 .ForMember(c => c.ConvidadosTotal, opt => opt.MapFrom(src => src.FornecedoresConvidados.Count));
+
+            CreateMap<Captacao, CaptacaoDetalhesDto>()
+                .ForMember(c => c.SugestaoFornecedores,
+                    opt => opt.MapFrom(src => src.FornecedoresSugeridos.Select(fs => fs.Fornecedor)));
+
             //.ForMember(c => c.PropostaTotal, opt => opt.MapFrom(src => src.Propostas.Count(proposta => proposta.Finalizado)));
         }
     }

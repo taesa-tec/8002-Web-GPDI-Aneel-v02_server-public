@@ -234,8 +234,8 @@ namespace APIGestor.Controllers.Demandas
             }
         }
 
-        [HttpGet("{id:int}/Form/{form}/Pdf")]
-        public ActionResult<object> GetDemandaPDF(int id, string form)
+        [HttpGet("{id:int}/Form/{form}/Pdf", Name = "DemandaPdf")]
+        public ActionResult<object> GetDemandaPdf(int id, string form)
         {
             var filename = Service.GetDemandaFormPdfFilename(id, form);
             if (System.IO.File.Exists(filename))
