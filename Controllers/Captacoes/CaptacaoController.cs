@@ -4,10 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIGestor.Data;
 using APIGestor.Dtos.Captacao;
+using APIGestor.Models;
 using APIGestor.Models.Captacao;
 using APIGestor.Requests.Captacao;
+using APIGestor.Services;
+using APIGestor.Views.Email.Captacao;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
@@ -23,8 +27,12 @@ namespace APIGestor.Controllers.Captacoes
     [Authorize("Bearer")]
     public class CaptacaoController : ControllerServiceBase<Captacao>
     {
-        public CaptacaoController(IService<Captacao> service, IMapper mapper) : base(service, mapper)
+        private UserManager<ApplicationUser> _userManager;
+
+        public CaptacaoController(IService<Captacao> service, IMapper mapper, UserManager<ApplicationUser> userManager)
+            : base(service, mapper)
         {
+            _userManager = userManager;
         }
 
         [HttpGet("Pendentes")]
@@ -84,11 +92,19 @@ namespace APIGestor.Controllers.Captacoes
 
 
         [HttpPost("NovaCaptacao")]
-        public async Task NovaCaptacao(NovaCaptacaoRequest request, [FromServices] GestorDbContext context)
+        public async Task<ActionResult> NovaCaptacao(NovaCaptacaoRequest request,
+            [FromServices] GestorDbContext context,
+            [FromServices] SendGridService sendGridService)
         {
             var captacao = Service.Get(request.Id);
+            if (captacao.Status == Captacao.CaptacaoStatus.Elaboracao && captacao.EnvioCaptacao != null)
+            {
+                return BadRequest(new {error = "Captação já está em elaboração"});
+            }
+
             captacao.Observacoes = request.Observacoes;
             captacao.EnvioCaptacao = DateTime.Now;
+            captacao.Status = Captacao.CaptacaoStatus.Elaboracao;
             Service.Put(captacao);
             if (request.FornecedorsSugeridos.Count > 0)
             {
@@ -102,6 +118,17 @@ namespace APIGestor.Controllers.Captacoes
                 // dbset.RemoveRange(dbset.Where(csf => csf.CaptacaoId == request.Id));
                 await dbset.AddRangeAsync(fornecedoresSugeridos);
             }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            await sendGridService.Send("diego.franca@lojainterativa.com", "Novo Projeto para captação",
+                "Emails/Captacao/NovaCaptacao", new NovaCaptacao()
+                {
+                    Autor = currentUser.NomeCompleto,
+                    CaptacaoId = captacao.Id,
+                    CaptacaoTitulo = captacao.Titulo
+                });
+            return Ok();
         }
 
         [HttpPut("Cancelar")]
@@ -128,5 +155,7 @@ namespace APIGestor.Controllers.Captacoes
             Service.Put(captacao);
             return Ok();
         }
+        
+        
     }
 }
