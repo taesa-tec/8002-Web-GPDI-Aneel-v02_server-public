@@ -39,7 +39,7 @@ namespace APIGestor.Controllers.Captacoes
         public ActionResult<List<CaptacaoPendenteDto>> GetPendentes()
         {
             //Service.Paged()
-            var captacoes = Service.Get(q =>
+            var captacoes = Service.Filter(q =>
                 q.Include(c => c.Criador).Where(c => c.Status == Captacao.CaptacaoStatus.Pendente));
             var mapped = Mapper.Map<List<CaptacaoPendenteDto>>(captacoes);
             return Ok(mapped);
@@ -49,7 +49,7 @@ namespace APIGestor.Controllers.Captacoes
         public ActionResult<List<CaptacaoElaboracaoDto>> GetEmElaboracao()
         {
             //Service.Paged()
-            var captacoes = Service.Get(q => q.Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao));
+            var captacoes = Service.Filter(q => q.Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao));
             var mapped = Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes);
             return Ok(mapped);
         }
@@ -59,7 +59,8 @@ namespace APIGestor.Controllers.Captacoes
         {
             //Service.Paged()
             var captacoes =
-                Service.Get(q => q.Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada)); // ou com zero propostas
+                Service.Filter(q =>
+                    q.Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada)); // ou com zero propostas
             var mapped = Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes);
             return Ok(mapped);
         }
@@ -69,7 +70,7 @@ namespace APIGestor.Controllers.Captacoes
         {
             //Service.Paged()
             var captacoes =
-                Service.Get(q =>
+                Service.Filter(q =>
                     q.Where(c =>
                         c.Status == Captacao.CaptacaoStatus.Fornecedor &&
                         c.Termino > DateTime.Today));
@@ -82,7 +83,7 @@ namespace APIGestor.Controllers.Captacoes
         {
             //Service.Paged()
             var captacoes =
-                Service.Get(q =>
+                Service.Filter(q =>
                     q.Where(c =>
                         c.Status == Captacao.CaptacaoStatus.Fornecedor &&
                         c.Termino <= DateTime.Today));

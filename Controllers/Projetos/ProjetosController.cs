@@ -22,7 +22,8 @@ namespace APIGestor.Controllers.Projetos
         protected GestorDbContext _context;
 
 
-        public ProjetosController(ProjetoService service, GestorDbContext context, UserProjetoService userprojeto_service)
+        public ProjetosController(ProjetoService service, GestorDbContext context,
+            UserProjetoService userprojeto_service)
         {
             _service = service;
             _context = context;
@@ -32,14 +33,13 @@ namespace APIGestor.Controllers.Projetos
         [HttpGet]
         public IEnumerable<Projeto> Get()
         {
-
             CatalogStatus status = null;
             int statusId = 0;
 
 
             if (Request.Query.ContainsKey("status"))
             {
-                status = _context.CatalogStatus.FirstOrDefault(s => s.Status == Request.Query["status"]);
+                status = _context.CatalogStatus.FirstOrDefault(s => s.Status == Request.Query["status"].First());
                 statusId = status != null ? status.Id : 0;
             }
 
@@ -64,22 +64,28 @@ namespace APIGestor.Controllers.Projetos
                 {
                     return Projeto;
                 }
+
                 return Forbid();
             }
+
             return NotFound();
         }
+
         [HttpGet("{id}/me")]
         public ActionResult<CatalogUserPermissao> myAccess(int id)
         {
             if (this.isAdmin())
             {
-                return new CatalogUserPermissao { Nome = "Administrador", Valor = "admin" };
+                return new CatalogUserPermissao {Nome = "Administrador", Valor = "admin"};
             }
-            var userProjeto = _context.UserProjetos.Include("CatalogUserPermissao").Where(up => up.ProjetoId == id && up.UserId == this.userId()).FirstOrDefault();
+
+            var userProjeto = _context.UserProjetos.Include("CatalogUserPermissao")
+                .Where(up => up.ProjetoId == id && up.UserId == this.userId()).FirstOrDefault();
             if (userProjeto != null)
             {
                 return userProjeto.CatalogUserPermissao;
             }
+
             return null;
         }
 
@@ -92,7 +98,7 @@ namespace APIGestor.Controllers.Projetos
         }
 
         [HttpPost] // Criar
-        public ActionResult<Resultado> Post([FromBody]Projeto Projeto)
+        public ActionResult<Resultado> Post([FromBody] Projeto Projeto)
         {
             if (this.isAdmin())
             {
@@ -101,13 +107,15 @@ namespace APIGestor.Controllers.Projetos
                 {
                     this.CreateLog(this._service, int.Parse(resultado.Id), Projeto);
                 }
+
                 return resultado;
             }
+
             return Forbid();
         }
 
         [HttpPut] // Editar
-        public ActionResult<Resultado> Put([FromBody]Projeto Projeto)
+        public ActionResult<Resultado> Put([FromBody] Projeto Projeto)
         {
             if (this._service.UserProjectCan(Projeto.Id, User, ProjectPermissions.Administrator))
             {
@@ -118,8 +126,10 @@ namespace APIGestor.Controllers.Projetos
                 {
                     this.CreateLog(this._service, Projeto.Id, _service.Obter(Projeto.Id), ProjetoOld);
                 }
+
                 return result;
             }
+
             return Forbid();
         }
 
@@ -130,11 +140,12 @@ namespace APIGestor.Controllers.Projetos
             {
                 var resultado = _service.Excluir(id);
             }
+
             return Forbid();
         }
 
         [HttpPut("dataInicio")]
-        public ActionResult<Resultado> PutA([FromBody]Projeto Projeto)
+        public ActionResult<Resultado> PutA([FromBody] Projeto Projeto)
         {
             if (this._service.UserProjectCan(Projeto.Id, User, ProjectPermissions.Administrator))
             {
@@ -145,13 +156,15 @@ namespace APIGestor.Controllers.Projetos
                 {
                     this.CreateLog(this._service, Projeto.Id, _service.Obter(Projeto.Id), ProjetoOld);
                 }
+
                 return result;
             }
+
             return Forbid();
         }
 
         [HttpPost("prorrogar")]
-        public ActionResult<Resultado> PostA([FromBody]Projeto Projeto)
+        public ActionResult<Resultado> PostA([FromBody] Projeto Projeto)
         {
             if (this._service.UserProjectCan(Projeto.Id, User, ProjectPermissions.Administrator))
             {
@@ -161,6 +174,7 @@ namespace APIGestor.Controllers.Projetos
                 {
                     this.CreateLog(this._service, Projeto.Id, etapa);
                 }
+
                 return result;
             }
 

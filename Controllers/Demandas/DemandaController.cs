@@ -1,67 +1,66 @@
 using System.Collections.Generic;
+using APIGestor.Dtos.Demandas;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Models.Demandas;
 using APIGestor.Models.Demandas.Forms;
 using APIGestor.Services.Demandas;
 using APIGestor.Services.Sistema;
+using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
+using TaesaCore.Controllers;
 
 namespace APIGestor.Controllers.Demandas
 {
     [Route("api/Demandas/")]
     [ApiController]
     [Authorize("Bearer")]
-    public partial class DemandaController : ControllerBase
+    public partial class DemandaController : ControllerServiceBase<Demanda>
     {
         SistemaService sistemaService;
-        protected DemandaService Service { get; }
-        protected DemandaLogService LogService { get; }
-        private IWebHostEnvironment _hostingEnvironment;
+        protected DemandaService DemandaService { get; }
 
         protected List<FieldList> _forms = new List<FieldList>()
         {
             new EspecificacaoTecnicaForm()
         };
 
-        public DemandaController(DemandaService DemandaService, SistemaService sistemaService,
-            IWebHostEnvironment hostingEnvironment)
+        public DemandaController(DemandaService demandaService, IMapper mapper, SistemaService sistemaService) : base(
+            demandaService, mapper)
         {
-            this.Service = DemandaService;
-
+            DemandaService = demandaService;
             this.sistemaService = sistemaService;
-            _hostingEnvironment = hostingEnvironment;
         }
 
 
         [HttpGet("{etapa:alpha}")]
-        public List<Demanda> GetByEtapa(DemandaEtapa demandaEtapa)
+        public List<DemandaDto> GetByEtapa(DemandaEtapa demandaEtapa)
         {
-            return this.Service.GetByEtapa(demandaEtapa, this.userId());
+            return Mapper.Map<List<DemandaDto>>(DemandaService.GetByEtapa(demandaEtapa, this.userId()));
         }
 
         [HttpGet("Reprovadas")]
-        public List<Demanda> GetDemandasReprovadas()
+        public List<DemandaDto> GetDemandasReprovadas()
         {
-            return this.Service.GetDemandasReprovadas(this.userId());
+            return Mapper.Map<List<DemandaDto>>(DemandaService.GetDemandasReprovadas(this.userId()));
         }
 
         [HttpGet("Aprovadas")]
-        public List<Demanda> GetDemandasAprovadas()
+        public List<DemandaDto> GetDemandasAprovadas()
         {
-            return this.Service.GetDemandasAprovadas(this.userId());
+            return Mapper.Map<List<DemandaDto>>(DemandaService.GetDemandasAprovadas(this.userId()));
         }
 
         [HttpGet("EmElaboracao")]
-        public List<Demanda> GetDemandasEmElaboracao()
+        public List<DemandaDto> GetDemandasEmElaboracao()
         {
-            return this.Service.GetDemandasEmElaboracao(this.userId());
+            return Mapper.Map<List<DemandaDto>>(DemandaService.GetDemandasEmElaboracao(this.userId()));
         }
 
         [HttpGet("Captacao")]
-        public List<Demanda> GetDemandasCaptacao()
+        public List<DemandaDto> GetDemandasCaptacao()
         {
-            return this.Service.GetDemandasCaptacao(this.userId());
+            return Mapper.Map<List<DemandaDto>>(DemandaService.GetDemandasCaptacao(this.userId()));
         }
     }
 }

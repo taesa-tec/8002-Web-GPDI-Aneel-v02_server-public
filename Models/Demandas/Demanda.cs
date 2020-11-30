@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using APIGestor.Exceptions.Demandas;
+using TaesaCore.Models;
 
 namespace APIGestor.Models.Demandas
 {
@@ -27,7 +28,7 @@ namespace APIGestor.Models.Demandas
         Captacao = 7
     }
 
-    public class Demanda
+    public class Demanda : BaseEntity
     {
         protected static Dictionary<DemandaEtapa, string> _etapaDesc = new Dictionary<DemandaEtapa, string>()
                 {
@@ -40,7 +41,6 @@ namespace APIGestor.Models.Demandas
                     {DemandaEtapa.AprovacaoDiretor, "Aprovação Diretor"},
                     {DemandaEtapa.Captacao, "Enviado para captação"}
                 };
-        public int Id { get; set; }
         public string Titulo { get; set; }
         public string CriadorId { get; set; }
         public ApplicationUser Criador { get; set; }
