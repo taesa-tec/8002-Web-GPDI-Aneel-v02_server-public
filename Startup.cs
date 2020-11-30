@@ -53,7 +53,7 @@ namespace APIGestor
             services.AddTransient<IStartupFilter, IdentityInitializer>();
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
 
             services.AddScoped<IViewRenderService, ViewRenderService>();
             // Configurando o acesso a dados de projetos

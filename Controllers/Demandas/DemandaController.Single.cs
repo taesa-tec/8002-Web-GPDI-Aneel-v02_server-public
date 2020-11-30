@@ -29,7 +29,7 @@ namespace APIGestor.Controllers.Demandas
             return DemandaService.CriarDemanda(titulo, this.userId());
         }
 
-        [HttpHead("{id:int}/Access")]
+        [HttpHead("{id:int}")]
         public ActionResult HasAccess(int id)
         {
             if (DemandaService.DemandaExist(id))
