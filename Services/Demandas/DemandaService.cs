@@ -21,10 +21,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using TaesaCore.Interfaces;
+using TaesaCore.Services;
 
 namespace APIGestor.Services.Demandas
 {
-    public class DemandaService
+    public class DemandaService : BaseService<Demanda>
     {
         protected delegate bool CanDemandaProgress(Demanda demanda, string userId);
 
@@ -59,12 +60,14 @@ namespace APIGestor.Services.Demandas
         #region Contructor
 
         public DemandaService(
+            IRepository<Demanda> repository,
             GestorDbContext context,
             MailerService mailer,
             IAuthorizationService authorization,
             DemandaLogService logService,
             IWebHostEnvironment hostingEnvironment,
             SistemaService sistemaService, IViewRenderService viewRender, IService<Captacao> serviceCaptacao)
+            : base(repository)
         {
             this._context = context;
             this.authorization = authorization;

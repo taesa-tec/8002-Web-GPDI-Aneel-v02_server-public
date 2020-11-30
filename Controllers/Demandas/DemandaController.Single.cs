@@ -26,15 +26,15 @@ namespace APIGestor.Controllers.Demandas
         [HttpPost("Criar")]
         public ActionResult<Demanda> CriarDemanda([FromBody] string titulo)
         {
-            return Service.CriarDemanda(titulo, this.userId());
+            return DemandaService.CriarDemanda(titulo, this.userId());
         }
 
         [HttpHead("{id:int}/Access")]
         public ActionResult HasAccess(int id)
         {
-            if (Service.DemandaExist(id))
+            if (DemandaService.DemandaExist(id))
             {
-                if (Service.UserCanAccess(id, this.userId()))
+                if (DemandaService.UserCanAccess(id, this.userId()))
                     return Ok();
                 else
                     return Forbid();
@@ -46,15 +46,15 @@ namespace APIGestor.Controllers.Demandas
         [HttpGet("{id:int}")]
         public ActionResult<Demanda> GetById(int id)
         {
-            if (Service.UserCanAccess(id, this.userId()))
-                return Service.GetById(id);
+            if (DemandaService.UserCanAccess(id, this.userId()))
+                return DemandaService.GetById(id);
             return NotFound();
         }
 
         [HttpPut("{id}/Captacao")]
         public ActionResult EnviarCaptacao(int id)
         {
-            Service.EnviarCaptacao(id, this.userId());
+            DemandaService.EnviarCaptacao(id, this.userId());
             return Ok();
         }
 
@@ -67,12 +67,12 @@ namespace APIGestor.Controllers.Demandas
                 return BadRequest("Superior Direto não informado!");
             }
 
-            if (!Service.DemandaExist(id))
+            if (!DemandaService.DemandaExist(id))
             {
                 return NotFound();
             }
 
-            Service.SetSuperiorDireto(id, superiorDireto);
+            DemandaService.SetSuperiorDireto(id, superiorDireto);
 
             return Ok();
         }
@@ -82,7 +82,7 @@ namespace APIGestor.Controllers.Demandas
         {
             return new
             {
-                superiorDireto = Service.GetSuperiorDireto(id)
+                superiorDireto = DemandaService.GetSuperiorDireto(id)
             };
         }
 
@@ -95,7 +95,7 @@ namespace APIGestor.Controllers.Demandas
                 return BadRequest("Rivisor não informado!");
             }
 
-            if (!Service.DemandaExist(id))
+            if (!DemandaService.DemandaExist(id))
             {
                 return NotFound();
             }
@@ -104,7 +104,7 @@ namespace APIGestor.Controllers.Demandas
             {
                 try
                 {
-                    Service.ProximaEtapa(id, this.userId(), revisorId);
+                    DemandaService.ProximaEtapa(id, this.userId(), revisorId);
                 }
                 catch (DemandaException exception)
                 {
@@ -125,11 +125,11 @@ namespace APIGestor.Controllers.Demandas
         public ActionResult<Demanda> AlterarStatusDemanda(int id, [FromBody] JObject data)
         {
             var comentario = data.Value<string>("comentario");
-            Service.ProximaEtapa(id, this.userId());
+            DemandaService.ProximaEtapa(id, this.userId());
 
             if (!String.IsNullOrWhiteSpace(comentario))
             {
-                Service.AddComentario(id, comentario, this.userId());
+                DemandaService.AddComentario(id, comentario, this.userId());
             }
 
             return GetById(id);
@@ -141,11 +141,11 @@ namespace APIGestor.Controllers.Demandas
             var etapa = (DemandaEtapa) data.Value<int>("status");
             if (etapa < DemandaEtapa.Captacao)
             {
-                Service.SetEtapa(id, etapa, this.userId());
+                DemandaService.SetEtapa(id, etapa, this.userId());
             }
             else
             {
-                Service.EnviarCaptacao(id, this.userId());
+                DemandaService.EnviarCaptacao(id, this.userId());
             }
 
 
@@ -155,7 +155,7 @@ namespace APIGestor.Controllers.Demandas
         [HttpPut("{id:int}/Reiniciar")]
         public ActionResult<Demanda> Reiniciar(int id, [FromBody] JObject data)
         {
-            if (!Service.DemandaExist(id))
+            if (!DemandaService.DemandaExist(id))
                 return NotFound();
 
             var motivo = data.Value<string>("motivo");
@@ -165,8 +165,8 @@ namespace APIGestor.Controllers.Demandas
                 motivo = "Motivo não informado";
             }
 
-            Service.ReprovarReiniciar(id, this.userId());
-            Service.AddComentario(id, motivo, this.userId());
+            DemandaService.ReprovarReiniciar(id, this.userId());
+            DemandaService.AddComentario(id, motivo, this.userId());
 
 
             return GetById(id);
@@ -175,14 +175,14 @@ namespace APIGestor.Controllers.Demandas
         [HttpPut("{id:int}/ReprovarPermanente")]
         public ActionResult<Demanda> Finalizar(int id, [FromBody] JObject data)
         {
-            if (!Service.DemandaExist(id))
+            if (!DemandaService.DemandaExist(id))
                 return NotFound();
 
             var motivo = data.Value<string>("motivo");
 
 
-            Service.ReprovarPermanente(id, this.userId());
-            Service.AddComentario(id, motivo, this.userId());
+            DemandaService.ReprovarPermanente(id, this.userId());
+            DemandaService.AddComentario(id, motivo, this.userId());
 
             return CreatedAtAction(nameof(GetById), new {id});
         }
@@ -190,13 +190,13 @@ namespace APIGestor.Controllers.Demandas
         [HttpGet("{id:int}/File/")]
         public ActionResult<object> GetDemandaFiles(int id)
         {
-            return Service.GetDemandaFiles(id);
+            return DemandaService.GetDemandaFiles(id);
         }
 
         [HttpGet("{id:int}/File/{file_id:int}")]
         public ActionResult<object> GetDemandaFile(int id, int file_id)
         {
-            var file = Service.GetDemandaFile(id, file_id);
+            var file = DemandaService.GetDemandaFile(id, file_id);
             if (file != null && System.IO.File.Exists(file.Path))
             {
                 return PhysicalFile(file.Path, file.ContentType, file.Name);
@@ -208,7 +208,7 @@ namespace APIGestor.Controllers.Demandas
         [HttpGet("{id:int}/Form/{form}")]
         public ActionResult<object> GetDemandaFormValue(int id, string form)
         {
-            var data = Service.GetDemandaFormData(id, form);
+            var data = DemandaService.GetDemandaFormData(id, form);
             if (data != null)
             {
                 return data;
@@ -220,11 +220,11 @@ namespace APIGestor.Controllers.Demandas
         [HttpPut("{id}/Form/{form}")]
         public ActionResult<object> SalvarDemandaFormValue(int id, string form, [FromBody] JObject data)
         {
-            if (Service.DemandaExist(id))
+            if (DemandaService.DemandaExist(id))
             {
-                Service.SalvarDemandaFormData(id, form, data).RunSynchronously();
+                DemandaService.SalvarDemandaFormData(id, form, data).RunSynchronously();
                 var formName = DemandaService.GetForm(form).Title;
-                Service.LogService.Incluir(this.userId(), id,
+                DemandaService.LogService.Incluir(this.userId(), id,
                     String.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");
                 return Ok();
             }
@@ -237,7 +237,7 @@ namespace APIGestor.Controllers.Demandas
         [HttpGet("{id:int}/Form/{form}/Pdf", Name = "DemandaPdf")]
         public ActionResult<object> GetDemandaPdf(int id, string form)
         {
-            var filename = Service.GetDemandaFormPdfFilename(id, form);
+            var filename = DemandaService.GetDemandaFormPdfFilename(id, form);
             if (System.IO.File.Exists(filename))
             {
                 var name = String.Format("demanda-{0}-{1}.pdf", id, form);
@@ -260,7 +260,7 @@ namespace APIGestor.Controllers.Demandas
         public ActionResult GetDemandaHistorico(int id, string form, [FromServices] IMapper mapper)
         {
             var historico =
-                mapper.Map<List<DemandaFormHistoricoListItemDto>>(Service.GetDemandaFormHistoricos(id, form));
+                mapper.Map<List<DemandaFormHistoricoListItemDto>>(DemandaService.GetDemandaFormHistoricos(id, form));
             return Ok(historico);
         }
 
@@ -270,8 +270,8 @@ namespace APIGestor.Controllers.Demandas
             [FromServices] IViewRenderService viewRenderService)
         {
             var diffBuilder = new InlineDiffBuilder(new Differ());
-            var demandaForm = Service.GetDemandaFormData(id, form);
-            var historico = Service.GetDemandaFormHistorico(historyId);
+            var demandaForm = DemandaService.GetDemandaFormData(id, form);
+            var historico = DemandaService.GetDemandaFormHistorico(historyId);
             var htmlOld = new HtmlDocument();
             var htmlNew = new HtmlDocument();
             IChunker chunker;
@@ -312,7 +312,7 @@ namespace APIGestor.Controllers.Demandas
         [HttpGet("{id:int}/Form/{form}/Debug")]
         public async Task<ActionResult<object>> GetDemandaTeste(int id, string form)
         {
-            var doc = await Service.DemandaFormHtml(Service.GetDemandaFormView(id, form));
+            var doc = await DemandaService.DemandaFormHtml(DemandaService.GetDemandaFormView(id, form));
             if (doc != null)
             {
                 return Content(doc, "text/html");
@@ -327,8 +327,9 @@ namespace APIGestor.Controllers.Demandas
             [FromServices] IViewRenderService viewRenderService)
         {
             var diffBuilder = new InlineDiffBuilder(new Differ());
-            var demandaForm = Service.GetDemandaFormData(id, form);
-            var historico = mapper.Map<List<DemandaFormHistoricoDto>>(Service.GetDemandaFormHistoricos(id, form));
+            var demandaForm = DemandaService.GetDemandaFormData(id, form);
+            var historico =
+                mapper.Map<List<DemandaFormHistoricoDto>>(DemandaService.GetDemandaFormHistoricos(id, form));
             var html = new HtmlDocument();
             var htmlNew = new HtmlDocument();
             IChunker chunker;
@@ -364,9 +365,9 @@ namespace APIGestor.Controllers.Demandas
         [HttpGet("{id:int}/Logs")]
         public ActionResult<List<DemandaLog>> GetDemandaLog(int id)
         {
-            if (Service.UserCanAccess(id, this.userId()))
+            if (DemandaService.UserCanAccess(id, this.userId()))
             {
-                return Service.GetDemandaLogs(id);
+                return DemandaService.GetDemandaLogs(id);
             }
 
             return Forbid();
