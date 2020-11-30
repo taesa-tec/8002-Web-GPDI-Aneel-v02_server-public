@@ -222,7 +222,7 @@ namespace APIGestor.Controllers.Demandas
         {
             if (DemandaService.DemandaExist(id))
             {
-                DemandaService.SalvarDemandaFormData(id, form, data).RunSynchronously();
+                DemandaService.SalvarDemandaFormData(id, form, data).Wait();
                 var formName = DemandaService.GetForm(form).Title;
                 DemandaService.LogService.Incluir(this.userId(), id,
                     String.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");

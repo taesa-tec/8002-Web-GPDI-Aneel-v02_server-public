@@ -222,7 +222,7 @@ namespace APIGestor.Models.Demandas.Forms
                 var children = data.Value<JObject>("children");
                 if (children != null)
                 {
-                    this.Children.ForEach(field =>
+                    Children.ForEach(field =>
                     {
                         if (children.TryGetValue(field.Key, out JToken child))
                         {
@@ -238,11 +238,12 @@ namespace APIGestor.Models.Demandas.Forms
                     });
                 }
             }
-            finally
+            catch (Exception)
             {
+                // ignored
             }
 
-            fieldRendered.Type = this.FieldType;
+            fieldRendered.Type = FieldType;
             return fieldRendered;
         }
 

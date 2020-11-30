@@ -10,6 +10,7 @@
         rel="stylesheet"/>
     <title></title>
     <partial name="Pdf/_Style"/>
+    @Html.Partial("_Style.cshtml")
 </head>
 
 <body>
@@ -250,7 +251,7 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
                 <td>Coordenador de Pesquisa e Desenvolvimento</td>
                 <td>Gerente de Gestão de Ativos</td>
                 <td>
-                    <span id="gerente-funcao">@(Model.Demanda.SuperiorDireto.Cargo ?? "Não Informado,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")</span>
+                    <span id="gerente-funcao">@(Model.Demanda.SuperiorDireto.Cargo ?? "Não Informado")</span>
                 </td>
                 <td>Diretor Técnico</td>
             </tr>
@@ -270,7 +271,9 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
         <div class="bPage">&nbsp;</div>
 
         <div class="content" id="main-content">
-            <partial name="Pdf/_FieldItem" for="Rendered" />
+            Partial1
+            @Html.Partial("_FieldItem.cshtml", @Model.Rendered)
+            Partial2
         </div>
     </td>
 </tr>
