@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
@@ -101,6 +104,19 @@ namespace APIGestor.Controllers.Sistema
             fornecedor.Ativo = true;
             await _userService.Ativar(fornecedor.ResponsavelId);
             Service.Put(fornecedor);
+        }
+
+        public override ActionResult<FornecedorDto> Get(int id)
+        {
+            if (!Service.Exist(id))
+                return NotFound();
+            var fornecedor = Service.Filter(q => q.Include(f => f.Responsavel).Where(f => f.Id == id)).FirstOrDefault();
+            return Mapper.Map<FornecedorDto>(fornecedor);
+        }
+
+        public override ActionResult<List<FornecedorDto>> Get()
+        {
+            return Mapper.Map<List<FornecedorDto>>(Service.Filter(q => q.Include(f => f.Responsavel)).ToList());
         }
 
         [HttpPost]

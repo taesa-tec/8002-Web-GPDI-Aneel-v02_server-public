@@ -9,7 +9,8 @@ namespace APIGestor.Dtos.Captacao.Fornecedor
         public string CNPJ { get; set; }
 
         public string ResponsavelId { get; set; }
-        public string Responsavel { get; set; }
+        public string ResponsavelNome { get; set; }
+        public string ResponsavelEmail { get; set; }
         public bool Ativo { get; set; }
         public List<CoExecutorDto> CoExecutores { get; set; }
     }

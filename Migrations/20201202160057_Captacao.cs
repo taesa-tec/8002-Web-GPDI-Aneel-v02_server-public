@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace APIGestor.Migrations
 {
-    public partial class CaptacaoMigration : Migration
+    public partial class Captacao : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,6 +39,58 @@ namespace APIGestor.Migrations
                         principalTable: "Demandas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Clausulas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Ordem = table.Column<int>(nullable: false),
+                    Conteudo = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Clausulas", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Contratos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Titulo = table.Column<string>(nullable: true),
+                    Header = table.Column<string>(nullable: true),
+                    Conteudo = table.Column<string>(nullable: true),
+                    Footer = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Contratos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Fornecedores",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(nullable: true),
+                    CNPJ = table.Column<string>(nullable: true),
+                    ResponsavelId = table.Column<string>(nullable: true),
+                    Ativo = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Fornecedores", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Fornecedores_AspNetUsers_ResponsavelId",
+                        column: x => x.ResponsavelId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -83,7 +135,7 @@ namespace APIGestor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CaptacaoContratos", x => new {x.CaptacaoId, x.ContratoId});
+                    table.PrimaryKey("PK_CaptacaoContratos", x => new { x.CaptacaoId, x.ContratoId });
                     table.ForeignKey(
                         name: "FK_CaptacaoContratos_Captacoes_CaptacaoId",
                         column: x => x.CaptacaoId,
@@ -107,7 +159,7 @@ namespace APIGestor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CaptacaoSugestoesFornecedores", x => new {x.FornecedorId, x.CaptacaoId});
+                    table.PrimaryKey("PK_CaptacaoSugestoesFornecedores", x => new { x.FornecedorId, x.CaptacaoId });
                     table.ForeignKey(
                         name: "FK_CaptacaoSugestoesFornecedores_Captacoes_CaptacaoId",
                         column: x => x.CaptacaoId,
@@ -131,7 +183,7 @@ namespace APIGestor.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CaptacoesFornecedores", x => new {x.FornecedorId, x.CaptacaoId});
+                    table.PrimaryKey("PK_CaptacoesFornecedores", x => new { x.FornecedorId, x.CaptacaoId });
                     table.ForeignKey(
                         name: "FK_CaptacoesFornecedores_Captacoes_CaptacaoId",
                         column: x => x.CaptacaoId,
@@ -144,6 +196,90 @@ namespace APIGestor.Migrations
                         principalTable: "Fornecedores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CoExecutores",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FornecedorId = table.Column<int>(nullable: false),
+                    CNPJ = table.Column<string>(nullable: true),
+                    UF = table.Column<string>(nullable: true),
+                    RazaoSocial = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CoExecutores", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CoExecutores_Fornecedores_FornecedorId",
+                        column: x => x.FornecedorId,
+                        principalTable: "Fornecedores",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaFornecedor",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FornecedorId = table.Column<int>(nullable: false),
+                    CaptacaoId = table.Column<int>(nullable: false),
+                    Finalizado = table.Column<bool>(nullable: false),
+                    Participacao = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaFornecedor", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaFornecedor_Captacoes_CaptacaoId",
+                        column: x => x.CaptacaoId,
+                        principalTable: "Captacoes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PropostaFornecedor_Fornecedores_FornecedorId",
+                        column: x => x.FornecedorId,
+                        principalTable: "Fornecedores",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SugestaoClausula",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClausulaId = table.Column<int>(nullable: false),
+                    FornecedorId = table.Column<int>(nullable: false),
+                    Conteudo = table.Column<string>(nullable: true),
+                    PropostaFornecedorId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SugestaoClausula", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SugestaoClausula_Clausulas_ClausulaId",
+                        column: x => x.ClausulaId,
+                        principalTable: "Clausulas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SugestaoClausula_Fornecedores_FornecedorId",
+                        column: x => x.FornecedorId,
+                        principalTable: "Fornecedores",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SugestaoClausula_PropostaFornecedor_PropostaFornecedorId",
+                        column: x => x.PropostaFornecedorId,
+                        principalTable: "PropostaFornecedor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -180,6 +316,41 @@ namespace APIGestor.Migrations
                 name: "IX_CaptacoesFornecedores_CaptacaoId",
                 table: "CaptacoesFornecedores",
                 column: "CaptacaoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CoExecutores_FornecedorId",
+                table: "CoExecutores",
+                column: "FornecedorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Fornecedores_ResponsavelId",
+                table: "Fornecedores",
+                column: "ResponsavelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaFornecedor_CaptacaoId",
+                table: "PropostaFornecedor",
+                column: "CaptacaoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaFornecedor_FornecedorId",
+                table: "PropostaFornecedor",
+                column: "FornecedorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SugestaoClausula_ClausulaId",
+                table: "SugestaoClausula",
+                column: "ClausulaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SugestaoClausula_FornecedorId",
+                table: "SugestaoClausula",
+                column: "FornecedorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SugestaoClausula_PropostaFornecedorId",
+                table: "SugestaoClausula",
+                column: "PropostaFornecedorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -197,7 +368,25 @@ namespace APIGestor.Migrations
                 name: "CaptacoesFornecedores");
 
             migrationBuilder.DropTable(
+                name: "CoExecutores");
+
+            migrationBuilder.DropTable(
+                name: "SugestaoClausula");
+
+            migrationBuilder.DropTable(
+                name: "Contratos");
+
+            migrationBuilder.DropTable(
+                name: "Clausulas");
+
+            migrationBuilder.DropTable(
+                name: "PropostaFornecedor");
+
+            migrationBuilder.DropTable(
                 name: "Captacoes");
+
+            migrationBuilder.DropTable(
+                name: "Fornecedores");
         }
     }
 }

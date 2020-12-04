@@ -18,7 +18,8 @@ namespace APIGestor.Models.Captacao
         }
 
         public string Titulo { get; set; }
+        public string Header { get; set; }
         public string Conteudo { get; set; }
-        public TipoContrato Tipo { get; set; }
+        public string Footer { get; set; }
     }
 }

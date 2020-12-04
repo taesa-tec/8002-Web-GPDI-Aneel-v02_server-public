@@ -50,6 +50,7 @@ namespace APIGestor
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var spaPath = Configuration.GetValue<string>("SpaPath");
             services.AddTransient<IStartupFilter, IdentityInitializer>();
             services.AddAutoMapper(typeof(Startup));
 
@@ -221,6 +222,19 @@ namespace APIGestor
 
             services.AddSingleton<IAuthorizationHandler, ProjectAuthorizationHandler>();
             services.AddSingleton<IdentityInitializer>();
+
+            services.AddSpaStaticFiles(opt =>
+            {
+                if (!string.IsNullOrWhiteSpace(spaPath) || Directory.Exists(spaPath))
+                {
+                    Console.WriteLine(spaPath);
+                    opt.RootPath = spaPath;
+                }
+                else
+                {
+                    opt.RootPath = "StaticFiles/DefaultSpa";
+                }
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -233,6 +247,7 @@ namespace APIGestor
             {
                 app.UseHsts();
             }
+
 
             #region GlobalExceptionHandler
 
@@ -288,8 +303,11 @@ namespace APIGestor
                         .AllowAnyHeader()
                 //.AllowCredentials()
             );
+
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.UseHttpsRedirection();
+            app.UseSpaStaticFiles();
+            app.UseSpa(spa => { });
         }
     }
 }

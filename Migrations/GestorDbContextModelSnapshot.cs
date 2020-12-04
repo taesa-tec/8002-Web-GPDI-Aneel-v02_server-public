@@ -145,6 +145,9 @@ namespace APIGestor.Migrations
                     b.Property<int>("DemandaId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("EnvioCaptacao")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Observacoes")
                         .HasColumnType("nvarchar(max)");
 
@@ -284,8 +287,11 @@ namespace APIGestor.Migrations
                     b.Property<string>("Conteudo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Tipo")
-                        .HasColumnType("int");
+                    b.Property<string>("Footer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Header")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Titulo")
                         .HasColumnType("nvarchar(max)");
@@ -293,6 +299,64 @@ namespace APIGestor.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contratos");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Captacao.PropostaFornecedor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CaptacaoId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Finalizado")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("FornecedorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Participacao")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CaptacaoId");
+
+                    b.HasIndex("FornecedorId");
+
+                    b.ToTable("PropostaFornecedor");
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Captacao.SugestaoClausula", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ClausulaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Conteudo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FornecedorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PropostaFornecedorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClausulaId");
+
+                    b.HasIndex("FornecedorId");
+
+                    b.HasIndex("PropostaFornecedorId");
+
+                    b.ToTable("SugestaoClausula");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogAtividade", b =>
@@ -2234,6 +2298,40 @@ namespace APIGestor.Migrations
                         .HasForeignKey("FornecedorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Captacao.PropostaFornecedor", b =>
+                {
+                    b.HasOne("APIGestor.Models.Captacao.Captacao", "Captacao")
+                        .WithMany("Propostas")
+                        .HasForeignKey("CaptacaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APIGestor.Models.Fornecedores.Fornecedor", "Fornecedor")
+                        .WithMany()
+                        .HasForeignKey("FornecedorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("APIGestor.Models.Captacao.SugestaoClausula", b =>
+                {
+                    b.HasOne("APIGestor.Models.Captacao.Clausula", "Clausula")
+                        .WithMany()
+                        .HasForeignKey("ClausulaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APIGestor.Models.Fornecedores.Fornecedor", "Fornecedor")
+                        .WithMany()
+                        .HasForeignKey("FornecedorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APIGestor.Models.Captacao.PropostaFornecedor", null)
+                        .WithMany("SugestaoClausulas")
+                        .HasForeignKey("PropostaFornecedorId");
                 });
 
             modelBuilder.Entity("APIGestor.Models.Catalogs.CatalogAtividade", b =>

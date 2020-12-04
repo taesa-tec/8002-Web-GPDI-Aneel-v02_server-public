@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using APIGestor.Dtos.Sistema;
 using APIGestor.Models.Captacao;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -12,10 +15,36 @@ namespace APIGestor.Controllers.Sistema
     [Route("api/Sistema/Clausulas")]
     [ApiController]
     [Authorize("Bearer")]
-    public class ClausulasController : ControllerCrudBase<Clausula>
+    public class ClausulasController : ControllerServiceBase<Clausula>
     {
         public ClausulasController(IService<Clausula> service, IMapper mapper) : base(service, mapper)
         {
+        }
+
+        [HttpGet]
+        public IList<Clausula> Index()
+        {
+            return Service.Get().OrderBy(c => c.Ordem).ToList();
+        }
+
+        [HttpPost]
+        public ActionResult Save(List<ClausulaDto> clausulas)
+        {
+            int o = 0;
+            clausulas.ForEach(clausula =>
+            {
+                var c = Mapper.Map<Clausula>(clausula);
+                c.Ordem = o++;
+                if (clausula.Id > 0)
+                {
+                    Service.Put(c);
+                }
+                else
+                {
+                    Service.Post(c);
+                }
+            });
+            return Ok();
         }
     }
 }
