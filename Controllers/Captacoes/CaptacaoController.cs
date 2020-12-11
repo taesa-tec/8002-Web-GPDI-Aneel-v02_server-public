@@ -95,7 +95,8 @@ namespace APIGestor.Controllers.Captacoes
         [HttpPost("NovaCaptacao")]
         public async Task<ActionResult> NovaCaptacao(NovaCaptacaoRequest request,
             [FromServices] GestorDbContext context,
-            [FromServices] SendGridService sendGridService)
+            [FromServices] SendGridService sendGridService,
+            [FromServices] IService<Contrato> contratoService)
         {
             var captacao = Service.Get(request.Id);
             if (captacao.Status == Captacao.CaptacaoStatus.Elaboracao && captacao.EnvioCaptacao != null)
@@ -103,32 +104,41 @@ namespace APIGestor.Controllers.Captacoes
                 return BadRequest(new {error = "Captação já está em elaboração"});
             }
 
+            if (!contratoService.Exist(request.ContratoId))
+            {
+                return BadRequest(new {error = "Contrato sugerido não existe ou foi removido"});
+            }
+
             captacao.Observacoes = request.Observacoes;
             captacao.EnvioCaptacao = DateTime.Now;
             captacao.Status = Captacao.CaptacaoStatus.Elaboracao;
+            captacao.ContratoSugeridoId = request.ContratoId;
             Service.Put(captacao);
-            if (request.FornecedorsSugeridos.Count > 0)
+            if (request.Fornecedores.Count > 0)
             {
-                var fornecedoresSugeridos = request.FornecedorsSugeridos.Select(fs => new CaptacaoSugestaoFornecedor()
+                var fornecedoresSugeridos = request.Fornecedores.Select(fid => new CaptacaoSugestaoFornecedor()
                 {
                     CaptacaoId = request.Id,
-                    FornecedorId = fs
+                    FornecedorId = fid
                 });
 
                 var dbset = context.Set<CaptacaoSugestaoFornecedor>();
-                // dbset.RemoveRange(dbset.Where(csf => csf.CaptacaoId == request.Id));
+                dbset.RemoveRange(dbset.Where(csf => csf.CaptacaoId == request.Id));
+                context.SaveChanges();
                 await dbset.AddRangeAsync(fornecedoresSugeridos);
+                context.SaveChanges();
             }
 
             var currentUser = await _userManager.GetUserAsync(User);
 
+            var nova = new NovaCaptacao()
+            {
+                Autor = currentUser.NomeCompleto,
+                CaptacaoId = captacao.Id,
+                CaptacaoTitulo = captacao.Titulo
+            };
             await sendGridService.Send("diego.franca@lojainterativa.com", "Novo Projeto para captação",
-                "Emails/Captacao/NovaCaptacao", new NovaCaptacao()
-                {
-                    Autor = currentUser.NomeCompleto,
-                    CaptacaoId = captacao.Id,
-                    CaptacaoTitulo = captacao.Titulo
-                });
+                "Email/Captacao/NovaCaptacao", nova);
             return Ok();
         }
 

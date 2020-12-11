@@ -23,6 +23,9 @@ namespace APIGestor.Models.Captacao
         public string CriadorId { get; set; }
         public ApplicationUser Criador { get; set; }
 
+        public int? ContratoSugeridoId { get; set; }
+        public Contrato ContratoSugerido { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public DateTime? EnvioCaptacao { get; set; }
         public DateTime? Termino { get; set; }

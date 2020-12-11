@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace APIGestor.Controllers
 {
-    public abstract class FileBaseController<T> : Controller where T : FileUpload, new()
+    public abstract class FileBaseController<T> : Controller where T : class, IFileUpload, new()
     {
         protected GestorDbContext context;
         protected IWebHostEnvironment hostingEnvironment;
@@ -20,11 +20,13 @@ namespace APIGestor.Controllers
         {
             get
             {
-                string folderName = String.Format("uploads/{0}/{1}/{2}", DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
+                string folderName = String.Format("uploads/{0}/{1}/{2}", DateTime.Today.Year, DateTime.Today.Month,
+                    DateTime.Today.Day);
                 string webRootPath = hostingEnvironment.WebRootPath;
                 return Path.Combine(webRootPath, folderName);
             }
         }
+
         public FileBaseController(GestorDbContext context, IWebHostEnvironment hostingEnvironment)
         {
             this.context = context;
@@ -69,19 +71,20 @@ namespace APIGestor.Controllers
                         {
                             _t = func(_t);
                         }
+
                         fileUploads.Add(_t);
 
                         o++;
                     }
                 }
             }
-            context.AddRange(fileUploads);
+
+            context.Set<T>().AddRange(fileUploads);
             // context.Files.AddRange(fileUploads);
             await context.SaveChangesAsync();
             return fileUploads;
         }
+
         protected abstract T FromFormFile(IFormFile file, string filename);
-
-
     }
 }

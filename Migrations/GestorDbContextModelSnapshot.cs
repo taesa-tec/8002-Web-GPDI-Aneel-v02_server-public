@@ -134,6 +134,9 @@ namespace APIGestor.Migrations
                     b.Property<string>("Consideracoes")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ContratoSugeridoId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -161,6 +164,8 @@ namespace APIGestor.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ContratoSugeridoId");
 
                     b.HasIndex("CriadorId");
 
@@ -210,8 +215,6 @@ namespace APIGestor.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CaptacaoArquivos");
-
-                    b.HasDiscriminator();
                 });
 
             modelBuilder.Entity("APIGestor.Models.Captacao.CaptacaoContrato", b =>
@@ -2231,6 +2234,10 @@ namespace APIGestor.Migrations
 
             modelBuilder.Entity("APIGestor.Models.Captacao.Captacao", b =>
                 {
+                    b.HasOne("APIGestor.Models.Captacao.Contrato", "ContratoSugerido")
+                        .WithMany()
+                        .HasForeignKey("ContratoSugeridoId");
+
                     b.HasOne("APIGestor.Models.ApplicationUser", "Criador")
                         .WithMany()
                         .HasForeignKey("CriadorId");
@@ -2260,13 +2267,13 @@ namespace APIGestor.Migrations
                     b.HasOne("APIGestor.Models.Captacao.Captacao", "Captacao")
                         .WithMany("Contratos")
                         .HasForeignKey("CaptacaoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("APIGestor.Models.Captacao.Contrato", "Contrato")
                         .WithMany()
                         .HasForeignKey("ContratoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

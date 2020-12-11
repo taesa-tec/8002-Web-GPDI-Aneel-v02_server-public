@@ -11,8 +11,8 @@ using APIGestor.Data;
 using APIGestor.Models;
 using APIGestor.Security;
 using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using APIGestor.Authorizations;
@@ -27,6 +27,7 @@ using APIGestor.Services.Projetos.Resultados;
 using APIGestor.Services.Projetos.XmlProjeto;
 using APIGestor.Services.Sistema;
 using AutoMapper;
+using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
@@ -36,6 +37,7 @@ using TaesaCore.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 using UserService = APIGestor.Services.UserService;
+
 
 namespace APIGestor
 {
@@ -53,6 +55,7 @@ namespace APIGestor
             var spaPath = Configuration.GetValue<string>("SpaPath");
             services.AddTransient<IStartupFilter, IdentityInitializer>();
             services.AddAutoMapper(typeof(Startup));
+
 
             services.AddControllers().AddNewtonsoftJson();
 
@@ -74,7 +77,8 @@ namespace APIGestor
             services.AddScoped<DbContext, GestorDbContext>();
 
             services.AddCors();
-            services.AddMvc();
+            services.AddMvc()
+                .AddFluentValidation(fv => { fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup)); });
 
             services.AddSwaggerGen(c =>
             {
@@ -184,6 +188,7 @@ namespace APIGestor
                 {
                     options.User.AllowedUserNameCharacters =
                         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+/";
+                    options.ClaimsIdentity.UserIdClaimType = JwtRegisteredClaimNames.Jti;
                 })
                 .AddEntityFrameworkStores<GestorDbContext>()
                 .AddDefaultTokenProviders()

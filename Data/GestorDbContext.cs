@@ -164,12 +164,22 @@ namespace APIGestor.Data
             builder.Entity<Captacao>(eb =>
             {
                 eb.Property(c => c.CreatedAt).HasDefaultValueSql("getdate()");
+                eb.HasOne(c => c.ContratoSugerido).WithMany()
+                    .HasForeignKey("ContratoSugeridoId")
+                    .IsRequired(false);
                 eb.ToTable("Captacoes");
             });
-            builder.Entity<CaptacaoArquivo>().HasBaseType((Type) null).ToTable("CaptacaoArquivos");
+            builder.Entity<CaptacaoArquivo>().ToTable("CaptacaoArquivos");
 
-            builder.Entity<CaptacaoContrato>().ToTable("CaptacaoContratos")
-                .HasKey(cc => new {cc.CaptacaoId, cc.ContratoId});
+            builder.Entity<CaptacaoContrato>(b =>
+            {
+                b.ToTable("CaptacaoContratos")
+                    .HasKey(cc => new {cc.CaptacaoId, cc.ContratoId});
+                b.HasOne(cc => cc.Captacao).WithMany(c => c.Contratos).HasForeignKey("CaptacaoId")
+                    .OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(cc => cc.Contrato).WithMany().HasForeignKey("ContratoId")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
 
             builder.Entity<CaptacaoFornecedor>()
                 .ToTable("CaptacoesFornecedores")
