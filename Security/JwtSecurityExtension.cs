@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -44,6 +45,12 @@ namespace APIGestor.Security
                 auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser().Build());
+
+
+                auth.AddPolicy("Admin", policy => { policy.RequireClaim(ClaimTypes.Role, Roles.AdminGestor); });
+                auth.AddPolicy("Ped", policy => { policy.RequireClaim(ClaimTypes.Role, Roles.UserGestor); });
+                auth.AddPolicy("Suprimento", policy => { policy.RequireClaim(ClaimTypes.Role, Roles.Suprimento); });
+                auth.AddPolicy("Fornecedor", policy => { policy.RequireClaim(ClaimTypes.Role, Roles.Fornecedor); });
             });
 
             return services;

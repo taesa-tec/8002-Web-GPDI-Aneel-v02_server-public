@@ -1,4 +1,6 @@
-﻿using APIGestor.Requests;
+﻿using System.Net;
+using APIGestor.Dtos.Auth;
+using APIGestor.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Security;
@@ -12,7 +14,7 @@ namespace APIGestor.Controllers
     {
         [AllowAnonymous]
         [HttpPost]
-        public object Post(
+        public ActionResult<Token> Post(
             [FromBody] Login user,
             [FromServices] AccessManager accessManager)
         {
@@ -21,14 +23,8 @@ namespace APIGestor.Controllers
             {
                 return accessManager.GenerateToken(user);
             }
-            else
-            {
-                return new
-                {
-                    Authenticated = false,
-                    Message = "Falha ao autenticar"
-                };
-            }
+
+            return StatusCode((int) HttpStatusCode.Unauthorized);
         }
 
         [HttpPost("recuperar-senha")]

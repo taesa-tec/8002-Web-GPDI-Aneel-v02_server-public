@@ -35,16 +35,24 @@ namespace APIGestor.Services
             this.accessManager = accessManager;
         }
 
+        protected List<string> GetRoles(ApplicationUser user) => _userManager.GetRolesAsync(user).Result.ToList();
+
         public ApplicationUser Obter(string userId)
         {
             if (!String.IsNullOrWhiteSpace(userId))
             {
-                return _context.Users
+                var user = _context.Users
                     .Include("FotoPerfil")
                     .Where(p => p.Id == userId).Include("CatalogEmpresa").FirstOrDefault();
+                if (user != null)
+                {
+                    user.Roles = GetRoles(user);
+                }
+
+                return user;
             }
-            else
-                return null;
+
+            return null;
         }
 
         public IEnumerable<ApplicationUser> ListarTodos()

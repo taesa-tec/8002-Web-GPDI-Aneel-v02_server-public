@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using APIGestor.Models;
 using APIGestor.Models.Catalogs;
 
@@ -19,6 +20,7 @@ namespace APIGestor.Dtos
         public string RazaoSocial { get; set; }
         public string FotoPerfil { get; set; }
         public string Role { get; set; }
+        public List<string> Roles { get; set; }
         public string CPF { get; set; }
         public DateTime? UltimoLogin { get; set; }
         public DateTime DataCadastro { get; set; }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using APIGestor.Models.Catalogs;
@@ -24,6 +25,7 @@ namespace APIGestor.Models
         public string RazaoSocial { get; set; }
         public FotoPerfil FotoPerfil { get; set; }
         public string Role { get; set; }
+        [NotMapped] public List<string> Roles { get; set; }
         public string CPF { get; set; }
         public DateTime? UltimoLogin { get; set; }
         public DateTime DataCadastro { get; set; }

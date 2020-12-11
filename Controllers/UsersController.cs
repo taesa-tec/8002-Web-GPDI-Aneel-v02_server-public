@@ -7,6 +7,7 @@ using APIGestor.Dtos;
 using APIGestor.Models.Projetos;
 using APIGestor.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace APIGestor.Controllers
@@ -47,11 +48,15 @@ namespace APIGestor.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ApplicationUserDto> Get(string id)
+        public ActionResult<ApplicationUserDto> Get(string id, [FromServices] UserManager<ApplicationUser> userManager)
         {
             var User = _service.Obter(id);
+            User.Roles = userManager.GetRolesAsync(User).Result.ToList();
+
             if (User != null)
+            {
                 return mapper.Map<ApplicationUserDto>(User);
+            }
             else
                 return NotFound();
         }

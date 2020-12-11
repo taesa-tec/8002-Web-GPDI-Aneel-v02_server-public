@@ -8,11 +8,14 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Threading.Tasks;
+using APIGestor.Dtos;
+using APIGestor.Dtos.Auth;
 using APIGestor.Models;
 using APIGestor.Models.Projetos;
 using APIGestor.Requests;
 using APIGestor.Services;
 using APIGestor.Views.Email;
+using AutoMapper;
 
 namespace APIGestor.Security
 {
@@ -25,15 +28,13 @@ namespace APIGestor.Security
         private IWebHostEnvironment _hostingEnvironment;
         private MailService _mailService;
         protected SendGridService SendGridService;
+        protected IMapper Mapper;
 
         public AccessManager(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            SigningConfigurations signingConfigurations,
-            IWebHostEnvironment hostingEnvironment,
-            TokenConfigurations tokenConfigurations,
-            MailService mailService,
-            SendGridService sendGridService)
+            UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+            SigningConfigurations signingConfigurations, IWebHostEnvironment hostingEnvironment,
+            TokenConfigurations tokenConfigurations, MailService mailService,
+            SendGridService sendGridService, IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -42,6 +43,7 @@ namespace APIGestor.Security
             _tokenConfigurations = tokenConfigurations;
             _mailService = mailService;
             SendGridService = sendGridService;
+            Mapper = mapper;
         }
 
         // @todo retornar o status do usuário
@@ -72,6 +74,7 @@ namespace APIGestor.Security
         {
             var userIdentity = _userManager
                 .FindByEmailAsync(user.Email).Result;
+            var roles = _userManager.GetRolesAsync(userIdentity).Result.ToList();
 
             ClaimsIdentity identity = new ClaimsIdentity(
                 new GenericIdentity(user.Email, "Login"),
@@ -81,7 +84,7 @@ namespace APIGestor.Security
                     new Claim(JwtRegisteredClaimNames.UniqueName, user.Email),
                     new Claim(ClaimTypes.Role,
                         userIdentity.Role ?? ""), // @todo Remover do sistema o uso do Role da tabela de usuários
-                }
+                }.Concat(roles.Select(r => new Claim(ClaimTypes.Role, r)))
             );
 
             DateTime dataCriacao = DateTime.Now;
@@ -102,11 +105,10 @@ namespace APIGestor.Security
 
             return new Token()
             {
-                Authenticated = true,
                 Created = dataCriacao.ToString("yyyy-MM-dd HH:mm:ss"),
                 Expiration = dataExpiracao.ToString("yyyy-MM-dd HH:mm:ss"),
                 AccessToken = token,
-                Message = "OK"
+                User = Mapper.Map<ApplicationUserDto>(userIdentity)
             };
         }
 
