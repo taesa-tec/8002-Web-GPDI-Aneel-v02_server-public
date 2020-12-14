@@ -19,7 +19,10 @@
 
 @section Action
 {
-    <a href="@url/login/nova-senha/?email=@Model.Email&token=@Model.Token">
+    @{
+        var urlr = string.Format("{0}/login/nova-senha/?email={1}&token={2}", url, Model.Email, Uri.EscapeUriString(Model.Token));
+    }
+    <a href="@urlr">
         <img src="https://projetosped.taesa.com.br/images/gerar-senha.png" alt="Taesa">
     </a>
 }

@@ -192,6 +192,7 @@ namespace APIGestor.Security
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) throw new Exception("Email não encontrado");
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            Console.WriteLine(token);
             await SendGridService.Send(email, subject, newAccount ? "Email/RegisterAccount" : "Email/RecoverAccount",
                 new RecoverAccount()
                 {

@@ -57,7 +57,8 @@ namespace APIGestor.Controllers.Sistema
                     NomeCompleto = nome,
                     Role = Roles.Fornecedor,
                     RazaoSocial = fornecedor.Nome,
-                    Status = UserStatus.Ativo
+                    Status = UserStatus.Ativo,
+                    CatalogEmpresaId = 0
                 };
 
                 var md5Hash = MD5.Create();

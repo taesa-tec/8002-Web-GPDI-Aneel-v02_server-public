@@ -10,6 +10,7 @@ using APIGestor.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TaesaCore.Extensions;
 
 namespace APIGestor.Services
 {
@@ -79,7 +80,7 @@ namespace APIGestor.Services
 
             if (resultado.Sucesso)
             {
-                string Password = "ApiTaesa@2019";
+                string Password = DateTime.Now.ToString().ToMD5(); //"ApiTaesa@2019";
                 dadosUser.EmailConfirmed = true;
                 dadosUser.DataCadastro = DateTime.Now;
                 resultado = CreateUser(dadosUser, Password, dadosUser.Role);
