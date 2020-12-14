@@ -10,8 +10,8 @@ namespace APIGestor.Mapping
         public ApplicationUserMapping()
         {
             CreateMap<ApplicationUser, ApplicationUserDto>()
-                //.ForMember(user => user.CatalogEmpresa, opt =>
-                //  opt.MapFrom(src => src.CatalogEmpresa.Nome))
+                .ForMember(user => user.Empresa, opt =>
+                    opt.MapFrom(src => src.CatalogEmpresa.Nome ?? src.RazaoSocial))
                 .ForMember(user => user.StatusValor, opt => opt.MapFrom(src =>
                     (src.Status != null) ? Enum.GetName(typeof(UserStatus), src.Status) : null
                 ))

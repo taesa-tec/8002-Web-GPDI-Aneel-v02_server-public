@@ -16,7 +16,7 @@ namespace APIGestor.Dtos
         public string NomeCompleto { get; set; }
         public string Cargo { get; set; }
         public int? CatalogEmpresaId;
-        public CatalogEmpresa CatalogEmpresa { get; set; }
+        public string Empresa { get; set; }
         public string RazaoSocial { get; set; }
         public string FotoPerfil { get; set; }
         public string Role { get; set; }

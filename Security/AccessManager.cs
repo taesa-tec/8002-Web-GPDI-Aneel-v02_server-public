@@ -8,6 +8,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Threading.Tasks;
+using APIGestor.Data;
 using APIGestor.Dtos;
 using APIGestor.Dtos.Auth;
 using APIGestor.Models;
@@ -22,6 +23,7 @@ namespace APIGestor.Security
     public class AccessManager
     {
         private UserManager<ApplicationUser> _userManager;
+        private GestorDbContext GestorDbContext;
         private SignInManager<ApplicationUser> _signInManager;
         private SigningConfigurations _signingConfigurations;
         private TokenConfigurations _tokenConfigurations;
@@ -34,7 +36,7 @@ namespace APIGestor.Security
             UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
             SigningConfigurations signingConfigurations, IWebHostEnvironment hostingEnvironment,
             TokenConfigurations tokenConfigurations, MailService mailService,
-            SendGridService sendGridService, IMapper mapper)
+            SendGridService sendGridService, IMapper mapper, GestorDbContext gestorDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -44,6 +46,7 @@ namespace APIGestor.Security
             _mailService = mailService;
             SendGridService = sendGridService;
             Mapper = mapper;
+            GestorDbContext = gestorDbContext;
         }
 
         // @todo retornar o status do usuário
@@ -74,6 +77,12 @@ namespace APIGestor.Security
         {
             var userIdentity = _userManager
                 .FindByEmailAsync(user.Email).Result;
+            if (userIdentity.CatalogEmpresaId != null)
+            {
+                userIdentity.CatalogEmpresa =
+                    GestorDbContext.CatalogEmpresas.FirstOrDefault(ce => ce.Id == userIdentity.CatalogEmpresaId);
+            }
+
             var roles = _userManager.GetRolesAsync(userIdentity).Result.ToList();
 
             ClaimsIdentity identity = new ClaimsIdentity(

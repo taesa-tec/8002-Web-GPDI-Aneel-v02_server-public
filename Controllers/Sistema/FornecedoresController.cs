@@ -55,6 +55,8 @@ namespace APIGestor.Controllers.Sistema
                     EmailConfirmed = true,
                     DataCadastro = DateTime.Now,
                     NomeCompleto = nome,
+                    Role = Roles.Fornecedor,
+                    RazaoSocial = fornecedor.Nome,
                     Status = UserStatus.Ativo
                 };
 
