@@ -6,7 +6,7 @@ wwwroot/Uploads
 project.lock.json
 .DS_Store
 *.pyc
-
+.config
 # Visual Studio Code
 .vscode
 
@@ -15,7 +15,6 @@ project.lock.json
 *.user
 *.userosscache
 *.sln.docstates
-*.sln
 
 # Build results
 [Dd]ebug/
