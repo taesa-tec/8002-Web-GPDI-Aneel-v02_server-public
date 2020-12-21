@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Models;
@@ -38,6 +39,19 @@ namespace APIGestor.Controllers
                 Template = x.AttributeRouteInfo.Template
             }).OrderBy(i => i.Template).ToList();
             return Ok(routes);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("fixusers")]
+        public ActionResult FixRoles([FromServices] UserManager<ApplicationUser> userManager)
+        {
+            var users = _service.ListarTodos().ToList();
+            users.Where(u => !string.IsNullOrWhiteSpace(u.Role)).ToList().ForEach(user =>
+            {
+                userManager.AddToRoleAsync(user, user.Role).Wait();
+            });
+
+            return Ok();
         }
 
         [HttpGet]
@@ -81,12 +95,6 @@ namespace APIGestor.Controllers
             return File(image, System.Net.Mime.MediaTypeNames.Image.Jpeg);
         }
 
-        [HttpGet("me")]
-        public ActionResult<ApplicationUserDto> GetA()
-        {
-            return mapper.Map<ApplicationUserDto>(_service.Obter(this.userId()));
-        }
-
         [HttpPost]
         public ActionResult<Resultado> Post([FromBody] ApplicationUser User)
         {
@@ -96,15 +104,21 @@ namespace APIGestor.Controllers
         }
 
         [HttpPut]
-        public ActionResult<Resultado> Put([FromBody] ApplicationUser User)
+        public ActionResult<Resultado> Edit([FromBody] ApplicationUser User)
         {
             if (this.isAdmin())
                 return _service.Atualizar(User);
             return Forbid();
         }
 
+        [HttpGet("me")]
+        public ActionResult<ApplicationUserDto> GetMe()
+        {
+            return mapper.Map<ApplicationUserDto>(_service.Obter(this.userId()));
+        }
+
         [HttpPut("me")]
-        public ActionResult<Resultado> PutA([FromBody] ApplicationUser _user)
+        public ActionResult<Resultado> EditMe([FromBody] ApplicationUser _user)
         {
             var me = _service.Obter(this.userId());
             _user.Id = this.userId();
@@ -119,6 +133,14 @@ namespace APIGestor.Controllers
             if (this.isAdmin())
                 return _service.Excluir(id);
             return Forbid();
+        }
+
+        [HttpGet("Role/{role}")]
+        public ActionResult<List<ApplicationUserDto>> GetByRole(string role,
+            [FromServices] UserManager<ApplicationUser> userManager)
+        {
+            var users = userManager.GetUsersInRoleAsync(role).Result.ToList();
+            return mapper.Map<List<ApplicationUserDto>>(users);
         }
     }
 }

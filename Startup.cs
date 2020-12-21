@@ -29,6 +29,7 @@ using APIGestor.Services.Sistema;
 using AutoMapper;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -56,6 +57,7 @@ namespace APIGestor
             services.AddTransient<IStartupFilter, IdentityInitializer>();
             services.AddAutoMapper(typeof(Startup));
 
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             services.AddControllers().AddNewtonsoftJson();
 
@@ -310,7 +312,7 @@ namespace APIGestor
             );
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseSpaStaticFiles();
             app.UseSpa(spa => { });
         }

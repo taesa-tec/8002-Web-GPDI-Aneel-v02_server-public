@@ -17,6 +17,7 @@ namespace APIGestor.Requests.Captacao
 
         public int Id { get; set; }
         public int ContratoId { get; set; }
+        public string UsuarioSuprimentoId { get; set; }
         public string Observacoes { get; set; }
         public List<int> Fornecedores { get; set; }
     }

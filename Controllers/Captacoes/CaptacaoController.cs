@@ -13,6 +13,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -28,11 +30,24 @@ namespace APIGestor.Controllers.Captacoes
     public class CaptacaoController : ControllerServiceBase<Captacao>
     {
         private UserManager<ApplicationUser> _userManager;
+        private IUrlHelper _urlHelper;
 
-        public CaptacaoController(IService<Captacao> service, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public CaptacaoController(IService<Captacao> service, IMapper mapper, UserManager<ApplicationUser> userManager,
+            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor)
             : base(service, mapper)
         {
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _userManager = userManager;
+        }
+
+        [HttpGet("")]
+        public ActionResult GetCaptacoes()
+        {
+            var captacoes = Service.Filter(q =>
+                q.Include(c => c.UsuarioSuprimento)
+                    .Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao &&
+                                c.UsuarioSuprimentoId == this.userId()));
+            return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
         }
 
         [HttpGet("Pendentes")]
@@ -49,7 +64,8 @@ namespace APIGestor.Controllers.Captacoes
         public ActionResult<List<CaptacaoElaboracaoDto>> GetEmElaboracao()
         {
             //Service.Paged()
-            var captacoes = Service.Filter(q => q.Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao));
+            var captacoes = Service.Filter(q =>
+                q.Include(c => c.UsuarioSuprimento).Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao));
             var mapped = Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes);
             return Ok(mapped);
         }
@@ -113,6 +129,7 @@ namespace APIGestor.Controllers.Captacoes
             captacao.EnvioCaptacao = DateTime.Now;
             captacao.Status = Captacao.CaptacaoStatus.Elaboracao;
             captacao.ContratoSugeridoId = request.ContratoId;
+            captacao.UsuarioSuprimentoId = request.UsuarioSuprimentoId;
             Service.Put(captacao);
             if (request.Fornecedores.Count > 0)
             {
@@ -169,12 +186,24 @@ namespace APIGestor.Controllers.Captacoes
 
         // @todo Authorization GetCaptacao
         [HttpGet("{id}")]
-        public ActionResult<CaptacaoDetalhesDto> GetCaptacao(int id, [FromServices] IUrlHelper urlHelper)
+        public ActionResult<CaptacaoDetalhesDto> GetCaptacao(int id)
         {
-            var captacao = Service.Get(id);
+            var captacao = Service.Filter(q => q
+                .Include(c => c.Arquivos)
+                .Include(c => c.FornecedoresSugeridos)
+                .ThenInclude(fs => fs.Fornecedor)
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao &&
+                            c.UsuarioSuprimentoId == this.userId() &&
+                            c.Id == id
+                )).FirstOrDefault();
+            if (captacao == null)
+            {
+                return NotFound();
+            }
+
             var detalhes = Mapper.Map<CaptacaoDetalhesDto>(captacao);
-            detalhes.EspecificacaoTecnicaUrl = urlHelper.Link("DemandaPdf",
-                new {id = captacao.DemandaId, form = "especificao-tecnica"});
+            detalhes.EspecificacaoTecnicaUrl = _urlHelper.Link("DemandaPdf",
+                new {id = captacao.DemandaId, form = "especificacao-tecnica"});
 
             return Ok(detalhes);
         }

@@ -23,6 +23,26 @@ namespace APIGestor.Controllers.Captacoes
         {
         }
 
+        [AllowAnonymous]
+        [HttpGet("{id}/Arquivos/{fileId}", Name = "DownloadCaptacaoFile")]
+        public IActionResult DownloadFile(int id, int fileId)
+        {
+            var file = context.Set<CaptacaoArquivo>().FirstOrDefault(df => df.CaptacaoId == id && df.Id == fileId);
+            if (file == null) return NotFound();
+            if (System.IO.File.Exists(file.Path))
+            {
+                var response = PhysicalFile(file.Path, file.ContentType, file.Name);
+                if (Request.Query["dl"] == "1")
+                {
+                    response.FileDownloadName = file.Name;
+                }
+
+                return response;
+            }
+
+            return NotFound();
+        }
+
         [HttpDelete("{id}/Arquivos/{fileId}")]
         public IActionResult RemoveFile(int id, int fileId)
         {

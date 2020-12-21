@@ -1,6 +1,8 @@
 using System.Linq;
 using APIGestor.Dtos.Captacao;
+using APIGestor.Dtos.Captacao.Fornecedor;
 using APIGestor.Models.Captacao;
+using APIGestor.Models.Fornecedores;
 using AutoMapper;
 
 namespace APIGestor.Mapping
@@ -12,13 +14,23 @@ namespace APIGestor.Mapping
             CreateMap<Captacao, CaptacaoPendenteDto>()
                 .ForMember(c => c.Criador, opt => opt.MapFrom(src => src.Criador.NomeCompleto))
                 .ForMember(c => c.Aprovacao, opt => opt.MapFrom(src => src.CreatedAt));
-            CreateMap<Captacao, CaptacaoElaboracaoDto>();
+
+            CreateMap<Captacao, CaptacaoElaboracaoDto>().ForMember(c => c.UsuarioSuprimento,
+                opt => opt.MapFrom(src => src.UsuarioSuprimento.NomeCompleto));
+
             CreateMap<Captacao, CaptacaoDto>()
                 .ForMember(c => c.ConvidadosTotal, opt => opt.MapFrom(src => src.FornecedoresConvidados.Count));
 
             CreateMap<Captacao, CaptacaoDetalhesDto>()
-                .ForMember(c => c.SugestaoFornecedores,
+                .ForMember(c => c.FornecedoresSugeridos,
                     opt => opt.MapFrom(src => src.FornecedoresSugeridos.Select(fs => fs.Fornecedor)));
+
+            CreateMap<CaptacaoArquivo, CaptacaoArquivoDto>()
+                .ForMember(dest => dest.Uri,
+                    opt => opt.MapFrom(src => $"/api/Captacoes/{src.CaptacaoId}/Arquivos/{src.Id}"))
+                ;
+            CreateMap<Fornecedor, FornecedorDto>();
+
 
             //.ForMember(c => c.PropostaTotal, opt => opt.MapFrom(src => src.Propostas.Count(proposta => proposta.Finalizado)));
         }

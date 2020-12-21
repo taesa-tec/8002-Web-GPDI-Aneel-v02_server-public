@@ -120,6 +120,10 @@ namespace APIGestor.Services
 
             if (resultado.Inconsistencias.Count == 0)
             {
+                var roles = _userManager.GetRolesAsync(User).Result.ToList();
+                roles.ForEach(r => _userManager.RemoveFromRoleAsync(User, r).Wait());
+                _userManager.AddToRoleAsync(User, dadosUser.Role).Wait();
+
                 User.Status = (dadosUser.Status != null && Enum.IsDefined(typeof(UserStatus), dadosUser.Status))
                     ? dadosUser.Status
                     : User.Status;
@@ -131,6 +135,8 @@ namespace APIGestor.Services
                 User.FotoPerfil = dadosUser.FotoPerfil == null || dadosUser.FotoPerfil.File.Length == 0
                     ? User.FotoPerfil
                     : dadosUser.FotoPerfil;
+
+
                 User.Role = dadosUser.Role == null ? User.Role : dadosUser.Role;
                 User.CPF = dadosUser.CPF == null ? User.CPF : dadosUser.CPF;
                 User.Cargo = dadosUser.Cargo == null ? User.Cargo : dadosUser.Cargo;

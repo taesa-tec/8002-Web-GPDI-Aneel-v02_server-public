@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace APIGestor.Services
 {
@@ -23,10 +24,12 @@ namespace APIGestor.Services
         private UserService _userService;
         private MailService _mailService;
         private CatalogService _catalogService;
+        private ILogger<IdentityInitializer> logger;
 
         public IConfiguration Configuration { get; }
 
-        public IdentityInitializer(IServiceProvider services, IConfiguration Configuration
+        public IdentityInitializer(IServiceProvider services, IConfiguration Configuration,
+            ILogger<IdentityInitializer> logger
         )
         {
             var scope = services.CreateScope();
@@ -38,6 +41,7 @@ namespace APIGestor.Services
                 scope.ServiceProvider.GetService<AccessManager>());
             _catalogService = new CatalogService(_context);
             this.Configuration = Configuration;
+            this.logger = logger;
         }
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
@@ -68,13 +72,15 @@ namespace APIGestor.Services
 
             foreach (var role in Roles.AllRoles)
             {
-                if (!await _roleManager.RoleExistsAsync(Roles.Fornecedor))
+                if (!await _roleManager.RoleExistsAsync(role))
                 {
-                    var result = await _roleManager.CreateAsync(new IdentityRole(Roles.Fornecedor));
-                    if (!result.Succeeded)
+                    var result = await _roleManager.CreateAsync(new IdentityRole(role));
+                    if (result.Succeeded)
                     {
-                        result.Errors.ToList().ForEach(error => { Console.WriteLine(error.Description); });
+                        Console.WriteLine($"{role} Criado");
                     }
+                    else
+                        result.Errors.ToList().ForEach(error => { logger.LogError(error.Description); });
                 }
             }
         }

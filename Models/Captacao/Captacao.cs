@@ -22,6 +22,8 @@ namespace APIGestor.Models.Captacao
 
         public string CriadorId { get; set; }
         public ApplicationUser Criador { get; set; }
+        public string UsuarioSuprimentoId { get; set; }
+        public ApplicationUser UsuarioSuprimento { get; set; }
 
         public int? ContratoSugeridoId { get; set; }
         public Contrato ContratoSugerido { get; set; }

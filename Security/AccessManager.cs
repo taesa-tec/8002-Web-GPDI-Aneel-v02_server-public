@@ -84,6 +84,13 @@ namespace APIGestor.Security
             }
 
             var roles = _userManager.GetRolesAsync(userIdentity).Result.ToList();
+            // Correção de funções do usuário
+            if (roles.Count == 0 && !string.IsNullOrWhiteSpace(userIdentity.Role))
+            {
+                _userManager.AddToRoleAsync(userIdentity, userIdentity.Role).Wait();
+                roles.Add(userIdentity.Role);
+            }
+            userIdentity.Roles = roles;
 
             ClaimsIdentity identity = new ClaimsIdentity(
                 new GenericIdentity(user.Email, "Login"),
