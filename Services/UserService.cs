@@ -80,7 +80,7 @@ namespace APIGestor.Services
 
             if (resultado.Sucesso)
             {
-                string Password = DateTime.Now.ToString().ToMD5(); //"ApiTaesa@2019";
+                string Password = DateTime.Now.ToString().ToMD5() + $"@M{DateTime.Now.Minute}";
                 dadosUser.EmailConfirmed = true;
                 dadosUser.DataCadastro = DateTime.Now;
                 resultado = CreateUser(dadosUser, Password, dadosUser.Role);
@@ -198,7 +198,7 @@ namespace APIGestor.Services
                 }
                 else
                 {
-                    if (User.Role != Roles.AdminGestor & User.Role != Roles.UserGestor)
+                    if (!Roles.AllRoles.Contains(User.Role))
                     {
                         resultado.Inconsistencias.Add(
                             "Role do usuário não identificada.");

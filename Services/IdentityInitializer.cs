@@ -68,8 +68,6 @@ namespace APIGestor.Services
 
         protected async Task CreateRoles()
         {
-            Console.WriteLine("Tentando criar as funções de usuário (Roles)");
-
             foreach (var role in Roles.AllRoles)
             {
                 if (!await _roleManager.RoleExistsAsync(role))
