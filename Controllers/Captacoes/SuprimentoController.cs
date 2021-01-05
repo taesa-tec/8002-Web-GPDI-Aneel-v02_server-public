@@ -1,10 +1,19 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using APIGestor.Data;
 using APIGestor.Dtos.Captacao;
+using APIGestor.Dtos.Captacao.Fornecedor;
 using APIGestor.Models.Captacao;
+using APIGestor.Requests.Captacao;
+using APIGestor.Services.Captacoes;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Server.IIS;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -18,8 +27,14 @@ namespace APIGestor.Controllers.Captacoes
     [Authorize("Bearer")]
     public class SuprimentoController : ControllerServiceBase<Captacao>
     {
-        public SuprimentoController(IService<Captacao> service, IMapper mapper) : base(service, mapper)
+        private IUrlHelper _urlHelper;
+        private CaptacaoService service;
+
+        public SuprimentoController(CaptacaoService service, IMapper mapper, IUrlHelperFactory urlHelperFactory,
+            IActionContextAccessor actionContextAccessor) : base(service, mapper)
         {
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            this.service = service;
         }
 
         [HttpGet("")]
@@ -27,22 +42,66 @@ namespace APIGestor.Controllers.Captacoes
         {
             var captacoes = Service.Filter(q =>
                 q.Include(c => c.UsuarioSuprimento)
-                    .Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao &&
+                    .Where(c => (c.Status != Captacao.CaptacaoStatus.Elaboracao ||
+                                 c.Status == Captacao.CaptacaoStatus.Fornecedor) &&
                                 c.UsuarioSuprimentoId == this.userId()));
             return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetCaptacao(int id)
+        public ActionResult<CaptacaoDetalhesDto> GetCaptacao(int id)
         {
             var captacao = Service.Filter(q => q
                 .Include(c => c.Arquivos)
-                .Include(c => c.Demanda)
-                .Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao &&
+                .Include(c => c.FornecedoresSugeridos)
+                .ThenInclude(fs => fs.Fornecedor)
+                .Where(c => (c.Status != Captacao.CaptacaoStatus.Elaboracao ||
+                             c.Status == Captacao.CaptacaoStatus.Fornecedor) &&
                             c.UsuarioSuprimentoId == this.userId() &&
                             c.Id == id
                 )).FirstOrDefault();
-            return Ok(Mapper.Map<CaptacaoDetalhesDto>(captacao));
+            if (captacao == null)
+            {
+                return NotFound();
+            }
+
+            var detalhes = Mapper.Map<CaptacaoDetalhesDto>(captacao);
+            detalhes.EspecificacaoTecnicaUrl = _urlHelper.Link("DemandaPdf",
+                new {id = captacao.DemandaId, form = "especificacao-tecnica"});
+
+            return Ok(detalhes);
+        }
+
+        // @todo Authorization ConfigurarCaptacao
+        [HttpPut("{id}")]
+        public async Task<ActionResult> ConfigurarCaptacao(int id, ConfiguracaoRequest request)
+        {
+            try
+            {
+                await service.ConfigurarCaptacao(id, request.Termino, request.Consideracoes, request.Arquivos,
+                    request.Fornecedores, request.Fornecedores);
+                await service.EnviarParaFornecedores(id);
+            }
+            catch (Exception e)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
+        [HttpGet("{id}/Propostas")]
+        public ActionResult<List<PropostaDto>> GetPropostas(int id)
+        {
+            var propostas = service.GetPropostas(id);
+            return Mapper.Map<List<PropostaDto>>(propostas);
+        }
+
+        [HttpGet("{id}/Propostas/{status}")]
+        public ActionResult<List<PropostaDto>> GetPropostas(int id, PropostaFornecedor.StatusParticipacao status)
+        {
+            var propostas = service.GetPropostas(id, status);
+            return Mapper.Map<List<PropostaDto>>(propostas);
         }
     }
 }

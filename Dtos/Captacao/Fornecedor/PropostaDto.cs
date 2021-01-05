@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using APIGestor.Models.Captacao;
 using TaesaCore.Models;
@@ -14,10 +15,10 @@ namespace APIGestor.Dtos.Captacao.Fornecedor
         }
 
         public int FornecedorId { get; set; }
-        public Models.Fornecedores.Fornecedor Fornecedor { get; set; }
+        public string Fornecedor { get; set; }
         public int CaptacaoId { get; set; }
-        public Models.Captacao.Captacao Captacao { get; set; }
         public StatusParticipacao Participacao { get; set; }
-        public List<SugestaoClausula> SugestaoClausulas { get; set; }
+        public DateTime Recebido { get; set; }
+        // public List<SugestaoClausula> SugestaoClausulas { get; set; }
     }
 }

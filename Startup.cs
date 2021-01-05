@@ -20,6 +20,7 @@ using APIGestor.Core;
 using Microsoft.AspNetCore.Authorization;
 using APIGestor.Exceptions.Demandas;
 using APIGestor.Services;
+using APIGestor.Services.Captacoes;
 using APIGestor.Services.Demandas;
 using APIGestor.Services.Projetos;
 using APIGestor.Services.Projetos.Relatorios;
@@ -71,7 +72,6 @@ namespace APIGestor
             }
             else
             {
-                var connectionString = Configuration.GetConnectionString("BaseGestor");
                 services.AddDbContext<GestorDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
             }
@@ -81,6 +81,8 @@ namespace APIGestor
             services.AddCors();
             services.AddMvc()
                 .AddFluentValidation(fv => { fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup)); });
+
+            #region Swagger
 
             services.AddSwaggerGen(c =>
             {
@@ -127,6 +129,8 @@ namespace APIGestor
                 c.IncludeXmlComments(xmlPath);
                 c.EnableAnnotations();
             });
+
+            #endregion
 
             #region Serviços
 
@@ -180,6 +184,8 @@ namespace APIGestor
             services.AddScoped<DemandaLogService>();
             services.AddScoped<SistemaService>();
             services.AddScoped<MailerService>();
+
+            services.AddScoped<CaptacaoService>();
 
             #endregion
 

@@ -30,6 +30,8 @@ namespace APIGestor.Mapping
                     opt => opt.MapFrom(src => $"/api/Captacoes/{src.CaptacaoId}/Arquivos/{src.Id}"))
                 ;
             CreateMap<Fornecedor, FornecedorDto>();
+            CreateMap<PropostaFornecedor, PropostaDto>()
+                .ForMember(dest => dest.Fornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome));
 
 
             //.ForMember(c => c.PropostaTotal, opt => opt.MapFrom(src => src.Propostas.Count(proposta => proposta.Finalizado)));

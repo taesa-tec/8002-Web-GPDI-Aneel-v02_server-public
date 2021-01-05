@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TaesaCore.Models;
 
@@ -19,5 +20,6 @@ namespace APIGestor.Models.Captacao
         public bool Finalizado { get; set; }
         public StatusParticipacao Participacao { get; set; }
         public List<SugestaoClausula> SugestaoClausulas { get; set; }
+        public DateTime Recebido { get; set; }
     }
 }
