@@ -20,6 +20,7 @@ namespace APIGestor.Models.Captacao
         public bool Finalizado { get; set; }
         public StatusParticipacao Participacao { get; set; }
         public List<SugestaoClausula> SugestaoClausulas { get; set; }
-        public DateTime Recebido { get; set; }
+        public DateTime DataCriacao { get; set; }
+        public DateTime? DataResposta { get; set; }
     }
 }

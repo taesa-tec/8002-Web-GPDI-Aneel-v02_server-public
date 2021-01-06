@@ -31,13 +31,16 @@ namespace APIGestor.Controllers.Captacoes
     {
         private UserManager<ApplicationUser> _userManager;
         private IUrlHelper _urlHelper;
+        private IService<CaptacaoInfo> _serviceInfo;
 
         public CaptacaoController(IService<Captacao> service, IMapper mapper, UserManager<ApplicationUser> userManager,
-            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor)
+            IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor,
+            IService<CaptacaoInfo> serviceInfo)
             : base(service, mapper)
         {
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _userManager = userManager;
+            _serviceInfo = serviceInfo;
         }
 
         [HttpGet("")]
@@ -82,16 +85,16 @@ namespace APIGestor.Controllers.Captacoes
         }
 
         [HttpGet("Abertas")]
-        public ActionResult<List<CaptacaoDto>> GetAbertas()
+        public ActionResult<List<CaptacaoInfo>> GetAbertas()
         {
             //Service.Paged()
             var captacoes =
-                Service.Filter(q =>
+                _serviceInfo.Filter(q =>
                     q.Where(c =>
                         c.Status == Captacao.CaptacaoStatus.Fornecedor &&
                         c.Termino > DateTime.Today));
-            var mapped = Mapper.Map<List<CaptacaoDto>>(captacoes);
-            return Ok(mapped);
+            // var mapped = Mapper.Map<List<CaptacaoDto>>(captacoes);
+            return Ok(captacoes);
         }
 
         [HttpGet("Encerradas")]
@@ -207,7 +210,5 @@ namespace APIGestor.Controllers.Captacoes
 
             return Ok(detalhes);
         }
-
-        
     }
 }

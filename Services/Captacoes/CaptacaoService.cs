@@ -90,7 +90,7 @@ namespace APIGestor.Services.Captacoes
                 FornecedorId = f.Id,
                 CaptacaoId = id,
                 Participacao = PropostaFornecedor.StatusParticipacao.Pendente,
-                Recebido = DateTime.Now
+                DataCriacao = DateTime.Now
             });
             // @todo Enviar email para fornecedores
             _context.AddRange(propostas);

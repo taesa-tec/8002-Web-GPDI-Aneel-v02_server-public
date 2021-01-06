@@ -169,6 +169,7 @@ namespace APIGestor.Data
                     .IsRequired(false);
                 eb.ToTable("Captacoes");
             });
+            builder.Entity<CaptacaoInfo>().ToView("CaptacoesView");
             builder.Entity<CaptacaoArquivo>().ToTable("CaptacaoArquivos");
 
             builder.Entity<CaptacaoContrato>(b =>
