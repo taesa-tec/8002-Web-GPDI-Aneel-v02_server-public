@@ -13,11 +13,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Server.IIS;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
-using TaesaCore.Interfaces;
 
 namespace APIGestor.Controllers.Captacoes
 {
@@ -93,14 +91,14 @@ namespace APIGestor.Controllers.Captacoes
         [HttpGet("{id}/Propostas")]
         public ActionResult<List<PropostaDto>> GetPropostas(int id)
         {
-            var propostas = service.GetPropostas(id);
+            var propostas = service.GetPropostasPorCaptacao(id);
             return Mapper.Map<List<PropostaDto>>(propostas);
         }
 
         [HttpGet("{id}/Propostas/{status}")]
         public ActionResult<List<PropostaDto>> GetPropostas(int id, PropostaFornecedor.StatusParticipacao status)
         {
-            var propostas = service.GetPropostas(id, status);
+            var propostas = service.GetPropostasPorCaptacao(id, status);
             return Mapper.Map<List<PropostaDto>>(propostas);
         }
     }

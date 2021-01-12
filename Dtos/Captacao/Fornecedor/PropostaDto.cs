@@ -14,7 +14,9 @@ namespace APIGestor.Dtos.Captacao.Fornecedor
             Rejeitado
         }
 
+        public string Captacao { get; set; }
         public DateTime DataCriacao { get; set; }
+        public DateTime? DataTermino { get; set; }
         public DateTime? DataResposta { get; set; }
         public int FornecedorId { get; set; }
         public string Fornecedor { get; set; }

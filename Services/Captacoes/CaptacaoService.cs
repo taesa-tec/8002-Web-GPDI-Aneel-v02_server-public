@@ -98,7 +98,15 @@ namespace APIGestor.Services.Captacoes
             await _context.SaveChangesAsync();
         }
 
-        public IEnumerable<PropostaFornecedor> GetPropostas(int id)
+        public PropostaFornecedor GetProposta(int id)
+        {
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Captacao)
+                .FirstOrDefault(p => p.Id == id);
+        }
+
+        public IEnumerable<PropostaFornecedor> GetPropostasPorCaptacao(int id)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
@@ -106,11 +114,24 @@ namespace APIGestor.Services.Captacoes
                 .ToList();
         }
 
-        public IEnumerable<PropostaFornecedor> GetPropostas(int id, PropostaFornecedor.StatusParticipacao status)
+        public IEnumerable<PropostaFornecedor> GetPropostasPorCaptacao(int id,
+            PropostaFornecedor.StatusParticipacao status)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Where(cp => cp.CaptacaoId == id && cp.Participacao == status)
+                .ToList();
+        }
+
+        public IEnumerable<PropostaFornecedor> GetPropostasPorResponsavel(string userId)
+        {
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Captacao)
+                .Where(cp =>
+                    cp.Fornecedor.ResponsavelId == userId &&
+                    cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                    cp.Participacao != PropostaFornecedor.StatusParticipacao.Rejeitado)
                 .ToList();
         }
     }

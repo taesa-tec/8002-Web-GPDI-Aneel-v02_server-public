@@ -169,7 +169,6 @@ namespace APIGestor.Data
                     .IsRequired(false);
                 eb.ToTable("Captacoes");
             });
-            builder.Entity<CaptacaoInfo>().ToView("CaptacoesView");
             builder.Entity<CaptacaoArquivo>().ToTable("CaptacaoArquivos");
 
             builder.Entity<CaptacaoContrato>(b =>
@@ -189,6 +188,13 @@ namespace APIGestor.Data
             builder.Entity<CaptacaoSugestaoFornecedor>()
                 .ToTable("CaptacaoSugestoesFornecedores")
                 .HasKey(a => new {a.FornecedorId, a.CaptacaoId});
+
+            builder.Entity<PropostaFornecedor>(builder =>
+            {
+                builder.HasIndex(p => new {p.CaptacaoId, p.FornecedorId}).IsUnique();
+            });
+
+            builder.Entity<CaptacaoInfo>().ToView("CaptacoesView");
         }
     }
 }

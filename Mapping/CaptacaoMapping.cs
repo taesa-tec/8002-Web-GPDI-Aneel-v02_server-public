@@ -31,7 +31,9 @@ namespace APIGestor.Mapping
                 ;
             CreateMap<Fornecedor, FornecedorDto>();
             CreateMap<PropostaFornecedor, PropostaDto>()
-                .ForMember(dest => dest.Fornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome));
+                .ForMember(dest => dest.Fornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome))
+                .ForMember(dest => dest.Captacao, opt => opt.MapFrom(src => src.Captacao.Titulo))
+                .ForMember(dest => dest.DataTermino, opt => opt.MapFrom(src => src.Captacao.Termino));
 
 
             //.ForMember(c => c.PropostaTotal, opt => opt.MapFrom(src => src.Propostas.Count(proposta => proposta.Finalizado)));
