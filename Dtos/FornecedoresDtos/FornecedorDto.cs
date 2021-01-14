@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using TaesaCore.Models;
 
-namespace APIGestor.Dtos.Captacao.Fornecedor
+namespace APIGestor.Dtos.FornecedoresDtos
 {
     public class FornecedorDto : BaseEntity
     {

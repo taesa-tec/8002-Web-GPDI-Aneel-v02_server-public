@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
-using APIGestor.Models.Captacao;
 using TaesaCore.Models;
 
-namespace APIGestor.Dtos.Captacao.Fornecedor
+namespace APIGestor.Dtos.FornecedoresDtos
 {
     public class PropostaDto : BaseEntity
     {
