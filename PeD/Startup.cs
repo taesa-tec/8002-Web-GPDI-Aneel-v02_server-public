@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
@@ -121,7 +122,7 @@ namespace PeD
                         new List<string>()
                     }
                 });
-
+                
 
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -317,7 +318,11 @@ namespace PeD
                 //.AllowCredentials()
             );
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                // endpoints.MapControllerRoute("Areas", "api/{controller=Home}/{action=Index}/{id?}");
+            });
             // app.UseHttpsRedirection();
             app.UseSpaStaticFiles();
             app.UseSpa(spa => { });

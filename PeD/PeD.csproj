@@ -45,7 +45,6 @@
     <ItemGroup>
       <Folder Include="Controllers\Administrador" />
       <Folder Include="Controllers\EquipePeD" />
-      <Folder Include="Controllers\Shared" />
       <Folder Include="Controllers\Suprimento" />
     </ItemGroup>
 

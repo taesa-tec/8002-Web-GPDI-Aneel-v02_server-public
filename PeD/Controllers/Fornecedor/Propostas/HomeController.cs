@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using PeD.Dtos.FornecedoresDtos;
 using PeD.Models.Captacao;
+using PeD.Security;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
 
-namespace PeD.Controllers.Fornecedor
+namespace PeD.Controllers.Fornecedor.Propostas
 {
     [SwaggerTag("Proposta Fornecedor")]
     [ApiController]
-    [Authorize("Bearer")]
+    [Authorize("Bearer", Roles = Roles.Fornecedor)]
     [Route("api/Fornecedor/Propostas")]
     public class PropostasController : ControllerServiceBase<PropostaFornecedor>
     {
