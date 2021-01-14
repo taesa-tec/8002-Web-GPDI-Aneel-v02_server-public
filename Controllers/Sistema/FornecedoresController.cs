@@ -4,9 +4,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using APIGestor.Dtos.Captacao.Fornecedor;
+using APIGestor.Dtos.FornecedoresDtos;
 using APIGestor.Models;
-using APIGestor.Models.Fornecedores;
 using APIGestor.Requests.Sistema.Fornecedores;
 using APIGestor.Security;
 using APIGestor.Services;
@@ -25,14 +24,15 @@ namespace APIGestor.Controllers.Sistema
     [Route("api/Sistema/Fornecedores")]
     [ApiController]
     [Authorize("Bearer")]
-    public class FornecedoresController : ControllerCrudBase<Fornecedor, FornecedorDto, FornecedorCreateRequest,
+    public class FornecedoresController : ControllerCrudBase<Models.Fornecedores.Fornecedor, FornecedorDto,
+        FornecedorCreateRequest,
         FornecedorEditRequest>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private UserService _userService;
         protected AccessManager AccessManager;
 
-        public FornecedoresController(IService<Fornecedor> service, IMapper mapper,
+        public FornecedoresController(IService<Models.Fornecedores.Fornecedor> service, IMapper mapper,
             UserManager<ApplicationUser> userManager, AccessManager accessManager, UserService userService) : base(
             service, mapper)
         {
@@ -42,7 +42,8 @@ namespace APIGestor.Controllers.Sistema
         }
 
 
-        protected async Task UpdateResponsavelFornecedor(Fornecedor fornecedor, string email, string nome)
+        protected async Task UpdateResponsavelFornecedor(Models.Fornecedores.Fornecedor fornecedor, string email,
+            string nome)
         {
             var responsavel = _userManager.FindByEmailAsync(email).Result;
 
@@ -95,14 +96,14 @@ namespace APIGestor.Controllers.Sistema
             fornecedor.ResponsavelId = responsavel.Id;
         }
 
-        protected async Task DesativarFonecedor(Fornecedor fornecedor)
+        protected async Task DesativarFonecedor(Models.Fornecedores.Fornecedor fornecedor)
         {
             fornecedor.Ativo = false;
             await _userService.Desativar(fornecedor.ResponsavelId);
             Service.Put(fornecedor);
         }
 
-        protected async Task AtivarFonecedor(Fornecedor fornecedor)
+        protected async Task AtivarFonecedor(Models.Fornecedores.Fornecedor fornecedor)
         {
             fornecedor.Ativo = true;
             await _userService.Ativar(fornecedor.ResponsavelId);
@@ -125,7 +126,7 @@ namespace APIGestor.Controllers.Sistema
         [HttpPost]
         public override IActionResult Post(FornecedorCreateRequest model)
         {
-            var fornecedor = new Fornecedor()
+            var fornecedor = new Models.Fornecedores.Fornecedor()
             {
                 Ativo = true,
                 Nome = model.Nome,

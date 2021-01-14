@@ -1,6 +1,6 @@
 using System.Linq;
 using APIGestor.Dtos.Captacao;
-using APIGestor.Dtos.Captacao.Fornecedor;
+using APIGestor.Dtos.FornecedoresDtos;
 using APIGestor.Models.Captacao;
 using APIGestor.Models.Fornecedores;
 using AutoMapper;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIGestor.Data;
 using APIGestor.Dtos.Captacao;
-using APIGestor.Dtos.Captacao.Fornecedor;
+using APIGestor.Dtos.FornecedoresDtos;
 using APIGestor.Models.Captacao;
 using APIGestor.Requests.Captacao;
 using APIGestor.Services.Captacoes;

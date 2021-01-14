@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using APIGestor.Dtos.Captacao.Fornecedor;
+using APIGestor.Dtos.FornecedoresDtos;
 using TaesaCore.Models;
 
 namespace APIGestor.Dtos.Captacao

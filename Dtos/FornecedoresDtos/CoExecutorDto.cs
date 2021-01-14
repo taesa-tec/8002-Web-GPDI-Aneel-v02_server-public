@@ -1,6 +1,6 @@
 using TaesaCore.Models;
 
-namespace APIGestor.Dtos.Captacao.Fornecedor
+namespace APIGestor.Dtos.FornecedoresDtos
 {
     public class CoExecutorDto : BaseEntity
     {

@@ -1,4 +1,4 @@
-using APIGestor.Dtos.Captacao.Fornecedor;
+using APIGestor.Dtos.FornecedoresDtos;
 using APIGestor.Dtos.Sistema;
 using APIGestor.Models.Captacao;
 using APIGestor.Models.Fornecedores;
