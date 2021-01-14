@@ -1,17 +1,11 @@
 using System;
+using PeD.Models.Captacao;
 using TaesaCore.Models;
 
 namespace PeD.Dtos.FornecedoresDtos
 {
     public class PropostaDto : BaseEntity
     {
-        public enum StatusParticipacao
-        {
-            Pendente,
-            Aceito,
-            Rejeitado
-        }
-
         public string Captacao { get; set; }
         public DateTime DataCriacao { get; set; }
         public DateTime? DataTermino { get; set; }

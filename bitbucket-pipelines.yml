@@ -16,14 +16,14 @@ pipelines:
               script:
                 - REPORTS_PATH=./test-reports/build_${BITBUCKET_BUILD_NUMBER}
                 - dotnet restore
-                - dotnet build --no-restore --configuration Release
+                - dotnet build --project ./PeD/Ped.csproj --no-restore --configuration Release
                 - dotnet test --no-build --configuration Release --test-adapter-path:. --logger:"junit;LogFilePath=$REPORTS_PATH/junit.xml"
           - step:
               name: Lint the code
               caches:
                 - dotnetcore
               script:
-                - export SOLUTION_NAME=APIGestor
+                - export SOLUTION_NAME=PeD
                 - export REPORTS_PATH=linter-reports
                 - dotnet new tool-manifest
                 - dotnet tool install JetBrains.ReSharper.GlobalTools

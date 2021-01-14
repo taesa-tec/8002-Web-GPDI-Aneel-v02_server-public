@@ -4,15 +4,15 @@ using TaesaCore.Models;
 
 namespace PeD.Models.Captacao
 {
+    public enum StatusParticipacao
+    {
+        Pendente,
+        Aceito,
+        Rejeitado
+    }
+
     public class PropostaFornecedor : BaseEntity
     {
-        public enum StatusParticipacao
-        {
-            Pendente,
-            Aceito,
-            Rejeitado
-        }
-
         public int FornecedorId { get; set; }
         public Fornecedores.Fornecedor Fornecedor { get; set; }
         public int CaptacaoId { get; set; }

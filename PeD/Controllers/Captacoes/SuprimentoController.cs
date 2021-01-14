@@ -96,7 +96,7 @@ namespace PeD.Controllers.Captacoes
         }
 
         [HttpGet("{id}/Propostas/{status}")]
-        public ActionResult<List<PropostaDto>> GetPropostas(int id, PropostaFornecedor.StatusParticipacao status)
+        public ActionResult<List<PropostaDto>> GetPropostas(int id, StatusParticipacao status)
         {
             var propostas = service.GetPropostasPorCaptacao(id, status);
             return Mapper.Map<List<PropostaDto>>(propostas);

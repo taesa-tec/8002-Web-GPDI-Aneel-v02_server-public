@@ -89,7 +89,7 @@ namespace PeD.Services.Captacoes
             {
                 FornecedorId = f.Id,
                 CaptacaoId = id,
-                Participacao = PropostaFornecedor.StatusParticipacao.Pendente,
+                Participacao = StatusParticipacao.Pendente,
                 DataCriacao = DateTime.Now
             });
             // @todo Enviar email para fornecedores
@@ -114,8 +114,7 @@ namespace PeD.Services.Captacoes
                 .ToList();
         }
 
-        public IEnumerable<PropostaFornecedor> GetPropostasPorCaptacao(int id,
-            PropostaFornecedor.StatusParticipacao status)
+        public IEnumerable<PropostaFornecedor> GetPropostasPorCaptacao(int id, StatusParticipacao status)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
@@ -131,7 +130,7 @@ namespace PeD.Services.Captacoes
                 .Where(cp =>
                     cp.Fornecedor.ResponsavelId == userId &&
                     cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
-                    cp.Participacao != PropostaFornecedor.StatusParticipacao.Rejeitado)
+                    cp.Participacao != StatusParticipacao.Rejeitado)
                 .ToList();
         }
     }
