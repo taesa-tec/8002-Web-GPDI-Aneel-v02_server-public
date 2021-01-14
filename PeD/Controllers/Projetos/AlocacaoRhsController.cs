@@ -2,7 +2,8 @@
 using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos {
@@ -25,7 +26,7 @@ namespace PeD.Controllers.Projetos {
          // CONTROLLER
         [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]AlocacaoRh AlocacaoRh ) {
-            if(_service.UserProjectCan((int)AlocacaoRh.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan((int)AlocacaoRh.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(AlocacaoRh);
                 if(resultado.Sucesso) {
                     this.CreateLog(_service, (int)AlocacaoRh.ProjetoId, _service.Obter(AlocacaoRh.Id));
@@ -38,7 +39,7 @@ namespace PeD.Controllers.Projetos {
          // CONTROLLER
         [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]AlocacaoRh AlocacaoRh ) {
-            if(_service.UserProjectCan((int)AlocacaoRh.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan((int)AlocacaoRh.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var oldAlocacao = _service.Obter(AlocacaoRh.Id);
                 _service._context.Entry(oldAlocacao).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                 var resultado = _service.Atualizar(AlocacaoRh);
@@ -55,7 +56,7 @@ namespace PeD.Controllers.Projetos {
         public ActionResult<Resultado> Delete( int id ) {
             var alocacao = _service.Obter(id);
             if(alocacao != null) {
-                if(_service.UserProjectCan((int)alocacao.ProjetoId, User, Authorizations.ProjectPermissions.Administrator)) {
+                if(_service.UserProjectCan((int)alocacao.ProjetoId, User, ProjectPermissions.Administrator)) {
                     var resultado = _service.Excluir(id);
                     if(resultado.Sucesso) {
                         this.CreateLog(_service, (int)alocacao.ProjetoId, alocacao);

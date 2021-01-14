@@ -1,9 +1,10 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using PeD.Dtos.Auth;
-using PeD.Requests;
-using PeD.Security;
+using PeD.Auth;
+using PeD.Core.ApiModels.Auth;
+using PeD.Core.Requests;
+using PeD.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace PeD.Controllers

@@ -2,7 +2,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using PeD.Models.Demandas.Forms;
+using PeD.Core.Models.Demandas.Forms;
 
 namespace PeD.Controllers.Demandas
 {

@@ -16,12 +16,11 @@
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="ClosedXML" Version="0.94.2" />
         <PackageReference Include="ClosedXML.Extensions.WebApi" Version="0.2.1" />
-        <PackageReference Include="CsvHelper" Version="15.0.3" />
         <PackageReference Include="DiffPlex" Version="1.5.0" />
-        <PackageReference Include="FluentValidation" Version="9.3.0" />
-        <PackageReference Include="FluentValidation.AspNetCore" Version="9.3.0" />
+        <PackageReference Include="FluentValidation" Version="9.4.0" />
+        <PackageReference Include="FluentValidation.AspNetCore" Version="9.4.0" />
         <PackageReference Include="GlobalExceptionHandler" Version="4.0.2" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.23" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
         <PackageReference Include="itext7.pdfhtml" Version="2.1.7" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.3" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.3" />
@@ -43,9 +42,33 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\Administrador" />
-      <Folder Include="Controllers\EquipePeD" />
-      <Folder Include="Controllers\Suprimento" />
+        <Folder Include="Auth" />
+        <Folder Include="Controllers\Administrador" />
+        <Folder Include="Controllers\EquipePeD" />
+        <Folder Include="Controllers\Fornecedor" />
+        <Folder Include="Controllers\Suprimento" />
+        <Folder Include="Core\Equipe" />
+        <Folder Include="Services" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\PeD.Auth\PeD.Auth.csproj" />
+        <ProjectReference Include="..\PeD.Core\PeD.Core.csproj" />
+        <ProjectReference Include="..\PeD.Data\PeD.Data.csproj" />
+        <ProjectReference Include="..\PeD.Fornecedor\PeD.Fornecedor.csproj" />
+        <ProjectReference Include="..\PeD.Services\PeD.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Email\Captacao\NovaCaptacao.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Email\RecoverAccount.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Email\RegisterAccount.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Email\Simple.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Pdf\DemandaFormView.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Pdf\Diff.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Pdf\_FieldItem.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Pdf\_Style.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\_EmailBase.cshtml" />
     </ItemGroup>
 
     <ProjectExtensions>

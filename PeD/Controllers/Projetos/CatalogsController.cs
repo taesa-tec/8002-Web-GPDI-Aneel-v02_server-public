@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Catalogs;
-using PeD.Models.Projetos;
+using PeD.Core.Models.Catalogs;
+using PeD.Core.Models.Projetos;
 using PeD.Services;
 
 namespace PeD.Controllers.Projetos

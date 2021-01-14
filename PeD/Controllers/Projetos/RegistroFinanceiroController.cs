@@ -3,7 +3,8 @@ using System.Linq;
 using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos {
@@ -27,7 +28,7 @@ namespace PeD.Controllers.Projetos {
         [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]RegistroFinanceiro RegistroFinanceiro ) {
             var Registro = _service._context.RegistrosFinanceiros.Where(r => r.Id == RegistroFinanceiro.Id).FirstOrDefault();
-            if(_service.UserProjectCan((int)RegistroFinanceiro.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan((int)RegistroFinanceiro.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(RegistroFinanceiro, this.userId());
                 if(resultado.Sucesso) {
                     this.CreateLog(_service, (int)RegistroFinanceiro.ProjetoId, _service.Obter(RegistroFinanceiro.Id));
@@ -41,7 +42,7 @@ namespace PeD.Controllers.Projetos {
         [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]RegistroFinanceiro RegistroFinanceiro ) {
             var Registro = _service.Obter(RegistroFinanceiro.Id);
-            if(_service.UserProjectCan((int)Registro.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan((int)Registro.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 _service._context.Entry(Registro).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                 var resultado = _service.Atualizar(RegistroFinanceiro, this.userId());
                 if(resultado.Sucesso) {
@@ -57,7 +58,7 @@ namespace PeD.Controllers.Projetos {
             var RegistroFinanceiro = _service.Obter(id);
 
             if(RegistroFinanceiro != null) {
-                if(_service.UserProjectCan((int)RegistroFinanceiro.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                if(_service.UserProjectCan((int)RegistroFinanceiro.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                     var resultado = _service.Excluir(id);
                     if(resultado.Sucesso) {
                         this.CreateLog(_service, (int)RegistroFinanceiro.ProjetoId, RegistroFinanceiro);

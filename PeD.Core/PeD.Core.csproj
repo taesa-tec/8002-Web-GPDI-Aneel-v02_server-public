@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CsvHelper" Version="19.0.0"/>
+        <PackageReference Include="DiffPlex" Version="1.5.0"/>
+        <PackageReference Include="FluentValidation" Version="9.4.0"/>
+        <PackageReference Include="FluentValidation.AspNetCore" Version="9.4.0"/>
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.29"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.3"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.0"/>
+        <PackageReference Include="TaesaCore" Version="3.1.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Views\Email\Captacao\NovaCaptacao.cshtml"/>
+        <Content Include="Views\Email\RecoverAccount.cshtml"/>
+        <Content Include="Views\Email\RegisterAccount.cshtml"/>
+        <Content Include="Views\Email\Simple.cshtml"/>
+        <Content Include="Views\Pdf\DemandaFormView.cshtml"/>
+        <Content Include="Views\Pdf\Diff.cshtml"/>
+        <Content Include="Views\Pdf\_FieldItem.cshtml"/>
+        <Content Include="Views\Pdf\_Style.cshtml"/>
+        <Content Include="Views\Shared\_EmailBase.cshtml"/>
+    </ItemGroup>
+
+</Project>

@@ -1,9 +1,9 @@
 using AutoMapper;
-using PeD.Dtos.FornecedoresDtos;
-using PeD.Dtos.Sistema;
-using PeD.Models.Captacao;
-using PeD.Models.Fornecedores;
-using PeD.Requests.Sistema.Fornecedores;
+using PeD.Core.ApiModels.FornecedoresDtos;
+using PeD.Core.ApiModels.Sistema;
+using PeD.Core.Models.Captacao;
+using PeD.Core.Models.Fornecedores;
+using PeD.Core.Requests.Sistema.Fornecedores;
 
 namespace PeD.Mapping
 {
@@ -11,12 +11,12 @@ namespace PeD.Mapping
     {
         public SistemaMapping()
         {
-            CreateMap<Fornecedor, FornecedorDto>()
+            CreateMap<Core.Models.Fornecedores.Fornecedor, FornecedorDto>()
                 .ForMember(f => f.ResponsavelNome, opt => opt.MapFrom(src => src.Responsavel.NomeCompleto ?? ""))
                 .ForMember(f => f.ResponsavelEmail, opt => opt.MapFrom(src => src.Responsavel.Email ?? ""))
                 .ReverseMap();
-            CreateMap<FornecedorCreateRequest, Fornecedor>().ReverseMap();
-            CreateMap<FornecedorEditRequest, Fornecedor>().ReverseMap();
+            CreateMap<FornecedorCreateRequest, Core.Models.Fornecedores.Fornecedor>().ReverseMap();
+            CreateMap<FornecedorEditRequest, Core.Models.Fornecedores.Fornecedor>().ReverseMap();
             CreateMap<CoExecutor, CoExecutorDto>()
                 .ForMember(c => c.Fornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome))
                 .ReverseMap();

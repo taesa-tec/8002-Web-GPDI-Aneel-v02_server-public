@@ -4,8 +4,9 @@ using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models;
-using PeD.Models.Projetos;
+using PeD.Core.Authorizations;
+using PeD.Core.Models;
+using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos
@@ -55,7 +56,7 @@ namespace PeD.Controllers.Projetos
             // Garantir que, caso o usuário atual tenha acesso administrativo a um dos projeto, não altere projetos que ele não tenha acesso
             foreach (int id in pids)
             {
-                auth = auth && (_service.UserProjectCan(id, User, Authorizations.ProjectPermissions.Administrator));
+                auth = auth && (_service.UserProjectCan(id, User, ProjectPermissions.Administrator));
             }
 
             if (auth)
@@ -74,7 +75,7 @@ namespace PeD.Controllers.Projetos
 
             foreach (int id in pids)
             {
-                auth = auth && (_service.UserProjectCan(id, User, Authorizations.ProjectPermissions.Administrator));
+                auth = auth && (_service.UserProjectCan(id, User, ProjectPermissions.Administrator));
             }
 
             if (auth)

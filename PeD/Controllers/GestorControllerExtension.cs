@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using PeD.Models;
-using PeD.Models.Projetos;
-using PeD.Security;
+using PeD.Auth;
+using PeD.Core.Models;
+using PeD.Core.Models.Projetos;
 using PeD.Services;
 using PeD.Services.Projetos;
 
@@ -65,7 +65,7 @@ namespace PeD.Controllers {
 
 
         }
-        public static bool CreateLog( this ControllerBase controller, BaseGestorService service, int ProjetoId, object Entity, object oldEntity = null ) {
+        public static bool CreateLog( this ControllerBase controller, BaseService service, int ProjetoId, object Entity, object oldEntity = null ) {
             return CreateLog(controller, service.LogService, ProjetoId, Entity, oldEntity);
         }
 

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
-using PeD.Models.Projetos.Resultados;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Projetos;
+using PeD.Core.Models.Projetos.Resultados;
 using PeD.Services.Projetos.Resultados;
 
 namespace PeD.Controllers.Projetos.Resultados
@@ -40,7 +41,7 @@ namespace PeD.Controllers.Projetos.Resultados
         public ActionResult<Resultado> Post([FromBody] ResultadoCapacitacao ResultadoCapacitacao)
         {
             if (_service.UserProjectCan(ResultadoCapacitacao.ProjetoId, User,
-                Authorizations.ProjectPermissions.LeituraEscrita))
+                ProjectPermissions.LeituraEscrita))
             {
                 var resultado = _service.Incluir(ResultadoCapacitacao);
                 if (resultado.Sucesso)
@@ -59,7 +60,7 @@ namespace PeD.Controllers.Projetos.Resultados
         public ActionResult<Resultado> Put([FromBody] ResultadoCapacitacao ResultadoCapacitacao)
         {
             var Resultado = _service._context.ResultadosCapacitacao.Find(ResultadoCapacitacao.Id);
-            if (_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
+            if (_service.UserProjectCan(Resultado.ProjetoId, User, ProjectPermissions.LeituraEscrita))
             {
                 _service._context.Entry(Resultado).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                 var resultado = _service.Atualizar(ResultadoCapacitacao);
@@ -78,7 +79,7 @@ namespace PeD.Controllers.Projetos.Resultados
         public ActionResult<Resultado> Delete(int id)
         {
             var Resultado = _service.Obter(id);
-            if (_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.Administrator))
+            if (_service.UserProjectCan(Resultado.ProjetoId, User, ProjectPermissions.Administrator))
             {
                 var resultado = _service.Excluir(id);
                 if (resultado.Sucesso)

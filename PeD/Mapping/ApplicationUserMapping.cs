@@ -1,7 +1,7 @@
 using System;
 using AutoMapper;
-using PeD.Dtos;
-using PeD.Models;
+using PeD.Core.ApiModels;
+using PeD.Core.Models;
 
 namespace PeD.Mapping
 {
