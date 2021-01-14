@@ -1,0 +1,28 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.NovaCaptacao
+@{
+    Layout = "_EmailBase";
+}
+@{
+    var appName = Configuration.GetValue<string>("AppName");
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+    Novo Projeto para Captação de Proposta no
+    Mercado cadastrado
+}
+
+@section Action
+{
+    <a href="@url/">
+        Ver Demanda
+    </a>
+}
+
+<p>
+    O usuário @Model.Autor enviou a demanda "@Model.CaptacaoTitulo" para Captação de Propostas ao Mercado.
+    Clique abaixo para mais detalhes.
+</p>
