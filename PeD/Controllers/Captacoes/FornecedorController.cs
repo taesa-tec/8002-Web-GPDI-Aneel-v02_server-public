@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.FornecedoresDtos;
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models.Captacoes;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;

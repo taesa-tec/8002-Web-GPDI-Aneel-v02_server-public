@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models.Captacoes;
+using PeD.Core.Models.Propostas;
 using PeD.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
@@ -16,7 +17,7 @@ namespace PeD.Services.Captacoes
         private DbSet<CaptacaoArquivo> _captacaoArquivos;
         private DbSet<CaptacaoFornecedor> _captacaoFornecedors;
         private DbSet<CaptacaoContrato> _captacaoContratos;
-        private DbSet<PropostaFornecedor> _captacaoPropostas;
+        private DbSet<Proposta> _captacaoPropostas;
 
         public CaptacaoService(IRepository<Captacao> repository, GestorDbContext context) : base(repository)
         {
@@ -24,7 +25,7 @@ namespace PeD.Services.Captacoes
             _captacaoArquivos = context.Set<CaptacaoArquivo>();
             _captacaoFornecedors = context.Set<CaptacaoFornecedor>();
             _captacaoContratos = context.Set<CaptacaoContrato>();
-            _captacaoPropostas = context.Set<PropostaFornecedor>();
+            _captacaoPropostas = context.Set<Proposta>();
         }
 
         protected void ThrowIfNotExist(int id)
@@ -85,7 +86,7 @@ namespace PeD.Services.Captacoes
             var fornecedores = _captacaoFornecedors.Include(cf => cf.Fornecedor).Where(cf => cf.CaptacaoId == id)
                 .Select(cf => cf.Fornecedor);
 
-            var propostas = fornecedores.Select(f => new PropostaFornecedor()
+            var propostas = fornecedores.Select(f => new Proposta()
             {
                 FornecedorId = f.Id,
                 CaptacaoId = id,
@@ -98,7 +99,7 @@ namespace PeD.Services.Captacoes
             await _context.SaveChangesAsync();
         }
 
-        public PropostaFornecedor GetProposta(int id)
+        public Proposta GetProposta(int id)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
@@ -106,7 +107,7 @@ namespace PeD.Services.Captacoes
                 .FirstOrDefault(p => p.Id == id);
         }
 
-        public IEnumerable<PropostaFornecedor> GetPropostasPorCaptacao(int id)
+        public IEnumerable<Proposta> GetPropostasPorCaptacao(int id)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
@@ -114,7 +115,7 @@ namespace PeD.Services.Captacoes
                 .ToList();
         }
 
-        public IEnumerable<PropostaFornecedor> GetPropostasPorCaptacao(int id, StatusParticipacao status)
+        public IEnumerable<Proposta> GetPropostasPorCaptacao(int id, StatusParticipacao status)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
@@ -122,7 +123,7 @@ namespace PeD.Services.Captacoes
                 .ToList();
         }
 
-        public IEnumerable<PropostaFornecedor> GetPropostasPorResponsavel(string userId)
+        public IEnumerable<Proposta> GetPropostasPorResponsavel(string userId)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)

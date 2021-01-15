@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Demandas;
 using PeD.Core.Models.Demandas.Forms;
 using PeD.Core.Views.Pdf;

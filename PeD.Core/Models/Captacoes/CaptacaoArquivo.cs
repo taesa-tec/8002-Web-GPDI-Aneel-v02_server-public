@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace PeD.Core.Models.Captacao
+namespace PeD.Core.Models.Captacoes
 {
     public class CaptacaoArquivo : IFileUpload
     {

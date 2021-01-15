@@ -105,7 +105,6 @@ namespace PeD
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer"
                 });
-
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
                     {
@@ -250,7 +249,7 @@ namespace PeD
                     opt.RootPath = "StaticFiles/DefaultSpa";
                 }
             });
-            
+
             services.AddFornecedorServices();
         }
 

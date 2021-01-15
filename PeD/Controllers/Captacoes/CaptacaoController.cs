@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.Models;
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models.Captacoes;
 using PeD.Core.Requests.Captacao;
 using PeD.Data;
 using PeD.Services;

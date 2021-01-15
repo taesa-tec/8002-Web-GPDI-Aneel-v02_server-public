@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using PeD.Core.Models.Demandas;
+using PeD.Core.Models.Propostas;
 using TaesaCore.Models;
 
-namespace PeD.Core.Models.Captacao
+namespace PeD.Core.Models.Captacoes
 {
     public class Captacao : BaseEntity
     {
@@ -45,6 +46,6 @@ namespace PeD.Core.Models.Captacao
         public List<CaptacaoFornecedor> FornecedoresConvidados { get; set; }
         public List<CaptacaoContrato> Contratos { get; set; }
         public List<CaptacaoArquivo> Arquivos { get; set; }
-        public List<PropostaFornecedor> Propostas { get; set; }
+        public List<Proposta> Propostas { get; set; }
     }
 }

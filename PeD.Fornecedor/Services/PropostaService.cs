@@ -1,24 +1,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models.Captacoes;
+using PeD.Core.Models.Propostas;
 using PeD.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 
 namespace PeD.Fornecedor.Services
 {
-    public class PropostaService : BaseService<PropostaFornecedor>
+    public class PropostaService : BaseService<Proposta>
     {
-        private DbSet<PropostaFornecedor> _captacaoPropostas;
+        private DbSet<Proposta> _captacaoPropostas;
 
-        public PropostaService(IRepository<PropostaFornecedor> repository, GestorDbContext context)
+        public PropostaService(IRepository<Proposta> repository, GestorDbContext context)
             : base(repository)
         {
-            _captacaoPropostas = context.Set<PropostaFornecedor>();
+            _captacaoPropostas = context.Set<Proposta>();
         }
 
-        public PropostaFornecedor GetProposta(int id)
+        public Proposta GetProposta(int id)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
@@ -27,7 +28,7 @@ namespace PeD.Fornecedor.Services
         }
 
 
-        public IEnumerable<PropostaFornecedor> GetPropostasPorResponsavel(string userId)
+        public IEnumerable<Proposta> GetPropostasPorResponsavel(string userId)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)

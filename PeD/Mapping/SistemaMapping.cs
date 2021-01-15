@@ -1,8 +1,9 @@
 using AutoMapper;
 using PeD.Core.ApiModels.FornecedoresDtos;
 using PeD.Core.ApiModels.Sistema;
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models;
 using PeD.Core.Models.Fornecedores;
+using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Sistema.Fornecedores;
 
 namespace PeD.Mapping
@@ -18,7 +19,6 @@ namespace PeD.Mapping
             CreateMap<FornecedorCreateRequest, Core.Models.Fornecedores.Fornecedor>().ReverseMap();
             CreateMap<FornecedorEditRequest, Core.Models.Fornecedores.Fornecedor>().ReverseMap();
             CreateMap<CoExecutor, CoExecutorDto>()
-                .ForMember(c => c.Fornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome))
                 .ReverseMap();
             CreateMap<Clausula, ClausulaDto>().ReverseMap();
         }

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PeD.Core.Models.Captacao
+namespace PeD.Core.Models.Captacoes
 {
     public class CaptacaoContrato
     {

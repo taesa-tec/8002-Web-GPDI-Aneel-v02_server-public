@@ -1,6 +1,6 @@
 using TaesaCore.Models;
 
-namespace PeD.Core.Models.Captacao
+namespace PeD.Core.Models
 {
     public class Clausula : BaseEntity
     {

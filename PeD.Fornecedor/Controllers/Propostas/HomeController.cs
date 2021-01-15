@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using PeD.Core.ApiModels.FornecedoresDtos;
 using PeD.Core.Extensions;
 using PeD.Core.Models;
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models.Captacoes;
+using PeD.Core.Models.Propostas;
 using PeD.Fornecedor.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -19,7 +20,7 @@ namespace PeD.Fornecedor.Controllers.Propostas
     [ApiController]
     [Authorize("Bearer", Roles = Roles.Fornecedor)]
     [Route("api/Fornecedor/Propostas")]
-    public class PropostasController : ControllerServiceBase<PropostaFornecedor>
+    public class PropostasController : ControllerServiceBase<Proposta>
     {
         private IUrlHelper _urlHelper;
         private new PropostaService Service;

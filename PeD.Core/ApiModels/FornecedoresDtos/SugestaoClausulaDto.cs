@@ -1,4 +1,4 @@
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models;
 using TaesaCore.Models;
 
 namespace PeD.Core.ApiModels.FornecedoresDtos

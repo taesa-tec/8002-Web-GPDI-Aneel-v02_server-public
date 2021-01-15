@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
+using PeD.Core.Models.Captacoes;
 using TaesaCore.Models;
 
-namespace PeD.Core.Models.Captacao
+namespace PeD.Core.Models.Propostas
 {
     public enum StatusParticipacao
     {
@@ -11,7 +11,7 @@ namespace PeD.Core.Models.Captacao
         Rejeitado
     }
 
-    public class PropostaFornecedor : BaseEntity
+    public class Proposta : BaseEntity
     {
         public int FornecedorId { get; set; }
         public Fornecedores.Fornecedor Fornecedor { get; set; }
@@ -19,8 +19,14 @@ namespace PeD.Core.Models.Captacao
         public Captacao Captacao { get; set; }
         public bool Finalizado { get; set; }
         public StatusParticipacao Participacao { get; set; }
-        public List<SugestaoClausula> SugestaoClausulas { get; set; }
         public DateTime DataCriacao { get; set; }
         public DateTime? DataResposta { get; set; }
+        public DateTime? DataClausulasAceitas { get; set; }
+    }
+
+    public class PropostaNode : BaseEntity
+    {
+        public int PropostaId { get; set; }
+        public Proposta Proposta { get; set; }
     }
 }

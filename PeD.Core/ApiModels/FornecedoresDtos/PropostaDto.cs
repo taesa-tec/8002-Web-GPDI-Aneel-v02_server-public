@@ -1,5 +1,6 @@
 using System;
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models.Captacoes;
+using PeD.Core.Models.Propostas;
 using TaesaCore.Models;
 
 namespace PeD.Core.ApiModels.FornecedoresDtos

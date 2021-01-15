@@ -2,12 +2,16 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.Models;
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Catalogs;
 using PeD.Core.Models.Demandas;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Resultados;
+using PeD.Core.Models.Propostas;
+using Contrato = PeD.Core.Models.Contrato;
+using Etapa = PeD.Core.Models.Projetos.Etapa;
+using Produto = PeD.Core.Models.Projetos.Produto;
 
 namespace PeD.Data
 {
@@ -158,8 +162,6 @@ namespace PeD.Data
             builder.Entity<Fornecedor>().ToTable("Fornecedores");
             builder.Entity<Contrato>().ToTable("Contratos");
             builder.Entity<Clausula>().ToTable("Clausulas");
-            builder.Entity<CoExecutor>().ToTable("CoExecutores");
-
             builder.Entity<Captacao>(eb =>
             {
                 eb.Property(c => c.CreatedAt).HasDefaultValueSql("getdate()");
@@ -188,9 +190,10 @@ namespace PeD.Data
                 .ToTable("CaptacaoSugestoesFornecedores")
                 .HasKey(a => new {a.FornecedorId, a.CaptacaoId});
 
-            builder.Entity<PropostaFornecedor>(builder =>
+            builder.Entity<Proposta>(builder =>
             {
                 builder.HasIndex(p => new {p.CaptacaoId, p.FornecedorId}).IsUnique();
+                builder.ToTable("Propostas");
             });
 
             builder.Entity<CaptacaoInfo>().ToView("CaptacoesView");

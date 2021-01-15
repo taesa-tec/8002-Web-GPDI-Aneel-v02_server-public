@@ -1,4 +1,4 @@
-namespace PeD.Core.Models.Captacao
+namespace PeD.Core.Models.Captacoes
 {
     public class CaptacaoSugestaoFornecedor
     {

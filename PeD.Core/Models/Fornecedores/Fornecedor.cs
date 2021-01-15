@@ -11,6 +11,5 @@ namespace PeD.Core.Models.Fornecedores
         public string ResponsavelId { get; set; }
         public ApplicationUser Responsavel { get; set; }
         public bool Ativo { get; set; }
-        public List<CoExecutor> CoExecutores { get; set; }
     }
 }

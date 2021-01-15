@@ -1,7 +1,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Core.Models.Captacao;
+using PeD.Core.Models;
+using PeD.Core.Models.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
