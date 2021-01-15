@@ -5,7 +5,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace PeD.Fornecedor.Controllers.Propostas
 {
-    [SwaggerTag("Proposta - Detalhes")]
+    [SwaggerTag("Proposta")]
     [ApiController]
     [Authorize("Bearer", Roles = Roles.Fornecedor)]
     [Route("api/Fornecedor/Propostas/{propostaId:int}/[controller]")]

@@ -80,7 +80,7 @@ namespace PeD.Controllers.Captacoes
                     request.Fornecedores, request.Fornecedores);
                 await service.EnviarParaFornecedores(id);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return NotFound();
             }

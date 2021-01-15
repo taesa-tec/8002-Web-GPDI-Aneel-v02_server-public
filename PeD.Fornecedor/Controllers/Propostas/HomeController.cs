@@ -22,35 +22,27 @@ namespace PeD.Fornecedor.Controllers.Propostas
     public class PropostasController : ControllerServiceBase<PropostaFornecedor>
     {
         private IUrlHelper _urlHelper;
-        private CaptacaoService _captacaoService;
+        private new PropostaService Service;
 
-
-        public PropostasController(CaptacaoService captacaoService, IService<PropostaFornecedor> service,
+        public PropostasController(PropostaService service,
             IMapper mapper, IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor) : base(service, mapper)
         {
+            Service = service;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
-            this._captacaoService = captacaoService;
         }
 
         [HttpGet("")]
         public ActionResult<List<PropostaDto>> GetPropostas()
         {
-            var propostas = _captacaoService.GetPropostasPorResponsavel(this.UserId());
+            var propostas = Service.GetPropostasPorResponsavel(this.UserId());
             return Ok(Mapper.Map<List<PropostaDto>>(propostas));
         }
 
         [HttpGet("{id}")]
         public ActionResult<PropostaDto> GetProposta(int id)
         {
-            var proposta = _captacaoService.GetProposta(id);
-            return Mapper.Map<PropostaDto>(proposta);
-        }
-
-        [HttpGet("{id}/Detalhes")]
-        public ActionResult<PropostaDto> GetPropostaDetalhes(int id)
-        {
-            var proposta = _captacaoService.GetProposta(id);
+            var proposta = Service.GetProposta(id);
             return Mapper.Map<PropostaDto>(proposta);
         }
     }

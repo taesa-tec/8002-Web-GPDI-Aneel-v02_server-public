@@ -27,8 +27,8 @@ using PeD.Core.Authorizations;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
 using PeD.Data;
+using PeD.Fornecedor.Services;
 using PeD.Services;
-using PeD.Services.Captacoes;
 using PeD.Services.Demandas;
 using PeD.Services.Projetos;
 using PeD.Services.Projetos.Relatorios;
@@ -39,6 +39,7 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 using TaesaCore.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
+using CaptacaoService = PeD.Services.Captacoes.CaptacaoService;
 using UserService = PeD.Services.UserService;
 
 
@@ -122,7 +123,7 @@ namespace PeD
                         new List<string>()
                     }
                 });
-                
+
 
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -249,6 +250,8 @@ namespace PeD
                     opt.RootPath = "StaticFiles/DefaultSpa";
                 }
             });
+            
+            services.AddFornecedorServices();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -284,7 +287,6 @@ namespace PeD
             // */
 
             #endregion
-
 
             // Define Cultura Padrão
             var cultureInfo = new CultureInfo("pt-BR");
