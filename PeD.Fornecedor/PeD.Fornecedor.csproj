@@ -6,6 +6,7 @@
 
     <ItemGroup>
         <Folder Include="Controllers" />
+        <Folder Include="Models" />
     </ItemGroup>
 
     <ItemGroup>
@@ -21,6 +22,5 @@
 
     <ItemGroup>
       <ProjectReference Include="..\PeD.Core\PeD.Core.csproj" />
-      <ProjectReference Include="..\PeD.Data\PeD.Data.csproj" />
     </ItemGroup>
 </Project>

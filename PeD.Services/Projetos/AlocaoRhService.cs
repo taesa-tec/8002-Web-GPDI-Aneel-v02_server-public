@@ -6,14 +6,17 @@ using Microsoft.EntityFrameworkCore;
 using PeD.Core.Models.Projetos;
 using PeD.Data;
 
-namespace PeD.Services.Projetos {
-    public class AlocacaoRhService : BaseService {
-
-
-        public AlocacaoRhService( GestorDbContext context, IAuthorizationService authorization, LogService logService ) : base(context, authorization, logService) {
-
+namespace PeD.Services.Projetos
+{
+    public class AlocacaoRhService : BaseService
+    {
+        public AlocacaoRhService(GestorDbContext context, IAuthorizationService authorization, LogService logService) :
+            base(context, authorization, logService)
+        {
         }
-        public IEnumerable<AlocacaoRh> ListarTodos( int projetoId ) {
+
+        public IEnumerable<AlocacaoRh> ListarTodos(int projetoId)
+        {
             var AlocacaoRh = _context.AlocacoesRh
                 .Include("RecursoHumano")
                 .Include("Empresa.CatalogEmpresa")
@@ -23,7 +26,8 @@ namespace PeD.Services.Projetos {
             return AlocacaoRh;
         }
 
-        public AlocacaoRh Obter( int id ) {
+        public AlocacaoRh Obter(int id)
+        {
             return _context.AlocacoesRh
                 .Include("RecursoHumano")
                 .Include("Empresa.CatalogEmpresa")
@@ -31,46 +35,59 @@ namespace PeD.Services.Projetos {
                 .FirstOrDefault(a => a.Id == id);
         }
 
-        public Resultado Incluir( AlocacaoRh dados ) {
+        public Resultado Incluir(AlocacaoRh dados)
+        {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Inclusão de AlocacaoRh";
-            if(dados.ProjetoId <= 0) {
+            if (dados.ProjetoId <= 0)
+            {
                 resultado.Inconsistencias.Add("Preencha o ProjetoId");
             }
-            else {
+            else
+            {
                 Projeto Projeto = _context.Projetos.Where(
-                        p => p.Id == dados.ProjetoId).FirstOrDefault();
+                    p => p.Id == dados.ProjetoId).FirstOrDefault();
 
-                if(Projeto == null) {
+                if (Projeto == null)
+                {
                     resultado.Inconsistencias.Add("Projeto não localizado");
                 }
             }
 
-            if(resultado.Inconsistencias.Count == 0) {
+            if (resultado.Inconsistencias.Count == 0)
+            {
                 _context.AlocacoesRh.Add(dados);
                 _context.SaveChanges();
                 resultado.Id = dados.Id.ToString();
             }
+
             return resultado;
         }
-        public Resultado Atualizar( AlocacaoRh dados ) {
+
+        public Resultado Atualizar(AlocacaoRh dados)
+        {
             Resultado resultado = DadosValidos(dados);
             resultado.Acao = "Atualização de AlocacaoRh";
 
-            if(resultado.Inconsistencias.Count == 0) {
+            if (resultado.Inconsistencias.Count == 0)
+            {
                 AlocacaoRh AlocacaoRh = _context.AlocacoesRh.Where(
                     p => p.Id == dados.Id).FirstOrDefault();
 
-                if(AlocacaoRh == null) {
+                if (AlocacaoRh == null)
+                {
                     resultado.Inconsistencias.Add(
                         "AlocacaoRh não encontrado");
                 }
-                else {
-
+                else
+                {
                     AlocacaoRh.EtapaId = dados.EtapaId == null ? AlocacaoRh.EtapaId : dados.EtapaId;
                     AlocacaoRh.EmpresaId = dados.EmpresaId == null ? AlocacaoRh.EmpresaId : dados.EmpresaId;
-                    AlocacaoRh.RecursoHumanoId = dados.RecursoHumanoId == null ? AlocacaoRh.RecursoHumanoId : dados.RecursoHumanoId;
-                    AlocacaoRh.Justificativa = dados.Justificativa == null ? AlocacaoRh.Justificativa : dados.Justificativa;
+                    AlocacaoRh.RecursoHumanoId = dados.RecursoHumanoId == null
+                        ? AlocacaoRh.RecursoHumanoId
+                        : dados.RecursoHumanoId;
+                    AlocacaoRh.Justificativa =
+                        dados.Justificativa == null ? AlocacaoRh.Justificativa : dados.Justificativa;
                     AlocacaoRh.HrsMes1 = dados.HrsMes1;
                     AlocacaoRh.HrsMes2 = dados.HrsMes2;
                     AlocacaoRh.HrsMes3 = dados.HrsMes3;
@@ -101,27 +118,37 @@ namespace PeD.Services.Projetos {
 
             return resultado;
         }
-        private Resultado DadosValidos( AlocacaoRh dados ) {
+
+        private Resultado DadosValidos(AlocacaoRh dados)
+        {
             var resultado = new Resultado();
-            if(dados == null) {
+            if (dados == null)
+            {
                 resultado.Inconsistencias.Add("Preencha os Dados do AlocacaoRh");
             }
-            else {
-                if(dados.ProjetoId == null && dados.Id > 0) {
+            else
+            {
+                if (dados.ProjetoId == null && dados.Id > 0)
+                {
                     dados.ProjetoId = _context.AlocacoesRh.Where(
-                    p => p.Id == dados.Id).FirstOrDefault().ProjetoId;
+                        p => p.Id == dados.Id).FirstOrDefault().ProjetoId;
                 }
-                if(dados.RecursoHumanoId == null) {
+
+                if (dados.RecursoHumanoId == null)
+                {
                     resultado.Inconsistencias.Add("Preencha o RecursoHumanoId");
                 }
-                else {
+                else
+                {
                     RecursoHumano RecursoHumano = _context.RecursoHumanos
-                                        .Where(p => p.ProjetoId == dados.ProjetoId)
-                                        .Where(p => p.Id == dados.RecursoHumanoId).FirstOrDefault();
-                    if(RecursoHumano == null) {
+                        .Where(p => p.ProjetoId == dados.ProjetoId)
+                        .Where(p => p.Id == dados.RecursoHumanoId).FirstOrDefault();
+                    if (RecursoHumano == null)
+                    {
                         resultado.Inconsistencias.Add("RecursoHumanoId não cadastrada ou não associada ao projeto.");
                     }
                 }
+
                 // if (dados.EtapaId == null)
                 // {
                 //     resultado.Inconsistencias.Add("Preencha o Nome do RecursoHumanoId");
@@ -136,32 +163,42 @@ namespace PeD.Services.Projetos {
                 //         resultado.Inconsistencias.Add("EtapaId não cadastrada ou não associada ao projeto.");
                 //     }
                 // }
-                if(dados.EmpresaId == null) {
+                if (dados.EmpresaId == null)
+                {
                     resultado.Inconsistencias.Add("Preencha a EmpresaId");
                 }
-                else {
+                else
+                {
                     Empresa Empresa = _context.Empresas
-                                        .Where(p => p.ProjetoId == dados.ProjetoId)
-                                        .Where(p => p.Id == dados.EmpresaId).FirstOrDefault();
-                    if(Empresa == null) {
+                        .Where(p => p.ProjetoId == dados.ProjetoId)
+                        .Where(p => p.Id == dados.EmpresaId).FirstOrDefault();
+                    if (Empresa == null)
+                    {
                         resultado.Inconsistencias.Add("EmpresaId não cadastrada ou não associada ao projeto.");
                     }
                 }
-                if(String.IsNullOrEmpty(dados.Justificativa)) {
+
+                if (String.IsNullOrEmpty(dados.Justificativa))
+                {
                     resultado.Inconsistencias.Add("Preencha a Justificativa da alocação");
                 }
             }
+
             return resultado;
         }
-        public Resultado Excluir( int id ) {
+
+        public Resultado Excluir(int id)
+        {
             Resultado resultado = new Resultado();
             resultado.Acao = "Exclusão de AlocacaoRh";
 
             AlocacaoRh AlocacaoRh = _context.AlocacoesRh.First(t => t.Id == id);
-            if(AlocacaoRh == null) {
+            if (AlocacaoRh == null)
+            {
                 resultado.Inconsistencias.Add("AlocacaoRh não encontrada");
             }
-            else {
+            else
+            {
                 _context.AlocacoesRh.Remove(AlocacaoRh);
                 _context.SaveChanges();
             }

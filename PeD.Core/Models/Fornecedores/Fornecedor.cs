@@ -3,13 +3,10 @@ using TaesaCore.Models;
 
 namespace PeD.Core.Models.Fornecedores
 {
-    public class Fornecedor : BaseEntity
+    public class Fornecedor : Empresa
     {
-        public string Nome { get; set; }
-        public string CNPJ { get; set; }
-
+        public new CategoriaEmpresa Categoria { get; } = CategoriaEmpresa.Fornecedor;
         public string ResponsavelId { get; set; }
         public ApplicationUser Responsavel { get; set; }
-        public bool Ativo { get; set; }
     }
 }

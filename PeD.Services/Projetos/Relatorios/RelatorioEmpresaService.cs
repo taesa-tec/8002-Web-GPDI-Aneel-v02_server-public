@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using ClosedXML.Excel;
 using CsvHelper;
+using PeD.Core.Models;
 using PeD.Core.Models.Projetos;
 using PeD.Data;
 

@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
-using PeD.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 
@@ -13,7 +12,7 @@ namespace PeD.Fornecedor.Services
     {
         private DbSet<Proposta> _captacaoPropostas;
 
-        public PropostaService(IRepository<Proposta> repository, GestorDbContext context)
+        public PropostaService(IRepository<Proposta> repository, DbContext context)
             : base(repository)
         {
             _captacaoPropostas = context.Set<Proposta>();

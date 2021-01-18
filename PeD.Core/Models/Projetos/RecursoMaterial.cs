@@ -6,10 +6,6 @@ using PeD.Core.Attributes;
 using PeD.Core.Models.Catalogs;
 
 namespace PeD.Core.Models.Projetos {
-    public enum CategoriaContabil {
-        RH, ST, MC, MP, VD, OU
-    }
-
     public class RecursoMaterial {
         [Key]
         public int Id { get; set; }

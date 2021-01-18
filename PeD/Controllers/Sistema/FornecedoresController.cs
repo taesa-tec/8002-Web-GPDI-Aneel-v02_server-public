@@ -130,7 +130,7 @@ namespace PeD.Controllers.Sistema
             {
                 Ativo = true,
                 Nome = model.Nome,
-                CNPJ = model.Cnpj
+                Cnpj = model.Cnpj
             };
 
 
@@ -148,7 +148,7 @@ namespace PeD.Controllers.Sistema
             var fornecedor = Service.Get(model.Id);
 
             fornecedor.Nome = model.Nome;
-            fornecedor.CNPJ = model.Cnpj;
+            fornecedor.Cnpj = model.Cnpj;
             if (!model.Ativo && fornecedor.Ativo)
             {
                 DesativarFonecedor(fornecedor).Wait();

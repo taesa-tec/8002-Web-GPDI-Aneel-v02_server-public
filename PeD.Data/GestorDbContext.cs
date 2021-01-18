@@ -10,8 +10,11 @@ using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Propostas;
 using Contrato = PeD.Core.Models.Contrato;
+using Empresa = PeD.Core.Models.Projetos.Empresa;
 using Etapa = PeD.Core.Models.Projetos.Etapa;
 using Produto = PeD.Core.Models.Projetos.Produto;
+using RecursoHumano = PeD.Core.Models.Projetos.RecursoHumano;
+using RecursoMaterial = PeD.Core.Models.Projetos.RecursoMaterial;
 
 namespace PeD.Data
 {

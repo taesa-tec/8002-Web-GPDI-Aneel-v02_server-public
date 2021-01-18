@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using PeD.Core.Models;
 using PeD.Core.Models.Projetos;
 using PeD.Data;
 
