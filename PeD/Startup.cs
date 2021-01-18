@@ -10,10 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
@@ -23,24 +21,18 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using PeD.Auth;
 using PeD.Core;
-using PeD.Core.Authorizations;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
 using PeD.Data;
 using PeD.Fornecedor.Services;
 using PeD.Services;
 using PeD.Services.Demandas;
-using PeD.Services.Projetos;
-using PeD.Services.Projetos.Relatorios;
-using PeD.Services.Projetos.Resultados;
-using PeD.Services.Projetos.XmlProjeto;
 using PeD.Services.Sistema;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using TaesaCore.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 using CaptacaoService = PeD.Services.Captacoes.CaptacaoService;
-using UserService = PeD.Services.UserService;
 
 
 namespace PeD
@@ -136,51 +128,8 @@ namespace PeD
             #region Serviços
 
             services.AddScoped<SendGridService>();
-            services.AddScoped<CatalogService>();
             services.AddScoped<MailService>();
             services.AddScoped<Services.UserService>();
-            services.AddScoped<ProjetoService>();
-            services.AddScoped<UserProjetoService>();
-            services.AddScoped<TemaService>();
-            services.AddScoped<EmpresaService>();
-            services.AddScoped<RecursoHumanoService>();
-            services.AddScoped<AlocacaoRhService>();
-            services.AddScoped<RecursoMaterialService>();
-            services.AddScoped<AlocacaoRmService>();
-            services.AddScoped<ProdutoService>();
-            services.AddScoped<EtapaService>();
-            services.AddScoped<LogService>();
-            services.AddScoped<UploadService>();
-            services.AddScoped<RelatorioEmpresaService>();
-            services.AddScoped<RelatorioEtapaService>();
-            services.AddScoped<RelatorioAtividadeService>();
-
-            // Gerador Xml Services
-            services.AddScoped<GeradorXmlService>();
-            services.AddScoped<XmlProjetoPedService>();
-            services.AddScoped<XmlInteressePedService>();
-            services.AddScoped<XmlInicioExecService>();
-            services.AddScoped<XmlProrrogacaoService>();
-            services.AddScoped<XmlRelatorioFinalService>();
-            services.AddScoped<XmlRelatorioAuditoriaService>();
-            services.AddScoped<XmlProjetoGestaoService>();
-            services.AddScoped<XmlRelatorioFinalGestaoService>();
-            services.AddScoped<XmlRelatorioAuditoriaGestaoService>();
-            ////////////////////////
-
-            services.AddScoped<RegistroFinanceiroService>();
-
-            services.AddScoped<RelatorioFinalService>();
-            services.AddScoped<ResultadoCapacitacaoService>();
-            services.AddScoped<ResultadoProducaoService>();
-            services.AddScoped<ResultadoInfraService>();
-            services.AddScoped<ResultadoIntelectualService>();
-            services.AddScoped<ResultadoSocioAmbientalService>();
-            services.AddScoped<ResultadoEconomicoService>();
-
-            // Projeto Gestão
-            services.AddScoped<AtividadeGestaoService>();
-
             services.AddScoped<DemandaService>();
             services.AddScoped<DemandaLogService>();
             services.AddScoped<SistemaService>();
@@ -234,7 +183,6 @@ namespace PeD
             };
             services.AddSingleton(emailConfig);
 
-            services.AddSingleton<IAuthorizationHandler, ProjectAuthorizationHandler>();
             services.AddSingleton<IdentityInitializer>();
 
             services.AddSpaStaticFiles(opt =>

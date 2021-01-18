@@ -8,7 +8,7 @@ namespace PeD.Data.Migrations
         {
             migrationBuilder.AddColumn<string>(
                 name: "Cnpj",
-                table: "CatalogEmpresas",
+                table: "Empresas",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
@@ -38,7 +38,7 @@ namespace PeD.Data.Migrations
 
             migrationBuilder.DropColumn(
                 name: "Cnpj",
-                table: "CatalogEmpresas");
+                table: "Empresas");
         }
     }
 }

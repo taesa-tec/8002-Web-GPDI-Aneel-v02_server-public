@@ -216,7 +216,7 @@ namespace PeD.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CatalogCategoriaContabilGestao",
+                name: "CategoriaContabil",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -250,7 +250,7 @@ namespace PeD.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CatalogAtividade",
+                name: "Atividade",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -265,7 +265,7 @@ namespace PeD.Data.Migrations
                     table.ForeignKey(
                         name: "FK_CatalogAtividade_CatalogCategoriaContabilGestao_CatalogCategoriaContabilGestaoId",
                         column: x => x.CatalogCategoriaContabilGestaoId,
-                        principalTable: "CatalogCategoriaContabilGestao",
+                        principalTable: "CategoriaContabil",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -317,7 +317,7 @@ namespace PeD.Data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_CatalogAtividade_CatalogCategoriaContabilGestaoId",
-                table: "CatalogAtividade",
+                table: "Atividade",
                 column: "CatalogCategoriaContabilGestaoId");
 
             migrationBuilder.CreateIndex(
@@ -329,7 +329,7 @@ namespace PeD.Data.Migrations
                 name: "FK_CatalogSubTemas_CatalogTema_CatalogTemaId",
                 table: "CatalogSubTemas",
                 column: "CatalogTemaId",
-                principalTable: "CatalogTema",
+                principalTable: "Tema",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -385,7 +385,7 @@ namespace PeD.Data.Migrations
                 name: "FK_RecursoMateriais_CatalogAtividade_CatalogAtividadeId",
                 table: "RecursoMateriais",
                 column: "CatalogAtividadeId",
-                principalTable: "CatalogAtividade",
+                principalTable: "Atividade",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -393,7 +393,7 @@ namespace PeD.Data.Migrations
                 name: "FK_RecursoMateriais_CatalogCategoriaContabilGestao_CatalogCategoriaContabilGestaoId",
                 table: "RecursoMateriais",
                 column: "CatalogCategoriaContabilGestaoId",
-                principalTable: "CatalogCategoriaContabilGestao",
+                principalTable: "CategoriaContabil",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -521,7 +521,7 @@ namespace PeD.Data.Migrations
                 name: "FK_Temas_CatalogTema_CatalogTemaId",
                 table: "Temas",
                 column: "CatalogTemaId",
-                principalTable: "CatalogTema",
+                principalTable: "Tema",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -680,13 +680,13 @@ namespace PeD.Data.Migrations
                 name: "AtividadesGestao");
 
             migrationBuilder.DropTable(
-                name: "CatalogAtividade");
+                name: "Atividade");
 
             migrationBuilder.DropTable(
                 name: "EtapaMeses");
 
             migrationBuilder.DropTable(
-                name: "CatalogCategoriaContabilGestao");
+                name: "CategoriaContabil");
 
             migrationBuilder.DropIndex(
                 name: "IX_ResultadosSocioAmbiental_ProjetoId",
@@ -812,7 +812,7 @@ namespace PeD.Data.Migrations
                 name: "FK_CatalogSubTemas_CatalogTema_CatalogTemaId",
                 table: "CatalogSubTemas",
                 column: "CatalogTemaId",
-                principalTable: "CatalogTema",
+                principalTable: "Tema",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
@@ -932,7 +932,7 @@ namespace PeD.Data.Migrations
                 name: "FK_Temas_CatalogTema_CatalogTemaId",
                 table: "Temas",
                 column: "CatalogTemaId",
-                principalTable: "CatalogTema",
+                principalTable: "Tema",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 

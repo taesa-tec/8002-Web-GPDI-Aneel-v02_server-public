@@ -20,7 +20,7 @@ namespace PeD.Data.Migrations
                 constraints: table => { table.PrimaryKey("PK_AspNetRoles", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "CatalogEmpresas",
+                name: "Empresas",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -32,7 +32,7 @@ namespace PeD.Data.Migrations
                 constraints: table => { table.PrimaryKey("PK_CatalogEmpresas", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "CatalogSegmentos",
+                name: "Segmentos",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -54,7 +54,7 @@ namespace PeD.Data.Migrations
                 constraints: table => { table.PrimaryKey("PK_CatalogStatus", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "CatalogTema",
+                name: "Tema",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -134,7 +134,7 @@ namespace PeD.Data.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUsers_CatalogEmpresas_CatalogEmpresaId",
                         column: x => x.CatalogEmpresaId,
-                        principalTable: "CatalogEmpresas",
+                        principalTable: "Empresas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -156,7 +156,7 @@ namespace PeD.Data.Migrations
                     table.ForeignKey(
                         name: "FK_CatalogSubTemas_CatalogTema_CatalogTemaId",
                         column: x => x.CatalogTemaId,
-                        principalTable: "CatalogTema",
+                        principalTable: "Tema",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -178,7 +178,7 @@ namespace PeD.Data.Migrations
                     table.ForeignKey(
                         name: "FK_Temas_CatalogTema_CatalogTemaId",
                         column: x => x.CatalogTemaId,
-                        principalTable: "CatalogTema",
+                        principalTable: "Tema",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -328,13 +328,13 @@ namespace PeD.Data.Migrations
                     table.ForeignKey(
                         name: "FK_Projetos_CatalogEmpresas_CatalogEmpresaId",
                         column: x => x.CatalogEmpresaId,
-                        principalTable: "CatalogEmpresas",
+                        principalTable: "Empresas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Projetos_CatalogSegmentos_CatalogSegmentoId",
                         column: x => x.CatalogSegmentoId,
-                        principalTable: "CatalogSegmentos",
+                        principalTable: "Segmentos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -375,7 +375,7 @@ namespace PeD.Data.Migrations
                     table.ForeignKey(
                         name: "FK_TemaSubTemas_CatalogTema_CatalogTemaId",
                         column: x => x.CatalogTemaId,
-                        principalTable: "CatalogTema",
+                        principalTable: "Tema",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -406,7 +406,7 @@ namespace PeD.Data.Migrations
                     table.ForeignKey(
                         name: "FK_Empresas_CatalogEmpresas_CatalogEmpresaId",
                         column: x => x.CatalogEmpresaId,
-                        principalTable: "CatalogEmpresas",
+                        principalTable: "Empresas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -706,7 +706,7 @@ namespace PeD.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_CatalogEmpresaId",
                 table: "AspNetUsers",
-                column: "CatalogEmpresaId");
+                column: "EmpresaId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -728,7 +728,7 @@ namespace PeD.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Empresas_CatalogEmpresaId",
                 table: "Empresas",
-                column: "CatalogEmpresaId");
+                column: "EmpresaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Empresas_ProjetoId",
@@ -753,7 +753,7 @@ namespace PeD.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Projetos_CatalogEmpresaId",
                 table: "Projetos",
-                column: "CatalogEmpresaId");
+                column: "EmpresaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projetos_CatalogSegmentoId",
@@ -876,10 +876,10 @@ namespace PeD.Data.Migrations
                 name: "Projetos");
 
             migrationBuilder.DropTable(
-                name: "CatalogEmpresas");
+                name: "Empresas");
 
             migrationBuilder.DropTable(
-                name: "CatalogSegmentos");
+                name: "Segmentos");
 
             migrationBuilder.DropTable(
                 name: "CatalogStatus");
@@ -888,7 +888,7 @@ namespace PeD.Data.Migrations
                 name: "Temas");
 
             migrationBuilder.DropTable(
-                name: "CatalogTema");
+                name: "Tema");
         }
     }
 }

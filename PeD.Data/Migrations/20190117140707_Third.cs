@@ -33,7 +33,7 @@ namespace PeD.Data.Migrations
                 name: "FK_CatalogSubTemas_CatalogTema_CatalogTemaId",
                 table: "CatalogSubTemas",
                 column: "CatalogTemaId",
-                principalTable: "CatalogTema",
+                principalTable: "Tema",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -65,7 +65,7 @@ namespace PeD.Data.Migrations
                 name: "FK_CatalogSubTemas_CatalogTema_CatalogTemaId",
                 table: "CatalogSubTemas",
                 column: "CatalogTemaId",
-                principalTable: "CatalogTema",
+                principalTable: "Tema",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -73,7 +73,7 @@ namespace PeD.Data.Migrations
                 name: "FK_TemaSubTemas_CatalogTema_CatalogTemaId",
                 table: "TemaSubTemas",
                 column: "CatalogTemaId",
-                principalTable: "CatalogTema",
+                principalTable: "Tema",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }

@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PeD.Auth;
+using PeD.Core.ApiModels;
 using PeD.Core.Models;
-using PeD.Core.Models.Catalogs;
-using PeD.Core.Models.Projetos;
+using PeD.Core.Models.Catalogos;
 using PeD.Data;
 using TaesaCore.Extensions;
 
@@ -44,7 +42,7 @@ namespace PeD.Services
             {
                 var user = _context.Users
                     .Include("FotoPerfil")
-                    .Where(p => p.Id == userId).Include("CatalogEmpresa").FirstOrDefault();
+                    .Where(p => p.Id == userId).Include("Empresa").FirstOrDefault();
                 if (user != null)
                 {
                     user.Roles = GetRoles(user);
@@ -59,7 +57,7 @@ namespace PeD.Services
         public IEnumerable<ApplicationUser> ListarTodos()
         {
             var Users = _context.Users
-                .Include("CatalogEmpresa")
+                .Include("Empresa")
                 .OrderBy(p => p.Id)
                 .ToList();
             return Users;
@@ -118,19 +116,17 @@ namespace PeD.Services
                 resultado.Inconsistencias.Add("User não encontrado");
             }
 
-            if (resultado.Inconsistencias.Count == 0)
+            if (resultado.Inconsistencias.Count == 0 && User != null)
             {
                 var roles = _userManager.GetRolesAsync(User).Result.ToList();
                 roles.ForEach(r => _userManager.RemoveFromRoleAsync(User, r).Wait());
                 _userManager.AddToRoleAsync(User, dadosUser.Role).Wait();
 
-                User.Status = (dadosUser.Status != null && Enum.IsDefined(typeof(UserStatus), dadosUser.Status))
-                    ? dadosUser.Status
-                    : User.Status;
+                User.Status = dadosUser.Status;
                 User.NomeCompleto = dadosUser.NomeCompleto == null ? User.NomeCompleto : dadosUser.NomeCompleto;
-                User.CatalogEmpresaId = dadosUser.CatalogEmpresaId == null
-                    ? User.CatalogEmpresaId
-                    : dadosUser.CatalogEmpresaId;
+                User.EmpresaId = dadosUser.EmpresaId == null
+                    ? User.EmpresaId
+                    : dadosUser.EmpresaId;
                 User.RazaoSocial = dadosUser.RazaoSocial == null ? User.RazaoSocial : dadosUser.RazaoSocial;
                 User.FotoPerfil = dadosUser.FotoPerfil == null || dadosUser.FotoPerfil.File.Length == 0
                     ? User.FotoPerfil
@@ -138,7 +134,7 @@ namespace PeD.Services
 
 
                 User.Role = dadosUser.Role == null ? User.Role : dadosUser.Role;
-                User.CPF = dadosUser.CPF == null ? User.CPF : dadosUser.CPF;
+                User.Cpf = dadosUser.Cpf == null ? User.Cpf : dadosUser.Cpf;
                 User.Cargo = dadosUser.Cargo == null ? User.Cargo : dadosUser.Cargo;
                 User.DataAtualizacao = DateTime.Now;
                 _context.SaveChanges();
@@ -160,8 +156,7 @@ namespace PeD.Services
             }
             else
             {
-                _context.UserProjetos.RemoveRange(_context.UserProjetos.Where(t => t.UserId == userId));
-                _context.FotoPerfil.RemoveRange(_context.FotoPerfil.Where(t => t.UserId == userId));
+                //_context.FotoPerfil.RemoveRange(_context.FotoPerfil.Where(t => t.UserId == userId));
                 _context.Users.Remove(User);
                 _context.SaveChanges();
             }
@@ -205,10 +200,10 @@ namespace PeD.Services
                     }
                 }
 
-                if (User.CatalogEmpresaId > 0)
+                if (User.EmpresaId > 0)
                 {
-                    CatalogEmpresa Empresa = _context.CatalogEmpresas.Where(
-                        e => e.Id == User.CatalogEmpresaId).FirstOrDefault();
+                    var Empresa = _context.Empresas.Where(
+                        e => e.Id == User.EmpresaId).FirstOrDefault();
                     if (Empresa == null)
                     {
                         resultado.Inconsistencias.Add("Empresa não encontrada");
@@ -257,7 +252,7 @@ namespace PeD.Services
             var user = emailOrId.Contains('@')
                 ? await _userManager.FindByEmailAsync(emailOrId)
                 : await _userManager.FindByIdAsync(emailOrId);
-            if (user != null && user.Status == UserStatus.Ativo)
+            if (user != null && user.Status)
             {
                 await Desativar(user);
             }
@@ -265,7 +260,7 @@ namespace PeD.Services
 
         public async Task Desativar(ApplicationUser user)
         {
-            user.Status = UserStatus.Inativo;
+            user.Status = false;
             await _userManager.UpdateAsync(user);
         }
 
@@ -274,7 +269,7 @@ namespace PeD.Services
             var user = emailOrId.Contains('@')
                 ? await _userManager.FindByEmailAsync(emailOrId)
                 : await _userManager.FindByIdAsync(emailOrId);
-            if (user != null && user.Status == UserStatus.Inativo)
+            if (user != null && user.Status == true)
             {
                 await Ativar(user);
             }
@@ -282,7 +277,7 @@ namespace PeD.Services
 
         public async Task Ativar(ApplicationUser user)
         {
-            user.Status = UserStatus.Ativo;
+            user.Status = true;
             await _userManager.UpdateAsync(user);
         }
     }

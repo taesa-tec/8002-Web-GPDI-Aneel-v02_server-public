@@ -8,7 +8,7 @@ namespace PeD.Data.Migrations
         {
             migrationBuilder.RenameColumn(
                 name: "Segmento",
-                table: "CatalogSegmentos",
+                table: "Segmentos",
                 newName: "Valor");
 
             migrationBuilder.AlterColumn<int>(
@@ -27,7 +27,7 @@ namespace PeD.Data.Migrations
 
             migrationBuilder.AddColumn<string>(
                 name: "Nome",
-                table: "CatalogSegmentos",
+                table: "Segmentos",
                 nullable: true);
         }
 
@@ -35,11 +35,11 @@ namespace PeD.Data.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "Nome",
-                table: "CatalogSegmentos");
+                table: "Segmentos");
 
             migrationBuilder.RenameColumn(
                 name: "Valor",
-                table: "CatalogSegmentos",
+                table: "Segmentos",
                 newName: "Segmento");
 
             migrationBuilder.AlterColumn<string>(

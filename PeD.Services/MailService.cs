@@ -1,9 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using PeD.Core.Models;
-using PeD.Core.Models.Projetos;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -18,6 +18,7 @@ namespace PeD.Services
         private readonly string contactEmail;
 
         private readonly IConfigurationSection SendGrid;
+
         public MailService(
             UserManager<ApplicationUser> userManager,
             IWebHostEnvironment hostingEnvironment,
@@ -34,10 +35,12 @@ namespace PeD.Services
         private string createEmailBody(ApplicationUser user, string file)
         {
             string body = string.Empty;
-            using (StreamReader reader = new StreamReader(Path.Combine(_hostingEnvironment.WebRootPath, "MailTemplates/" + file + ".html")))
+            using (StreamReader reader =
+                new StreamReader(Path.Combine(_hostingEnvironment.WebRootPath, "MailTemplates/" + file + ".html")))
             {
                 body = reader.ReadToEnd();
             }
+
             var ResetToken = _userManager.GeneratePasswordResetTokenAsync(user).Result;
             body = body.Replace("{{URL_SITE}}", this.urlSite);
             body = body.Replace("{{USER_EMAIL}}", user.Email);
@@ -46,20 +49,27 @@ namespace PeD.Services
             body = body.Replace("{{APP_NAME}}", this.configuration.GetValue<string>("AppName"));
             return body;
         }
-        //        private string apiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
-        public Resultado SendMail(ApplicationUser user, string subject, string file)
-        {
-            Resultado resultado = new Resultado();
-            resultado.Acao = subject;
 
-            var client = new SendGridClient(SendGrid.GetValue<string>("ApiKey"));
-            var from = new EmailAddress(SendGrid.GetValue<string>("SenderEmail"), SendGrid.GetValue<string>("SenderName"));
-            var to = new EmailAddress(user.Email, user.NomeCompleto);
-            var plainTextContent = "";
-            var htmlContent = this.createEmailBody(user, file);
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = client.SendEmailAsync(msg);
-            return resultado;
+        //        private string apiKey = Environment.GetEnvironmentVariable("SendGridApiKey");
+        public bool SendMail(ApplicationUser user, string subject, string file)
+        {
+            try
+            {
+                var client = new SendGridClient(SendGrid.GetValue<string>("ApiKey"));
+                var from = new EmailAddress(SendGrid.GetValue<string>("SenderEmail"),
+                    SendGrid.GetValue<string>("SenderName"));
+                var to = new EmailAddress(user.Email, user.NomeCompleto);
+                var plainTextContent = "";
+                var htmlContent = this.createEmailBody(user, file);
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                var response = client.SendEmailAsync(msg);
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

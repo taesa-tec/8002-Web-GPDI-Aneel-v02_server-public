@@ -32,7 +32,7 @@ namespace PeD.Data.Migrations
                 nullable: true);
 
             migrationBuilder.CreateTable(
-                name: "CatalogProdutoFaseCadeia",
+                name: "ProdutoFaseCadeia",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -61,7 +61,7 @@ namespace PeD.Data.Migrations
                     table.ForeignKey(
                         name: "FK_CatalogProdutoTipoDetalhado_CatalogProdutoFaseCadeia_CatalogProdutoFaseCadeiaId",
                         column: x => x.CatalogProdutoFaseCadeiaId,
-                        principalTable: "CatalogProdutoFaseCadeia",
+                        principalTable: "ProdutoFaseCadeia",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -99,7 +99,7 @@ namespace PeD.Data.Migrations
                 name: "FK_Produtos_CatalogProdutoFaseCadeia_CatalogProdutoFaseCadeiaId",
                 table: "Produtos",
                 column: "CatalogProdutoFaseCadeiaId",
-                principalTable: "CatalogProdutoFaseCadeia",
+                principalTable: "ProdutoFaseCadeia",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -130,7 +130,7 @@ namespace PeD.Data.Migrations
                 name: "CatalogProdutoTipoDetalhado");
 
             migrationBuilder.DropTable(
-                name: "CatalogProdutoFaseCadeia");
+                name: "ProdutoFaseCadeia");
 
             migrationBuilder.DropIndex(
                 name: "IX_Produtos_CatalogProdutoFaseCadeiaId",

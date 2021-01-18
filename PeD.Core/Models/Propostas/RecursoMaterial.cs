@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using PeD.Core.Models.Projetos;
 
 namespace PeD.Core.Models.Propostas
 {

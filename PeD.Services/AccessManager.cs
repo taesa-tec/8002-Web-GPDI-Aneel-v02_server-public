@@ -12,7 +12,6 @@ using PeD.Auth;
 using PeD.Core.ApiModels;
 using PeD.Core.ApiModels.Auth;
 using PeD.Core.Models;
-using PeD.Core.Models.Projetos;
 using PeD.Core.Requests;
 using PeD.Data;
 using PeD.Views.Email;
@@ -64,7 +63,7 @@ namespace PeD.Services
                         .Result;
                     if (resultadoLogin.Succeeded)
                     {
-                        return userIdentity.Status > 0;
+                        return userIdentity.Status;
                     }
                 }
             }
@@ -76,10 +75,10 @@ namespace PeD.Services
         {
             var userIdentity = _userManager
                 .FindByEmailAsync(user.Email).Result;
-            if (userIdentity.CatalogEmpresaId != null)
+            if (userIdentity.EmpresaId != null)
             {
-                userIdentity.CatalogEmpresa =
-                    GestorDbContext.CatalogEmpresas.FirstOrDefault(ce => ce.Id == userIdentity.CatalogEmpresaId);
+                userIdentity.Empresa =
+                    GestorDbContext.Empresas.FirstOrDefault(ce => ce.Id == userIdentity.EmpresaId);
             }
 
             var roles = _userManager.GetRolesAsync(userIdentity).Result.ToList();
@@ -128,45 +127,35 @@ namespace PeD.Services
             };
         }
 
-        public Resultado RecuperarSenha(Login user)
+        public bool RecuperarSenha(Login user)
         {
-            Resultado resultado = new Resultado();
-            resultado.Acao = "Recuperação de senha de User";
-
             if (String.IsNullOrWhiteSpace(user.Email))
             {
-                resultado.Inconsistencias.Add(
-                    "Preencha o E-mail do Usuário");
-                return resultado;
+                throw new Exception("Preencha o E-mail do Usuário");
             }
 
             try
             {
                 SendRecoverAccountEmail(user.Email).Wait(10000);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                resultado.Inconsistencias.Add(e.Message);
+                return false;
             }
 
-            return resultado;
+            return false;
         }
 
-        public Resultado NovaSenha(User user)
+        public bool NovaSenha(User user)
         {
-            Resultado resultado = new Resultado();
-            resultado.Acao = "Recuperação de senha de User";
-
             if (String.IsNullOrWhiteSpace(user.Email))
             {
-                resultado.Inconsistencias.Add(
-                    "Preencha o E-mail do Usuário");
+                throw new Exception("Preencha o E-mail do Usuário");
             }
 
             if (String.IsNullOrWhiteSpace(user.NewPassword))
             {
-                resultado.Inconsistencias.Add(
-                    "Preencha a nova senha do Usuário");
+                throw new Exception("Preencha a nova senha do Usuário");
             }
 
             var User = _userManager.Users
@@ -174,23 +163,19 @@ namespace PeD.Services
                 .FirstOrDefault();
             if (User == null)
             {
-                resultado.Inconsistencias.Add(
-                    "usuário não localizado");
+                throw new Exception("usuário não localizado");
             }
 
-            if (resultado.Inconsistencias.Count == 0)
+            var result = _userManager.ResetPasswordAsync(User, user.ResetToken, user.NewPassword).Result;
+            if (result.Errors.Count() > 0)
             {
-                var result = _userManager.ResetPasswordAsync(User, user.ResetToken, user.NewPassword).Result;
-                if (result.Errors.Count() > 0)
+                foreach (var error in result.Errors)
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        resultado.Inconsistencias.Add(error.Description);
-                    }
+                    throw new Exception(error.Description);
                 }
             }
 
-            return resultado;
+            return true;
         }
 
         public async Task SendRecoverAccountEmail(string email, bool newAccount = false,

@@ -30,7 +30,7 @@ namespace PeD.Data.Migrations
                 name: "FK_RegistrosFinanceiros_CatalogAtividade_CatalogAtividadeId",
                 table: "RegistrosFinanceiros",
                 column: "CatalogAtividadeId",
-                principalTable: "CatalogAtividade",
+                principalTable: "Atividade",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -38,7 +38,7 @@ namespace PeD.Data.Migrations
                 name: "FK_RegistrosFinanceiros_CatalogCategoriaContabilGestao_CatalogCategoriaContabilGestaoId",
                 table: "RegistrosFinanceiros",
                 column: "CatalogCategoriaContabilGestaoId",
-                principalTable: "CatalogCategoriaContabilGestao",
+                principalTable: "CategoriaContabil",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }

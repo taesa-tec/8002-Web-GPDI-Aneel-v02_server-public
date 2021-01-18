@@ -11,10 +11,7 @@ namespace PeD.Mapping
         {
             CreateMap<ApplicationUser, ApplicationUserDto>()
                 .ForMember(user => user.Empresa, opt =>
-                    opt.MapFrom(src => src.CatalogEmpresa.Nome ?? src.RazaoSocial))
-                .ForMember(user => user.StatusValor, opt => opt.MapFrom(src =>
-                    (src.Status != null) ? Enum.GetName(typeof(UserStatus), src.Status) : null
-                ))
+                    opt.MapFrom(src => src.Empresa.Nome ?? src.RazaoSocial))
                 .ForMember(user => user.FotoPerfil,
                     opt => opt.MapFrom(src => String.Format("/api/Users/{0}/Avatar", src.Id)));
         }

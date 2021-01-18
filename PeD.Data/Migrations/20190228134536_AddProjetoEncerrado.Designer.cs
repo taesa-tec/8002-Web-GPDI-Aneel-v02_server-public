@@ -105,7 +105,7 @@ namespace PeD.Data.Migrations
 
                     b.Property<string>("CPF");
 
-                    b.Property<int?>("CatalogEmpresaId");
+                    b.Property<int?>("EmpresaId");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
@@ -156,7 +156,7 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CatalogEmpresaId");
+                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("FotoPerfilId");
 
@@ -171,7 +171,7 @@ namespace PeD.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("PeD.Models.CatalogEmpresa", b =>
+            modelBuilder.Entity("PeD.Models.Empresa", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -183,10 +183,10 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CatalogEmpresas");
+                    b.ToTable("Empresas");
                 });
 
-            modelBuilder.Entity("PeD.Models.CatalogEstado", b =>
+            modelBuilder.Entity("PeD.Models.Estado", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -201,7 +201,7 @@ namespace PeD.Data.Migrations
                     b.ToTable("CatalogEstados");
                 });
 
-            modelBuilder.Entity("PeD.Models.CatalogPais", b =>
+            modelBuilder.Entity("PeD.Models.Pais", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -214,7 +214,7 @@ namespace PeD.Data.Migrations
                     b.ToTable("CatalogPaises");
                 });
 
-            modelBuilder.Entity("PeD.Models.CatalogSegmento", b =>
+            modelBuilder.Entity("PeD.Models.Segmento", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -226,7 +226,7 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CatalogSegmentos");
+                    b.ToTable("Segmentos");
                 });
 
             modelBuilder.Entity("PeD.Models.CatalogStatus", b =>
@@ -242,7 +242,7 @@ namespace PeD.Data.Migrations
                     b.ToTable("CatalogStatus");
                 });
 
-            modelBuilder.Entity("PeD.Models.CatalogSubTema", b =>
+            modelBuilder.Entity("PeD.Models.SubTema", b =>
                 {
                     b.Property<int>("SubTemaId")
                         .ValueGeneratedOnAdd()
@@ -263,7 +263,7 @@ namespace PeD.Data.Migrations
                     b.ToTable("CatalogSubTemas");
                 });
 
-            modelBuilder.Entity("PeD.Models.CatalogTema", b =>
+            modelBuilder.Entity("PeD.Models.Tema", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -277,7 +277,7 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CatalogTema");
+                    b.ToTable("Tema");
                 });
 
             modelBuilder.Entity("PeD.Models.CatalogUserPermissao", b =>
@@ -301,7 +301,7 @@ namespace PeD.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CatalogEmpresaId");
+                    b.Property<int?>("EmpresaId");
 
                     b.Property<int?>("CatalogEstadoId");
 
@@ -315,7 +315,7 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CatalogEmpresaId");
+                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("CatalogEstadoId");
 
@@ -457,7 +457,7 @@ namespace PeD.Data.Migrations
 
                     b.Property<bool?>("AvaliacaoInicial");
 
-                    b.Property<int?>("CatalogEmpresaId");
+                    b.Property<int?>("EmpresaId");
 
                     b.Property<int?>("CatalogSegmentoId");
 
@@ -493,7 +493,7 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CatalogEmpresaId");
+                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("CatalogSegmentoId");
 
@@ -1153,18 +1153,18 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("PeD.Models.CatalogEmpresa", "CatalogEmpresa")
+                    b.HasOne("PeD.Models.Empresa", "Empresa")
                         .WithMany()
-                        .HasForeignKey("CatalogEmpresaId");
+                        .HasForeignKey("EmpresaId");
 
                     b.HasOne("PeD.Models.FotoPerfil", "FotoPerfil")
                         .WithMany()
                         .HasForeignKey("FotoPerfilId");
                 });
 
-            modelBuilder.Entity("PeD.Models.CatalogSubTema", b =>
+            modelBuilder.Entity("PeD.Models.SubTema", b =>
                 {
-                    b.HasOne("PeD.Models.CatalogTema")
+                    b.HasOne("PeD.Models.Tema")
                         .WithMany("SubTemas")
                         .HasForeignKey("CatalogTemaId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -1172,11 +1172,11 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Models.Empresa", b =>
                 {
-                    b.HasOne("PeD.Models.CatalogEmpresa", "CatalogEmpresa")
+                    b.HasOne("PeD.Models.Empresa", "Empresa")
                         .WithMany()
-                        .HasForeignKey("CatalogEmpresaId");
+                        .HasForeignKey("EmpresaId");
 
-                    b.HasOne("PeD.Models.CatalogEstado", "Estado")
+                    b.HasOne("PeD.Models.Estado", "Estado")
                         .WithMany()
                         .HasForeignKey("CatalogEstadoId");
 
@@ -1228,11 +1228,11 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Models.Projeto", b =>
                 {
-                    b.HasOne("PeD.Models.CatalogEmpresa", "CatalogEmpresa")
+                    b.HasOne("PeD.Models.Empresa", "Empresa")
                         .WithMany()
-                        .HasForeignKey("CatalogEmpresaId");
+                        .HasForeignKey("EmpresaId");
 
-                    b.HasOne("PeD.Models.CatalogSegmento", "CatalogSegmento")
+                    b.HasOne("PeD.Models.Segmento", "Segmento")
                         .WithMany()
                         .HasForeignKey("CatalogSegmentoId");
 
@@ -1327,7 +1327,7 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Models.ResultadoProducao", b =>
                 {
-                    b.HasOne("PeD.Models.CatalogPais", "Pais")
+                    b.HasOne("PeD.Models.Pais", "Pais")
                         .WithMany()
                         .HasForeignKey("CatalogPaisId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -1335,7 +1335,7 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Models.Tema", b =>
                 {
-                    b.HasOne("PeD.Models.CatalogTema", "CatalogTema")
+                    b.HasOne("PeD.Models.Tema", "Tema")
                         .WithMany()
                         .HasForeignKey("CatalogTemaId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -1348,7 +1348,7 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Models.TemaSubTema", b =>
                 {
-                    b.HasOne("PeD.Models.CatalogSubTema", "CatalogSubTema")
+                    b.HasOne("PeD.Models.SubTema", "SubTema")
                         .WithMany()
                         .HasForeignKey("CatalogSubTemaId")
                         .OnDelete(DeleteBehavior.Cascade);

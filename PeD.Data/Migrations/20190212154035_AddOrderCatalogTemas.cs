@@ -8,7 +8,7 @@ namespace PeD.Data.Migrations
         {
             migrationBuilder.AddColumn<int>(
                 name: "Order",
-                table: "CatalogTema",
+                table: "Tema",
                 nullable: false,
                 defaultValue: 0);
 
@@ -23,7 +23,7 @@ namespace PeD.Data.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "Order",
-                table: "CatalogTema");
+                table: "Tema");
 
             migrationBuilder.DropColumn(
                 name: "Order",

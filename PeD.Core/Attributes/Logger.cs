@@ -2,7 +2,7 @@
 
 namespace PeD.Core.Attributes {
     [System.AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
-    sealed class LoggerAttribute : Attribute {
+    public sealed class LoggerAttribute : Attribute {
         // See the attribute guidelines at 
         //  http://go.microsoft.com/fwlink/?LinkId=85236
         readonly string name;

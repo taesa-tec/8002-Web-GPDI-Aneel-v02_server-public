@@ -666,7 +666,7 @@ namespace PeD.Services.Demandas
                 var catalogId = tema.GetValue("catalogTemaId").Value<int>();
                 var outroDesc = tema.GetValue("outroDesc").Value<string>();
 
-                var catalogTema = _context.CatalogTema.Find(catalogId);
+                var catalogTema = _context.Temas.Find(catalogId);
                 if (catalogTema != null)
                 {
                     fieldRendered.Value = catalogTema.Nome;
@@ -684,7 +684,7 @@ namespace PeD.Services.Demandas
                     var catalogSubTemaId = (child as JObject).GetValue("catalogSubTemaId").Value<int>();
                     var subOutroDesc = (child as JObject).GetValue("outroDesc").Value<string>();
 
-                    var catalogSubTema = _context.CatalogSubTemas.Find(catalogSubTemaId);
+                    var catalogSubTema = _context.Temas.Find(catalogSubTemaId);
                     if (catalogSubTema != null)
                     {
                         var item = new FieldRendered("Sub Tema", catalogSubTema.Nome);
