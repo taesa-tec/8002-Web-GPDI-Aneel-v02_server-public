@@ -2,7 +2,8 @@
 using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos {
@@ -24,7 +25,7 @@ namespace PeD.Controllers.Projetos {
          // CONTROLLER
         [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]Empresa Empresa ) {
-            if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan(Empresa.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
 
                 var resultado = _service.Incluir(Empresa);
                 if(resultado.Sucesso) {
@@ -38,7 +39,7 @@ namespace PeD.Controllers.Projetos {
          // CONTROLLER
         [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]Empresa Empresa ) {
-            if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan(Empresa.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var empresaOld = _service.Obter(Empresa.Id);
                 _service._context.Entry(empresaOld).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                 var resultado = _service.Atualizar(Empresa);
@@ -56,7 +57,7 @@ namespace PeD.Controllers.Projetos {
             var Empresa = _service.Obter(id);
 
             if(Empresa != null) {
-                if(_service.UserProjectCan(Empresa.ProjetoId, User, Authorizations.ProjectPermissions.Administrator)) {
+                if(_service.UserProjectCan(Empresa.ProjetoId, User, ProjectPermissions.Administrator)) {
                     var resultado = _service.Excluir(id);
                     if(resultado.Sucesso) {
                         this.CreateLog(_service, Empresa.ProjetoId, Empresa);

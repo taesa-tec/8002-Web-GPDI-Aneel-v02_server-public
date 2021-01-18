@@ -1,7 +1,8 @@
 ﻿using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos {
@@ -28,7 +29,7 @@ namespace PeD.Controllers.Projetos {
          // CONTROLLER
         [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]RelatorioFinal RelatorioFinal ) {
-            if(_service.UserProjectCan(RelatorioFinal.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan(RelatorioFinal.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(RelatorioFinal);
                 if(resultado.Sucesso) {
                     this.CreateLog(_service, RelatorioFinal.ProjetoId, RelatorioFinal);
@@ -43,7 +44,7 @@ namespace PeD.Controllers.Projetos {
         public ActionResult<Resultado> Put( [FromBody]RelatorioFinal RelatorioFinal ) {
             var Relatorio = _service._context.RelatorioFinal.Find(RelatorioFinal.Id);
             if(Relatorio != null) {
-                if(_service.UserProjectCan(Relatorio.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                if(_service.UserProjectCan(Relatorio.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
 
                     _service._context.Entry(Relatorio).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
 
@@ -63,7 +64,7 @@ namespace PeD.Controllers.Projetos {
         public ActionResult<Resultado> Delete( int id ) {
             var Relatorio = _service.Obter(id);
             if(Relatorio != null) {
-                if(_service.UserProjectCan(Relatorio.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                if(_service.UserProjectCan(Relatorio.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                     var resultado = _service.Excluir(id);
                     if(resultado.Sucesso) {
                         this.CreateLog(_service, Relatorio.ProjetoId, Relatorio);

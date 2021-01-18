@@ -1,7 +1,7 @@
 using AutoMapper;
-using PeD.Dtos;
-using PeD.Dtos.Demandas;
-using PeD.Models.Demandas;
+using PeD.Core.ApiModels;
+using PeD.Core.ApiModels.Demandas;
+using PeD.Core.Models.Demandas;
 
 namespace PeD.Mapping
 {

@@ -3,7 +3,8 @@ using System.Linq;
 using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos {
@@ -25,7 +26,7 @@ namespace PeD.Controllers.Projetos {
          // CONTROLLER
         [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]Etapa Etapa ) {
-            if(_service.UserProjectCan(Etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan(Etapa.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(Etapa);
                 if(resultado.Sucesso) {
                     this.CreateLog(_service, Etapa.ProjetoId, Etapa);
@@ -39,7 +40,7 @@ namespace PeD.Controllers.Projetos {
         [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]Etapa Etapa ) {
             var etapa = _service.Obter(Etapa.Id);
-            if(_service.UserProjectCan(etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan(etapa.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 _service._context.Entry(etapa).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                 var resultado = _service.Atualizar(Etapa);
                 if(resultado.Sucesso) {
@@ -54,7 +55,7 @@ namespace PeD.Controllers.Projetos {
         public ActionResult<Resultado> Delete( int id ) {
             var Etapa = _service._context.Etapas.Where(e => e.Id == id).FirstOrDefault();
             if(Etapa != null) {
-                if(_service.UserProjectCan(Etapa.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+                if(_service.UserProjectCan(Etapa.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                     var resultado = _service.Excluir(id);
                     if(resultado.Sucesso) {
                         this.CreateLog(_service, Etapa.ProjetoId, Etapa);

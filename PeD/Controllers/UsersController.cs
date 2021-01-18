@@ -6,9 +6,9 @@ using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using PeD.Dtos;
-using PeD.Models;
-using PeD.Models.Projetos;
+using PeD.Core.ApiModels;
+using PeD.Core.Models;
+using PeD.Core.Models.Projetos;
 using PeD.Services;
 
 namespace PeD.Controllers

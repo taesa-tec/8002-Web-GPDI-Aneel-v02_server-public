@@ -11,9 +11,9 @@ using DiffPlex;
 using DiffPlex.Chunkers;
 using DiffPlex.DiffBuilder;
 using HtmlAgilityPack;
-using PeD.Dtos;
-using PeD.Exceptions.Demandas;
-using PeD.Models.Demandas;
+using PeD.Core.ApiModels;
+using PeD.Core.Exceptions.Demandas;
+using PeD.Core.Models.Demandas;
 using PeD.Services;
 using PeD.Services.Demandas;
 

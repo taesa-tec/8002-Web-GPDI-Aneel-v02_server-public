@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
+using PeD.Core.Models;
 using PeD.Data;
-using PeD.Models;
 
 namespace PeD.Controllers
 {

@@ -1,9 +1,10 @@
 using System.Linq;
 using AutoMapper;
-using PeD.Dtos.Captacao;
-using PeD.Dtos.FornecedoresDtos;
-using PeD.Models.Captacao;
-using PeD.Models.Fornecedores;
+using PeD.Core.ApiModels.Captacao;
+using PeD.Core.ApiModels.FornecedoresDtos;
+using PeD.Core.Models.Captacoes;
+using PeD.Core.Models.Fornecedores;
+using PeD.Core.Models.Propostas;
 
 namespace PeD.Mapping
 {
@@ -29,8 +30,8 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.Uri,
                     opt => opt.MapFrom(src => $"/api/Captacoes/{src.CaptacaoId}/Arquivos/{src.Id}"))
                 ;
-            CreateMap<Fornecedor, FornecedorDto>();
-            CreateMap<PropostaFornecedor, PropostaDto>()
+            CreateMap<Core.Models.Fornecedores.Fornecedor, FornecedorDto>();
+            CreateMap<Proposta, PropostaDto>()
                 .ForMember(dest => dest.Fornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome))
                 .ForMember(dest => dest.Captacao, opt => opt.MapFrom(src => src.Captacao.Titulo))
                 .ForMember(dest => dest.DataTermino, opt => opt.MapFrom(src => src.Captacao.Termino));

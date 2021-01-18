@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PeD.Core.Models.Captacoes;
 using PeD.Data;
-using PeD.Models.Captacao;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace PeD.Controllers.Captacoes

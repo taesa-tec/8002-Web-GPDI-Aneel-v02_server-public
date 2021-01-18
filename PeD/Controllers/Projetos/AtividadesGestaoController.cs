@@ -1,7 +1,7 @@
 ﻿using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
+using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos

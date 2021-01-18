@@ -4,10 +4,10 @@ using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PeD.Authorizations;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Catalogs;
+using PeD.Core.Models.Projetos;
 using PeD.Data;
-using PeD.Models.Catalogs;
-using PeD.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos

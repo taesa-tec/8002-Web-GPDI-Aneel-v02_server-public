@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
-using PeD.Dtos.Captacao;
-using PeD.Dtos.FornecedoresDtos;
-using PeD.Models.Captacao;
-using PeD.Requests.Captacao;
+using PeD.Core.ApiModels.Captacao;
+using PeD.Core.ApiModels.FornecedoresDtos;
+using PeD.Core.Models.Captacoes;
+using PeD.Core.Models.Propostas;
+using PeD.Core.Requests.Captacao;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -80,7 +81,7 @@ namespace PeD.Controllers.Captacoes
                     request.Fornecedores, request.Fornecedores);
                 await service.EnviarParaFornecedores(id);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return NotFound();
             }

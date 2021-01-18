@@ -1,7 +1,8 @@
 ﻿using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos
@@ -33,7 +34,7 @@ namespace PeD.Controllers.Projetos
         [HttpPost("[controller]")]
         public ActionResult<Resultado> Post([FromBody] Tema Tema)
         {
-            if (this._service.UserProjectCan(Tema.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
+            if (this._service.UserProjectCan(Tema.ProjetoId, User, ProjectPermissions.LeituraEscrita))
             {
                 var resultado = _service.Incluir(Tema);
                 if (resultado.Sucesso)
@@ -51,7 +52,7 @@ namespace PeD.Controllers.Projetos
         [HttpPut("[controller]")]
         public ActionResult<Resultado> Put([FromBody] Tema Tema)
         {
-            if (this._service.UserProjectCan(Tema.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
+            if (this._service.UserProjectCan(Tema.ProjetoId, User, ProjectPermissions.LeituraEscrita))
             {
                 var oldTema = _service.Obter(Tema.Id);
                 _service._context.Entry(oldTema).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
@@ -71,7 +72,7 @@ namespace PeD.Controllers.Projetos
         public ActionResult<Resultado> Delete(int id)
         {
             var tema = _service.Obter(id);
-            if (this._service.UserProjectCan(tema.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita))
+            if (this._service.UserProjectCan(tema.ProjetoId, User, ProjectPermissions.LeituraEscrita))
             {
                 var resultado = _service.Excluir(id);
                 if (resultado.Sucesso)

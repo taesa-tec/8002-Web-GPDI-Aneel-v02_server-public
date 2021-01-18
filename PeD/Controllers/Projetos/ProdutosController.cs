@@ -2,7 +2,8 @@
 using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos {
@@ -41,7 +42,7 @@ namespace PeD.Controllers.Projetos {
          // CONTROLLER
         [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]Produto Produto ) {
-            if(this._service.UserProjectCan(Produto.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(this._service.UserProjectCan(Produto.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(Produto);
                 if(resultado.Sucesso) {
                     this.CreateLog(_service, Produto.ProjetoId, Produto);
@@ -54,7 +55,7 @@ namespace PeD.Controllers.Projetos {
          // CONTROLLER
         [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]Produto Produto ) {
-            if(this._service.UserProjectCan(Produto.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(this._service.UserProjectCan(Produto.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var oldProduto = _service.Obter(Produto.Id);
                 _service._context.Entry(oldProduto).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                 var resultado = _service.Atualizar(Produto);
@@ -69,7 +70,7 @@ namespace PeD.Controllers.Projetos {
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
             Produto p = _service.Obter(id);
-            if(this._service.UserProjectCan(p.ProjetoId, User, Authorizations.ProjectPermissions.Administrator)) {
+            if(this._service.UserProjectCan(p.ProjetoId, User, ProjectPermissions.Administrator)) {
                 var resultado = _service.Excluir(id);
                 if(resultado.Sucesso) {
                     this.CreateLog(_service, p.ProjetoId, p);

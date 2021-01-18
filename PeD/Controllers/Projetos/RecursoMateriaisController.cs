@@ -3,7 +3,8 @@ using System.Linq;
 using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos {
@@ -25,7 +26,7 @@ namespace PeD.Controllers.Projetos {
          // CONTROLLER
         [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]RecursoMaterial RecursoMaterial ) {
-            if(_service.UserProjectCan((int)RecursoMaterial.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan((int)RecursoMaterial.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(RecursoMaterial);
                 if(resultado.Sucesso) {
                     this.CreateLog(_service, (int)RecursoMaterial.ProjetoId, RecursoMaterial);
@@ -38,7 +39,7 @@ namespace PeD.Controllers.Projetos {
          // CONTROLLER
         [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]RecursoMaterial RecursoMaterial ) {
-            if(_service.UserProjectCan((int)RecursoMaterial.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan((int)RecursoMaterial.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var oldRecurso = _service.Obter(RecursoMaterial.Id);
                 _service._context.Entry(oldRecurso).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                 var resultado = _service.Atualizar(RecursoMaterial);
@@ -54,7 +55,7 @@ namespace PeD.Controllers.Projetos {
         public ActionResult<Resultado> Delete( int id ) {
             var recurso = this._service._context.RecursoMateriais.Where(r => r.Id == id).FirstOrDefault();
             if(recurso != null) {
-                if(_service.UserProjectCan((int)recurso.ProjetoId, User, Authorizations.ProjectPermissions.Administrator)) {
+                if(_service.UserProjectCan((int)recurso.ProjetoId, User, ProjectPermissions.Administrator)) {
 
                     var resultado = _service.Excluir(id);
                     if(resultado.Sucesso) {

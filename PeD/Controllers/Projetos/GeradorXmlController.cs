@@ -3,8 +3,8 @@ using System.IdentityModel.Tokens.Jwt;
 using PeD.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
-using PeD.Models.Projetos.Xmls;
+using PeD.Core.Models.Projetos;
+using PeD.Core.Models.Projetos.Xmls;
 using PeD.Services.Projetos;
 
 namespace PeD.Controllers.Projetos {

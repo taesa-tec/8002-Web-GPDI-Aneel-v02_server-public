@@ -11,6 +11,7 @@ namespace PeD.Controllers.Sistema
     public class EquipePeDController : ControllerBase
     {
         SistemaService sistemaService;
+
         public EquipePeDController(SistemaService sistemaService)
         {
             this.sistemaService = sistemaService;
@@ -21,13 +22,5 @@ namespace PeD.Controllers.Sistema
         {
             return sistemaService.GetEquipePedUsers();
         }
-        [HttpPut]
-        public ActionResult SetEquipePeD(EquipePeD equipePeD)
-        {
-            sistemaService.SetEquipePeD(equipePeD);
-            return Ok();
-        }
-
-
     }
 }

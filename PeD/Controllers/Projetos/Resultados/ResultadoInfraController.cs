@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Models.Projetos;
-using PeD.Models.Projetos.Resultados;
+using PeD.Core.Authorizations;
+using PeD.Core.Models.Projetos;
+using PeD.Core.Models.Projetos.Resultados;
 using PeD.Services.Projetos.Resultados;
 
 namespace PeD.Controllers.Projetos.Resultados {
@@ -33,7 +34,7 @@ namespace PeD.Controllers.Projetos.Resultados {
          // CONTROLLER
         [HttpPost("[controller]")]
         public ActionResult<Resultado> Post( [FromBody]ResultadoInfra ResultadoInfra ) {
-            if(_service.UserProjectCan(ResultadoInfra.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan(ResultadoInfra.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 var resultado = _service.Incluir(ResultadoInfra);
                 if(resultado.Sucesso) {
                     this.CreateLog(_service, ResultadoInfra.ProjetoId, ResultadoInfra);
@@ -48,7 +49,7 @@ namespace PeD.Controllers.Projetos.Resultados {
         [HttpPut("[controller]")]
         public ActionResult<Resultado> Put( [FromBody]ResultadoInfra ResultadoInfra ) {
             var Resultado = _service.Obter(ResultadoInfra.Id);
-            if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.LeituraEscrita)) {
+            if(_service.UserProjectCan(Resultado.ProjetoId, User, ProjectPermissions.LeituraEscrita)) {
                 _service._context.Entry(Resultado).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
 
                 var resultado = _service.Atualizar(ResultadoInfra);
@@ -64,7 +65,7 @@ namespace PeD.Controllers.Projetos.Resultados {
         [HttpDelete("[controller]/{Id}")]
         public ActionResult<Resultado> Delete( int id ) {
             var Resultado = _service._context.ResultadosInfra.Find(id);
-            if(_service.UserProjectCan(Resultado.ProjetoId, User, Authorizations.ProjectPermissions.Administrator)) {
+            if(_service.UserProjectCan(Resultado.ProjetoId, User, ProjectPermissions.Administrator)) {
                 var resultado = _service.Excluir(id);
                 if(resultado.Sucesso) {
                     this.CreateLog(_service, Resultado.ProjetoId, Resultado);

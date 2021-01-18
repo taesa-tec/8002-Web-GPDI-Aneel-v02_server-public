@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PeD.Core.Models.Demandas;
 using PeD.Data;
-using PeD.Models.Demandas;
 
 namespace PeD.Controllers.Demandas
 {
