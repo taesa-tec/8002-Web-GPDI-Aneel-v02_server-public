@@ -9,7 +9,7 @@ namespace PeD.Core.Models.Catalogos
         public Tema Parent { get; set; }
         public string Nome { get; set; }
         public string Valor { get; set; }
-        public ICollection<Tema> SubTemas { get; set; }
+        public List<Tema> SubTemas { get; set; }
         public int Order { get; set; }
     }
 }

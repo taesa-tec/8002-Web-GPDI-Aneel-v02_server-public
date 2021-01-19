@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PeD.Core.Models;
 
@@ -7,7 +8,7 @@ namespace PeD.Data.Builders
     {
         public static EntityTypeBuilder<Estado> Config(this EntityTypeBuilder<Estado> builder)
         {
-            return builder.Seed();
+            return builder.Seed().ToTable("Estados");
         }
 
         public static EntityTypeBuilder<Estado> Seed(this EntityTypeBuilder<Estado> builder)

@@ -22,29 +22,31 @@ namespace PeD.Data
 
         #region DbSet's
 
-        public DbSet<Segmento> Segmentos { get; set; }
-        public DbSet<Empresa> Empresas { get; set; }
-        public DbSet<Estado> CatalogEstados { get; set; }
-        public DbSet<Pais> CatalogPaises { get; set; }
-        public DbSet<Tema> Temas { get; set; }
-        public DbSet<ProdutoFaseCadeia> CatalogProdutoFaseCadeia { get; set; }
+        public DbSet<FileUpload> Files { get; set; }
 
-        public DbSet<CatalogProdutoTipoDetalhado> CatalogProdutoTipoDetalhado { get; set; }
+        public DbSet<Empresa> Empresas { get; set; }
+        public DbSet<Tema> Temas { get; set; }
+        public DbSet<ProdutoFaseCadeia> ProdutoFasesCadeia { get; set; }
+
         // Projeto Gestão
 
-        public DbSet<CategoriaContabil> CatalogCategoriaContabilGestao { get; set; }
-        public DbSet<Atividade> CatalogAtividade { get; set; }
+        public DbSet<CategoriaContabil> CategoriasContabeis { get; set; }
+        public DbSet<Atividade> Atividades { get; set; }
 
         /* Demandas */
+
+        #region Demandas
+
         public DbSet<Demanda> Demandas { get; set; }
         public DbSet<DemandaComentario> DemandaComentarios { get; set; }
         public DbSet<DemandaFormFile> DemandaFormFiles { get; set; }
         public DbSet<DemandaFormValues> DemandaFormValues { get; set; }
         public DbSet<DemandaFormHistorico> DemandaFormHistoricos { get; set; }
         public DbSet<SystemOption> SystemOptions { get; set; }
-        public DbSet<FileUpload> Files { get; set; }
         public DbSet<DemandaFile> DemandaFiles { get; set; }
         public DbSet<DemandaLog> DemandaLogs { get; set; }
+
+        #endregion
 
         #endregion
 
@@ -71,13 +73,23 @@ namespace PeD.Data
 
         protected void AddEntities(ModelBuilder builder)
         {
+            #region Global
+
+            builder.Entity<Tema>().Config();
             builder.Entity<Segmento>().Config();
             builder.Entity<Estado>().Config();
             builder.Entity<Pais>().Config();
             builder.Entity<Empresa>().Config();
-            builder.Entity<Fornecedor>().ToTable("Fornecedores");
+            builder.Entity<CategoriaContabil>().Config();
             builder.Entity<Contrato>().ToTable("Contratos");
             builder.Entity<Clausula>().ToTable("Clausulas");
+
+            #endregion
+
+            builder.Entity<Fornecedor>().ToTable("Empresas")
+                .HasQueryFilter(f => f.Categoria == Empresa.CategoriaEmpresa.Fornecedor);
+
+
             builder.Entity<Captacao>(eb =>
             {
                 eb.Property(c => c.CreatedAt).HasDefaultValueSql("getdate()");

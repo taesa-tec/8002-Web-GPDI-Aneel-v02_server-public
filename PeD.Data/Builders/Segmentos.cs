@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PeD.Core.Models.Catalogos;
 
@@ -7,7 +8,7 @@ namespace PeD.Data.Builders
     {
         public static EntityTypeBuilder<Segmento> Config(this EntityTypeBuilder<Segmento> builder)
         {
-            return builder.Seed();
+            return builder.Seed().ToTable("Segmentos");
         }
 
         public static EntityTypeBuilder<Segmento> Seed(this EntityTypeBuilder<Segmento> builder)
