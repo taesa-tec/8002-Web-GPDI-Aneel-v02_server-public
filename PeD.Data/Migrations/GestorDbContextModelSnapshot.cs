@@ -571,7 +571,7 @@ namespace PeD.Data.Migrations
                     b.ToTable("CatalogPaises");
                 });
 
-            modelBuilder.Entity("PeD.Models.ProdutoFaseCadeia", b =>
+            modelBuilder.Entity("PeD.Models.FaseCadeiaProduto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -586,7 +586,7 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProdutoFaseCadeia");
+                    b.ToTable("FaseCadeiaProduto");
                 });
 
             modelBuilder.Entity("PeD.Models.CatalogProdutoTipoDetalhado", b =>
@@ -2045,7 +2045,7 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Models.CatalogProdutoTipoDetalhado", b =>
                 {
-                    b.HasOne("PeD.Models.ProdutoFaseCadeia", null)
+                    b.HasOne("PeD.Models.FaseCadeiaProduto", null)
                         .WithMany("TiposDetalhados")
                         .HasForeignKey("CatalogProdutoFaseCadeiaId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2183,7 +2183,7 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Models.Produto", b =>
                 {
-                    b.HasOne("PeD.Models.ProdutoFaseCadeia", "ProdutoFaseCadeia")
+                    b.HasOne("PeD.Models.FaseCadeiaProduto", "FaseCadeiaProduto")
                         .WithMany()
                         .HasForeignKey("CatalogProdutoFaseCadeiaId");
 

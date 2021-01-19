@@ -26,7 +26,7 @@ namespace PeD.Data
 
         public DbSet<Empresa> Empresas { get; set; }
         public DbSet<Tema> Temas { get; set; }
-        public DbSet<ProdutoFaseCadeia> ProdutoFasesCadeia { get; set; }
+        public DbSet<FaseCadeiaProduto> ProdutoFasesCadeia { get; set; }
 
         // Projeto Gestão
 
@@ -81,6 +81,7 @@ namespace PeD.Data
             builder.Entity<Pais>().Config();
             builder.Entity<Empresa>().Config();
             builder.Entity<CategoriaContabil>().Config();
+            builder.Entity<FaseCadeiaProduto>().Config();
             builder.Entity<Contrato>().ToTable("Contratos");
             builder.Entity<Clausula>().ToTable("Clausulas");
 
