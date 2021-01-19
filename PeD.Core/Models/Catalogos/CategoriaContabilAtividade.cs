@@ -1,11 +1,11 @@
-using System.ComponentModel.DataAnnotations;
+using TaesaCore.Models;
 
 namespace PeD.Core.Models.Catalogos
 {
-    public class Atividade
+    public class CategoriaContabilAtividade : BaseEntity
     {
-        [Key] public int Id { get; set; }
         public string Nome { get; set; }
         public string Valor { get; set; }
+        public int CategoriaContabilId { get; set; }
     }
 }

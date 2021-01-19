@@ -4,15 +4,15 @@ namespace PeD.Core.Models
 {
     public class Roles
     {
-        public const string AdminGestor = "Admin-PeD";
-        public const string UserGestor = "User-PeD";
+        public const string Administrador = "Administrador";
+        public const string User = "User";
         public const string Suprimento = "Suprimento";
         public const string Fornecedor = "Fornecedor";
 
         protected static List<string> _allRoles = new List<string>()
         {
-            Roles.AdminGestor,
-            Roles.UserGestor,
+            Roles.Administrador,
+            Roles.User,
             Roles.Suprimento,
             Roles.Fornecedor
         };

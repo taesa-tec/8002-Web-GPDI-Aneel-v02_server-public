@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PeD.Core.Models.Catalogos;
 
@@ -6,22 +7,21 @@ namespace PeD.Data.Builders
 {
     public static class CategoriasContabeis
     {
-        public static EntityTypeBuilder<CategoriaContabil> Config(this EntityTypeBuilder<CategoriaContabil> builder)
-        {
-            return builder.Seed();
-        }
+        private static List<CategoriaContabil> _categoriaContabils;
 
-        public static EntityTypeBuilder<CategoriaContabil> Seed(this EntityTypeBuilder<CategoriaContabil> builder)
+        private static List<CategoriaContabil> GetCategorias()
         {
+            if (_categoriaContabils != null)
+                return _categoriaContabils;
             var categorias = new List<CategoriaContabil>
             {
                 new CategoriaContabil
                 {
                     Valor = "RH",
                     Nome = "Recursos Humanos",
-                    Atividades = new List<Atividade>
+                    Atividades = new List<CategoriaContabilAtividade>
                     {
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "HH",
                             Nome =
@@ -33,15 +33,15 @@ namespace PeD.Data.Builders
                 {
                     Valor = "ST",
                     Nome = "Serviços de Terceiros",
-                    Atividades = new List<Atividade>
+                    Atividades = new List<CategoriaContabilAtividade>
                     {
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "FG",
                             Nome =
                                 "Desenvolvimento de ferramenta para gestão do Programa de P&D da Empresa, excluindose aquisição de equipamentos."
                         },
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "PP",
                             Nome =
@@ -53,9 +53,9 @@ namespace PeD.Data.Builders
                 {
                     Valor = "MC",
                     Nome = "Materiais de Consumo",
-                    Atividades = new List<Atividade>
+                    Atividades = new List<CategoriaContabilAtividade>
                     {
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "RP",
                             Nome = "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução."
@@ -66,26 +66,26 @@ namespace PeD.Data.Builders
                 {
                     Valor = "VD",
                     Nome = "Viagens e Diárias",
-                    Atividades = new List<Atividade>
+                    Atividades = new List<CategoriaContabilAtividade>
                     {
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "EC",
                             Nome =
                                 "Participação dos membros da equipe de gestão em eventos sobre pesquisa, desenvolvimento e inovação relacionados ao setor elétrico e/ou em cursos de gestão tecnológica e da informação."
                         },
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "PP",
                             Nome =
                                 "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em P&D."
                         },
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "RP",
                             Nome = "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução."
                         },
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "AP",
                             Nome =
@@ -97,20 +97,20 @@ namespace PeD.Data.Builders
                 {
                     Valor = "OU",
                     Nome = "Outros",
-                    Atividades = new List<Atividade>
+                    Atividades = new List<CategoriaContabilAtividade>
                     {
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "EC",
                             Nome =
                                 "Participação dos membros da equipe de gestão em eventos sobre pesquisa, desenvolvimento e inovação relacionados ao setor elétrico e/ou em cursos de gestão tecnológica e da informação."
                         },
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "RP",
                             Nome = "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução."
                         },
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "BA",
                             Nome = "Buscas de anterioridade no Instituto Nacional da Propriedade Industrial (INPI)."
@@ -121,18 +121,18 @@ namespace PeD.Data.Builders
                 {
                     Valor = "CT",
                     Nome = "CITENEL",
-                    Atividades = new List<Atividade>
+                    Atividades = new List<CategoriaContabilAtividade>
                     {
-                        new Atividade {Valor = "AC", Nome = "Apoio à realização do CITENEL."}
+                        new CategoriaContabilAtividade {Valor = "AC", Nome = "Apoio à realização do CITENEL."}
                     }
                 },
                 new CategoriaContabil
                 {
                     Valor = "AC",
                     Nome = "Auditoria Contábil e Financeira",
-                    Atividades = new List<Atividade>
+                    Atividades = new List<CategoriaContabilAtividade>
                     {
-                        new Atividade
+                        new CategoriaContabilAtividade
                         {
                             Valor = "CA",
                             Nome = "Contratação de auditoria contábil e financeira para os projetos concluídos."
@@ -140,8 +140,43 @@ namespace PeD.Data.Builders
                     }
                 }
             };
+            var id = 1;
+            var ida = 1;
 
+            categorias.ForEach(c =>
+            {
+                c.Id = id++;
+                c.Atividades.ForEach(a =>
+                {
+                    a.Id = ida++;
+                    a.CategoriaContabilId = c.Id;
+                });
+            });
+            _categoriaContabils = categorias;
+            return categorias;
+        }
+
+        public static EntityTypeBuilder<CategoriaContabil> Config(this EntityTypeBuilder<CategoriaContabil> builder)
+        {
+            return builder.Seed();
+        }
+
+        public static EntityTypeBuilder<CategoriaContabil> Seed(this EntityTypeBuilder<CategoriaContabil> builder)
+        {
+            var categorias = GetCategorias().Select(c => new CategoriaContabil()
+            {
+                Id = c.Id,
+                Nome = c.Nome,
+                Valor = c.Valor
+            });
             builder.HasData(categorias);
+            return builder;
+        }
+
+        public static EntityTypeBuilder<CategoriaContabilAtividade> Seed(this EntityTypeBuilder<CategoriaContabilAtividade> builder)
+        {
+            var atividades = GetCategorias().SelectMany(c => c.Atividades);
+            builder.HasData(atividades);
             return builder;
         }
     }

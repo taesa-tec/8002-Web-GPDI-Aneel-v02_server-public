@@ -13,13 +13,13 @@ namespace PeD.Core.ApiModels
 
         public string NomeCompleto { get; set; }
         public string Cargo { get; set; }
-        public int? CatalogEmpresaId;
+        public int? EmpresaId;
         public string Empresa { get; set; }
         public string RazaoSocial { get; set; }
         public string FotoPerfil { get; set; }
         public string Role { get; set; }
         public List<string> Roles { get; set; }
-        public string CPF { get; set; }
+        public string Cpf { get; set; }
         public DateTime? UltimoLogin { get; set; }
         public DateTime DataCadastro { get; set; }
         public DateTime? DataAtualizacao { get; set; }

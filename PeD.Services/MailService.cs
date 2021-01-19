@@ -64,7 +64,7 @@ namespace PeD.Services
                 var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
                 var response = client.SendEmailAsync(msg);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

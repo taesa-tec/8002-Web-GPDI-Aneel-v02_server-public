@@ -7,6 +7,6 @@ namespace PeD.Core.Models.Catalogos
     {
         public string Nome { get; set; }
         public string Valor { get; set; }
-        public ICollection<Atividade> Atividades { get; set; }
+        public List<CategoriaContabilAtividade> Atividades { get; set; }
     }
 }

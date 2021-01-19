@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PeD.Core.Models;
@@ -13,7 +14,8 @@ namespace PeD.Data.Builders
 
         public static EntityTypeBuilder<Estado> Seed(this EntityTypeBuilder<Estado> builder)
         {
-            builder.HasData(
+            var estados = new List<Estado>()
+            {
                 new Estado {Nome = "ACRE", Valor = "AC"},
                 new Estado {Nome = "ALAGOAS", Valor = "AL"},
                 new Estado {Nome = "AMAPÁ", Valor = "AP"},
@@ -40,7 +42,11 @@ namespace PeD.Data.Builders
                 new Estado {Nome = "SANTA CATARINA", Valor = "SC"},
                 new Estado {Nome = "SÃO PAULO", Valor = "SP"},
                 new Estado {Nome = "SERGIPE", Valor = "SE"},
-                new Estado {Nome = "TOCANTINS", Valor = "TO"});
+                new Estado {Nome = "TOCANTINS", Valor = "TO"}
+            };
+            var id = 1;
+            estados.ForEach(e => e.Id = id++);
+            builder.HasData(estados);
             return builder;
         }
     }

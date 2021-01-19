@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PeD.Core.Models;
@@ -13,7 +14,9 @@ namespace PeD.Data.Builders
 
         public static EntityTypeBuilder<Pais> Seed(this EntityTypeBuilder<Pais> builder)
         {
-            builder.HasData(new Pais {Nome = "Açores"},
+            var paises = new List<Pais>()
+            {
+                new Pais {Nome = "Açores"},
                 new Pais {Nome = "Acrotiri e Deceleia"},
                 new Pais {Nome = "Afeganistão"},
                 new Pais {Nome = "África do Sul"},
@@ -271,7 +274,10 @@ namespace PeD.Data.Builders
                 new Pais {Nome = "Vietnã"},
                 new Pais {Nome = "Wallis e Futuna"},
                 new Pais {Nome = "Zâmbia"},
-                new Pais {Nome = "Zimbabué"});
+                new Pais {Nome = "Zimbabué"}
+            };
+            var id = 1;
+            paises.ForEach(p => p.Id = id++);
             return builder;
         }
     }

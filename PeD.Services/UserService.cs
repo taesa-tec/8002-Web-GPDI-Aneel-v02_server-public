@@ -41,7 +41,6 @@ namespace PeD.Services
             if (!String.IsNullOrWhiteSpace(userId))
             {
                 var user = _context.Users
-                    .Include("FotoPerfil")
                     .Where(p => p.Id == userId).Include("Empresa").FirstOrDefault();
                 if (user != null)
                 {
@@ -107,36 +106,33 @@ namespace PeD.Services
             var resultado = new Resultado();
             resultado.Acao = "Atualização de User";
 
-            ApplicationUser User = _context.Users
+            var user = _context.Users
                 .Where(u => u.Id == dadosUser.Id)
                 .FirstOrDefault();
 
-            if (User == null)
+            if (user == null)
             {
                 resultado.Inconsistencias.Add("User não encontrado");
             }
 
-            if (resultado.Inconsistencias.Count == 0 && User != null)
+            if (resultado.Inconsistencias.Count == 0 && user != null)
             {
-                var roles = _userManager.GetRolesAsync(User).Result.ToList();
-                roles.ForEach(r => _userManager.RemoveFromRoleAsync(User, r).Wait());
-                _userManager.AddToRoleAsync(User, dadosUser.Role).Wait();
+                var roles = _userManager.GetRolesAsync(user).Result.ToList();
+                roles.ForEach(r => _userManager.RemoveFromRoleAsync(user, r).Wait());
+                _userManager.AddToRoleAsync(user, dadosUser.Role).Wait();
 
-                User.Status = dadosUser.Status;
-                User.NomeCompleto = dadosUser.NomeCompleto == null ? User.NomeCompleto : dadosUser.NomeCompleto;
-                User.EmpresaId = dadosUser.EmpresaId == null
-                    ? User.EmpresaId
+                user.Status = dadosUser.Status;
+                user.NomeCompleto = dadosUser.NomeCompleto == null ? user.NomeCompleto : dadosUser.NomeCompleto;
+                user.EmpresaId = dadosUser.EmpresaId == null
+                    ? user.EmpresaId
                     : dadosUser.EmpresaId;
-                User.RazaoSocial = dadosUser.RazaoSocial == null ? User.RazaoSocial : dadosUser.RazaoSocial;
-                User.FotoPerfil = dadosUser.FotoPerfil == null || dadosUser.FotoPerfil.File.Length == 0
-                    ? User.FotoPerfil
-                    : dadosUser.FotoPerfil;
+                user.RazaoSocial = dadosUser.RazaoSocial == null ? user.RazaoSocial : dadosUser.RazaoSocial;
 
 
-                User.Role = dadosUser.Role == null ? User.Role : dadosUser.Role;
-                User.Cpf = dadosUser.Cpf == null ? User.Cpf : dadosUser.Cpf;
-                User.Cargo = dadosUser.Cargo == null ? User.Cargo : dadosUser.Cargo;
-                User.DataAtualizacao = DateTime.Now;
+                user.Role = dadosUser.Role == null ? user.Role : dadosUser.Role;
+                user.Cpf = dadosUser.Cpf == null ? user.Cpf : dadosUser.Cpf;
+                user.Cargo = dadosUser.Cargo == null ? user.Cargo : dadosUser.Cargo;
+                user.DataAtualizacao = DateTime.Now;
                 _context.SaveChanges();
             }
 

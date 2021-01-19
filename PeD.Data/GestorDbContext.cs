@@ -31,7 +31,7 @@ namespace PeD.Data
         // Projeto Gestão
 
         public DbSet<CategoriaContabil> CategoriasContabeis { get; set; }
-        public DbSet<Atividade> Atividades { get; set; }
+        public DbSet<CategoriaContabilAtividade> CategoriaContabilAtividades { get; set; }
 
         /* Demandas */
 
@@ -81,16 +81,15 @@ namespace PeD.Data
             builder.Entity<Pais>().Config();
             builder.Entity<Empresa>().Config();
             builder.Entity<CategoriaContabil>().Config();
+            builder.Entity<CategoriaContabilAtividade>().Seed();
             builder.Entity<FaseCadeiaProduto>().Config();
+            builder.Entity<FaseTipoDetalhado>().Seed();
             builder.Entity<Contrato>().ToTable("Contratos");
             builder.Entity<Clausula>().ToTable("Clausulas");
 
             #endregion
 
-            builder.Entity<Fornecedor>().ToTable("Empresas")
-                .HasQueryFilter(f => f.Categoria == Empresa.CategoriaEmpresa.Fornecedor);
-
-
+            builder.Entity<Fornecedor>(); //.ToTable("Empresas");
             builder.Entity<Captacao>(eb =>
             {
                 eb.Property(c => c.CreatedAt).HasDefaultValueSql("getdate()");

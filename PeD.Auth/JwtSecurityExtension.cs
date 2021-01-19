@@ -46,8 +46,8 @@ namespace PeD.Auth
                     .RequireAuthenticatedUser().Build());
 
 
-                auth.AddPolicy("Admin", policy => { policy.RequireClaim(ClaimTypes.Role, Roles.AdminGestor); });
-                auth.AddPolicy("Ped", policy => { policy.RequireClaim(ClaimTypes.Role, Roles.UserGestor); });
+                auth.AddPolicy("Admin", policy => { policy.RequireClaim(ClaimTypes.Role, Roles.Administrador); });
+                auth.AddPolicy("Ped", policy => { policy.RequireClaim(ClaimTypes.Role, Roles.User); });
                 auth.AddPolicy("Suprimento", policy => { policy.RequireClaim(ClaimTypes.Role, Roles.Suprimento); });
                 auth.AddPolicy("Fornecedor", policy => { policy.RequireClaim(ClaimTypes.Role, Roles.Fornecedor); });
             });

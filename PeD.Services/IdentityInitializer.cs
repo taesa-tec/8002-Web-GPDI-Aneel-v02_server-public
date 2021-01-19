@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -9,9 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PeD.Core.Models;
-using PeD.Core.Models.Catalogos;
 using PeD.Data;
-using CategoriaContabil = PeD.Core.Models.Catalogos.CategoriaContabil;
 
 namespace PeD.Services
 {
@@ -53,7 +50,6 @@ namespace PeD.Services
             {
                 CreateRoles().Wait();
                 CreateAdminUser();
-                CreateCatalog();
             }
             else
             {
@@ -83,7 +79,7 @@ namespace PeD.Services
         protected void CreateAdminUser()
         {
             // Verifica se já termos um administrador cadastrado
-            if (_context.Users.Any(User => User.Role == Roles.AdminGestor))
+            if (_context.Users.Any(User => User.Role == Roles.Administrador))
                 return;
 
             var adminSection = Configuration.GetSection("AdminUser");
@@ -98,14 +94,11 @@ namespace PeD.Services
                         Email = adminEmail,
                         EmailConfirmed = true,
                         Status = true,
-                        Role = "Admin-PeD"
-                    }, adminPass, Roles.AdminGestor);
+                        Role = Roles.Administrador,
+                        EmpresaId = 1,
+                        DataCadastro = DateTime.Now
+                    }, adminPass, Roles.Administrador);
             }
-        }
-
-        protected void CreateCatalog()
-        {
-            
         }
     }
 }

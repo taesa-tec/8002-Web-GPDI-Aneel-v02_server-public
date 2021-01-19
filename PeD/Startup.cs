@@ -13,9 +13,12 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using AutoMapper;
+using DocumentFormat.OpenXml.Vml;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -33,6 +36,7 @@ using TaesaCore.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 using CaptacaoService = PeD.Services.Captacoes.CaptacaoService;
+using Path = System.IO.Path;
 
 
 namespace PeD
@@ -128,8 +132,9 @@ namespace PeD
             #region Serviços
 
             services.AddScoped<SendGridService>();
+            services.AddScoped<ArquivoService>();
             services.AddScoped<MailService>();
-            services.AddScoped<Services.UserService>();
+            services.AddScoped<UserService>();
             services.AddScoped<DemandaService>();
             services.AddScoped<DemandaLogService>();
             services.AddScoped<SistemaService>();
@@ -189,7 +194,6 @@ namespace PeD
             {
                 if (!string.IsNullOrWhiteSpace(spaPath) || Directory.Exists(spaPath))
                 {
-                    Console.WriteLine(spaPath);
                     opt.RootPath = spaPath;
                 }
                 else
@@ -203,6 +207,17 @@ namespace PeD
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var storagePath = Configuration.GetValue<string>("StoragePath");
+            if (!string.IsNullOrWhiteSpace(storagePath) && Directory.Exists(storagePath))
+            {
+                Console.WriteLine(storagePath);
+                app.UseStaticFiles(new StaticFileOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(Path.Combine(storagePath, "avatar")),
+                    RequestPath = "/Avatar"
+                });
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -273,7 +288,10 @@ namespace PeD
                 // endpoints.MapControllerRoute("Areas", "api/{controller=Home}/{action=Index}/{id?}");
             });
             // app.UseHttpsRedirection();
+
+
             app.UseSpaStaticFiles();
+
             app.UseSpa(spa => { });
         }
     }

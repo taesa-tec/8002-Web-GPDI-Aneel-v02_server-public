@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PeD.Core.Models.Catalogos;
@@ -14,7 +15,7 @@ namespace PeD.Data.Builders
 
         public static EntityTypeBuilder<Tema> Seed(this EntityTypeBuilder<Tema> builder)
         {
-            var temas = new List<Tema>
+            var _temas = new List<Tema>
             {
                 new Tema
                 {
@@ -430,12 +431,20 @@ namespace PeD.Data.Builders
                 }
             };
 
-            var id = 0;
-            temas.ForEach(tema =>
+            var id = 1;
+            var temas = new List<Tema>();
+            _temas.ForEach(tema =>
             {
-                tema.Id = ++id;
-                tema.SubTemas.ForEach(sub => sub.ParentId = tema.Id);
+                tema.Id = id++;
+                temas.Add(tema);
+                tema.SubTemas.ForEach(sub =>
+                {
+                    sub.ParentId = tema.Id;
+                    sub.Id = id++;
+                    temas.Add(sub);
+                });
             });
+            temas.ForEach(t => t.SubTemas = new List<Tema>());
             builder.HasData(temas);
             return builder;
         }

@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using TaesaCore.Models;
 
 namespace PeD.Core.Models
 {
@@ -17,13 +18,12 @@ namespace PeD.Core.Models
         public DateTime CreatedAt { get; set; }
     }
 
-    public class FileUpload : IFileUpload
+    public class FileUpload : BaseEntity, IFileUpload
     {
         public FileUpload()
         {
         }
 
-        public int Id { get; set; }
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
 

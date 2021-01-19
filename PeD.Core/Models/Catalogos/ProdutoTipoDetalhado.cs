@@ -1,16 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using PeD.Core.Attributes;
+using TaesaCore.Models;
 
 namespace PeD.Core.Models.Catalogos
 {
-    public class CatalogProdutoTipoDetalhado {
-        [Key]
-        public int Id { get; set; }
-        public int CatalogProdutoFaseCadeiaId { get; set; }
-        [Logger]
+    public class FaseTipoDetalhado : BaseEntity
+    {
+        public int FaseCadeiaProdutoId { get; set; }
         public string Nome { get; set; }
-        [Logger]
         public string Valor { get; set; }
-
     }
 }

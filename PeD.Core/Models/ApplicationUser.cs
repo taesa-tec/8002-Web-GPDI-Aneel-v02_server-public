@@ -17,19 +17,12 @@ namespace PeD.Core.Models
         public int? EmpresaId;
         [ForeignKey("EmpresaId")] public Empresa Empresa { get; set; }
         public string RazaoSocial { get; set; }
-        public FotoPerfil FotoPerfil { get; set; }
+        public string FotoPerfil { get; set; }
         public string Role { get; set; }
         [NotMapped] public List<string> Roles { get; set; }
         public string Cpf { get; set; }
         public DateTime? UltimoLogin { get; set; }
         public DateTime DataCadastro { get; set; }
         public DateTime? DataAtualizacao { get; set; }
-    }
-
-    public class FotoPerfil
-    {
-        [Key] public int Id { get; set; }
-        public string UserId { get; set; }
-        public byte[] File { get; set; }
     }
 }

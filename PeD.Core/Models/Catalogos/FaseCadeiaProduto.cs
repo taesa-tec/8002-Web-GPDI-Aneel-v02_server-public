@@ -7,6 +7,6 @@ namespace PeD.Core.Models.Catalogos
     {
         public string Nome { get; set; }
         public string Valor { get; set; }
-        public List<CatalogProdutoTipoDetalhado> TiposDetalhados { get; set; }
+        public List<FaseTipoDetalhado> TiposDetalhados { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PeD.Core.Models;
@@ -13,7 +14,9 @@ namespace PeD.Data.Builders
 
         public static EntityTypeBuilder<Empresa> Seed(this EntityTypeBuilder<Empresa> builder)
         {
-            builder.HasData(
+            //builder.HasData(
+            var empresas = new List<Empresa>
+            {
                 new Empresa
                 {
                     Nome = "TAESA",
@@ -139,7 +142,16 @@ namespace PeD.Data.Builders
                     Nome = "ERB 1",
                     Valor = "00000",
                     Cnpj = "28.052.123/0001-95"
-                });
+                }
+            };
+            var id = 1;
+            empresas.ForEach(e =>
+            {
+                e.Id = id++;
+                e.Ativo = true;
+                e.Categoria = Empresa.CategoriaEmpresa.Taesa;
+            });
+            builder.HasData(empresas);
             return builder;
         }
     }

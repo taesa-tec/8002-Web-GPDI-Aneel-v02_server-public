@@ -14,10 +14,10 @@ namespace PeD.Data.Builders
         public static EntityTypeBuilder<Segmento> Seed(this EntityTypeBuilder<Segmento> builder)
         {
             builder.HasData(
-                new Segmento {Nome = "Geração", Valor = "G"},
-                new Segmento {Nome = "Transmissão", Valor = "T"},
-                new Segmento {Nome = "Distribuição", Valor = "D"},
-                new Segmento {Nome = "Comercialização", Valor = "C"});
+                new Segmento {Id = 1, Nome = "Geração", Valor = "G"},
+                new Segmento {Id = 2, Nome = "Transmissão", Valor = "T"},
+                new Segmento {Id = 3, Nome = "Distribuição", Valor = "D"},
+                new Segmento {Id = 4, Nome = "Comercialização", Valor = "C"});
             return builder;
         }
     }
