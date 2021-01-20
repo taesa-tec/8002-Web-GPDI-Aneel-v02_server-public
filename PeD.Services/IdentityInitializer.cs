@@ -32,8 +32,8 @@ namespace PeD.Services
             _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             _mailService = scope.ServiceProvider.GetRequiredService<MailService>();
-            _userService = new UserService(_context, _userManager, _roleManager, _mailService,
-                scope.ServiceProvider.GetService<AccessManager>());
+            _userService = new UserService(_context, _userManager, scope.ServiceProvider.GetService<AccessManager>(),
+                Configuration);
             this.Configuration = Configuration;
             this.logger = logger;
         }

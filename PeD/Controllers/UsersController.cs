@@ -31,33 +31,6 @@ namespace PeD.Controllers
             this.mapper = mapper;
         }
 
-        [AllowAnonymous]
-        [HttpGet("routes")]
-        public IActionResult GetRoutes([FromServices] IActionDescriptorCollectionProvider _provider)
-        {
-            var routes = _provider.ActionDescriptors.Items.Select(x => new
-            {
-                Action = x.RouteValues["Action"],
-                Controller = x.RouteValues["Controller"],
-                Name = x.AttributeRouteInfo.Name,
-                Template = x.AttributeRouteInfo.Template
-            }).OrderBy(i => i.Template).ToList();
-            return Ok(routes);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("fixusers")]
-        public ActionResult FixRoles([FromServices] UserManager<ApplicationUser> userManager)
-        {
-            var users = _service.ListarTodos().ToList();
-            users.Where(u => !string.IsNullOrWhiteSpace(u.Role)).ToList().ForEach(user =>
-            {
-                userManager.AddToRoleAsync(user, user.Role).Wait();
-            });
-
-            return Ok();
-        }
-
         [HttpGet]
         public IEnumerable<ApplicationUserDto> Get()
         {
@@ -69,35 +42,15 @@ namespace PeD.Controllers
         public ActionResult<ApplicationUserDto> Get(string id, [FromServices] UserManager<ApplicationUser> userManager)
         {
             var User = _service.Obter(id);
-            User.Roles = userManager.GetRolesAsync(User).Result.ToList();
 
             if (User != null)
             {
+                User.Roles = userManager.GetRolesAsync(User).Result.ToList();
                 return mapper.Map<ApplicationUserDto>(User);
             }
-            else
-                return NotFound();
-        }
 
-        // [AllowAnonymous]
-        // [HttpGet("{id}/avatar")]
-        // [ResponseCache(Duration = 60)]
-        // public FileResult Download(string id)
-        // {
-        //     byte[] image;
-        //     var user = _service.Obter(id);
-        //
-        //     if (user == null || user.FotoPerfil == null || user.FotoPerfil.File.Length < 1)
-        //     {
-        //         image = System.IO.File.ReadAllBytes("wwwroot/Assets/default_avatar.jpg");
-        //     }
-        //     else
-        //     {
-        //         image = user.FotoPerfil.File;
-        //     }
-        //
-        //     return File(image, System.Net.Mime.MediaTypeNames.Image.Jpeg);
-        // }
+            return NotFound();
+        }
 
         [HttpPost]
         public ActionResult<Resultado> Post([FromBody] ApplicationUser User)
@@ -107,38 +60,12 @@ namespace PeD.Controllers
             return Forbid();
         }
 
-        [HttpPost("Avatar")]
+        [HttpPost("{userId}/Avatar")]
         [RequestSizeLimit(5242880)] // 5MB
-        public async Task<IActionResult> UploadAvatar(IFormFile file, [FromServices] IConfiguration configuration)
+        public async Task<IActionResult> UploadAvatar(IFormFile file, [FromRoute] string userId,
+            [FromServices] IConfiguration configuration)
         {
-            var filename = this.UserId() + ".jpg";
-            var storagePath = configuration.GetValue<string>("StoragePath");
-            filename = Path.Combine(storagePath, "avatar", filename);
-
-            if (System.IO.File.Exists(filename))
-            {
-                System.IO.File.Move(filename, filename + ".old");
-            }
-
-            try
-            {
-                using (var stream = System.IO.File.Create(filename))
-                {
-                    await file.CopyToAsync(stream);
-                    stream.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                if (System.IO.File.Exists(filename + ".old"))
-                {
-                    System.IO.File.Move(filename + ".old", filename);
-                }
-
-                return BadRequest();
-            }
-
+            await _service.UpdateAvatar(userId, file);
             return Ok();
         }
 
@@ -150,22 +77,6 @@ namespace PeD.Controllers
             return Forbid();
         }
 
-        [HttpGet("me")]
-        public ActionResult<ApplicationUserDto> GetMe()
-        {
-            return mapper.Map<ApplicationUserDto>(_service.Obter(this.userId()));
-        }
-
-        [HttpPut("me")]
-        public ActionResult<Resultado> EditMe([FromBody] ApplicationUser _user)
-        {
-            var me = _service.Obter(this.UserId());
-            _user.Id = me.Id;
-            _user.Email = me.Email;
-            _user.Role = me.Role;
-            _user.Status = me.Status;
-            return _service.Atualizar(_user);
-        }
 
         [HttpDelete("{id}")]
         public ActionResult<Resultado> Delete(string id)

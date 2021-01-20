@@ -22,5 +22,12 @@ namespace PeD.Controllers.Sistema
         {
             return sistemaService.GetEquipePedUsers();
         }
+
+        [HttpPut]
+        public ActionResult SetEquipePeD(EquipePeD equipePeD)
+        {
+            sistemaService.SetEquipePeD(equipePeD);
+            return Ok();
+        }
     }
 }

@@ -3,7 +3,6 @@ using AutoMapper;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.ApiModels.FornecedoresDtos;
 using PeD.Core.Models.Captacoes;
-using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
 
 namespace PeD.Mapping

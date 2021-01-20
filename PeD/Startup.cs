@@ -210,7 +210,11 @@ namespace PeD
             var storagePath = Configuration.GetValue<string>("StoragePath");
             if (!string.IsNullOrWhiteSpace(storagePath) && Directory.Exists(storagePath))
             {
-                Console.WriteLine(storagePath);
+                if (!Directory.Exists(Path.Combine(storagePath, "avatar")))
+                {
+                    Directory.CreateDirectory(Path.Combine(storagePath, "avatar"));
+                }
+
                 app.UseStaticFiles(new StaticFileOptions()
                 {
                     FileProvider = new PhysicalFileProvider(Path.Combine(storagePath, "avatar")),

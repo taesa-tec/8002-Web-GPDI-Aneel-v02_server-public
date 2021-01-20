@@ -10,8 +10,6 @@ namespace PeD.Core.Equipe
         public string Gerente { get; set; }
         public string Coordenador { get; set; }
 
-        public List<string> Outros { get; set; }
-        public EquipePeD() { }
 
         public List<string> CargosChavesIds
         {
@@ -20,15 +18,5 @@ namespace PeD.Core.Equipe
                 return new List<string>() { Diretor, Gerente, Coordenador };
             }
         }
-
-        public List<string> Ids
-        {
-            get
-            {
-                return CargosChavesIds.Concat(Outros).ToList();
-            }
-        }
-
-
     }
 }

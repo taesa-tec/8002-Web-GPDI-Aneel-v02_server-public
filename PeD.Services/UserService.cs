@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PeD.Core.ApiModels;
 using PeD.Core.Models;
 using PeD.Core.Models.Catalogos;
@@ -16,22 +19,19 @@ namespace PeD.Services
     public class UserService
     {
         private GestorDbContext _context;
-        private MailService _mailService;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private AccessManager accessManager;
+        private IConfiguration Configuration;
 
         public UserService(
             GestorDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            MailService mailService, AccessManager accessManager)
+            AccessManager accessManager, IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
-            _roleManager = roleManager;
-            _mailService = mailService;
             this.accessManager = accessManager;
+            Configuration = configuration;
         }
 
         protected List<string> GetRoles(ApplicationUser user) => _userManager.GetRolesAsync(user).Result.ToList();
@@ -77,7 +77,8 @@ namespace PeD.Services
 
             if (resultado.Sucesso)
             {
-                string Password = DateTime.Now.ToString().ToMD5() + $"@M{DateTime.Now.Minute}";
+                string Password = DateTime.Now.ToString().ToMD5() + $"@Mi{DateTime.Now.Minute}";
+                dadosUser.Id = Guid.NewGuid().ToString();
                 dadosUser.EmailConfirmed = true;
                 dadosUser.DataCadastro = DateTime.Now;
                 resultado = CreateUser(dadosUser, Password, dadosUser.Role);
@@ -123,8 +124,8 @@ namespace PeD.Services
 
                 user.Status = dadosUser.Status;
                 user.NomeCompleto = dadosUser.NomeCompleto == null ? user.NomeCompleto : dadosUser.NomeCompleto;
-                user.EmpresaId = dadosUser.EmpresaId == null
-                    ? user.EmpresaId
+                user.EmpresaId = dadosUser.EmpresaId == 0
+                    ? null
                     : dadosUser.EmpresaId;
                 user.RazaoSocial = dadosUser.RazaoSocial == null ? user.RazaoSocial : dadosUser.RazaoSocial;
 
@@ -275,6 +276,46 @@ namespace PeD.Services
         {
             user.Status = true;
             await _userManager.UpdateAsync(user);
+        }
+
+        public async Task UpdateAvatar(string id, IFormFile file)
+        {
+            var filename = id + ".jpg";
+            var storagePath = Configuration.GetValue<string>("StoragePath");
+            var fullname = Path.Combine(storagePath, "avatar", filename);
+
+            if (File.Exists(fullname))
+            {
+                File.Move(fullname, fullname + ".old");
+            }
+
+            try
+            {
+                using (var stream = File.Create(fullname))
+                {
+                    await file.CopyToAsync(stream);
+                    stream.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                if (File.Exists(fullname + ".old"))
+                {
+                    File.Move(fullname + ".old", fullname);
+                }
+            }
+            finally
+            {
+                if (File.Exists(fullname + ".old"))
+                {
+                    File.Delete(fullname + ".old");
+                }
+            }
+
+            var user = Obter(id);
+            user.FotoPerfil = $"/avatar/{filename}";
+            Atualizar(user);
         }
     }
 }

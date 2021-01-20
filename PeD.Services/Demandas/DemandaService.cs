@@ -114,7 +114,7 @@ namespace PeD.Services.Demandas
         {
             if (DemandaExist(id))
             {
-                if (sistemaService.GetEquipePeD().Ids.Contains(userId))
+                if (sistemaService.GetEquipePeD().CargosChavesIds.Contains(userId))
                     return true;
                 var demanda = _context.Demandas.Find(id);
                 return (demanda.CriadorId == userId || demanda.SuperiorDiretoId == userId ||
