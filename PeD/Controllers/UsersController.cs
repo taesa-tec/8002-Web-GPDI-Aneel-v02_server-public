@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using PeD.Core.ApiModels;
 using PeD.Core.Extensions;
 using PeD.Core.Models;
+using PeD.Core.Requests.Users;
 using PeD.Services;
 
 namespace PeD.Controllers
@@ -53,10 +54,10 @@ namespace PeD.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Resultado> Post([FromBody] ApplicationUser User)
+        public ActionResult<Resultado> Post([FromBody] NewUserRequest user)
         {
             if (this.isAdmin())
-                return _service.Incluir(User);
+                return _service.Incluir(mapper.Map<ApplicationUser>(user));
             return Forbid();
         }
 

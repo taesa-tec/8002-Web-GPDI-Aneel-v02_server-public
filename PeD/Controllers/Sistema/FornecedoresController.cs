@@ -99,7 +99,11 @@ namespace PeD.Controllers.Sistema
         protected async Task DesativarFonecedor(Core.Models.Fornecedores.Fornecedor fornecedor)
         {
             fornecedor.Ativo = false;
-            await _userService.Desativar(fornecedor.ResponsavelId);
+            if (fornecedor.ResponsavelId != null)
+            {
+                await _userService.Desativar(fornecedor.ResponsavelId);
+            }
+
             Service.Put(fornecedor);
         }
 

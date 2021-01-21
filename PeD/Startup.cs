@@ -78,7 +78,11 @@ namespace PeD
 
             services.AddCors();
             services.AddMvc()
-                .AddFluentValidation(fv => { fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup)); });
+                .AddFluentValidation(fv =>
+                {
+                    fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup));
+                    fv.RegisterValidatorsFromAssemblyContaining(typeof(ApplicationUser));
+                });
 
             #region Swagger
 
