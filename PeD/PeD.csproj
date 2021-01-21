@@ -55,7 +55,6 @@
         <ProjectReference Include="..\PeD.Core\PeD.Core.csproj" />
         <ProjectReference Include="..\PeD.Data\PeD.Data.csproj" />
         <ProjectReference Include="..\PeD.Fornecedor\PeD.Fornecedor.csproj" />
-        <ProjectReference Include="..\PeD.Services\PeD.Services.csproj" />
     </ItemGroup>
 
     <ItemGroup>

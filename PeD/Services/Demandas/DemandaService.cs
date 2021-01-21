@@ -130,12 +130,12 @@ namespace PeD.Services.Demandas
 
         protected IQueryable<Demanda> QueryDemandas(string userId = null)
         {
-            var CargosChavesIds = sistemaService.GetEquipePeD().CargosChavesIds;
+            var cargosChavesIds = sistemaService.GetEquipePeD().CargosChavesIds;
             return _context.Demandas
                 .Include("Criador")
                 .Include("SuperiorDireto")
                 .Include("Revisor")
-                .ByUser(CargosChavesIds.Contains(userId) ? null : userId);
+                .ByUser(cargosChavesIds.Contains(userId) ? null : userId);
         }
 
         public List<Demanda> GetByEtapa(DemandaEtapa demandaEtapa, string userId = null)
@@ -220,7 +220,13 @@ namespace PeD.Services.Demandas
             var user = _context.Users.Find(userId);
             demanda.IrParaEtapa(demandaEtapa);
             _context.SaveChanges();
-            NotificarResponsavel(demanda, userId);
+            try
+            {
+                NotificarResponsavel(demanda, userId);
+            }
+            catch (Exception)
+            {
+            }
 
             if (demanda.EtapaAtual < DemandaEtapa.Captacao && demanda.Status == DemandaStatus.EmElaboracao)
             {
