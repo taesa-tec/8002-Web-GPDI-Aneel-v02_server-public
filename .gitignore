@@ -1,7 +1,7 @@
 /.project
 /.idea
 
-PeD/wwwroot/Uploads
+PeD/wwwroot/uploads
 *.swp
 *.*~
 project.lock.json

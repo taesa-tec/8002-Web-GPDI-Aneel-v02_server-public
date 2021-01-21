@@ -59,7 +59,7 @@ namespace PeD.Controllers.Sistema
                     Role = Roles.Fornecedor,
                     RazaoSocial = fornecedor.Nome,
                     Status = true,
-                    EmpresaId = 0
+                    EmpresaId = fornecedor.Id == 0 ? (int?) null : fornecedor.Id
                 };
 
                 var md5Hash = MD5.Create();
@@ -130,12 +130,13 @@ namespace PeD.Controllers.Sistema
             {
                 Ativo = true,
                 Nome = model.Nome,
-                Cnpj = model.Cnpj
+                Cnpj = model.Cnpj,
+                Categoria = Empresa.CategoriaEmpresa.Fornecedor,
             };
 
-
-            UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
             Service.Post(fornecedor);
+            UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
+            Service.Put(fornecedor);
 
             return Ok(fornecedor);
         }
