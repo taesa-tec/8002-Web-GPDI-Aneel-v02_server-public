@@ -56,7 +56,7 @@ namespace PeD.Controllers
         [HttpPost]
         public ActionResult<Resultado> Post([FromBody] NewUserRequest user)
         {
-            if (this.isAdmin())
+            if (this.IsAdmin())
                 return _service.Incluir(mapper.Map<ApplicationUser>(user));
             return Forbid();
         }
@@ -73,7 +73,7 @@ namespace PeD.Controllers
         [HttpPut]
         public ActionResult<Resultado> Edit([FromBody] ApplicationUser User)
         {
-            if (this.isAdmin())
+            if (this.IsAdmin())
                 return _service.Atualizar(User);
             return Forbid();
         }
@@ -82,7 +82,7 @@ namespace PeD.Controllers
         [HttpDelete("{id}")]
         public ActionResult<Resultado> Delete(string id)
         {
-            if (this.isAdmin())
+            if (this.IsAdmin())
                 return _service.Excluir(id);
             return Forbid();
         }

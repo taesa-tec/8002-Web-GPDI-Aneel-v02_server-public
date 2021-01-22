@@ -1,7 +1,7 @@
 using PeD.Core.Models.Demandas;
 using PeD.Core.Models.Demandas.Forms;
 
-namespace PeD.Core.Views.Pdf
+namespace PeD.Views.Pdf
 {
     public class DemandaFormView
     {

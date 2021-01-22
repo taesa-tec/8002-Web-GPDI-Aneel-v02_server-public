@@ -41,9 +41,9 @@ namespace PeD.Controllers.Captacoes
         {
             var captacoes = Service.Filter(q =>
                 q.Include(c => c.UsuarioSuprimento)
-                    .Where(c => (c.Status != Captacao.CaptacaoStatus.Elaboracao ||
+                    .Where(c => (c.Status == Captacao.CaptacaoStatus.Elaboracao ||
                                  c.Status == Captacao.CaptacaoStatus.Fornecedor) &&
-                                c.UsuarioSuprimentoId == this.userId()));
+                                c.UsuarioSuprimentoId == this.UserId()));
             return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
         }
 
@@ -54,9 +54,9 @@ namespace PeD.Controllers.Captacoes
                 .Include(c => c.Arquivos)
                 .Include(c => c.FornecedoresSugeridos)
                 .ThenInclude(fs => fs.Fornecedor)
-                .Where(c => (c.Status != Captacao.CaptacaoStatus.Elaboracao ||
+                .Where(c => (c.Status == Captacao.CaptacaoStatus.Elaboracao ||
                              c.Status == Captacao.CaptacaoStatus.Fornecedor) &&
-                            c.UsuarioSuprimentoId == this.userId() &&
+                            c.UsuarioSuprimentoId == this.UserId() &&
                             c.Id == id
                 )).FirstOrDefault();
             if (captacao == null)
@@ -78,11 +78,12 @@ namespace PeD.Controllers.Captacoes
             try
             {
                 await service.ConfigurarCaptacao(id, request.Termino, request.Consideracoes, request.Arquivos,
-                    request.Fornecedores, request.Fornecedores);
+                    request.Fornecedores, request.Contratos);
                 await service.EnviarParaFornecedores(id);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 return NotFound();
             }
 

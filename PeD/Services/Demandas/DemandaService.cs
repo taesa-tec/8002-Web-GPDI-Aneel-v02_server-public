@@ -12,15 +12,16 @@ using iText.Layout.Properties;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Demandas;
 using PeD.Core.Models.Demandas.Forms;
-using PeD.Core.Views.Pdf;
 using PeD.Data;
 using PeD.Services.Sistema;
+using PeD.Views.Pdf;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 
@@ -32,29 +33,29 @@ namespace PeD.Services.Demandas
 
         #region Statics
 
-        protected static readonly List<FieldList> Forms = new List<FieldList>()
+        protected static readonly List<FieldList> Forms = new List<FieldList>
         {
             new EspecificacaoTecnicaForm()
         };
 
         public static FieldList GetForm(string key)
         {
-            return DemandaService.Forms.FirstOrDefault(f => f.Key == key);
+            return Forms.FirstOrDefault(f => f.Key == key);
         }
 
         #endregion
 
         #region Props
 
-        SistemaService sistemaService;
         private IService<Captacao> _serviceCaptacao;
+        private IViewRenderService _viewRender;
+        private IWebHostEnvironment _hostingEnvironment;
+        protected Dictionary<DemandaEtapa, CanDemandaProgress> DemandaProgressCheck;
+        public readonly DemandaLogService LogService;
+        private IConfiguration Configuration;
+        SistemaService sistemaService;
         MailerService mailer;
         GestorDbContext _context;
-        IAuthorizationService authorization;
-        private IViewRenderService _viewRender;
-        public readonly DemandaLogService LogService;
-        protected Dictionary<DemandaEtapa, CanDemandaProgress> DemandaProgressCheck;
-        private IWebHostEnvironment _hostingEnvironment;
 
         #endregion
 
@@ -64,23 +65,24 @@ namespace PeD.Services.Demandas
             IRepository<Demanda> repository,
             GestorDbContext context,
             MailerService mailer,
-            IAuthorizationService authorization,
             DemandaLogService logService,
             IWebHostEnvironment hostingEnvironment,
-            SistemaService sistemaService, IViewRenderService viewRender, IService<Captacao> serviceCaptacao)
+            SistemaService sistemaService, IViewRenderService viewRender, IService<Captacao> serviceCaptacao,
+            IConfiguration configuration)
             : base(repository)
         {
-            this._context = context;
-            this.authorization = authorization;
-            this._hostingEnvironment = hostingEnvironment;
+            _context = context;
+
+            _hostingEnvironment = hostingEnvironment;
             this.sistemaService = sistemaService;
-            this._viewRender = viewRender;
+            _viewRender = viewRender;
             _serviceCaptacao = serviceCaptacao;
+            Configuration = configuration;
             this.mailer = mailer;
-            this.LogService = logService;
+            LogService = logService;
 
 
-            DemandaProgressCheck = new Dictionary<DemandaEtapa, CanDemandaProgress>()
+            DemandaProgressCheck = new Dictionary<DemandaEtapa, CanDemandaProgress>
             {
                 {DemandaEtapa.Elaboracao, ElaboracaoProgress},
                 {DemandaEtapa.PreAprovacao, PreAprovacaoProgress},
@@ -248,7 +250,7 @@ namespace PeD.Services.Demandas
 
             if (demanda != null)
             {
-                if (!String.IsNullOrWhiteSpace(revisorId) && _context.Users.Any(user => user.Id == revisorId))
+                if (!string.IsNullOrWhiteSpace(revisorId) && _context.Users.Any(user => user.Id == revisorId))
                 {
                     demanda.RevisorId = revisorId;
                 }
@@ -262,12 +264,12 @@ namespace PeD.Services.Demandas
                     if (demanda.Status == DemandaStatus.Aprovada)
                     {
                         LogService.Incluir(userId, demanda.Id, "Aprovação de demanda",
-                            String.Format("O usuário {0} aprovou a demanda", user.NomeCompleto));
+                            string.Format("O usuário {0} aprovou a demanda", user.NomeCompleto));
                     }
                     else
                     {
                         LogService.Incluir(userId, demanda.Id, "Avanço de Etapa",
-                            String.Format(" {0} alterou a etapa da demanda para \"{1}\"", user.NomeCompleto,
+                            string.Format(" {0} alterou a etapa da demanda para \"{1}\"", user.NomeCompleto,
                                 demanda.EtapaDesc));
                     }
                 }
@@ -278,7 +280,7 @@ namespace PeD.Services.Demandas
             }
             else
             {
-                throw new Exception();
+                throw new Exception("Demanda não encontrada");
             }
         }
 
@@ -318,9 +320,9 @@ namespace PeD.Services.Demandas
 
             var demanda = GetById(id);
 
-            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
+            if (demanda != null && DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
             {
-                if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
+                if (DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
                 {
                     demanda.ReprovarReiniciar();
                     _context.DemandaFormValues
@@ -349,9 +351,9 @@ namespace PeD.Services.Demandas
 
             var demanda = GetById(id);
 
-            if (demanda != null && this.DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
+            if (demanda != null && DemandaProgressCheck.ContainsKey(demanda.EtapaAtual))
             {
-                if (this.DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
+                if (DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
                 {
                     demanda.ReprovarPermanente();
                     _context.SaveChanges();
@@ -376,13 +378,11 @@ namespace PeD.Services.Demandas
                 demanda.Comentarios.Add(comentario);
                 _context.SaveChanges();
             }
-
-            return;
         }
 
         public void AddComentario(int id, string comentario, string userId)
         {
-            AddComentario(id, new DemandaComentario()
+            AddComentario(id, new DemandaComentario
             {
                 Content = comentario,
                 DemandaId = id,
@@ -396,7 +396,7 @@ namespace PeD.Services.Demandas
             var demanda = GetById(id);
             if (demanda != null && demanda.EtapaAtual != DemandaEtapa.Captacao)
             {
-                var captacao = new Captacao()
+                var captacao = _context.Set<Captacao>().FirstOrDefault(c => c.DemandaId == id) ?? new Captacao
                 {
                     DemandaId = id,
                     CriadorId = userId,
@@ -407,7 +407,10 @@ namespace PeD.Services.Demandas
                 demanda.Status = DemandaStatus.Concluido;
                 demanda.CaptacaoDate = DateTime.Now;
                 _context.SaveChanges();
-                _serviceCaptacao.Post(captacao);
+
+                if (captacao.Id == 0)
+                    _serviceCaptacao.Post(captacao);
+
                 var user = _context.Users.Find(userId);
 
 
@@ -502,7 +505,7 @@ namespace PeD.Services.Demandas
                 .Include("Files.File")
                 .Where(df => df.DemandaId == id)
                 .SelectMany(_dfv => _dfv.Files.Select(dff => dff.File))
-                .Distinct<DemandaFile>()
+                .Distinct()
                 .ToList();
         }
 
@@ -519,8 +522,9 @@ namespace PeD.Services.Demandas
                 .FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
             if (dfData != null)
             {
+                formanexos.ToList().ForEach(i => Console.WriteLine(i.Value<int>()));
                 dfData.SetValue(formdata);
-                dfData.Files = formanexos.ToList().Select(item => new DemandaFormFile()
+                dfData.Files = formanexos.ToList().Select(item => new DemandaFormFile
                 {
                     DemandaFormId = dfData.Id,
                     FileId = item.Value<int>()
@@ -535,7 +539,7 @@ namespace PeD.Services.Demandas
                 dfData.DemandaId = id;
                 dfData.FormKey = form;
                 dfData.SetValue(formdata);
-                dfData.Files = formanexos.ToList().Select(item => new DemandaFormFile()
+                dfData.Files = formanexos.ToList().Select(item => new DemandaFormFile
                 {
                     FileId = item.Value<int>()
                 }).ToList();
@@ -553,7 +557,8 @@ namespace PeD.Services.Demandas
             var demandaFormView = GetDemandaFormView(id, form);
             var versao = await SaveDemandaFormHistorico(demandaFormView);
             dfData.Html = versao.Content;
-            SaveDemandaFormPdf(id, form, versao.Content);
+
+            SaveDemandaFormPdf(id, form, versao.Content, dfData.Revisao.ToString());
         }
 
         public DemandaFormView GetDemandaFormView(int id, string form)
@@ -563,7 +568,7 @@ namespace PeD.Services.Demandas
             var renderDocument = RenderDocument(id, form);
             var formDemanda = _context.DemandaFormValues.FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
 
-            return new DemandaFormView()
+            return new DemandaFormView
             {
                 Demanda = demanda,
                 Form = mainForm,
@@ -591,9 +596,9 @@ namespace PeD.Services.Demandas
             return new FieldRendered("Error", "No data or Form found");
         }
 
-        public string SaveDemandaFormPdf(int id, string form, string html)
+        public string SaveDemandaFormPdf(int id, string form, string html, string revisao)
         {
-            var fullname = GetDemandaFormPdfFilename(id, form, true);
+            var fullname = GetDemandaFormPdfFilename(id, form, revisao, true);
             var stream = new FileStream(fullname, FileMode.Create);
             HtmlConverter.ConvertToPdf(html, stream);
             stream.Close();
@@ -605,7 +610,7 @@ namespace PeD.Services.Demandas
         public async Task<DemandaFormHistorico> SaveDemandaFormHistorico(DemandaFormView demandaFormView)
         {
             var html = await DemandaFormHtml(demandaFormView);
-            var historico = new DemandaFormHistorico()
+            var historico = new DemandaFormHistorico
             {
                 FormValuesId = demandaFormView.DemandaFormValues.Id,
                 Content = html,
@@ -619,18 +624,19 @@ namespace PeD.Services.Demandas
             return historico;
         }
 
-        public string GetDemandaFormPdfFilename(int id, string form, bool createDirectory = false)
+        public string GetDemandaFormPdfFilename(int id, string form, string revisao, bool createDirectory = false)
         {
-            var folderName = String.Format("uploads/demandas/{0}/{1}/", id, form);
-            var webRootPath = _hostingEnvironment.WebRootPath;
-            var newPath = Path.Combine(webRootPath, folderName);
-            var filename = String.Format("demanda-{0}-{1}.pdf", id, form);
-            if (createDirectory && !Directory.Exists(newPath))
+            var storagePath = Configuration.GetValue<string>("StoragePath");
+
+            var folderName = Path.Combine(storagePath, "demandas", id.ToString());
+
+            var filename = string.Format("{0}-{1}.pdf", form, revisao);
+            if (createDirectory && !Directory.Exists(folderName))
             {
-                Directory.CreateDirectory(newPath);
+                Directory.CreateDirectory(folderName);
             }
 
-            return Path.Combine(newPath, filename);
+            return Path.Combine(folderName, filename);
         }
 
         protected void UpdatePdf(string filename)

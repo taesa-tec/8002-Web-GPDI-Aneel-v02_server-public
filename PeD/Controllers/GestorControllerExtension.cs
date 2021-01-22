@@ -7,12 +7,12 @@ namespace PeD.Controllers
 {
     public static class GestorControllerExtension
     {
-        public static string userId(this ControllerBase controller)
+        public static string UserId(this ControllerBase controller)
         {
             return controller.User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
         }
 
-        public static bool isAdmin(this ControllerBase controller)
+        public static bool IsAdmin(this ControllerBase controller)
         {
             return controller.User.FindFirst(ClaimTypes.Role).Value == Roles.Administrador;
         }

@@ -46,11 +46,6 @@ namespace PeD.Services.Sistema
 
         public EquipePeD GetEquipePeD()
         {
-            if (SistemaService.EquipePeD != null)
-            {
-                return SistemaService.EquipePeD;
-            }
-
             var diretor = GetOption<string>("equipe-ped-diretor");
             var gerente = GetOption<string>("equipe-ped-gerente");
             var coordenador = GetOption<string>("equipe-ped-coordenador");

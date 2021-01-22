@@ -5,7 +5,6 @@ using TaesaCore.Models;
 
 namespace PeD.Core.Models.Demandas
 {
-
     public enum DemandaStatus
     {
         EmElaboracao,
@@ -14,8 +13,8 @@ namespace PeD.Core.Models.Demandas
         Aprovada,
         Concluido,
         Pendente
-
     }
+
     public enum DemandaEtapa
     {
         Elaboracao = 0,
@@ -31,16 +30,17 @@ namespace PeD.Core.Models.Demandas
     public class Demanda : BaseEntity
     {
         protected static Dictionary<DemandaEtapa, string> _etapaDesc = new Dictionary<DemandaEtapa, string>()
-                {
-                    {DemandaEtapa.Elaboracao, "Elaboração"},
-                    {DemandaEtapa.PreAprovacao, "Pre-Aprovação"},
-                    {DemandaEtapa.RevisorPendente, "Revisor Pendente"},
-                    {DemandaEtapa.AprovacaoRevisor, "Aprovação Revisor"},
-                    {DemandaEtapa.AprovacaoCoordenador, "Aprovação Coordenador"},
-                    {DemandaEtapa.AprovacaoGerente, "Aprovação Gerente"},
-                    {DemandaEtapa.AprovacaoDiretor, "Aprovação Diretor"},
-                    {DemandaEtapa.Captacao, "Enviado para captação"}
-                };
+        {
+            {DemandaEtapa.Elaboracao, "Elaboração"},
+            {DemandaEtapa.PreAprovacao, "Pre-Aprovação"},
+            {DemandaEtapa.RevisorPendente, "Revisor Pendente"},
+            {DemandaEtapa.AprovacaoRevisor, "Aprovação Revisor"},
+            {DemandaEtapa.AprovacaoCoordenador, "Aprovação Coordenador"},
+            {DemandaEtapa.AprovacaoGerente, "Aprovação Gerente"},
+            {DemandaEtapa.AprovacaoDiretor, "Aprovação Diretor"},
+            {DemandaEtapa.Captacao, "Enviado para captação"}
+        };
+
         public string Titulo { get; set; }
         public string CriadorId { get; set; }
         public ApplicationUser Criador { get; set; }
@@ -75,6 +75,7 @@ namespace PeD.Core.Models.Demandas
                 {
                     this.EtapaAtual++;
                 }
+
                 this.Status = DemandaStatus.EmElaboracao;
             }
             else
@@ -82,6 +83,7 @@ namespace PeD.Core.Models.Demandas
                 Status = DemandaStatus.Aprovada;
             }
         }
+
         public void EtapaAnterior()
         {
             if (this.EtapaAtual > DemandaEtapa.Elaboracao)
@@ -90,6 +92,7 @@ namespace PeD.Core.Models.Demandas
                 this.Status = DemandaStatus.EmElaboracao;
             }
         }
+
         public void IrParaEtapa(DemandaEtapa demandaEtapa)
         {
             if (demandaEtapa > EtapaAtual)
@@ -100,11 +103,13 @@ namespace PeD.Core.Models.Demandas
             if (EtapaAtual != demandaEtapa)
                 IrParaEtapa(demandaEtapa);
         }
+
         public void ReprovarReiniciar()
         {
             this.EtapaAtual = DemandaEtapa.Elaboracao;
             this.Status = DemandaStatus.Reprovada;
         }
+
         public void ReprovarPermanente()
         {
             this.Status = DemandaStatus.ReprovadaPermanente;
@@ -112,28 +117,17 @@ namespace PeD.Core.Models.Demandas
 
         public string EtapaStatusText
         {
-            get
-            {
-                return Enum.GetName(typeof(DemandaStatus), this.Status);
-            }
+            get { return Enum.GetName(typeof(DemandaStatus), this.Status); }
         }
+
         public string EtapaAtualText
         {
-            get
-            {
-                return Enum.GetName(typeof(DemandaEtapa), this.EtapaAtual);
-            }
+            get { return Enum.GetName(typeof(DemandaEtapa), this.EtapaAtual); }
         }
 
         public string EtapaDesc
         {
-            get
-            {
-                return Demanda._etapaDesc[EtapaAtual];
-            }
+            get { return Demanda._etapaDesc[EtapaAtual]; }
         }
-
     }
-
-
 }

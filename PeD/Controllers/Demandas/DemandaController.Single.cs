@@ -14,6 +14,8 @@ using HtmlAgilityPack;
 using PeD.Core.ApiModels;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models.Demandas;
+using PeD.Core.Requests.Demanda;
+using PeD.Data;
 using PeD.Services;
 using PeD.Services.Demandas;
 
@@ -26,7 +28,7 @@ namespace PeD.Controllers.Demandas
         [HttpPost("Criar")]
         public ActionResult<Demanda> CriarDemanda([FromBody] string titulo)
         {
-            return DemandaService.CriarDemanda(titulo, this.userId());
+            return DemandaService.CriarDemanda(titulo, this.UserId());
         }
 
         [HttpHead("{id:int}")]
@@ -34,10 +36,9 @@ namespace PeD.Controllers.Demandas
         {
             if (DemandaService.DemandaExist(id))
             {
-                if (DemandaService.UserCanAccess(id, this.userId()))
+                if (this.IsAdmin() || DemandaService.UserCanAccess(id, this.UserId()))
                     return Ok();
-                else
-                    return Forbid();
+                return Forbid();
             }
 
             return NotFound();
@@ -46,7 +47,7 @@ namespace PeD.Controllers.Demandas
         [HttpGet("{id:int}")]
         public ActionResult<Demanda> GetById(int id)
         {
-            if (DemandaService.UserCanAccess(id, this.userId()))
+            if (this.IsAdmin() || DemandaService.UserCanAccess(id, this.UserId()))
                 return DemandaService.GetById(id);
             return NotFound();
         }
@@ -54,7 +55,7 @@ namespace PeD.Controllers.Demandas
         [HttpPut("{id}/Captacao")]
         public ActionResult EnviarCaptacao(int id)
         {
-            DemandaService.EnviarCaptacao(id, this.userId());
+            DemandaService.EnviarCaptacao(id, this.UserId());
             return Ok();
         }
 
@@ -100,11 +101,11 @@ namespace PeD.Controllers.Demandas
                 return NotFound();
             }
 
-            if (sistemaService.GetEquipePeD().Coordenador == this.userId())
+            if (sistemaService.GetEquipePeD().Coordenador == this.UserId())
             {
                 try
                 {
-                    DemandaService.ProximaEtapa(id, this.userId(), revisorId);
+                    DemandaService.ProximaEtapa(id, this.UserId(), revisorId);
                 }
                 catch (DemandaException exception)
                 {
@@ -122,14 +123,13 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id}/ProximaEtapa")]
-        public ActionResult<Demanda> AlterarStatusDemanda(int id, [FromBody] JObject data)
+        public ActionResult<Demanda> AlterarStatusDemanda(int id, [FromBody] DemandaEtapaRequest request)
         {
-            var comentario = data.Value<string>("comentario");
-            DemandaService.ProximaEtapa(id, this.userId());
+            DemandaService.ProximaEtapa(id, this.UserId());
 
-            if (!String.IsNullOrWhiteSpace(comentario))
+            if (!string.IsNullOrWhiteSpace(request.Comentario))
             {
-                DemandaService.AddComentario(id, comentario, this.userId());
+                DemandaService.AddComentario(id, request.Comentario, this.UserId());
             }
 
             return GetById(id);
@@ -141,11 +141,11 @@ namespace PeD.Controllers.Demandas
             var etapa = (DemandaEtapa) data.Value<int>("status");
             if (etapa < DemandaEtapa.Captacao)
             {
-                DemandaService.SetEtapa(id, etapa, this.userId());
+                DemandaService.SetEtapa(id, etapa, this.UserId());
             }
             else
             {
-                DemandaService.EnviarCaptacao(id, this.userId());
+                DemandaService.EnviarCaptacao(id, this.UserId());
             }
 
 
@@ -165,8 +165,8 @@ namespace PeD.Controllers.Demandas
                 motivo = "Motivo não informado";
             }
 
-            DemandaService.ReprovarReiniciar(id, this.userId());
-            DemandaService.AddComentario(id, motivo, this.userId());
+            DemandaService.ReprovarReiniciar(id, this.UserId());
+            DemandaService.AddComentario(id, motivo, this.UserId());
 
 
             return GetById(id);
@@ -181,8 +181,8 @@ namespace PeD.Controllers.Demandas
             var motivo = data.Value<string>("motivo");
 
 
-            DemandaService.ReprovarPermanente(id, this.userId());
-            DemandaService.AddComentario(id, motivo, this.userId());
+            DemandaService.ReprovarPermanente(id, this.UserId());
+            DemandaService.AddComentario(id, motivo, this.UserId());
 
             return CreatedAtAction(nameof(GetById), new {id});
         }
@@ -224,35 +224,37 @@ namespace PeD.Controllers.Demandas
             {
                 DemandaService.SalvarDemandaFormData(id, form, data).Wait();
                 var formName = DemandaService.GetForm(form).Title;
-                DemandaService.LogService.Incluir(this.userId(), id,
+                DemandaService.LogService.Incluir(this.UserId(), id,
                     String.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");
                 return Ok();
             }
-            else
-            {
-                return NotFound();
-            }
+
+            return NotFound();
         }
 
         [HttpGet("{id:int}/Form/{form}/Pdf", Name = "DemandaPdf")]
-        public ActionResult<object> GetDemandaPdf(int id, string form)
+        public ActionResult<object> GetDemandaPdf(int id, string form, [FromServices] GestorDbContext context)
         {
-            var filename = DemandaService.GetDemandaFormPdfFilename(id, form);
-            if (System.IO.File.Exists(filename))
-            {
-                var name = String.Format("demanda-{0}-{1}.pdf", id, form);
-                var response = PhysicalFile(filename, "application/pdf", name);
-                if (Request.Query["dl"] == "1")
-                {
-                    response.FileDownloadName = name;
-                }
+            var info = context.Set<DemandaInfo>().FirstOrDefault(c => c.Id == id && c.Form == form);
 
-                return response;
-            }
-            else
+            if (info != null)
             {
-                return NotFound(filename);
+                var filename = DemandaService.GetDemandaFormPdfFilename(id, form, info.Revisao.ToString());
+
+                if (System.IO.File.Exists(filename))
+                {
+                    var name = String.Format("demanda-{0}-{1}.pdf", id, form);
+                    var response = PhysicalFile(filename, "application/pdf", name);
+                    if (Request.Query["dl"] == "1")
+                    {
+                        response.FileDownloadName = name;
+                    }
+
+                    return response;
+                }
             }
+
+            return NotFound();
         }
 
         [AllowAnonymous]
@@ -365,7 +367,7 @@ namespace PeD.Controllers.Demandas
         [HttpGet("{id:int}/Logs")]
         public ActionResult<List<DemandaLog>> GetDemandaLog(int id)
         {
-            if (DemandaService.UserCanAccess(id, this.userId()))
+            if (this.IsAdmin() || DemandaService.UserCanAccess(id, this.UserId()))
             {
                 return DemandaService.GetDemandaLogs(id);
             }

@@ -27,7 +27,7 @@ namespace PeD.Controllers
 
             return context
             .Files
-            .Where(file => file.UserId == this.userId())
+            .Where(file => file.UserId == this.UserId())
             .ToList();
         }
 
@@ -47,7 +47,7 @@ namespace PeD.Controllers
                 ContentType = file.ContentType,
                 Path = filename,
                 Size = file.Length,
-                UserId = this.userId(),
+                UserId = this.UserId(),
                 CreatedAt = DateTime.Now
             };
         }

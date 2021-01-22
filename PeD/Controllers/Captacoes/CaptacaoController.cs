@@ -49,7 +49,7 @@ namespace PeD.Controllers.Captacoes
             var captacoes = Service.Filter(q =>
                 q.Include(c => c.UsuarioSuprimento)
                     .Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao &&
-                                c.UsuarioSuprimentoId == this.userId()));
+                                c.UsuarioSuprimentoId == this.UserId()));
             return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
         }
 
@@ -196,7 +196,7 @@ namespace PeD.Controllers.Captacoes
                 .Include(c => c.FornecedoresSugeridos)
                 .ThenInclude(fs => fs.Fornecedor)
                 .Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao &&
-                            c.UsuarioSuprimentoId == this.userId() &&
+                            c.UsuarioSuprimentoId == this.UserId() &&
                             c.Id == id
                 )).FirstOrDefault();
             if (captacao == null)

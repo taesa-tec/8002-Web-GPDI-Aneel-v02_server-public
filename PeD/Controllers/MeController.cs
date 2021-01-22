@@ -27,13 +27,13 @@ namespace PeD.Controllers
         [HttpGet("")]
         public ActionResult<ApplicationUserDto> GetMe()
         {
-            return mapper.Map<ApplicationUserDto>(_service.Obter(this.userId()));
+            return mapper.Map<ApplicationUserDto>(_service.Obter(this.UserId()));
         }
 
         [HttpPut("")]
         public ActionResult<Resultado> EditMe([FromBody] ApplicationUser _user)
         {
-            var me = _service.Obter(this.UserId());
+            var me = _service.Obter(ControllerExtension.UserId(this));
             _user.Id = me.Id;
             _user.Email = me.Email;
             _user.Role = me.Role;
@@ -45,7 +45,7 @@ namespace PeD.Controllers
         [RequestSizeLimit(5242880)] // 5MB
         public async Task<IActionResult> UploadAvatar(IFormFile file)
         {
-            await _service.UpdateAvatar(this.UserId(), file);
+            await _service.UpdateAvatar(ControllerExtension.UserId(this), file);
             return Ok();
         }
     }

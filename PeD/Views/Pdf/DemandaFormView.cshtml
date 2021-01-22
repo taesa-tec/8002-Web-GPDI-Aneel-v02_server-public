@@ -1,4 +1,4 @@
-@model PeD.Core.Views.Pdf.DemandaFormView;
+@model PeD.Views.Pdf.DemandaFormView;
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -271,9 +271,7 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
         <div class="bPage">&nbsp;</div>
 
         <div class="content" id="main-content">
-            Partial1
             @Html.Partial("_FieldItem.cshtml", @Model.Rendered)
-            Partial2
         </div>
     </td>
 </tr>

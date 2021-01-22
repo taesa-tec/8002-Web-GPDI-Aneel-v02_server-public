@@ -98,7 +98,7 @@ namespace PeD.Controllers.Captacoes
                 ContentType = file.ContentType,
                 Path = filename,
                 Size = file.Length,
-                UserId = this.userId(),
+                UserId = this.UserId(),
                 CreatedAt = DateTime.Now
             };
         }
