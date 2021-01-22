@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using PeD.Core.Equipe;
+using Microsoft.AspNetCore.Identity;
+using PeD.Core;
 using PeD.Core.Models;
 using PeD.Data;
 
@@ -10,10 +11,12 @@ namespace PeD.Services.Sistema
     {
         protected static EquipePeD EquipePeD { get; set; }
         protected GestorDbContext context;
+        protected UserManager<ApplicationUser> _userManager;
 
-        public SistemaService(GestorDbContext context)
+        public SistemaService(GestorDbContext context, UserManager<ApplicationUser> userManager)
         {
             this.context = context;
+            _userManager = userManager;
         }
 
         public void SetOption(string name, object value)
@@ -48,15 +51,19 @@ namespace PeD.Services.Sistema
                 return SistemaService.EquipePeD;
             }
 
-            var EquipeOutros = GetOption<List<string>>("equipe-ped-outros");
-            var Equipe = new EquipePeD()
+            var diretor = GetOption<string>("equipe-ped-diretor");
+            var gerente = GetOption<string>("equipe-ped-gerente");
+            var coordenador = GetOption<string>("equipe-ped-coordenador");
+            var equipeOutros = _userManager.GetUsersInRoleAsync(Roles.User).Result.Select(u => u.Id).ToList();
+            var equipe = new EquipePeD()
             {
-                Diretor = GetOption<string>("equipe-ped-diretor"),
-                Gerente = GetOption<string>("equipe-ped-gerente"),
-                Coordenador = GetOption<string>("equipe-ped-coordenador"),
+                Diretor = diretor,
+                Gerente = gerente,
+                Coordenador = coordenador,
+                Outros = equipeOutros
             };
-            SistemaService.EquipePeD = Equipe;
-            return Equipe;
+            EquipePeD = equipe;
+            return EquipePeD;
         }
 
         public object GetEquipePedUsers()
@@ -67,6 +74,7 @@ namespace PeD.Services.Sistema
                 Diretor = context.Users.FirstOrDefault(u => u.Id == equipe.Diretor),
                 Gerente = context.Users.FirstOrDefault(u => u.Id == equipe.Gerente),
                 Coordenador = context.Users.FirstOrDefault(u => u.Id == equipe.Coordenador),
+                Outros = context.Users.Where(u => equipe.Outros.Contains(u.Id))
             };
         }
 

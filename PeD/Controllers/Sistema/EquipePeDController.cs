@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using PeD.Core.Equipe;
+using PeD.Core;
 using PeD.Services.Sistema;
 
 namespace PeD.Controllers.Sistema

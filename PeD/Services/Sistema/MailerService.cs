@@ -63,7 +63,13 @@ namespace PeD.Services.Sistema
 
         public Task<Response> SendMail(List<ApplicationUser> users, string subject, string content)
         {
-            var client = new SendGridClient(SendGrid.GetValue<string>("ApiKey"));
+            var apiKey = SendGrid.GetValue<string>("ApiKey");
+            if (apiKey == null)
+            {
+                return null;
+            }
+
+            var client = new SendGridClient(apiKey);
             var from = new EmailAddress("noreply@taesa.com.br", "Taesa");
             var tos = users.Select(user => new EmailAddress(user.Email, user.NomeCompleto)).ToList();
             var plainTextContent = "";

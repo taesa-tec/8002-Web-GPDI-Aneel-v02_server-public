@@ -713,26 +713,33 @@ namespace PeD.Services.Demandas
 
         public void NotificarResponsavel(Demanda demanda, string userId)
         {
-            switch (demanda.EtapaAtual)
+            try
             {
-                case DemandaEtapa.PreAprovacao:
-                    NotificarSuperior(demanda);
-                    break;
+                switch (demanda.EtapaAtual)
+                {
+                    case DemandaEtapa.PreAprovacao:
+                        NotificarSuperior(demanda);
+                        break;
 
-                case DemandaEtapa.RevisorPendente:
-                    NotificarRevisorPendente(demanda);
-                    break;
-                case DemandaEtapa.AprovacaoRevisor:
-                    NotificarRevisor(demanda);
-                    break;
-                case DemandaEtapa.AprovacaoCoordenador:
-                case DemandaEtapa.AprovacaoGerente:
-                    NotificarAprovador(demanda, userId);
-                    break;
-                case DemandaEtapa.AprovacaoDiretor:
-                    if (demanda.Status != DemandaStatus.Aprovada)
+                    case DemandaEtapa.RevisorPendente:
+                        NotificarRevisorPendente(demanda);
+                        break;
+                    case DemandaEtapa.AprovacaoRevisor:
+                        NotificarRevisor(demanda);
+                        break;
+                    case DemandaEtapa.AprovacaoCoordenador:
+                    case DemandaEtapa.AprovacaoGerente:
                         NotificarAprovador(demanda, userId);
-                    break;
+                        break;
+                    case DemandaEtapa.AprovacaoDiretor:
+                        if (demanda.Status != DemandaStatus.Aprovada)
+                            NotificarAprovador(demanda, userId);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
 
