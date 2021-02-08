@@ -235,7 +235,8 @@ namespace PeD.Controllers.Demandas
         [HttpGet("{id:int}/Form/{form}/Pdf", Name = "DemandaPdf")]
         public ActionResult<object> GetDemandaPdf(int id, string form, [FromServices] GestorDbContext context)
         {
-            var info = context.Set<DemandaInfo>().FirstOrDefault(c => c.Id == id && c.Form == form);
+            var info = context.Set<DemandaFormValues>()
+                .FirstOrDefault(values => values.DemandaId == id && values.FormKey == form);
 
             if (info != null)
             {
@@ -243,7 +244,7 @@ namespace PeD.Controllers.Demandas
 
                 if (System.IO.File.Exists(filename))
                 {
-                    var name = String.Format("demanda-{0}-{1}.pdf", id, form);
+                    var name = String.Format("demanda-{0}-{1}-rev-{2}.pdf", id, form, info.Revisao);
                     var response = PhysicalFile(filename, "application/pdf", name);
                     if (Request.Query["dl"] == "1")
                     {
@@ -252,9 +253,11 @@ namespace PeD.Controllers.Demandas
 
                     return response;
                 }
+
+                return NotFound();
             }
 
-            return NotFound();
+            return BadRequest();
         }
 
         [AllowAnonymous]

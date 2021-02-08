@@ -9,12 +9,12 @@ using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
 
-namespace PeD.Fornecedor.Controllers.Propostas
+namespace PeD.Controllers.Fornecedores.Propostas
 {
     [SwaggerTag("Proposta")]
     [ApiController]
     [Authorize("Bearer", Roles = Roles.Fornecedor)]
-    [Route("api/Fornecedor/Propostas/{propostaId:int}/[controller]")]
+    [Route("api/Fornecedor/Propostas/{captacaoId:int}/[controller]")]
     public class CoExecutoresController : ControllerCrudBase<CoExecutor, CoExecutorDto>
     {
         public CoExecutoresController(IService<CoExecutor> service, IMapper mapper) : base(service, mapper)
@@ -23,7 +23,7 @@ namespace PeD.Fornecedor.Controllers.Propostas
 
         public override ActionResult<List<CoExecutorDto>> Get()
         {
-            int propostaId = int.Parse(RouteData.Values["propostaId"].ToString() ?? string.Empty);
+            int captacaoId = int.Parse(RouteData.Values["captacaoId"].ToString() ?? string.Empty);
             //Service.Filter(query=>query.Where(c=>))
             return base.Get();
         }

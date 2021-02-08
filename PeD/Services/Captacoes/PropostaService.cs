@@ -6,7 +6,7 @@ using PeD.Core.Models.Propostas;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 
-namespace PeD.Fornecedor.Services
+namespace PeD.Services.Captacoes
 {
     public class PropostaService : BaseService<Proposta>
     {
@@ -27,6 +27,16 @@ namespace PeD.Fornecedor.Services
         }
 
 
+        public Proposta GetPropostaPorFornecedor(int captacaoId, int fornecedorId) =>
+            _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p =>
+                    p.Captacao)
+                .FirstOrDefault(cp => cp.CaptacaoId == captacaoId &&
+                                      cp.Fornecedor.Id == fornecedorId &&
+                                      cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                                      cp.Participacao != StatusParticipacao.Rejeitado);
+
         public IEnumerable<Proposta> GetPropostasPorResponsavel(string userId)
         {
             return _captacaoPropostas
@@ -38,5 +48,15 @@ namespace PeD.Fornecedor.Services
                     cp.Participacao != StatusParticipacao.Rejeitado)
                 .ToList();
         }
+
+        public Proposta GetPropostaPorResponsavel(int captacaoId, string userId) =>
+            _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Captacao)
+                .ThenInclude(c => c.Arquivos)
+                .FirstOrDefault(cp => cp.Fornecedor.ResponsavelId == userId &&
+                                      cp.CaptacaoId == captacaoId &&
+                                      cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                                      cp.Participacao != StatusParticipacao.Rejeitado);
     }
 }

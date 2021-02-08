@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using PeD.Core.ApiModels.Captacao;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
 using TaesaCore.Models;
@@ -16,6 +18,10 @@ namespace PeD.Core.ApiModels.FornecedoresDtos
         public int CaptacaoId { get; set; }
 
         public StatusParticipacao Participacao { get; set; }
+
+        public string Consideracoes { get; set; }
+
+        public List<CaptacaoArquivoDto> Arquivos { get; set; }
         // public List<SugestaoClausula> SugestaoClausulas { get; set; }
     }
 }

@@ -13,12 +13,10 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using AutoMapper;
-using DocumentFormat.OpenXml.Vml;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -27,8 +25,8 @@ using PeD.Core;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
 using PeD.Data;
-using PeD.Fornecedor.Services;
 using PeD.Services;
+using PeD.Services.Captacoes;
 using PeD.Services.Demandas;
 using PeD.Services.Sistema;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -145,6 +143,7 @@ namespace PeD
             services.AddScoped<MailerService>();
 
             services.AddScoped<CaptacaoService>();
+            services.AddScoped<PropostaService>();
 
             #endregion
 
@@ -205,8 +204,6 @@ namespace PeD
                     opt.RootPath = "StaticFiles/DefaultSpa";
                 }
             });
-
-            services.AddFornecedorServices();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

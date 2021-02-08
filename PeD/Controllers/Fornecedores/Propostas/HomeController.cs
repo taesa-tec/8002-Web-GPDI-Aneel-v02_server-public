@@ -7,14 +7,12 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using PeD.Core.ApiModels.FornecedoresDtos;
 using PeD.Core.Extensions;
 using PeD.Core.Models;
-using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
-using PeD.Fornecedor.Services;
+using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
-using TaesaCore.Interfaces;
 
-namespace PeD.Fornecedor.Controllers.Propostas
+namespace PeD.Controllers.Fornecedores.Propostas
 {
     [SwaggerTag("Proposta Fornecedor")]
     [ApiController]
@@ -43,8 +41,36 @@ namespace PeD.Fornecedor.Controllers.Propostas
         [HttpGet("{id}")]
         public ActionResult<PropostaDto> GetProposta(int id)
         {
-            var proposta = Service.GetProposta(id);
+            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
             return Mapper.Map<PropostaDto>(proposta);
+        }
+
+        [HttpPut("{id}/Rejeitar")]
+        public ActionResult RejeitarCaptacao(int id)
+        {
+            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            if (proposta.Participacao == StatusParticipacao.Pendente)
+            {
+                proposta.Participacao = StatusParticipacao.Rejeitado;
+                Service.Put(proposta);
+                return Ok();
+            }
+
+            return StatusCode(428);
+        }
+
+        [HttpPut("{id}/Participar")]
+        public ActionResult ParticiparCaptacao(int id)
+        {
+            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            if (proposta.Participacao == StatusParticipacao.Pendente)
+            {
+                proposta.Participacao = StatusParticipacao.Aceito;
+                Service.Put(proposta);
+                return Ok();
+            }
+
+            return StatusCode(428);
         }
     }
 }
