@@ -1,6 +1,13 @@
+using System;
 using System.Collections.Generic;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PeD.Core.ApiModels.FornecedoresDtos;
 using PeD.Core.Models;
+using PeD.Core.Models.Propostas;
+using PeD.Core.Requests.Proposta;
+using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Interfaces;
 
@@ -8,15 +15,17 @@ namespace PeD.Controllers.Fornecedores.Propostas
 {
     [SwaggerTag("Proposta ")]
     [ApiController]
-    //[Authorize("Bearer", Roles = Roles.Fornecedor)]
+    [Authorize("Bearer", Roles = Roles.Fornecedor)]
     [Route("api/Fornecedor/Propostas/{captacaoId:int}/[controller]")]
-    public class CondicoesController : Controller
+    public class CondicoesController : ControllerBase
     {
         private IService<Clausula> Service;
+        private IMapper Mapper;
 
-        public CondicoesController(IService<Clausula> service)
+        public CondicoesController(IService<Clausula> service, IMapper mapper)
         {
             Service = service;
+            Mapper = mapper;
         }
 
         [SwaggerOperation("Lista das clausulas")]
@@ -28,10 +37,28 @@ namespace PeD.Controllers.Fornecedores.Propostas
         }
 
         [SwaggerOperation("Aceitação dos termos das clausulas")]
-        [HttpPost("{id}")]
-        public ActionResult AceitarClausula(int id, bool accepted)
+        [HttpPost]
+        public ActionResult AceitarClausula([FromServices] PropostaService propostaService, [FromRoute] int captacaoId,
+            CondicoesRequest request)
         {
-            return Ok();
+            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            if (proposta != null)
+            {
+                if (request.ClausulasAceita)
+                {
+                    proposta.DataClausulasAceitas = DateTime.Now;
+                }
+                else
+                {
+                    proposta.Participacao = StatusParticipacao.Rejeitado;
+                }
+
+                propostaService.Put(proposta);
+
+                return Ok(Mapper.Map<PropostaDto>(proposta));
+            }
+
+            return NotFound();
         }
     }
 }

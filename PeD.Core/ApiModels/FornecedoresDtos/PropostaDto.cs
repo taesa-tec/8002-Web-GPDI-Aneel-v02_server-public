@@ -13,6 +13,7 @@ namespace PeD.Core.ApiModels.FornecedoresDtos
         public DateTime DataCriacao { get; set; }
         public DateTime? DataTermino { get; set; }
         public DateTime? DataResposta { get; set; }
+        public DateTime? DataClausulasAceitas { get; set; }
         public int FornecedorId { get; set; }
         public string Fornecedor { get; set; }
         public int CaptacaoId { get; set; }
