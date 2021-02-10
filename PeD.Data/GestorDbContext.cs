@@ -118,11 +118,44 @@ namespace PeD.Data
                 .ToTable("CaptacaoSugestoesFornecedores")
                 .HasKey(a => new {a.FornecedorId, a.CaptacaoId});
 
-            builder.Entity<Proposta>(builder =>
+            #region Proposta
+
+            builder.Entity<Proposta>(_builder =>
             {
-                builder.HasIndex(p => new {p.CaptacaoId, p.FornecedorId}).IsUnique();
-                builder.ToTable("Propostas");
+                _builder.HasIndex(p => new {p.CaptacaoId, p.FornecedorId}).IsUnique();
+                _builder.ToTable("Propostas");
             });
+
+            builder.Entity<CoExecutor>();
+            builder.Entity<Contrato>();
+            builder.Entity<Escopo>();
+            builder.Entity<Etapa>();
+            builder.Entity<EtapaProdutos>(b =>
+            {
+                b.HasOne(ep => ep.Produto).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(ep => ep.Etapa).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PlanoTrabalho>();
+            builder.Entity<Produto>();
+            builder.Entity<RecursoHumano>();
+            builder.Entity<RecursoMaterial>();
+            builder.Entity<RecursoHumano.Alocacao>(b =>
+            {
+                b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Etapa).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Proposta).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<RecursoMaterial.Alocacao>(b =>
+            {
+                b.HasOne(a => a.EmpresaRecebedora).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Proposta).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<Risco>();
+
+            #endregion
 
             builder.Entity<CaptacaoInfo>().ToView("CaptacoesView");
         }
