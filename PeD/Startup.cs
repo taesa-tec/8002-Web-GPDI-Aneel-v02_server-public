@@ -144,6 +144,7 @@ namespace PeD
 
             services.AddScoped<CaptacaoService>();
             services.AddScoped<PropostaService>();
+            services.AddScoped<CoExecutorService>();
 
             #endregion
 
