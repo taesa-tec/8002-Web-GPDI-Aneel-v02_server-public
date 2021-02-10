@@ -37,7 +37,7 @@ namespace PeD.Controllers.Captacoes
         [HttpGet("")]
         public ActionResult<List<PropostaDto>> GetPropostas()
         {
-            var propostas = service.GetPropostasPorResponsavel(this.userId());
+            var propostas = service.GetPropostasPorResponsavel(this.UserId());
             return Ok(Mapper.Map<List<PropostaDto>>(propostas));
         }
 

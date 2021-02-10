@@ -15,7 +15,7 @@ namespace PeD.Core.Extensions
 
         public static bool IsAdmin(this ControllerBase controller)
         {
-            return controller.User.FindFirst(ClaimTypes.Role).Value == Roles.AdminGestor;
+            return controller.User.FindFirst(ClaimTypes.Role).Value == Roles.Administrador;
         }
     }
 }

@@ -1,0 +1,11 @@
+using TaesaCore.Models;
+
+namespace PeD.Core.Models.Catalogos
+{
+    public class CategoriaContabilAtividade : BaseEntity
+    {
+        public string Nome { get; set; }
+        public string Valor { get; set; }
+        public int CategoriaContabilId { get; set; }
+    }
+}

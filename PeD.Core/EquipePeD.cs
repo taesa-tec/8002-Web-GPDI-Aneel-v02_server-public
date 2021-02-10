@@ -1,9 +1,7 @@
-using System.Linq;
 using System.Collections.Generic;
 
-namespace PeD.Core.Equipe
+namespace PeD.Core
 {
-
     public class EquipePeD
     {
         public string Diretor { get; set; }
@@ -11,24 +9,10 @@ namespace PeD.Core.Equipe
         public string Coordenador { get; set; }
 
         public List<string> Outros { get; set; }
-        public EquipePeD() { }
 
         public List<string> CargosChavesIds
         {
-            get
-            {
-                return new List<string>() { Diretor, Gerente, Coordenador };
-            }
+            get { return new List<string>() {Diretor, Gerente, Coordenador}; }
         }
-
-        public List<string> Ids
-        {
-            get
-            {
-                return CargosChavesIds.Concat(Outros).ToList();
-            }
-        }
-
-
     }
 }

@@ -10,37 +10,31 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using PeD.Auth;
 using PeD.Core;
-using PeD.Core.Authorizations;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
 using PeD.Data;
-using PeD.Fornecedor.Services;
 using PeD.Services;
+using PeD.Services.Captacoes;
 using PeD.Services.Demandas;
-using PeD.Services.Projetos;
-using PeD.Services.Projetos.Relatorios;
-using PeD.Services.Projetos.Resultados;
-using PeD.Services.Projetos.XmlProjeto;
 using PeD.Services.Sistema;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using TaesaCore.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 using CaptacaoService = PeD.Services.Captacoes.CaptacaoService;
-using UserService = PeD.Services.UserService;
+using Path = System.IO.Path;
 
 
 namespace PeD
@@ -82,7 +76,11 @@ namespace PeD
 
             services.AddCors();
             services.AddMvc()
-                .AddFluentValidation(fv => { fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup)); });
+                .AddFluentValidation(fv =>
+                {
+                    fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup));
+                    fv.RegisterValidatorsFromAssemblyContaining(typeof(ApplicationUser));
+                });
 
             #region Swagger
 
@@ -136,57 +134,17 @@ namespace PeD
             #region Serviços
 
             services.AddScoped<SendGridService>();
-            services.AddScoped<CatalogService>();
+            services.AddScoped<ArquivoService>();
             services.AddScoped<MailService>();
-            services.AddScoped<Services.UserService>();
-            services.AddScoped<ProjetoService>();
-            services.AddScoped<UserProjetoService>();
-            services.AddScoped<TemaService>();
-            services.AddScoped<EmpresaService>();
-            services.AddScoped<RecursoHumanoService>();
-            services.AddScoped<AlocacaoRhService>();
-            services.AddScoped<RecursoMaterialService>();
-            services.AddScoped<AlocacaoRmService>();
-            services.AddScoped<ProdutoService>();
-            services.AddScoped<EtapaService>();
-            services.AddScoped<LogService>();
-            services.AddScoped<UploadService>();
-            services.AddScoped<RelatorioEmpresaService>();
-            services.AddScoped<RelatorioEtapaService>();
-            services.AddScoped<RelatorioAtividadeService>();
-
-            // Gerador Xml Services
-            services.AddScoped<GeradorXmlService>();
-            services.AddScoped<XmlProjetoPedService>();
-            services.AddScoped<XmlInteressePedService>();
-            services.AddScoped<XmlInicioExecService>();
-            services.AddScoped<XmlProrrogacaoService>();
-            services.AddScoped<XmlRelatorioFinalService>();
-            services.AddScoped<XmlRelatorioAuditoriaService>();
-            services.AddScoped<XmlProjetoGestaoService>();
-            services.AddScoped<XmlRelatorioFinalGestaoService>();
-            services.AddScoped<XmlRelatorioAuditoriaGestaoService>();
-            ////////////////////////
-
-            services.AddScoped<RegistroFinanceiroService>();
-
-            services.AddScoped<RelatorioFinalService>();
-            services.AddScoped<ResultadoCapacitacaoService>();
-            services.AddScoped<ResultadoProducaoService>();
-            services.AddScoped<ResultadoInfraService>();
-            services.AddScoped<ResultadoIntelectualService>();
-            services.AddScoped<ResultadoSocioAmbientalService>();
-            services.AddScoped<ResultadoEconomicoService>();
-
-            // Projeto Gestão
-            services.AddScoped<AtividadeGestaoService>();
-
+            services.AddScoped<UserService>();
             services.AddScoped<DemandaService>();
             services.AddScoped<DemandaLogService>();
             services.AddScoped<SistemaService>();
             services.AddScoped<MailerService>();
 
             services.AddScoped<CaptacaoService>();
+            services.AddScoped<PropostaService>();
+            services.AddScoped<CoExecutorService>();
 
             #endregion
 
@@ -234,14 +192,12 @@ namespace PeD
             };
             services.AddSingleton(emailConfig);
 
-            services.AddSingleton<IAuthorizationHandler, ProjectAuthorizationHandler>();
             services.AddSingleton<IdentityInitializer>();
 
             services.AddSpaStaticFiles(opt =>
             {
                 if (!string.IsNullOrWhiteSpace(spaPath) || Directory.Exists(spaPath))
                 {
-                    Console.WriteLine(spaPath);
                     opt.RootPath = spaPath;
                 }
                 else
@@ -249,12 +205,25 @@ namespace PeD
                     opt.RootPath = "StaticFiles/DefaultSpa";
                 }
             });
-
-            services.AddFornecedorServices();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var storagePath = Configuration.GetValue<string>("StoragePath");
+            if (!string.IsNullOrWhiteSpace(storagePath) && Directory.Exists(storagePath))
+            {
+                if (!Directory.Exists(Path.Combine(storagePath, "avatar")))
+                {
+                    Directory.CreateDirectory(Path.Combine(storagePath, "avatar"));
+                }
+
+                app.UseStaticFiles(new StaticFileOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(Path.Combine(storagePath, "avatar")),
+                    RequestPath = "/Avatar"
+                });
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -325,7 +294,10 @@ namespace PeD
                 // endpoints.MapControllerRoute("Areas", "api/{controller=Home}/{action=Index}/{id?}");
             });
             // app.UseHttpsRedirection();
+
+
             app.UseSpaStaticFiles();
+
             app.UseSpa(spa => { });
         }
     }

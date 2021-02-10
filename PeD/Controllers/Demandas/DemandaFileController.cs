@@ -28,7 +28,6 @@ namespace PeD.Controllers.Demandas
             if (file == null) return NotFound();
             try
             {
-                context.DemandaFormFiles.RemoveRange(context.DemandaFormFiles.Where(df => df.FileId == fileId));
                 context.DemandaFiles.Remove(file);
                 context.SaveChanges();
                 System.IO.File.Delete(file.Path);
@@ -76,7 +75,7 @@ namespace PeD.Controllers.Demandas
                 ContentType = file.ContentType,
                 Path = filename,
                 Size = file.Length,
-                UserId = this.userId(),
+                UserId = this.UserId(),
                 CreatedAt = DateTime.Now
             };
         }

@@ -54,8 +54,6 @@
         <ProjectReference Include="..\PeD.Auth\PeD.Auth.csproj" />
         <ProjectReference Include="..\PeD.Core\PeD.Core.csproj" />
         <ProjectReference Include="..\PeD.Data\PeD.Data.csproj" />
-        <ProjectReference Include="..\PeD.Fornecedor\PeD.Fornecedor.csproj" />
-        <ProjectReference Include="..\PeD.Services\PeD.Services.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -68,6 +66,10 @@
         <_ContentIncludedByDefault Remove="Views\Pdf\_FieldItem.cshtml" />
         <_ContentIncludedByDefault Remove="Views\Pdf\_Style.cshtml" />
         <_ContentIncludedByDefault Remove="Views\Shared\_EmailBase.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\Fornecedores" />
     </ItemGroup>
 
     <ProjectExtensions>

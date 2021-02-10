@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using PeD.Core.Equipe;
+using PeD.Core;
 using PeD.Services.Sistema;
 
 namespace PeD.Controllers.Sistema
@@ -21,6 +21,13 @@ namespace PeD.Controllers.Sistema
         public object GetEquipePeD()
         {
             return sistemaService.GetEquipePedUsers();
+        }
+
+        [HttpPut]
+        public ActionResult SetEquipePeD(EquipePeD equipePeD)
+        {
+            sistemaService.SetEquipePeD(equipePeD);
+            return Ok();
         }
     }
 }

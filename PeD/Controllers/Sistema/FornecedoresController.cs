@@ -58,8 +58,8 @@ namespace PeD.Controllers.Sistema
                     NomeCompleto = nome,
                     Role = Roles.Fornecedor,
                     RazaoSocial = fornecedor.Nome,
-                    Status = UserStatus.Ativo,
-                    CatalogEmpresaId = 0
+                    Status = true,
+                    EmpresaId = fornecedor.Id == 0 ? (int?) null : fornecedor.Id
                 };
 
                 var md5Hash = MD5.Create();
@@ -99,7 +99,11 @@ namespace PeD.Controllers.Sistema
         protected async Task DesativarFonecedor(Core.Models.Fornecedores.Fornecedor fornecedor)
         {
             fornecedor.Ativo = false;
-            await _userService.Desativar(fornecedor.ResponsavelId);
+            if (fornecedor.ResponsavelId != null)
+            {
+                await _userService.Desativar(fornecedor.ResponsavelId);
+            }
+
             Service.Put(fornecedor);
         }
 
@@ -130,12 +134,13 @@ namespace PeD.Controllers.Sistema
             {
                 Ativo = true,
                 Nome = model.Nome,
-                Cnpj = model.Cnpj
+                Cnpj = model.Cnpj,
+                Categoria = Empresa.CategoriaEmpresa.Fornecedor,
             };
 
-
-            UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
             Service.Post(fornecedor);
+            UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
+            Service.Put(fornecedor);
 
             return Ok(fornecedor);
         }

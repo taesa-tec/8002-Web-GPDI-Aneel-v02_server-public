@@ -2,6 +2,7 @@ using System;
 using AutoMapper;
 using PeD.Core.ApiModels;
 using PeD.Core.Models;
+using PeD.Core.Requests.Users;
 
 namespace PeD.Mapping
 {
@@ -11,12 +12,14 @@ namespace PeD.Mapping
         {
             CreateMap<ApplicationUser, ApplicationUserDto>()
                 .ForMember(user => user.Empresa, opt =>
-                    opt.MapFrom(src => src.CatalogEmpresa.Nome ?? src.RazaoSocial))
-                .ForMember(user => user.StatusValor, opt => opt.MapFrom(src =>
-                    (src.Status != null) ? Enum.GetName(typeof(UserStatus), src.Status) : null
-                ))
-                .ForMember(user => user.FotoPerfil,
-                    opt => opt.MapFrom(src => String.Format("/api/Users/{0}/Avatar", src.Id)));
+                    opt.MapFrom(src => src.Empresa.Nome ?? src.RazaoSocial));
+
+            CreateMap<NewUserRequest, ApplicationUser>()
+                .ForMember(dest => dest.EmpresaId, opt =>
+                    opt.MapFrom(src => src.EmpresaId == 0 ? (int?) null : src.EmpresaId));
+            CreateMap<EditUserRequest, ApplicationUser>()
+                .ForMember(dest => dest.EmpresaId, opt =>
+                    opt.MapFrom(src => src.EmpresaId == 0 ? (int?) null : src.EmpresaId));
         }
     }
 }
