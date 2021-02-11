@@ -1,7 +1,8 @@
+using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.Models;
 using TaesaCore.Models;
 
-namespace PeD.Core.ApiModels.FornecedoresDtos
+namespace PeD.Core.ApiModels.Propostas
 {
     public class SugestaoClausulaDto : BaseEntity
     {

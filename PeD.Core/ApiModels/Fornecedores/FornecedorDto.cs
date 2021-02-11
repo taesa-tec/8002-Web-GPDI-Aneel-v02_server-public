@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using PeD.Core.ApiModels.Propostas;
 using TaesaCore.Models;
 
-namespace PeD.Core.ApiModels.FornecedoresDtos
+namespace PeD.Core.ApiModels.Fornecedores
 {
     public class FornecedorDto : BaseEntity
     {

@@ -10,7 +10,7 @@ using PeD.Data;
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20210210140951_PropostasChilds")]
+    [Migration("20210211183638_PropostasChilds")]
     partial class PropostasChilds
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2351,6 +2351,62 @@ namespace PeD.Data.Migrations
                     b.ToTable("PropostaCoExecutores");
                 });
 
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Contrato", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Conteudo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Finalizado")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaContratos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.ContratoRevisao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Conteudo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ContratoId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContratoId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaContratosRevisao");
+                });
+
             modelBuilder.Entity("PeD.Core.Models.Propostas.Escopo", b =>
                 {
                     b.Property<int>("Id")
@@ -3022,6 +3078,36 @@ namespace PeD.Data.Migrations
                         .WithMany()
                         .HasForeignKey("PropostaId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Contrato", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Contrato", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany("Contratos")
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.ContratoRevisao", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.Contrato", "Parent")
+                        .WithMany("Revisoes")
+                        .HasForeignKey("ContratoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 

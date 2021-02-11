@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using PeD.Core.ApiModels.Captacao;
-using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
 using TaesaCore.Models;
 
-namespace PeD.Core.ApiModels.FornecedoresDtos
+namespace PeD.Core.ApiModels.Propostas
 {
     public class PropostaDto : BaseEntity
     {
@@ -24,5 +23,10 @@ namespace PeD.Core.ApiModels.FornecedoresDtos
 
         public List<CaptacaoArquivoDto> Arquivos { get; set; }
         // public List<SugestaoClausula> SugestaoClausulas { get; set; }
+    }
+
+    public abstract class PropostaNodeDto : BaseEntity
+    {
+        public int PropostaId { get; set; }
     }
 }

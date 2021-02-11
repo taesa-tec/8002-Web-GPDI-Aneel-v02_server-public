@@ -8,6 +8,7 @@ using PeD.Core.Models.Propostas;
 using PeD.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
+using Contrato = PeD.Core.Models.Contrato;
 
 namespace PeD.Services.Captacoes
 {
@@ -133,6 +134,26 @@ namespace PeD.Services.Captacoes
                     cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
                     cp.Participacao != StatusParticipacao.Rejeitado)
                 .ToList();
+        }
+
+        public IEnumerable<Contrato> GetContratos(int captacaoId)
+        {
+            return
+                _captacaoContratos
+                    .Include(cc => cc.Contrato)
+                    .Where(cc => cc.CaptacaoId == captacaoId)
+                    .Select(cc => cc.Contrato)
+                    .ToList();
+        }
+
+        public Contrato GetContrato(int contratoId)
+        {
+            return
+                _captacaoContratos
+                    .Include(cc => cc.Contrato)
+                    .FirstOrDefault(cc => cc.ContratoId == contratoId)
+                    ?.Contrato;
+            ;
         }
     }
 }

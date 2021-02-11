@@ -1,9 +1,12 @@
 using System.Linq;
 using AutoMapper;
 using PeD.Core.ApiModels.Captacao;
-using PeD.Core.ApiModels.FornecedoresDtos;
+using PeD.Core.ApiModels.Fornecedores;
+using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
+using Contrato = PeD.Core.Models.Contrato;
+using ContratoDto = PeD.Core.ApiModels.Captacao.ContratoDto;
 
 namespace PeD.Mapping
 {
@@ -30,14 +33,7 @@ namespace PeD.Mapping
                     opt => opt.MapFrom(src => $"/api/Captacoes/{src.CaptacaoId}/Arquivos/{src.Id}"))
                 ;
             CreateMap<Core.Models.Fornecedores.Fornecedor, FornecedorDto>();
-            CreateMap<Proposta, PropostaDto>()
-                .ForMember(dest => dest.Fornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome))
-                .ForMember(dest => dest.Captacao, opt => opt.MapFrom(src => src.Captacao.Titulo))
-                .ForMember(dest => dest.DataTermino, opt => opt.MapFrom(src => src.Captacao.Termino))
-                .ForMember(dest => dest.Consideracoes, opt => opt.MapFrom(src => src.Captacao.Consideracoes))
-                .ForMember(dest => dest.Arquivos,
-                    opt => opt.MapFrom(src => src.Captacao.Arquivos.Where(a => a.AcessoFornecedor)))
-                ;
+            CreateMap<Contrato, ContratoDto>();
 
 
             //.ForMember(c => c.PropostaTotal, opt => opt.MapFrom(src => src.Propostas.Count(proposta => proposta.Finalizado)));

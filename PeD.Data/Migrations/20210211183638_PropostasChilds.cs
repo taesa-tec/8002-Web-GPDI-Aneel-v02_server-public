@@ -30,6 +30,34 @@ namespace PeD.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PropostaContratos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    ParentId = table.Column<int>(nullable: false),
+                    Conteudo = table.Column<string>(nullable: true),
+                    Finalizado = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaContratos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaContratos_Contratos_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Contratos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PropostaContratos_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PropostaEscopos",
                 columns: table => new
                 {
@@ -222,6 +250,33 @@ namespace PeD.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PropostaContratosRevisao",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    ContratoId = table.Column<int>(nullable: false),
+                    Conteudo = table.Column<string>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaContratosRevisao", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaContratosRevisao_PropostaContratos_ContratoId",
+                        column: x => x.ContratoId,
+                        principalTable: "PropostaContratos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PropostaContratosRevisao_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PropostaEtapasProdutos",
                 columns: table => new
                 {
@@ -340,6 +395,26 @@ namespace PeD.Data.Migrations
                 column: "PropostaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PropostaContratos_ParentId",
+                table: "PropostaContratos",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaContratos_PropostaId",
+                table: "PropostaContratos",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaContratosRevisao_ContratoId",
+                table: "PropostaContratosRevisao",
+                column: "ContratoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaContratosRevisao_PropostaId",
+                table: "PropostaContratosRevisao",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PropostaEscopos_PropostaId",
                 table: "PropostaEscopos",
                 column: "PropostaId");
@@ -453,6 +528,9 @@ namespace PeD.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "PropostaContratosRevisao");
+
+            migrationBuilder.DropTable(
                 name: "PropostaEscopos");
 
             migrationBuilder.DropTable(
@@ -469,6 +547,9 @@ namespace PeD.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "PropostaRiscos");
+
+            migrationBuilder.DropTable(
+                name: "PropostaContratos");
 
             migrationBuilder.DropTable(
                 name: "PropostaProdutos");

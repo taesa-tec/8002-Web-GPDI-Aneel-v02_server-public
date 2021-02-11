@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using PeD.Core.Models.Captacoes;
 using TaesaCore.Models;
 
@@ -22,6 +23,8 @@ namespace PeD.Core.Models.Propostas
         public DateTime DataCriacao { get; set; }
         public DateTime? DataResposta { get; set; }
         public DateTime? DataClausulasAceitas { get; set; }
+        
+        public List<Contrato> Contratos { get; set; }
     }
 
     public class PropostaNode : BaseEntity

@@ -1,10 +1,9 @@
 using TaesaCore.Models;
 
-namespace PeD.Core.ApiModels.FornecedoresDtos
+namespace PeD.Core.ApiModels.Propostas
 {
-    public class CoExecutorDto : BaseEntity
+    public class CoExecutorDto : PropostaNodeDto
     {
-        public int PropostaId { get; set; }
         public string CNPJ { get; set; }
         public string UF { get; set; }
         public string RazaoSocial { get; set; }

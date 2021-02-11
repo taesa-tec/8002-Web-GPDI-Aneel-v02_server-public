@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeD.Auth;
-using PeD.Core.ApiModels.FornecedoresDtos;
+using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.Models;
 using PeD.Core.Requests.Sistema.Fornecedores;
 using PeD.Services;

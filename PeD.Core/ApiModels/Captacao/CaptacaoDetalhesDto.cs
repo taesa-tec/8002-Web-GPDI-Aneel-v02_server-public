@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using PeD.Core.ApiModels.FornecedoresDtos;
+using PeD.Core.ApiModels.Fornecedores;
 using TaesaCore.Models;
 
 namespace PeD.Core.ApiModels.Captacao
