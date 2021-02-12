@@ -19,11 +19,11 @@ namespace PeD.Mapping
                         .MapFrom(src => src.Captacao.Arquivos.Where(a => a.AcessoFornecedor)))
                 ;
 
-            CreateMap<Contrato, ContratoDto>()
+            CreateMap<PropostaContrato, ContratoDto>()
                 .ForMember(c => c.Titulo, opt => opt.MapFrom(src => src.Parent.Titulo));
-            CreateMap<Contrato, ContratoListItemDto>()
+            CreateMap<PropostaContrato, ContratoListItemDto>()
                 .ForMember(c => c.Titulo, opt => opt.MapFrom(src => src.Parent.Titulo));
-            CreateMap<ContratoRevisao, ContratoRevisaoDto>();
+            CreateMap<PropostaContratoRevisao, ContratoRevisaoDto>();
         }
     }
 }

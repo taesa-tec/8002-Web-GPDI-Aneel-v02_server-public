@@ -127,8 +127,8 @@ namespace PeD.Data
             });
 
             builder.Entity<CoExecutor>();
-            builder.Entity<PeD.Core.Models.Propostas.Contrato>();
-            builder.Entity<PeD.Core.Models.Propostas.ContratoRevisao>(b =>
+            builder.Entity<PeD.Core.Models.Propostas.PropostaContrato>();
+            builder.Entity<PeD.Core.Models.Propostas.PropostaContratoRevisao>(b =>
             {
                 b.HasOne(c => c.Proposta).WithMany().OnDelete(DeleteBehavior.NoAction);
             });

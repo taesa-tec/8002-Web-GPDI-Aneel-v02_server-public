@@ -24,7 +24,7 @@ namespace PeD.Core.Models.Propostas
         public DateTime? DataResposta { get; set; }
         public DateTime? DataClausulasAceitas { get; set; }
         
-        public List<Contrato> Contratos { get; set; }
+        public List<PropostaContrato> Contratos { get; set; }
     }
 
     public class PropostaNode : BaseEntity

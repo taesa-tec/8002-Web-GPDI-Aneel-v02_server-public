@@ -256,7 +256,8 @@ namespace PeD.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PropostaId = table.Column<int>(nullable: false),
-                    ContratoId = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
+                    ParentId = table.Column<int>(nullable: false),
                     Conteudo = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                 },
@@ -264,8 +265,8 @@ namespace PeD.Data.Migrations
                 {
                     table.PrimaryKey("PK_PropostaContratosRevisao", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PropostaContratosRevisao_PropostaContratos_ContratoId",
-                        column: x => x.ContratoId,
+                        name: "FK_PropostaContratosRevisao_PropostaContratos_ParentId",
+                        column: x => x.ParentId,
                         principalTable: "PropostaContratos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -274,6 +275,12 @@ namespace PeD.Data.Migrations
                         column: x => x.PropostaId,
                         principalTable: "Propostas",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PropostaContratosRevisao_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -405,14 +412,19 @@ namespace PeD.Data.Migrations
                 column: "PropostaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PropostaContratosRevisao_ContratoId",
+                name: "IX_PropostaContratosRevisao_ParentId",
                 table: "PropostaContratosRevisao",
-                column: "ContratoId");
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PropostaContratosRevisao_PropostaId",
                 table: "PropostaContratosRevisao",
                 column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaContratosRevisao_UserId",
+                table: "PropostaContratosRevisao",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PropostaEscopos_PropostaId",

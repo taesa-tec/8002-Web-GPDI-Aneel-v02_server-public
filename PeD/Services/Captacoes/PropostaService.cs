@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
+using PeD.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 
@@ -12,13 +13,15 @@ namespace PeD.Services.Captacoes
     public class PropostaService : BaseService<Proposta>
     {
         private DbSet<Proposta> _captacaoPropostas;
-        private DbSet<Contrato> _propostasContratos;
+        private DbSet<PropostaContrato> _propostasContratos;
+        private GestorDbContext context;
 
-        public PropostaService(IRepository<Proposta> repository, DbContext context)
+        public PropostaService(IRepository<Proposta> repository, GestorDbContext context)
             : base(repository)
         {
+            this.context = context;
             _captacaoPropostas = context.Set<Proposta>();
-            _propostasContratos = context.Set<Contrato>();
+            _propostasContratos = context.Set<PropostaContrato>();
         }
 
         public Proposta GetProposta(int id)
@@ -62,7 +65,7 @@ namespace PeD.Services.Captacoes
                                       cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
                                       cp.Participacao != StatusParticipacao.Rejeitado);
 
-        public IEnumerable<Contrato> GetContratos(int captacaoId, string userId)
+        public IEnumerable<PropostaContrato> GetContratos(int captacaoId, string userId)
         {
             var proposta = _captacaoPropostas
                 .Include(p => p.Fornecedor)
@@ -76,14 +79,24 @@ namespace PeD.Services.Captacoes
             if (proposta != null)
                 return proposta.Contratos;
 
-            return new List<Contrato>();
+            return new List<PropostaContrato>();
         }
 
-        public Contrato GetContrato(int contratoId, int propostaId)
+        public PropostaContrato GetContrato(int contratoId, int propostaId)
         {
             return _propostasContratos
                 .Include(p => p.Parent)
                 .FirstOrDefault(c => c.PropostaId == propostaId && c.ParentId == contratoId);
+        }
+
+        public List<PropostaContratoRevisao> GetContratoRevisoes(int contratoId, int propostaId)
+        {
+            return context.Set<PropostaContratoRevisao>()
+                .Include(cr => cr.Parent)
+                .ThenInclude(c => c.Parent)
+                .Where(cr => cr.Parent.ParentId == contratoId && cr.PropostaId == propostaId)
+                .OrderByDescending(cr => cr.CreatedAt)
+                .ToList();
         }
     }
 }

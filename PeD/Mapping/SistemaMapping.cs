@@ -1,4 +1,5 @@
 using AutoMapper;
+using PeD.Core.ApiModels;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.ApiModels.Sistema;
@@ -6,6 +7,7 @@ using PeD.Core.Models;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Sistema.Fornecedores;
+using TaesaCore.Models;
 
 namespace PeD.Mapping
 {
@@ -13,6 +15,7 @@ namespace PeD.Mapping
     {
         public SistemaMapping()
         {
+            CreateMap<BaseEntity, BaseEntityDto>().ForMember(b => b.Name, opt => opt.MapFrom(src => src.ToString()));
             CreateMap<Core.Models.Fornecedores.Fornecedor, FornecedorDto>()
                 .ForMember(f => f.ResponsavelNome, opt => opt.MapFrom(src => src.Responsavel.NomeCompleto ?? ""))
                 .ForMember(f => f.ResponsavelEmail, opt => opt.MapFrom(src => src.Responsavel.Email ?? ""))
