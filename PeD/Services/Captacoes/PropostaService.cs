@@ -98,5 +98,13 @@ namespace PeD.Services.Captacoes
                 .OrderByDescending(cr => cr.CreatedAt)
                 .ToList();
         }
+
+        public PropostaContratoRevisao GetContratoRevisao(int contratoId, int propostaId, int id)
+        {
+            return context.Set<PropostaContratoRevisao>()
+                .Include(cr => cr.Parent)
+                .ThenInclude(c => c.Parent)
+                .FirstOrDefault(cr => cr.Parent.ParentId == contratoId && cr.PropostaId == propostaId && cr.Id == id);
+        }
     }
 }

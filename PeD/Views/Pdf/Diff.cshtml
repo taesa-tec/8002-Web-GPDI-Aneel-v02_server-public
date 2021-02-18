@@ -27,7 +27,7 @@
             --diffback: #f7dfdf !important;
             color:#7c6464 !important;
         }
-        .deleted::after{
+        .deleted::before{
             content: "- ";        
         }
         .diff-text{
@@ -54,7 +54,7 @@
             color: inherit;
         }
     </style>
-<partial name="Pdf/_Style"/>
+@Html.Partial("_Style.cshtml")
 @foreach (var line in @Model.Lines)
 {
     if (!Regex.IsMatch(line.Text, "<[\\w|\\d]+(?:\\b[^>]*)?>\\s*|\\s*</[\\w|\\d]+>\\s*"))

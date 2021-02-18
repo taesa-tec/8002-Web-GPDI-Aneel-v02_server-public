@@ -40,7 +40,9 @@ namespace PeD.Core.Models.Propostas
 
         public override string ToString()
         {
-            return Parent?.ToString();
+            var p = Parent?.ToString() ?? "";
+            var d = CreatedAt.ToShortDateString();
+            return $"{p} - {d}".Trim('-', ' ');
         }
     }
 }

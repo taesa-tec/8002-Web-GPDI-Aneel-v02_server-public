@@ -23,10 +23,15 @@ namespace PeD.Core.ApiModels.Propostas
         public bool Finalizado { get; set; }
     }
 
-    public class ContratoRevisaoDto : PropostaNode
+    public class ContratoRevisaoDto : PropostaNodeDto
     {
         public int ParentId { get; set; }
         public string Conteudo { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class ContratoRevisaoListItemDto : BaseEntityDto
+    {
         public DateTime CreatedAt { get; set; }
     }
 }

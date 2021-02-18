@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
+using DiffPlex.DiffBuilder.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PeD.Core.ApiModels;
@@ -11,6 +13,7 @@ using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
 using PeD.Data;
+using PeD.Services;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Interfaces;
@@ -110,12 +113,33 @@ namespace PeD.Controllers.Fornecedores.Propostas
         }
 
         [HttpGet("{contratoId}/Revisoes")]
-        public ActionResult<List<BaseEntityDto>> GetRevisoes([FromRoute] int captacaoId,
+        public ActionResult<List<ContratoRevisaoListItemDto>> GetRevisoes([FromRoute] int captacaoId,
             [FromRoute] int contratoId)
         {
             var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
             var revisoes = propostaService.GetContratoRevisoes(contratoId, proposta.Id);
-            return mapper.Map<List<BaseEntityDto>>(revisoes);
+            return mapper.Map<List<ContratoRevisaoListItemDto>>(revisoes);
+        }
+
+        [HttpGet("{contratoId}/Revisoes/{id}")]
+        public ActionResult<ContratoRevisaoDto> GetRevisao([FromRoute] int captacaoId,
+            [FromRoute] int contratoId, [FromRoute] int id)
+        {
+            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            var revisao = propostaService.GetContratoRevisao(contratoId, proposta.Id, id);
+            return mapper.Map<ContratoRevisaoDto>(revisao);
+        }
+
+        [HttpGet("{contratoId}/Revisoes/{id}/Diff")]
+        public async Task<ActionResult<string>> GetRevisaoDiff([FromRoute] int captacaoId,
+            [FromRoute] int contratoId, [FromRoute] int id, [FromServices] IViewRenderService viewRenderService)
+        {
+            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            var revisao = propostaService.GetContratoRevisao(contratoId, proposta.Id, id);
+            var contrato = Get(captacaoId, contratoId);
+            var diff = DiffService.Html(contrato.Value.Conteudo, revisao.Conteudo);
+            var render = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
+            return render;
         }
     }
 }
