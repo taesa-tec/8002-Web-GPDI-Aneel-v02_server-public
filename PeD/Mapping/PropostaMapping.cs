@@ -2,6 +2,7 @@ using System.Linq;
 using AutoMapper;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models.Propostas;
+using PeD.Core.Requests.Proposta;
 
 namespace PeD.Mapping
 {
@@ -19,13 +20,15 @@ namespace PeD.Mapping
                         .MapFrom(src => src.Captacao.Arquivos.Where(a => a.AcessoFornecedor)))
                 ;
 
-            CreateMap<PropostaContrato, ContratoDto>()
+            CreateMap<PropostaContrato, PropostaContratoDto>()
                 .ForMember(c => c.Titulo, opt => opt.MapFrom(src => src.Parent.Titulo));
             CreateMap<PropostaContrato, ContratoListItemDto>()
                 .ForMember(c => c.Titulo, opt => opt.MapFrom(src => src.Parent.Titulo));
             CreateMap<PropostaContratoRevisao, ContratoRevisaoDto>();
             CreateMap<PropostaContratoRevisao, ContratoRevisaoListItemDto>()
                 .ForMember(r => r.Name, opt => opt.MapFrom(src => src.Parent.Parent.Titulo));
+            CreateMap<PlanoTrabalho, PlanoTrabalhoDto>();
+            CreateMap<PlanoTrabalhoRequest, PlanoTrabalho>();
         }
     }
 }

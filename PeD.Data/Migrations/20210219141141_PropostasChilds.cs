@@ -118,7 +118,8 @@ namespace PeD.Data.Migrations
                     RazoabilidadeCustos = table.Column<string>(nullable: true),
                     PesquisasCorrelatas = table.Column<string>(nullable: true),
                     MetodologiaTrabalho = table.Column<string>(nullable: true),
-                    BuscaAnterioridade = table.Column<string>(nullable: true)
+                    BuscaAnterioridade = table.Column<string>(nullable: true),
+                    Bibliografia = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

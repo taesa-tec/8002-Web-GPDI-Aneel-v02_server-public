@@ -2349,39 +2349,6 @@ namespace PeD.Data.Migrations
                     b.ToTable("PropostaCoExecutores");
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Propostas.ContratoRevisao", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Conteudo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ParentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PropostaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
-
-                    b.HasIndex("PropostaId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PropostaContratosRevisao");
-                });
-
             modelBuilder.Entity("PeD.Core.Models.Propostas.Escopo", b =>
                 {
                     b.Property<int>("Id")
@@ -2478,6 +2445,9 @@ namespace PeD.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Aplicabilidade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bibliografia")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BuscaAnterioridade")
@@ -2613,6 +2583,39 @@ namespace PeD.Data.Migrations
                     b.HasIndex("PropostaId");
 
                     b.ToTable("PropostaContratos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.PropostaContratoRevisao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Conteudo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PropostaContratosRevisao");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano", b =>
@@ -3084,25 +3087,6 @@ namespace PeD.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Propostas.ContratoRevisao", b =>
-                {
-                    b.HasOne("PeD.Core.Models.Propostas.PropostaContrato", "Parent")
-                        .WithMany("Revisoes")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
-                        .WithMany()
-                        .HasForeignKey("PropostaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PeD.Core.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("PeD.Core.Models.Propostas.Escopo", b =>
                 {
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
@@ -3188,6 +3172,25 @@ namespace PeD.Data.Migrations
                         .HasForeignKey("PropostaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.PropostaContratoRevisao", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.PropostaContrato", "Parent")
+                        .WithMany("Revisoes")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano", b =>

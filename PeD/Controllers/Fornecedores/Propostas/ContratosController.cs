@@ -58,15 +58,15 @@ namespace PeD.Controllers.Fornecedores.Propostas
         }
 
         [HttpGet("{contratoId}")]
-        public ActionResult<ContratoDto> Get([FromRoute] int captacaoId, [FromRoute] int contratoId)
+        public ActionResult<PropostaContratoDto> Get([FromRoute] int captacaoId, [FromRoute] int contratoId)
         {
             var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
             var contratoProposta = propostaService.GetContrato(contratoId, proposta.Id);
             if (contratoProposta != null)
-                return mapper.Map<ContratoDto>(contratoProposta);
+                return mapper.Map<PropostaContratoDto>(contratoProposta);
             var contrato = captacaoService.GetContrato(contratoId);
 
-            return mapper.Map<ContratoDto>(new PropostaContrato()
+            return mapper.Map<PropostaContratoDto>(new PropostaContrato()
             {
                 ParentId = contrato.Id,
                 Parent = contrato

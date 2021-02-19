@@ -13,7 +13,7 @@ namespace PeD.Core.ApiModels.Propostas
         public bool Finalizado { get; set; }
     }
 
-    public class ContratoDto : PropostaNodeDto
+    public class PropostaContratoDto : PropostaNodeDto
     {
         public int ParentId { get; set; }
         public Captacao.ContratoDto Parent { get; set; }
