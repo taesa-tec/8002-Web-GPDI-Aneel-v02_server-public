@@ -42,7 +42,7 @@ namespace PeD.Controllers
         }
 
         [NonAction]
-        public virtual async Task<ActionResult<List<T>>> Upload(Func<T, T> func = null)
+        public virtual async Task<List<T>> Upload(Func<T, T> func = null)
         {
             List<IFormFile> files = Request.Form.Files.ToList();
 

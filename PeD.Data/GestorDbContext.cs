@@ -125,6 +125,11 @@ namespace PeD.Data
                 _builder.HasIndex(p => new {p.CaptacaoId, p.FornecedorId}).IsUnique();
                 _builder.ToTable("Propostas");
             });
+            builder.Entity<PropostaArquivo>(b =>
+            {
+                b.HasKey(pa => new {pa.PropostaId, pa.ArquivoId});
+                b.ToTable("PropostasArquivos");
+            });
 
             builder.Entity<CoExecutor>();
             builder.Entity<PeD.Core.Models.Propostas.PropostaContrato>();

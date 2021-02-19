@@ -40,7 +40,11 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
             if (proposta == null)
                 return NotFound();
-            var plano = Service.Filter(q => q.Where(p => p.PropostaId == proposta.Id)).FirstOrDefault() ??
+            var plano = Service.Filter(q => q
+                            .Include(p => p.Proposta)
+                            .ThenInclude(p => p.Arquivos)
+                            .ThenInclude(a => a.Arquivo)
+                            .Where(p => p.PropostaId == proposta.Id)).FirstOrDefault() ??
                         new PlanoTrabalho();
             return _mapper.Map<PlanoTrabalhoDto>(plano);
         }
@@ -51,13 +55,13 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
             if (proposta == null)
                 return NotFound();
-            var planoPrev = Service.Filter(q => q.Where(p => p.PropostaId == proposta.Id)).FirstOrDefault();
+            var planoPrev = Service.Filter(q => q.AsNoTracking().Where(p => p.PropostaId == proposta.Id))
+                .FirstOrDefault();
             var plano = _mapper.Map<PlanoTrabalho>(request);
             plano.PropostaId = proposta.Id;
 
             if (planoPrev != null)
             {
-                _context.Entry(planoPrev).State = EntityState.Detached;
                 plano.Id = planoPrev.Id;
                 Service.Put(plano);
             }
@@ -65,7 +69,6 @@ namespace PeD.Controllers.Fornecedores.Propostas
             {
                 Service.Post(plano);
             }
-
 
             return Ok();
         }

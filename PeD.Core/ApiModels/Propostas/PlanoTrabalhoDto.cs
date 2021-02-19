@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using PeD.Core.Models;
+
 namespace PeD.Core.ApiModels.Propostas
 {
     public class PlanoTrabalhoDto
@@ -11,5 +14,6 @@ namespace PeD.Core.ApiModels.Propostas
         public string MetodologiaTrabalho { get; set; }
         public string BuscaAnterioridade { get; set; }
         public string Bibliografia { get; set; }
+        public List<FileUpload> Arquivos { get; set; }
     }
 }
