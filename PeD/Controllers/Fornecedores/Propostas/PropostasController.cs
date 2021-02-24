@@ -73,5 +73,19 @@ namespace PeD.Controllers.Fornecedores.Propostas
 
             return StatusCode(428);
         }
+
+        [HttpPut("{id}/Duracao")]
+        public ActionResult PropostaDuracao(int id, [FromBody] short meses)
+        {
+            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            if (proposta.Participacao == StatusParticipacao.Aceito)
+            {
+                proposta.Duracao = meses;
+                Service.Put(proposta);
+                return Ok();
+            }
+
+            return StatusCode(428);
+        }
     }
 }

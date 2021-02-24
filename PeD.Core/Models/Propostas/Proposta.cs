@@ -24,6 +24,7 @@ namespace PeD.Core.Models.Propostas
         public DateTime? DataResposta { get; set; }
         public DateTime? DataClausulasAceitas { get; set; }
 
+        public short Duracao { get; set; }
         public List<PropostaContrato> Contratos { get; set; }
         public List<PropostaArquivo> Arquivos { get; set; }
     }
