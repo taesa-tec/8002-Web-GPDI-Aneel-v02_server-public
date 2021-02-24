@@ -21,7 +21,7 @@ namespace PeD.Data.Builders
             {
                 new FaseCadeiaProduto
                 {
-                    Valor = "PB",
+                    Id = "PB",
                     Nome = "Pesquisa Básica Dirigida",
                     TiposDetalhados = new List<FaseTipoDetalhado>
                     {
@@ -33,7 +33,7 @@ namespace PeD.Data.Builders
                 },
                 new FaseCadeiaProduto
                 {
-                    Valor = "PA",
+                    Id = "PA",
                     Nome = "Pesquisa Aplicada",
                     TiposDetalhados = new List<FaseTipoDetalhado>
                     {
@@ -46,7 +46,7 @@ namespace PeD.Data.Builders
                 },
                 new FaseCadeiaProduto
                 {
-                    Valor = "DE",
+                    Id = "DE",
                     Nome = "Desenvolvimento Experimental",
                     TiposDetalhados = new List<FaseTipoDetalhado>
                     {
@@ -63,7 +63,7 @@ namespace PeD.Data.Builders
                 },
                 new FaseCadeiaProduto
                 {
-                    Valor = "CS",
+                    Id = "CS",
                     Nome = "Cabeça de série",
                     TiposDetalhados = new List<FaseTipoDetalhado>
                     {
@@ -73,7 +73,7 @@ namespace PeD.Data.Builders
                 },
                 new FaseCadeiaProduto
                 {
-                    Valor = "LP",
+                    Id = "LP",
                     Nome = "Lote Pioneiro",
                     TiposDetalhados = new List<FaseTipoDetalhado>
                     {
@@ -90,7 +90,7 @@ namespace PeD.Data.Builders
                 },
                 new FaseCadeiaProduto
                 {
-                    Valor = "IM",
+                    Id = "IM",
                     Nome = "Inserção no Mercado",
                     TiposDetalhados = new List<FaseTipoDetalhado>
                     {
@@ -109,11 +109,9 @@ namespace PeD.Data.Builders
                 }
             };
 
-            var id = 1;
             var ida = 1;
             fases.ForEach(f =>
             {
-                f.Id = id++;
                 f.TiposDetalhados.ForEach(t =>
                 {
                     t.Id = ida++;
@@ -135,10 +133,15 @@ namespace PeD.Data.Builders
             {
                 Id = f.Id,
                 Nome = f.Nome,
-                Valor = f.Valor
             });
             builder.HasData(fases);
             return builder;
+        }
+
+        public static EntityTypeBuilder<FaseTipoDetalhado> Config(this EntityTypeBuilder<FaseTipoDetalhado> builder)
+        {
+            builder.Property(f => f.FaseCadeiaProdutoId).IsRequired();
+            return builder.Seed();
         }
 
         public static EntityTypeBuilder<FaseTipoDetalhado> Seed(this EntityTypeBuilder<FaseTipoDetalhado> builder)

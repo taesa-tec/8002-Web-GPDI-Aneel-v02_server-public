@@ -1,12 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-
-namespace PeD.Data.Migrations
+namespace PeD.Data.Views
 {
-    public partial class Views : Migration
+    public class Captacoes
     {
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            var sql = @"CREATE OR ALTER VIEW CaptacoesView as
+        public static string Up = @"CREATE OR ALTER VIEW CaptacoesView as
 SELECT
        C.Id,
        C.Titulo,
@@ -28,12 +24,6 @@ LEFT JOIN AspNetUsers A on A.Id = C.UsuarioSuprimentoId
 LEFT JOIN Propostas P on C.Id = P.CaptacaoId  AND P.Finalizado = 1 AND P.Participacao = 1
 GROUP BY C.Id, C.Titulo, C.CriadorId, ANU.NomeCompleto, C.CreatedAt, C.EnvioCaptacao, C.Termino, C.Cancelamento, C.Status, C.UsuarioSuprimentoId, A.NomeCompleto;";
 
-
-            migrationBuilder.Sql(sql);
-        }
-
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-        }
+        public static string Down = "";
     }
 }

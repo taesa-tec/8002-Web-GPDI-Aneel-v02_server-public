@@ -574,7 +574,7 @@ namespace PeD.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Catalogos.FaseCadeiaProduto", b =>
+            modelBuilder.Entity("PeD.Core.Models.Catalogos.Estado", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -589,44 +589,215 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FasesCadeiaProduto");
+                    b.ToTable("Estados");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Nome = "Pesquisa Básica Dirigida",
-                            Valor = "PB"
+                            Nome = "ACRE",
+                            Valor = "AC"
                         },
                         new
                         {
                             Id = 2,
-                            Nome = "Pesquisa Aplicada",
-                            Valor = "PA"
+                            Nome = "ALAGOAS",
+                            Valor = "AL"
                         },
                         new
                         {
                             Id = 3,
-                            Nome = "Desenvolvimento Experimental",
-                            Valor = "DE"
+                            Nome = "AMAPÁ",
+                            Valor = "AP"
                         },
                         new
                         {
                             Id = 4,
-                            Nome = "Cabeça de série",
-                            Valor = "CS"
+                            Nome = "AMAZONAS",
+                            Valor = "AM"
                         },
                         new
                         {
                             Id = 5,
-                            Nome = "Lote Pioneiro",
-                            Valor = "LP"
+                            Nome = "BAHIA",
+                            Valor = "BA"
                         },
                         new
                         {
                             Id = 6,
-                            Nome = "Inserção no Mercado",
-                            Valor = "IM"
+                            Nome = "CEARÁ",
+                            Valor = "CE"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Nome = "DISTRITO FEDERAL",
+                            Valor = "DF"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Nome = "ESPÍRITO SANTO",
+                            Valor = "ES"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Nome = "GOIÁS",
+                            Valor = "GO"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Nome = "MARANHÃO",
+                            Valor = "MA"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Nome = "MATO GROSSO",
+                            Valor = "MT"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Nome = "MATO GROSSO DO SUL",
+                            Valor = "MS"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Nome = "MINAS GERAIS",
+                            Valor = "MG"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Nome = "PARÁ",
+                            Valor = "PA"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Nome = "PARAÍBA",
+                            Valor = "PB"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Nome = "PARANÁ",
+                            Valor = "PR"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Nome = "PERNAMBUCO",
+                            Valor = "PE"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Nome = "PIAUÍ",
+                            Valor = "PI"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Nome = "RIO DE JANEIRO",
+                            Valor = "RJ"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Nome = "RIO GRANDE DO NORTE",
+                            Valor = "RN"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Nome = "RIO GRANDE DO SUL",
+                            Valor = "RS"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Nome = "RONDONIA",
+                            Valor = "RO"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Nome = "RORAIMA",
+                            Valor = "RR"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Nome = "SANTA CATARINA",
+                            Valor = "SC"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Nome = "SÃO PAULO",
+                            Valor = "SP"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Nome = "SERGIPE",
+                            Valor = "SE"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Nome = "TOCANTINS",
+                            Valor = "TO"
+                        });
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Catalogos.FaseCadeiaProduto", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FasesCadeiaProduto");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "PB",
+                            Nome = "Pesquisa Básica Dirigida"
+                        },
+                        new
+                        {
+                            Id = "PA",
+                            Nome = "Pesquisa Aplicada"
+                        },
+                        new
+                        {
+                            Id = "DE",
+                            Nome = "Desenvolvimento Experimental"
+                        },
+                        new
+                        {
+                            Id = "CS",
+                            Nome = "Cabeça de série"
+                        },
+                        new
+                        {
+                            Id = "LP",
+                            Nome = "Lote Pioneiro"
+                        },
+                        new
+                        {
+                            Id = "IM",
+                            Nome = "Inserção no Mercado"
                         });
                 });
 
@@ -637,8 +808,9 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("FaseCadeiaProdutoId")
-                        .HasColumnType("int");
+                    b.Property<string>("FaseCadeiaProdutoId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Nome")
                         .HasColumnType("nvarchar(max)");
@@ -656,170 +828,230 @@ namespace PeD.Data.Migrations
                         new
                         {
                             Id = 1,
-                            FaseCadeiaProdutoId = 1,
+                            FaseCadeiaProdutoId = "PB",
                             Nome = "Novo material",
                             Valor = ""
                         },
                         new
                         {
                             Id = 2,
-                            FaseCadeiaProdutoId = 1,
+                            FaseCadeiaProdutoId = "PB",
                             Nome = "Nova estrutura",
                             Valor = ""
                         },
                         new
                         {
                             Id = 3,
-                            FaseCadeiaProdutoId = 1,
+                            FaseCadeiaProdutoId = "PB",
                             Nome = "Modelo",
                             Valor = ""
                         },
                         new
                         {
                             Id = 4,
-                            FaseCadeiaProdutoId = 1,
+                            FaseCadeiaProdutoId = "PB",
                             Nome = "Algoritmo",
                             Valor = ""
                         },
                         new
                         {
                             Id = 5,
-                            FaseCadeiaProdutoId = 2,
+                            FaseCadeiaProdutoId = "PA",
                             Nome = "metodologia ou técnica",
                             Valor = ""
                         },
                         new
                         {
                             Id = 6,
-                            FaseCadeiaProdutoId = 2,
+                            FaseCadeiaProdutoId = "PA",
                             Nome = "Projeto demonstrativo de novos equipamentos",
                             Valor = ""
                         },
                         new
                         {
                             Id = 7,
-                            FaseCadeiaProdutoId = 2,
+                            FaseCadeiaProdutoId = "PA",
                             Nome = "Modelos digitais",
                             Valor = ""
                         },
                         new
                         {
                             Id = 8,
-                            FaseCadeiaProdutoId = 2,
+                            FaseCadeiaProdutoId = "PA",
                             Nome = "Modelos de funções ou de processos",
                             Valor = ""
                         },
                         new
                         {
                             Id = 9,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Protótipo de material para demonstração e testes",
                             Valor = ""
                         },
                         new
                         {
                             Id = 10,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Protótipo de dispositivo para demonstração e testes",
                             Valor = ""
                         },
                         new
                         {
                             Id = 11,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Protótipo de equipamento para demonstração e testes",
                             Valor = ""
                         },
                         new
                         {
                             Id = 12,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Implantação de projeto piloto",
                             Valor = ""
                         },
                         new
                         {
                             Id = 13,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Serviços (novos ou aperfeiçoados)",
                             Valor = ""
                         },
                         new
                         {
                             Id = 14,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Software baseado em pesquisa aplicada",
                             Valor = ""
                         },
                         new
                         {
                             Id = 15,
-                            FaseCadeiaProdutoId = 4,
+                            FaseCadeiaProdutoId = "CS",
                             Nome = "Aperfeiçoamento de protótipo obtido em projeto anterior",
                             Valor = ""
                         },
                         new
                         {
                             Id = 16,
-                            FaseCadeiaProdutoId = 5,
+                            FaseCadeiaProdutoId = "LP",
                             Nome = "Primeira fabricação de produto",
                             Valor = ""
                         },
                         new
                         {
                             Id = 17,
-                            FaseCadeiaProdutoId = 5,
+                            FaseCadeiaProdutoId = "LP",
                             Nome = "Reprodução de licenças para ensaios de validação",
                             Valor = ""
                         },
                         new
                         {
                             Id = 18,
-                            FaseCadeiaProdutoId = 5,
+                            FaseCadeiaProdutoId = "LP",
                             Nome = "Análise de custos e refino do projeto, com vistas à produção industrial e/ou à comercialização",
                             Valor = ""
                         },
                         new
                         {
                             Id = 19,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Estudos mercadológicos",
                             Valor = ""
                         },
                         new
                         {
                             Id = 20,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Material de divulgação",
                             Valor = ""
                         },
                         new
                         {
                             Id = 21,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Registro de patentes",
                             Valor = ""
                         },
                         new
                         {
                             Id = 22,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Contratação de empresa de transferência de tecnologia e serviços jurídicos",
                             Valor = ""
                         },
                         new
                         {
                             Id = 23,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Aprimoramentos e melhorias incrementais nos produtos",
                             Valor = ""
                         },
                         new
                         {
                             Id = 24,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Software ou serviços",
                             Valor = ""
+                        });
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Catalogos.Pais", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Paises");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Catalogos.ProdutoTipo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProdutoTipos");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "CD",
+                            Nome = "Componente ou Dispositivo"
+                        },
+                        new
+                        {
+                            Id = "CM",
+                            Nome = "Conceito ou Metodologia"
+                        },
+                        new
+                        {
+                            Id = "ME",
+                            Nome = "Máquina ou Equipamento"
+                        },
+                        new
+                        {
+                            Id = "MS",
+                            Nome = "Material ou Substância"
+                        },
+                        new
+                        {
+                            Id = "SM",
+                            Nome = "Sistema"
+                        },
+                        new
+                        {
+                            Id = "SW",
+                            Nome = "Software"
                         });
                 });
 
@@ -2085,188 +2317,6 @@ namespace PeD.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Estado", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Valor")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Estados");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Nome = "ACRE",
-                            Valor = "AC"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Nome = "ALAGOAS",
-                            Valor = "AL"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Nome = "AMAPÁ",
-                            Valor = "AP"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Nome = "AMAZONAS",
-                            Valor = "AM"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Nome = "BAHIA",
-                            Valor = "BA"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Nome = "CEARÁ",
-                            Valor = "CE"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Nome = "DISTRITO FEDERAL",
-                            Valor = "DF"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Nome = "ESPÍRITO SANTO",
-                            Valor = "ES"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Nome = "GOIÁS",
-                            Valor = "GO"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Nome = "MARANHÃO",
-                            Valor = "MA"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Nome = "MATO GROSSO",
-                            Valor = "MT"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Nome = "MATO GROSSO DO SUL",
-                            Valor = "MS"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Nome = "MINAS GERAIS",
-                            Valor = "MG"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Nome = "PARÁ",
-                            Valor = "PA"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Nome = "PARAÍBA",
-                            Valor = "PB"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Nome = "PARANÁ",
-                            Valor = "PR"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Nome = "PERNAMBUCO",
-                            Valor = "PE"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Nome = "PIAUÍ",
-                            Valor = "PI"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Nome = "RIO DE JANEIRO",
-                            Valor = "RJ"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Nome = "RIO GRANDE DO NORTE",
-                            Valor = "RN"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Nome = "RIO GRANDE DO SUL",
-                            Valor = "RS"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Nome = "RONDONIA",
-                            Valor = "RO"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Nome = "RORAIMA",
-                            Valor = "RR"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Nome = "SANTA CATARINA",
-                            Valor = "SC"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Nome = "SÃO PAULO",
-                            Valor = "SP"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Nome = "SERGIPE",
-                            Valor = "SE"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Nome = "TOCANTINS",
-                            Valor = "TO"
-                        });
-                });
-
             modelBuilder.Entity("PeD.Core.Models.FileUpload", b =>
                 {
                     b.Property<int>("Id")
@@ -2306,21 +2356,6 @@ namespace PeD.Data.Migrations
                     b.ToTable("Files");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("FileUpload");
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Pais", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Paises");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.CoExecutor", b =>
@@ -2497,24 +2532,30 @@ namespace PeD.Data.Migrations
                     b.Property<string>("Descricao")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FaseCadeia")
-                        .HasColumnType("int");
+                    b.Property<string>("FaseCadeiaId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("PropostaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Tipo")
+                    b.Property<int>("TipoDetalhadoId")
                         .HasColumnType("int");
 
-                    b.Property<string>("TipoDetalhado")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("TipoId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Titulo")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FaseCadeiaId");
+
                     b.HasIndex("PropostaId");
+
+                    b.HasIndex("TipoDetalhadoId");
+
+                    b.HasIndex("TipoId");
 
                     b.ToTable("PropostaProdutos");
                 });
@@ -3152,11 +3193,25 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.Produto", b =>
                 {
+                    b.HasOne("PeD.Core.Models.Catalogos.FaseCadeiaProduto", "FaseCadeia")
+                        .WithMany()
+                        .HasForeignKey("FaseCadeiaId");
+
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
                         .WithMany()
                         .HasForeignKey("PropostaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Catalogos.FaseTipoDetalhado", "TipoDetalhado")
+                        .WithMany()
+                        .HasForeignKey("TipoDetalhadoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Catalogos.ProdutoTipo", "ProdutoTipo")
+                        .WithMany()
+                        .HasForeignKey("TipoId");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.Proposta", b =>

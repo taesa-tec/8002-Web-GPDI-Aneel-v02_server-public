@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PeD.Core.Models;
+using PeD.Core.Models.Catalogos;
 
 namespace PeD.Data.Builders
 {

@@ -6,7 +6,7 @@ namespace PeD.Core.Models.Catalogos
 {
     public class FaseTipoDetalhado : BaseEntity
     {
-        public int FaseCadeiaProdutoId { get; set; }
+        [Required] public string FaseCadeiaProdutoId { get; set; }
         public string Nome { get; set; }
         public string Valor { get; set; }
     }

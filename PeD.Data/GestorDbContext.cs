@@ -10,6 +10,7 @@ using PeD.Core.Models.Propostas;
 using PeD.Data.Builders;
 using CategoriaContabil = PeD.Core.Models.Catalogos.CategoriaContabil;
 using Contrato = PeD.Core.Models.Contrato;
+using ProdutoTipo = PeD.Core.Models.Catalogos.ProdutoTipo;
 
 namespace PeD.Data
 {
@@ -83,9 +84,10 @@ namespace PeD.Data
             builder.Entity<CategoriaContabil>().Config();
             builder.Entity<CategoriaContabilAtividade>().Seed();
             builder.Entity<FaseCadeiaProduto>().Config();
-            builder.Entity<FaseTipoDetalhado>().Seed();
+            builder.Entity<ProdutoTipo>().Seed();
             builder.Entity<Contrato>().ToTable("Contratos");
             builder.Entity<Clausula>().ToTable("Clausulas");
+            builder.Entity<FaseTipoDetalhado>().Config();
 
             #endregion
 

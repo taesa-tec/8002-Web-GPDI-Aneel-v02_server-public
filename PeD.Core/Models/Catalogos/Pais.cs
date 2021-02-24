@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using TaesaCore.Models;
+﻿using TaesaCore.Models;
 
-namespace PeD.Core.Models
+namespace PeD.Core.Models.Catalogos
 {
     public class Pais : BaseEntity
     {

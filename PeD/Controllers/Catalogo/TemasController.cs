@@ -8,9 +8,9 @@ using PeD.Core.Models.Catalogos;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
 
-namespace PeD.Controllers
+namespace PeD.Controllers.Catalogo
 {
-    [Route("api/[controller]")]
+    [Route("api/Catalogo/[controller]")]
     [ApiController]
     [Authorize("Bearer")]
     public class TemasController : ControllerCrudBase<Tema, TemaDto>
