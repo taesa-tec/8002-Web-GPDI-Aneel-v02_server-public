@@ -34,7 +34,11 @@ namespace PeD.Controllers.Fornecedores.Propostas
         public IActionResult Get([FromRoute] int captacaoId)
         {
             var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var produtos = Service.Filter(q => q.Where(p => p.PropostaId == proposta.Id));
+            var produtos = Service.Filter(q => q
+                .Include(p => p.FaseCadeia)
+                .Include(p => p.TipoDetalhado)
+                .Include(p => p.ProdutoTipo)
+                .Where(p => p.PropostaId == proposta.Id));
 
             return Ok(Mapper.Map<List<PropostaProdutoDto>>(produtos));
         }
@@ -43,7 +47,11 @@ namespace PeD.Controllers.Fornecedores.Propostas
         public IActionResult Get([FromRoute] int captacaoId, [FromRoute] int id)
         {
             var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var produto = Service.Filter(q => q.Where(p => p.PropostaId == proposta.Id && p.Id == id)).FirstOrDefault();
+            var produto = Service.Filter(q => q
+                .Include(p => p.FaseCadeia)
+                .Include(p => p.TipoDetalhado)
+                .Include(p => p.ProdutoTipo)
+                .Where(p => p.PropostaId == proposta.Id && p.Id == id)).FirstOrDefault();
             if (produto == null)
                 return NotFound();
 
@@ -61,13 +69,13 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return Ok();
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put([FromRoute] int captacaoId, [FromRoute] int id,
+        [HttpPut]
+        public IActionResult Put([FromRoute] int captacaoId,
             [FromBody] PropostaProdutoRequest request)
         {
             var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
             var produtoPrev = Service
-                .Filter(q => q.AsNoTracking().Where(p => p.PropostaId == proposta.Id && p.Id == id))
+                .Filter(q => q.AsNoTracking().Where(p => p.PropostaId == proposta.Id && p.Id == request.Id))
                 .FirstOrDefault();
             if (produtoPrev == null)
                 return NotFound();
@@ -81,8 +89,8 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return Ok(Mapper.Map<PropostaProdutoDto>(produto));
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete([FromRoute] int captacaoId, [FromRoute] int id)
+        [HttpDelete]
+        public IActionResult Delete([FromRoute] int captacaoId, [FromQuery] int id)
         {
             var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
             var produto = Service.Filter(q => q.Where(p => p.PropostaId == proposta.Id && p.Id == id)).FirstOrDefault();
@@ -90,7 +98,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 return NotFound();
             Service.Delete(produto.Id);
 
-            return Ok(Mapper.Map<PropostaProdutoDto>(produto));
+            return Ok();
         }
     }
 }

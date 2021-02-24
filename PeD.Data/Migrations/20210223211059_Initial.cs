@@ -101,10 +101,8 @@ namespace PeD.Data.Migrations
                 name: "FasesCadeiaProduto",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(nullable: true),
-                    Valor = table.Column<string>(nullable: true)
+                    Id = table.Column<string>(nullable: false),
+                    Nome = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -122,6 +120,18 @@ namespace PeD.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Paises", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProdutoTipos",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Nome = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProdutoTipos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -244,7 +254,7 @@ namespace PeD.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FaseCadeiaProdutoId = table.Column<int>(nullable: false),
+                    FaseCadeiaProdutoId = table.Column<string>(nullable: false),
                     Nome = table.Column<string>(nullable: true),
                     Valor = table.Column<string>(nullable: true)
                 },
@@ -624,6 +634,222 @@ namespace PeD.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PropostaCoExecutores",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    CNPJ = table.Column<string>(nullable: true),
+                    UF = table.Column<string>(nullable: true),
+                    RazaoSocial = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaCoExecutores", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaCoExecutores_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaContratos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    ParentId = table.Column<int>(nullable: false),
+                    Conteudo = table.Column<string>(nullable: true),
+                    Finalizado = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaContratos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaContratos_Contratos_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Contratos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PropostaContratos_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaEscopos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    Objetivo = table.Column<string>(nullable: true),
+                    BeneficioTaesa = table.Column<string>(nullable: true),
+                    BeneficioInstitucional = table.Column<string>(nullable: true),
+                    BeneficioIndustria = table.Column<string>(nullable: true),
+                    BeneficioSetorEletrico = table.Column<string>(nullable: true),
+                    BeneficioSociedade = table.Column<string>(nullable: true),
+                    ExperienciaPrevia = table.Column<string>(nullable: true),
+                    Contrapartidas = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaEscopos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaEscopos_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaEtapas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    DescricaoAtividades = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaEtapas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaEtapas_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaPlanosTrabalhos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    Motivacao = table.Column<string>(nullable: true),
+                    Originalidade = table.Column<string>(nullable: true),
+                    Aplicabilidade = table.Column<string>(nullable: true),
+                    Relevancia = table.Column<string>(nullable: true),
+                    RazoabilidadeCustos = table.Column<string>(nullable: true),
+                    PesquisasCorrelatas = table.Column<string>(nullable: true),
+                    MetodologiaTrabalho = table.Column<string>(nullable: true),
+                    BuscaAnterioridade = table.Column<string>(nullable: true),
+                    Bibliografia = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaPlanosTrabalhos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaPlanosTrabalhos_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaProdutos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false),
+                    Classificacao = table.Column<int>(nullable: false),
+                    TipoId = table.Column<string>(nullable: true),
+                    TipoDetalhado = table.Column<string>(nullable: true),
+                    Titulo = table.Column<string>(nullable: true),
+                    Descricao = table.Column<string>(nullable: true),
+                    FaseCadeiaId = table.Column<int>(nullable: false),
+                    FaseCadeiaId1 = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaProdutos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaProdutos_FasesCadeiaProduto_FaseCadeiaId1",
+                        column: x => x.FaseCadeiaId1,
+                        principalTable: "FasesCadeiaProduto",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PropostaProdutos_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PropostaProdutos_ProdutoTipos_TipoId",
+                        column: x => x.TipoId,
+                        principalTable: "ProdutoTipos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaRecursosMateriais",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    Nome = table.Column<string>(nullable: true),
+                    CategoriaContabilId = table.Column<int>(nullable: false),
+                    ValorUnitario = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
+                    EspecificacaoTecnica = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaRecursosMateriais", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosMateriais_CategoriasContabeis_CategoriaContabilId",
+                        column: x => x.CategoriaContabilId,
+                        principalTable: "CategoriasContabeis",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosMateriais_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaRiscos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    Item = table.Column<string>(nullable: true),
+                    Classificacao = table.Column<string>(nullable: true),
+                    Justificativa = table.Column<string>(nullable: true),
+                    Probabilidade = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaRiscos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaRiscos_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DemandaFormFiles",
                 columns: table => new
                 {
@@ -650,6 +876,217 @@ namespace PeD.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PropostasArquivos",
+                columns: table => new
+                {
+                    PropostaId = table.Column<int>(nullable: false),
+                    ArquivoId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostasArquivos", x => new { x.PropostaId, x.ArquivoId });
+                    table.ForeignKey(
+                        name: "FK_PropostasArquivos_Files_ArquivoId",
+                        column: x => x.ArquivoId,
+                        principalTable: "Files",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PropostasArquivos_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaRecursosHumanos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    NomeCompleto = table.Column<string>(nullable: true),
+                    Titulacao = table.Column<string>(nullable: true),
+                    Funcao = table.Column<string>(nullable: true),
+                    Nacionalidade = table.Column<string>(nullable: true),
+                    EmpresaId = table.Column<int>(nullable: true),
+                    Documento = table.Column<string>(nullable: true),
+                    ValorHora = table.Column<decimal>(type: "decimal(10, 2)", nullable: false),
+                    UrlCurriculo = table.Column<string>(nullable: true),
+                    CoExecutorId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaRecursosHumanos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosHumanos_PropostaCoExecutores_CoExecutorId",
+                        column: x => x.CoExecutorId,
+                        principalTable: "PropostaCoExecutores",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosHumanos_Empresas_EmpresaId",
+                        column: x => x.EmpresaId,
+                        principalTable: "Empresas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosHumanos_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaContratosRevisao",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
+                    ParentId = table.Column<int>(nullable: false),
+                    Conteudo = table.Column<string>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaContratosRevisao", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaContratosRevisao_PropostaContratos_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "PropostaContratos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PropostaContratosRevisao_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PropostaContratosRevisao_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaEtapasProdutos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    ProdutoId = table.Column<int>(nullable: false),
+                    EtapaId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaEtapasProdutos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaEtapasProdutos_PropostaEtapas_EtapaId",
+                        column: x => x.EtapaId,
+                        principalTable: "PropostaEtapas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PropostaEtapasProdutos_PropostaProdutos_ProdutoId",
+                        column: x => x.ProdutoId,
+                        principalTable: "PropostaProdutos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PropostaEtapasProdutos_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaRecursosMateriaisAlocacao",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    EtapaId = table.Column<int>(nullable: false),
+                    EmpresaFinanciadoraId = table.Column<int>(nullable: false),
+                    Justificativa = table.Column<string>(nullable: true),
+                    RecursoId = table.Column<int>(nullable: false),
+                    EmpresaRecebedoraId = table.Column<int>(nullable: false),
+                    Quantidade = table.Column<decimal>(type: "decimal(18, 2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaRecursosMateriaisAlocacao", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosMateriaisAlocacao_Empresas_EmpresaFinanciadoraId",
+                        column: x => x.EmpresaFinanciadoraId,
+                        principalTable: "Empresas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosMateriaisAlocacao_Empresas_EmpresaRecebedoraId",
+                        column: x => x.EmpresaRecebedoraId,
+                        principalTable: "Empresas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosMateriaisAlocacao_PropostaEtapas_EtapaId",
+                        column: x => x.EtapaId,
+                        principalTable: "PropostaEtapas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosMateriaisAlocacao_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosMateriaisAlocacao_PropostaRecursosMateriais_RecursoId",
+                        column: x => x.RecursoId,
+                        principalTable: "PropostaRecursosMateriais",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostaRecursosHumanosAlocacao",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PropostaId = table.Column<int>(nullable: false),
+                    EtapaId = table.Column<int>(nullable: false),
+                    EmpresaFinanciadoraId = table.Column<int>(nullable: false),
+                    Justificativa = table.Column<string>(nullable: true),
+                    RecursoId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostaRecursosHumanosAlocacao", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosHumanosAlocacao_Empresas_EmpresaFinanciadoraId",
+                        column: x => x.EmpresaFinanciadoraId,
+                        principalTable: "Empresas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosHumanosAlocacao_PropostaEtapas_EtapaId",
+                        column: x => x.EtapaId,
+                        principalTable: "PropostaEtapas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosHumanosAlocacao_Propostas_PropostaId",
+                        column: x => x.PropostaId,
+                        principalTable: "Propostas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PropostaRecursosHumanosAlocacao_PropostaRecursosHumanos_RecursoId",
+                        column: x => x.RecursoId,
+                        principalTable: "PropostaRecursosHumanos",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 table: "CategoriasContabeis",
                 columns: new[] { "Id", "Nome", "Valor" },
@@ -669,6 +1106,7 @@ namespace PeD.Data.Migrations
                 columns: new[] { "Id", "Ativo", "Categoria", "Cnpj", "Discriminator", "Nome", "Valor" },
                 values: new object[,]
                 {
+                    { 2, true, 1, "07.859.971/0001-30", "Empresa", "ATE", "04906" },
                     { 3, true, 1, "07.859.971/0001-30", "Empresa", "ATE II", "05012" },
                     { 4, true, 1, "07.002.685/0001-54", "Empresa", "ATE III", "05455" },
                     { 5, true, 1, "07.859.971/0001-30", "Empresa", "ETEO", "	0414" },
@@ -676,20 +1114,19 @@ namespace PeD.Data.Migrations
                     { 7, true, 1, "19.486.977/0001-99", "Empresa", "MARIANA", "08837" },
                     { 8, true, 1, "07.859.971/0001-30", "Empresa", "MUNIRAH", "04757" },
                     { 9, true, 1, "07.859.971/0001-30", "Empresa", "NOVATRANS", "02609" },
-                    { 11, true, 1, "07.859.971/0001-30", "Empresa", "PATESA", "03943" },
+                    { 10, true, 1, "07.859.971/0001-30", "Empresa", "NTE", "03619" },
+                    { 13, true, 1, "07.859.971/0001-30", "Empresa", "STE", "03944" },
                     { 12, true, 1, "15.867.360/0001-62", "Empresa", "São Gotardo", "08193" },
-                    { 15, true, 1, "05.063.249/0001-60", "Empresa", "ETAU", "03942" },
+                    { 1, true, 1, "07.859.971/0001-30", "Empresa", "TAESA", "07130" },
                     { 14, true, 1, "07.859.971/0001-30", "Empresa", "TSN", "02607" },
-                    { 2, true, 1, "07.859.971/0001-30", "Empresa", "ATE", "04906" },
+                    { 15, true, 1, "05.063.249/0001-60", "Empresa", "ETAU", "03942" },
                     { 16, true, 1, "09.274.998/0001-97", "Empresa", "BRASNORTE", "06625" },
                     { 17, true, 1, "24.944.194/0001-41", "Empresa", "MIRACEMA", "10731" },
                     { 18, true, 1, "26.617.923/0001-80", "Empresa", "JANAÚBA", "11114" },
                     { 19, true, 1, "26.707.830/0001-47", "Empresa", "AIMORÉS", "11105" },
+                    { 11, true, 1, "07.859.971/0001-30", "Empresa", "PATESA", "03943" },
                     { 20, true, 1, "26.712.591/0001-13", "Empresa", "PARAGUAÇÚ", "11104" },
-                    { 21, true, 1, "28.052.123/0001-95", "Empresa", "ERB 1", "00000" },
-                    { 13, true, 1, "07.859.971/0001-30", "Empresa", "STE", "03944" },
-                    { 1, true, 1, "07.859.971/0001-30", "Empresa", "TAESA", "07130" },
-                    { 10, true, 1, "07.859.971/0001-30", "Empresa", "NTE", "03619" }
+                    { 21, true, 1, "28.052.123/0001-95", "Empresa", "ERB 1", "00000" }
                 });
 
             migrationBuilder.InsertData(
@@ -697,46 +1134,59 @@ namespace PeD.Data.Migrations
                 columns: new[] { "Id", "Nome", "Valor" },
                 values: new object[,]
                 {
-                    { 3, "AMAPÁ", "AP" },
-                    { 6, "CEARÁ", "CE" },
-                    { 7, "DISTRITO FEDERAL", "DF" },
-                    { 8, "ESPÍRITO SANTO", "ES" },
-                    { 9, "GOIÁS", "GO" },
-                    { 10, "MARANHÃO", "MA" },
-                    { 11, "MATO GROSSO", "MT" },
-                    { 12, "MATO GROSSO DO SUL", "MS" },
-                    { 13, "MINAS GERAIS", "MG" },
-                    { 14, "PARÁ", "PA" },
-                    { 5, "BAHIA", "BA" },
-                    { 15, "PARAÍBA", "PB" },
-                    { 17, "PERNAMBUCO", "PE" },
-                    { 18, "PIAUÍ", "PI" },
-                    { 19, "RIO DE JANEIRO", "RJ" },
-                    { 20, "RIO GRANDE DO NORTE", "RN" },
-                    { 21, "RIO GRANDE DO SUL", "RS" },
                     { 22, "RONDONIA", "RO" },
-                    { 23, "RORAIMA", "RR" },
-                    { 24, "SANTA CATARINA", "SC" },
-                    { 25, "SÃO PAULO", "SP" },
+                    { 17, "PERNAMBUCO", "PE" },
                     { 16, "PARANÁ", "PR" },
+                    { 15, "PARAÍBA", "PB" },
+                    { 21, "RIO GRANDE DO SUL", "RS" },
+                    { 14, "PARÁ", "PA" },
+                    { 13, "MINAS GERAIS", "MG" },
+                    { 12, "MATO GROSSO DO SUL", "MS" },
+                    { 11, "MATO GROSSO", "MT" },
+                    { 10, "MARANHÃO", "MA" },
+                    { 9, "GOIÁS", "GO" },
+                    { 8, "ESPÍRITO SANTO", "ES" },
+                    { 7, "DISTRITO FEDERAL", "DF" },
+                    { 6, "CEARÁ", "CE" },
+                    { 5, "BAHIA", "BA" },
+                    { 18, "PIAUÍ", "PI" },
                     { 4, "AMAZONAS", "AM" },
-                    { 27, "TOCANTINS", "TO" },
-                    { 1, "ACRE", "AC" },
                     { 2, "ALAGOAS", "AL" },
-                    { 26, "SERGIPE", "SE" }
+                    { 20, "RIO GRANDE DO NORTE", "RN" },
+                    { 1, "ACRE", "AC" },
+                    { 27, "TOCANTINS", "TO" },
+                    { 26, "SERGIPE", "SE" },
+                    { 25, "SÃO PAULO", "SP" },
+                    { 24, "SANTA CATARINA", "SC" },
+                    { 23, "RORAIMA", "RR" },
+                    { 3, "AMAPÁ", "AP" },
+                    { 19, "RIO DE JANEIRO", "RJ" }
                 });
 
             migrationBuilder.InsertData(
                 table: "FasesCadeiaProduto",
-                columns: new[] { "Id", "Nome", "Valor" },
+                columns: new[] { "Id", "Nome" },
                 values: new object[,]
                 {
-                    { 1, "Pesquisa Básica Dirigida", "PB" },
-                    { 2, "Pesquisa Aplicada", "PA" },
-                    { 3, "Desenvolvimento Experimental", "DE" },
-                    { 4, "Cabeça de série", "CS" },
-                    { 5, "Lote Pioneiro", "LP" },
-                    { 6, "Inserção no Mercado", "IM" }
+                    { "IM", "Inserção no Mercado" },
+                    { "LP", "Lote Pioneiro" },
+                    { "CS", "Cabeça de série" },
+                    { "DE", "Desenvolvimento Experimental" },
+                    { "PA", "Pesquisa Aplicada" },
+                    { "PB", "Pesquisa Básica Dirigida" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ProdutoTipos",
+                columns: new[] { "Id", "Nome" },
+                values: new object[,]
+                {
+                    { "CM", "Conceito ou Metodologia" },
+                    { "CD", "Componente ou Dispositivo" },
+                    { "ME", "Máquina ou Equipamento" },
+                    { "MS", "Material ou Substância" },
+                    { "SM", "Sistema" },
+                    { "SW", "Software" }
                 });
 
             migrationBuilder.InsertData(
@@ -744,10 +1194,10 @@ namespace PeD.Data.Migrations
                 columns: new[] { "Id", "Nome", "Valor" },
                 values: new object[,]
                 {
+                    { 4, "Comercialização", "C" },
                     { 1, "Geração", "G" },
                     { 2, "Transmissão", "T" },
-                    { 3, "Distribuição", "D" },
-                    { 4, "Comercialização", "C" }
+                    { 3, "Distribuição", "D" }
                 });
 
             migrationBuilder.InsertData(
@@ -755,18 +1205,18 @@ namespace PeD.Data.Migrations
                 columns: new[] { "Id", "Nome", "Order", "ParentId", "Valor" },
                 values: new object[,]
                 {
-                    { 60, "Supervisão, Controle e Proteção de Sistemas de Energia Elétrica", 0, null, "SC" },
+                    { 92, "Outros", 1, null, "OU" },
                     { 80, "Medição, faturamento e combate a perdas comerciais", 0, null, "MF" },
-                    { 48, "Operação de Sistemas de Energia Elétrica", 0, null, "OP" },
-                    { 72, "Qualidade e Confiabilidade dos Serviços de Energia Elétrica", 0, null, "QC" },
-                    { 39, "Planejamento de Sistemas de Energia Elétrica", 0, null, "PL" },
-                    { 1, "Fontes alternativas de geração de energia elétrica", 0, null, "FA" },
-                    { 27, "Segurança", 0, null, "SE" },
-                    { 22, "Meio Ambiente", 0, null, "MA" },
-                    { 14, "Gestão de Bacias e Reservatórios", 0, null, "GB" },
                     { 7, "Geração Termelétrica", 0, null, "GT" },
-                    { 33, "Eficiência Energética", 0, null, "EE" },
-                    { 92, "Outros", 1, null, "OU" }
+                    { 14, "Gestão de Bacias e Reservatórios", 0, null, "GB" },
+                    { 22, "Meio Ambiente", 0, null, "MA" },
+                    { 27, "Segurança", 0, null, "SE" },
+                    { 39, "Planejamento de Sistemas de Energia Elétrica", 0, null, "PL" },
+                    { 48, "Operação de Sistemas de Energia Elétrica", 0, null, "OP" },
+                    { 60, "Supervisão, Controle e Proteção de Sistemas de Energia Elétrica", 0, null, "SC" },
+                    { 72, "Qualidade e Confiabilidade dos Serviços de Energia Elétrica", 0, null, "QC" },
+                    { 1, "Fontes alternativas de geração de energia elétrica", 0, null, "FA" },
+                    { 33, "Eficiência Energética", 0, null, "EE" }
                 });
 
             migrationBuilder.InsertData(
@@ -794,30 +1244,30 @@ namespace PeD.Data.Migrations
                 columns: new[] { "Id", "FaseCadeiaProdutoId", "Nome", "Valor" },
                 values: new object[,]
                 {
-                    { 16, 5, "Primeira fabricação de produto", "" },
-                    { 17, 5, "Reprodução de licenças para ensaios de validação", "" },
-                    { 18, 5, "Análise de custos e refino do projeto, com vistas à produção industrial e/ou à comercialização", "" },
-                    { 19, 6, "Estudos mercadológicos", "" },
-                    { 22, 6, "Contratação de empresa de transferência de tecnologia e serviços jurídicos", "" },
-                    { 21, 6, "Registro de patentes", "" },
-                    { 23, 6, "Aprimoramentos e melhorias incrementais nos produtos", "" },
-                    { 24, 6, "Software ou serviços", "" },
-                    { 14, 3, "Software baseado em pesquisa aplicada", "" },
-                    { 20, 6, "Material de divulgação", "" },
-                    { 13, 3, "Serviços (novos ou aperfeiçoados)", "" },
-                    { 15, 4, "Aperfeiçoamento de protótipo obtido em projeto anterior", "" },
-                    { 11, 3, "Protótipo de equipamento para demonstração e testes", "" },
-                    { 12, 3, "Implantação de projeto piloto", "" },
-                    { 1, 1, "Novo material", "" },
-                    { 2, 1, "Nova estrutura", "" },
-                    { 4, 1, "Algoritmo", "" },
-                    { 5, 2, "metodologia ou técnica", "" },
-                    { 3, 1, "Modelo", "" },
-                    { 7, 2, "Modelos digitais", "" },
-                    { 8, 2, "Modelos de funções ou de processos", "" },
-                    { 9, 3, "Protótipo de material para demonstração e testes", "" },
-                    { 10, 3, "Protótipo de dispositivo para demonstração e testes", "" },
-                    { 6, 2, "Projeto demonstrativo de novos equipamentos", "" }
+                    { 16, "LP", "Primeira fabricação de produto", "" },
+                    { 17, "LP", "Reprodução de licenças para ensaios de validação", "" },
+                    { 18, "LP", "Análise de custos e refino do projeto, com vistas à produção industrial e/ou à comercialização", "" },
+                    { 19, "IM", "Estudos mercadológicos", "" },
+                    { 22, "IM", "Contratação de empresa de transferência de tecnologia e serviços jurídicos", "" },
+                    { 21, "IM", "Registro de patentes", "" },
+                    { 23, "IM", "Aprimoramentos e melhorias incrementais nos produtos", "" },
+                    { 24, "IM", "Software ou serviços", "" },
+                    { 14, "DE", "Software baseado em pesquisa aplicada", "" },
+                    { 20, "IM", "Material de divulgação", "" },
+                    { 13, "DE", "Serviços (novos ou aperfeiçoados)", "" },
+                    { 15, "CS", "Aperfeiçoamento de protótipo obtido em projeto anterior", "" },
+                    { 11, "DE", "Protótipo de equipamento para demonstração e testes", "" },
+                    { 12, "DE", "Implantação de projeto piloto", "" },
+                    { 1, "PB", "Novo material", "" },
+                    { 2, "PB", "Nova estrutura", "" },
+                    { 4, "PB", "Algoritmo", "" },
+                    { 5, "PA", "metodologia ou técnica", "" },
+                    { 3, "PB", "Modelo", "" },
+                    { 7, "PA", "Modelos digitais", "" },
+                    { 8, "PA", "Modelos de funções ou de processos", "" },
+                    { 9, "DE", "Protótipo de material para demonstração e testes", "" },
+                    { 10, "DE", "Protótipo de dispositivo para demonstração e testes", "" },
+                    { 6, "PA", "Projeto demonstrativo de novos equipamentos", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -1073,6 +1523,156 @@ namespace PeD.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PropostaCoExecutores_PropostaId",
+                table: "PropostaCoExecutores",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaContratos_ParentId",
+                table: "PropostaContratos",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaContratos_PropostaId",
+                table: "PropostaContratos",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaContratosRevisao_ParentId",
+                table: "PropostaContratosRevisao",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaContratosRevisao_PropostaId",
+                table: "PropostaContratosRevisao",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaContratosRevisao_UserId",
+                table: "PropostaContratosRevisao",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaEscopos_PropostaId",
+                table: "PropostaEscopos",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaEtapas_PropostaId",
+                table: "PropostaEtapas",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaEtapasProdutos_EtapaId",
+                table: "PropostaEtapasProdutos",
+                column: "EtapaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaEtapasProdutos_ProdutoId",
+                table: "PropostaEtapasProdutos",
+                column: "ProdutoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaEtapasProdutos_PropostaId",
+                table: "PropostaEtapasProdutos",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaPlanosTrabalhos_PropostaId",
+                table: "PropostaPlanosTrabalhos",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaProdutos_FaseCadeiaId1",
+                table: "PropostaProdutos",
+                column: "FaseCadeiaId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaProdutos_PropostaId",
+                table: "PropostaProdutos",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaProdutos_TipoId",
+                table: "PropostaProdutos",
+                column: "TipoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosHumanos_CoExecutorId",
+                table: "PropostaRecursosHumanos",
+                column: "CoExecutorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosHumanos_EmpresaId",
+                table: "PropostaRecursosHumanos",
+                column: "EmpresaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosHumanos_PropostaId",
+                table: "PropostaRecursosHumanos",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosHumanosAlocacao_EmpresaFinanciadoraId",
+                table: "PropostaRecursosHumanosAlocacao",
+                column: "EmpresaFinanciadoraId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosHumanosAlocacao_EtapaId",
+                table: "PropostaRecursosHumanosAlocacao",
+                column: "EtapaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosHumanosAlocacao_PropostaId",
+                table: "PropostaRecursosHumanosAlocacao",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosHumanosAlocacao_RecursoId",
+                table: "PropostaRecursosHumanosAlocacao",
+                column: "RecursoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosMateriais_CategoriaContabilId",
+                table: "PropostaRecursosMateriais",
+                column: "CategoriaContabilId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosMateriais_PropostaId",
+                table: "PropostaRecursosMateriais",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosMateriaisAlocacao_EmpresaFinanciadoraId",
+                table: "PropostaRecursosMateriaisAlocacao",
+                column: "EmpresaFinanciadoraId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosMateriaisAlocacao_EmpresaRecebedoraId",
+                table: "PropostaRecursosMateriaisAlocacao",
+                column: "EmpresaRecebedoraId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosMateriaisAlocacao_EtapaId",
+                table: "PropostaRecursosMateriaisAlocacao",
+                column: "EtapaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosMateriaisAlocacao_PropostaId",
+                table: "PropostaRecursosMateriaisAlocacao",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRecursosMateriaisAlocacao_RecursoId",
+                table: "PropostaRecursosMateriaisAlocacao",
+                column: "RecursoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostaRiscos_PropostaId",
+                table: "PropostaRiscos",
+                column: "PropostaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Propostas_FornecedorId",
                 table: "Propostas",
                 column: "FornecedorId");
@@ -1082,6 +1682,11 @@ namespace PeD.Data.Migrations
                 table: "Propostas",
                 columns: new[] { "CaptacaoId", "FornecedorId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PropostasArquivos_ArquivoId",
+                table: "PropostasArquivos",
+                column: "ArquivoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Temas_ParentId",
@@ -1286,7 +1891,28 @@ namespace PeD.Data.Migrations
                 name: "Paises");
 
             migrationBuilder.DropTable(
-                name: "Propostas");
+                name: "PropostaContratosRevisao");
+
+            migrationBuilder.DropTable(
+                name: "PropostaEscopos");
+
+            migrationBuilder.DropTable(
+                name: "PropostaEtapasProdutos");
+
+            migrationBuilder.DropTable(
+                name: "PropostaPlanosTrabalhos");
+
+            migrationBuilder.DropTable(
+                name: "PropostaRecursosHumanosAlocacao");
+
+            migrationBuilder.DropTable(
+                name: "PropostaRecursosMateriaisAlocacao");
+
+            migrationBuilder.DropTable(
+                name: "PropostaRiscos");
+
+            migrationBuilder.DropTable(
+                name: "PropostasArquivos");
 
             migrationBuilder.DropTable(
                 name: "Segmentos");
@@ -1301,16 +1927,40 @@ namespace PeD.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "CategoriasContabeis");
+                name: "DemandaFormValues");
+
+            migrationBuilder.DropTable(
+                name: "PropostaContratos");
+
+            migrationBuilder.DropTable(
+                name: "PropostaProdutos");
+
+            migrationBuilder.DropTable(
+                name: "PropostaRecursosHumanos");
+
+            migrationBuilder.DropTable(
+                name: "PropostaEtapas");
+
+            migrationBuilder.DropTable(
+                name: "PropostaRecursosMateriais");
 
             migrationBuilder.DropTable(
                 name: "Files");
 
             migrationBuilder.DropTable(
-                name: "DemandaFormValues");
+                name: "FasesCadeiaProduto");
 
             migrationBuilder.DropTable(
-                name: "FasesCadeiaProduto");
+                name: "ProdutoTipos");
+
+            migrationBuilder.DropTable(
+                name: "PropostaCoExecutores");
+
+            migrationBuilder.DropTable(
+                name: "CategoriasContabeis");
+
+            migrationBuilder.DropTable(
+                name: "Propostas");
 
             migrationBuilder.DropTable(
                 name: "Captacoes");

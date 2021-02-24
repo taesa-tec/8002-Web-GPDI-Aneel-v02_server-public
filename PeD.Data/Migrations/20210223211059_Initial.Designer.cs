@@ -10,8 +10,8 @@ using PeD.Data;
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20210119191502_Views")]
-    partial class Views
+    [Migration("20210223211059_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -576,7 +576,7 @@ namespace PeD.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Catalogos.FaseCadeiaProduto", b =>
+            modelBuilder.Entity("PeD.Core.Models.Catalogos.Estado", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -591,44 +591,215 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FasesCadeiaProduto");
+                    b.ToTable("Estados");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Nome = "Pesquisa Básica Dirigida",
-                            Valor = "PB"
+                            Nome = "ACRE",
+                            Valor = "AC"
                         },
                         new
                         {
                             Id = 2,
-                            Nome = "Pesquisa Aplicada",
-                            Valor = "PA"
+                            Nome = "ALAGOAS",
+                            Valor = "AL"
                         },
                         new
                         {
                             Id = 3,
-                            Nome = "Desenvolvimento Experimental",
-                            Valor = "DE"
+                            Nome = "AMAPÁ",
+                            Valor = "AP"
                         },
                         new
                         {
                             Id = 4,
-                            Nome = "Cabeça de série",
-                            Valor = "CS"
+                            Nome = "AMAZONAS",
+                            Valor = "AM"
                         },
                         new
                         {
                             Id = 5,
-                            Nome = "Lote Pioneiro",
-                            Valor = "LP"
+                            Nome = "BAHIA",
+                            Valor = "BA"
                         },
                         new
                         {
                             Id = 6,
-                            Nome = "Inserção no Mercado",
-                            Valor = "IM"
+                            Nome = "CEARÁ",
+                            Valor = "CE"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Nome = "DISTRITO FEDERAL",
+                            Valor = "DF"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Nome = "ESPÍRITO SANTO",
+                            Valor = "ES"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Nome = "GOIÁS",
+                            Valor = "GO"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Nome = "MARANHÃO",
+                            Valor = "MA"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Nome = "MATO GROSSO",
+                            Valor = "MT"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Nome = "MATO GROSSO DO SUL",
+                            Valor = "MS"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Nome = "MINAS GERAIS",
+                            Valor = "MG"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Nome = "PARÁ",
+                            Valor = "PA"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Nome = "PARAÍBA",
+                            Valor = "PB"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Nome = "PARANÁ",
+                            Valor = "PR"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Nome = "PERNAMBUCO",
+                            Valor = "PE"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Nome = "PIAUÍ",
+                            Valor = "PI"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Nome = "RIO DE JANEIRO",
+                            Valor = "RJ"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Nome = "RIO GRANDE DO NORTE",
+                            Valor = "RN"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Nome = "RIO GRANDE DO SUL",
+                            Valor = "RS"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Nome = "RONDONIA",
+                            Valor = "RO"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Nome = "RORAIMA",
+                            Valor = "RR"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Nome = "SANTA CATARINA",
+                            Valor = "SC"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Nome = "SÃO PAULO",
+                            Valor = "SP"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Nome = "SERGIPE",
+                            Valor = "SE"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Nome = "TOCANTINS",
+                            Valor = "TO"
+                        });
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Catalogos.FaseCadeiaProduto", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FasesCadeiaProduto");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "PB",
+                            Nome = "Pesquisa Básica Dirigida"
+                        },
+                        new
+                        {
+                            Id = "PA",
+                            Nome = "Pesquisa Aplicada"
+                        },
+                        new
+                        {
+                            Id = "DE",
+                            Nome = "Desenvolvimento Experimental"
+                        },
+                        new
+                        {
+                            Id = "CS",
+                            Nome = "Cabeça de série"
+                        },
+                        new
+                        {
+                            Id = "LP",
+                            Nome = "Lote Pioneiro"
+                        },
+                        new
+                        {
+                            Id = "IM",
+                            Nome = "Inserção no Mercado"
                         });
                 });
 
@@ -639,8 +810,9 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("FaseCadeiaProdutoId")
-                        .HasColumnType("int");
+                    b.Property<string>("FaseCadeiaProdutoId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Nome")
                         .HasColumnType("nvarchar(max)");
@@ -658,170 +830,230 @@ namespace PeD.Data.Migrations
                         new
                         {
                             Id = 1,
-                            FaseCadeiaProdutoId = 1,
+                            FaseCadeiaProdutoId = "PB",
                             Nome = "Novo material",
                             Valor = ""
                         },
                         new
                         {
                             Id = 2,
-                            FaseCadeiaProdutoId = 1,
+                            FaseCadeiaProdutoId = "PB",
                             Nome = "Nova estrutura",
                             Valor = ""
                         },
                         new
                         {
                             Id = 3,
-                            FaseCadeiaProdutoId = 1,
+                            FaseCadeiaProdutoId = "PB",
                             Nome = "Modelo",
                             Valor = ""
                         },
                         new
                         {
                             Id = 4,
-                            FaseCadeiaProdutoId = 1,
+                            FaseCadeiaProdutoId = "PB",
                             Nome = "Algoritmo",
                             Valor = ""
                         },
                         new
                         {
                             Id = 5,
-                            FaseCadeiaProdutoId = 2,
+                            FaseCadeiaProdutoId = "PA",
                             Nome = "metodologia ou técnica",
                             Valor = ""
                         },
                         new
                         {
                             Id = 6,
-                            FaseCadeiaProdutoId = 2,
+                            FaseCadeiaProdutoId = "PA",
                             Nome = "Projeto demonstrativo de novos equipamentos",
                             Valor = ""
                         },
                         new
                         {
                             Id = 7,
-                            FaseCadeiaProdutoId = 2,
+                            FaseCadeiaProdutoId = "PA",
                             Nome = "Modelos digitais",
                             Valor = ""
                         },
                         new
                         {
                             Id = 8,
-                            FaseCadeiaProdutoId = 2,
+                            FaseCadeiaProdutoId = "PA",
                             Nome = "Modelos de funções ou de processos",
                             Valor = ""
                         },
                         new
                         {
                             Id = 9,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Protótipo de material para demonstração e testes",
                             Valor = ""
                         },
                         new
                         {
                             Id = 10,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Protótipo de dispositivo para demonstração e testes",
                             Valor = ""
                         },
                         new
                         {
                             Id = 11,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Protótipo de equipamento para demonstração e testes",
                             Valor = ""
                         },
                         new
                         {
                             Id = 12,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Implantação de projeto piloto",
                             Valor = ""
                         },
                         new
                         {
                             Id = 13,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Serviços (novos ou aperfeiçoados)",
                             Valor = ""
                         },
                         new
                         {
                             Id = 14,
-                            FaseCadeiaProdutoId = 3,
+                            FaseCadeiaProdutoId = "DE",
                             Nome = "Software baseado em pesquisa aplicada",
                             Valor = ""
                         },
                         new
                         {
                             Id = 15,
-                            FaseCadeiaProdutoId = 4,
+                            FaseCadeiaProdutoId = "CS",
                             Nome = "Aperfeiçoamento de protótipo obtido em projeto anterior",
                             Valor = ""
                         },
                         new
                         {
                             Id = 16,
-                            FaseCadeiaProdutoId = 5,
+                            FaseCadeiaProdutoId = "LP",
                             Nome = "Primeira fabricação de produto",
                             Valor = ""
                         },
                         new
                         {
                             Id = 17,
-                            FaseCadeiaProdutoId = 5,
+                            FaseCadeiaProdutoId = "LP",
                             Nome = "Reprodução de licenças para ensaios de validação",
                             Valor = ""
                         },
                         new
                         {
                             Id = 18,
-                            FaseCadeiaProdutoId = 5,
+                            FaseCadeiaProdutoId = "LP",
                             Nome = "Análise de custos e refino do projeto, com vistas à produção industrial e/ou à comercialização",
                             Valor = ""
                         },
                         new
                         {
                             Id = 19,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Estudos mercadológicos",
                             Valor = ""
                         },
                         new
                         {
                             Id = 20,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Material de divulgação",
                             Valor = ""
                         },
                         new
                         {
                             Id = 21,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Registro de patentes",
                             Valor = ""
                         },
                         new
                         {
                             Id = 22,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Contratação de empresa de transferência de tecnologia e serviços jurídicos",
                             Valor = ""
                         },
                         new
                         {
                             Id = 23,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Aprimoramentos e melhorias incrementais nos produtos",
                             Valor = ""
                         },
                         new
                         {
                             Id = 24,
-                            FaseCadeiaProdutoId = 6,
+                            FaseCadeiaProdutoId = "IM",
                             Nome = "Software ou serviços",
                             Valor = ""
+                        });
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Catalogos.Pais", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Paises");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Catalogos.ProdutoTipo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProdutoTipos");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "CD",
+                            Nome = "Componente ou Dispositivo"
+                        },
+                        new
+                        {
+                            Id = "CM",
+                            Nome = "Conceito ou Metodologia"
+                        },
+                        new
+                        {
+                            Id = "ME",
+                            Nome = "Máquina ou Equipamento"
+                        },
+                        new
+                        {
+                            Id = "MS",
+                            Nome = "Material ou Substância"
+                        },
+                        new
+                        {
+                            Id = "SM",
+                            Nome = "Sistema"
+                        },
+                        new
+                        {
+                            Id = "SW",
+                            Nome = "Software"
                         });
                 });
 
@@ -2087,188 +2319,6 @@ namespace PeD.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Estado", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Valor")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Estados");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Nome = "ACRE",
-                            Valor = "AC"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Nome = "ALAGOAS",
-                            Valor = "AL"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Nome = "AMAPÁ",
-                            Valor = "AP"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Nome = "AMAZONAS",
-                            Valor = "AM"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Nome = "BAHIA",
-                            Valor = "BA"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Nome = "CEARÁ",
-                            Valor = "CE"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Nome = "DISTRITO FEDERAL",
-                            Valor = "DF"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Nome = "ESPÍRITO SANTO",
-                            Valor = "ES"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Nome = "GOIÁS",
-                            Valor = "GO"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Nome = "MARANHÃO",
-                            Valor = "MA"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Nome = "MATO GROSSO",
-                            Valor = "MT"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Nome = "MATO GROSSO DO SUL",
-                            Valor = "MS"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Nome = "MINAS GERAIS",
-                            Valor = "MG"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Nome = "PARÁ",
-                            Valor = "PA"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Nome = "PARAÍBA",
-                            Valor = "PB"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Nome = "PARANÁ",
-                            Valor = "PR"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Nome = "PERNAMBUCO",
-                            Valor = "PE"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Nome = "PIAUÍ",
-                            Valor = "PI"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Nome = "RIO DE JANEIRO",
-                            Valor = "RJ"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Nome = "RIO GRANDE DO NORTE",
-                            Valor = "RN"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Nome = "RIO GRANDE DO SUL",
-                            Valor = "RS"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Nome = "RONDONIA",
-                            Valor = "RO"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Nome = "RORAIMA",
-                            Valor = "RR"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Nome = "SANTA CATARINA",
-                            Valor = "SC"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Nome = "SÃO PAULO",
-                            Valor = "SP"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Nome = "SERGIPE",
-                            Valor = "SE"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Nome = "TOCANTINS",
-                            Valor = "TO"
-                        });
-                });
-
             modelBuilder.Entity("PeD.Core.Models.FileUpload", b =>
                 {
                     b.Property<int>("Id")
@@ -2310,19 +2360,207 @@ namespace PeD.Data.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("FileUpload");
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Pais", b =>
+            modelBuilder.Entity("PeD.Core.Models.Propostas.CoExecutor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Nome")
+                    b.Property<string>("CNPJ")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RazaoSocial")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UF")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Paises");
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaCoExecutores");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Escopo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BeneficioIndustria")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BeneficioInstitucional")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BeneficioSetorEletrico")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BeneficioSociedade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BeneficioTaesa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Contrapartidas")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExperienciaPrevia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Objetivo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaEscopos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Etapa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("DescricaoAtividades")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaEtapas");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.EtapaProdutos", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EtapaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EtapaId");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaEtapasProdutos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.PlanoTrabalho", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Aplicabilidade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Bibliografia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BuscaAnterioridade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetodologiaTrabalho")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Motivacao")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Originalidade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PesquisasCorrelatas")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RazoabilidadeCustos")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Relevancia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaPlanosTrabalhos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Produto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Classificacao")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descricao")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FaseCadeiaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FaseCadeiaId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TipoDetalhado")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TipoId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Titulo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FaseCadeiaId1");
+
+                    b.HasIndex("PropostaId");
+
+                    b.HasIndex("TipoId");
+
+                    b.ToTable("PropostaProdutos");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.Proposta", b =>
@@ -2361,6 +2599,268 @@ namespace PeD.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Propostas");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.PropostaArquivo", b =>
+                {
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ArquivoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PropostaId", "ArquivoId");
+
+                    b.HasIndex("ArquivoId");
+
+                    b.ToTable("PropostasArquivos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.PropostaContrato", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Conteudo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Finalizado")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaContratos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.PropostaContratoRevisao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Conteudo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PropostaContratosRevisao");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CoExecutorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Documento")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmpresaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Funcao")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nacionalidade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NomeCompleto")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titulacao")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UrlCurriculo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ValorHora")
+                        .HasColumnType("decimal(10, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CoExecutorId");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaRecursosHumanos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano+Alocacao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EmpresaFinanciadoraId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EtapaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Justificativa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecursoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaFinanciadoraId");
+
+                    b.HasIndex("EtapaId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.HasIndex("RecursoId");
+
+                    b.ToTable("PropostaRecursosHumanosAlocacao");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CategoriaContabilId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EspecificacaoTecnica")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ValorUnitario")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoriaContabilId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaRecursosMateriais");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial+Alocacao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EmpresaFinanciadoraId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmpresaRecebedoraId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EtapaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Justificativa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantidade")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("RecursoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaFinanciadoraId");
+
+                    b.HasIndex("EmpresaRecebedoraId");
+
+                    b.HasIndex("EtapaId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.HasIndex("RecursoId");
+
+                    b.ToTable("PropostaRecursosMateriaisAlocacao");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Risco", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Classificacao")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Item")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Justificativa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Probabilidade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaRiscos");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.SystemOption", b =>
@@ -2637,6 +3137,80 @@ namespace PeD.Data.Migrations
                         .HasForeignKey("UserId");
                 });
 
+            modelBuilder.Entity("PeD.Core.Models.Propostas.CoExecutor", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Escopo", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Etapa", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.EtapaProdutos", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
+                        .WithMany()
+                        .HasForeignKey("EtapaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.PlanoTrabalho", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Produto", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Catalogos.FaseCadeiaProduto", "FaseCadeia")
+                        .WithMany()
+                        .HasForeignKey("FaseCadeiaId1");
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Catalogos.ProdutoTipo", "ProdutoTipo")
+                        .WithMany()
+                        .HasForeignKey("TipoId");
+                });
+
             modelBuilder.Entity("PeD.Core.Models.Propostas.Proposta", b =>
                 {
                     b.HasOne("PeD.Core.Models.Captacoes.Captacao", "Captacao")
@@ -2648,6 +3222,156 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.Fornecedores.Fornecedor", "Fornecedor")
                         .WithMany()
                         .HasForeignKey("FornecedorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.PropostaArquivo", b =>
+                {
+                    b.HasOne("PeD.Core.Models.FileUpload", "Arquivo")
+                        .WithMany()
+                        .HasForeignKey("ArquivoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany("Arquivos")
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.PropostaContrato", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Contrato", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany("Contratos")
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.PropostaContratoRevisao", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.PropostaContrato", "Parent")
+                        .WithMany("Revisoes")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutor")
+                        .WithMany()
+                        .HasForeignKey("CoExecutorId");
+
+                    b.HasOne("PeD.Core.Models.Empresa", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId");
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano+Alocacao", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaFinanciadora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaFinanciadoraId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
+                        .WithMany()
+                        .HasForeignKey("EtapaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.RecursoHumano", "Recurso")
+                        .WithMany()
+                        .HasForeignKey("RecursoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Catalogos.CategoriaContabil", "CategoriaContabil")
+                        .WithMany()
+                        .HasForeignKey("CategoriaContabilId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial+Alocacao", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaFinanciadora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaFinanciadoraId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaRecebedora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaRecebedoraId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
+                        .WithMany()
+                        .HasForeignKey("EtapaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.RecursoMaterial", "Recurso")
+                        .WithMany()
+                        .HasForeignKey("RecursoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Risco", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

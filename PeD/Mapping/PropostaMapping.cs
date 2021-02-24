@@ -32,8 +32,12 @@ namespace PeD.Mapping
                     options.MapFrom(src => src.Proposta.Arquivos.Select(a => a.Arquivo)));
             CreateMap<PlanoTrabalhoRequest, PlanoTrabalho>();
 
-            CreateMap<Produto, PropostaProdutoDto>();
             CreateMap<PropostaProdutoRequest, Produto>();
+            CreateMap<Produto, PropostaProdutoDto>()
+                .ForMember(dest => dest.FaseCadeia, opt => opt.MapFrom(src => src.FaseCadeia.Nome))
+                .ForMember(dest => dest.ProdutoTipo, opt => opt.MapFrom(src => src.ProdutoTipo.Nome))
+                .ForMember(dest => dest.TipoDetalhado, opt => opt.MapFrom(src => src.TipoDetalhado.Nome))
+                ;
         }
     }
 }
