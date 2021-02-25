@@ -245,8 +245,11 @@ namespace PeD
                     httpContext.Response.Headers["Access-Control-Allow-Origin"] = "*";
                     return JsonConvert.SerializeObject(new
                     {
-                        exception.Message,
                         exception.Source,
+                        exception.Message,
+                        title = exception.Message,
+                        detail = exception.Source,
+                        status = 500
                     });
                 });
                 configuration.Map<DemandaException>()

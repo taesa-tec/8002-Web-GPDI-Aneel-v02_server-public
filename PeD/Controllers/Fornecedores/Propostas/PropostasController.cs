@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -12,6 +14,7 @@ using PeD.Core.Models.Propostas;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
+using TaesaCore.Interfaces;
 
 namespace PeD.Controllers.Fornecedores.Propostas
 {
@@ -75,11 +78,17 @@ namespace PeD.Controllers.Fornecedores.Propostas
         }
 
         [HttpPut("{id}/Duracao")]
-        public ActionResult PropostaDuracao(int id, [FromBody] short meses)
+        public ActionResult PropostaDuracao(int id, [FromServices] IService<Etapa> etapaService, [FromBody] short meses)
         {
             var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
             if (proposta.Participacao == StatusParticipacao.Aceito)
             {
+                var max = etapaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id))
+                    .Select(e => e.Meses.Max())
+                    .Max();
+                if (meses < max)
+                    return Problem("Há etapas em meses superiores à duração desejada",
+                        title: "Alteração não permitida", statusCode: StatusCodes.Status428PreconditionRequired);
                 proposta.Duracao = meses;
                 Service.Put(proposta);
                 return Ok();
