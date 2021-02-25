@@ -16,6 +16,7 @@ namespace PeD.Core.ApiModels.Propostas
         public int FornecedorId { get; set; }
         public string Fornecedor { get; set; }
         public int CaptacaoId { get; set; }
+        public short Duracao { get; set; }
 
         public StatusParticipacao Participacao { get; set; }
 

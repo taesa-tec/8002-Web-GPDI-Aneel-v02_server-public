@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Catalogos;
@@ -140,7 +142,13 @@ namespace PeD.Data
                 b.HasOne(c => c.Proposta).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<Escopo>();
-            builder.Entity<Etapa>();
+            builder.Entity<Etapa>(b =>
+            {
+                b.Property(e => e.Meses).HasConversion(
+                    meses => JsonConvert.SerializeObject(meses),
+                    meses => JsonConvert.DeserializeObject<List<int>>(meses));
+                b.HasOne(e => e.Produto).WithMany().HasForeignKey(e => e.ProdutoId).OnDelete(DeleteBehavior.NoAction);
+            });
             builder.Entity<EtapaProdutos>(b =>
             {
                 b.HasOne(ep => ep.Produto).WithMany().OnDelete(DeleteBehavior.NoAction);

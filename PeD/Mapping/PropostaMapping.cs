@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using PeD.Core.ApiModels.Propostas;
@@ -38,6 +39,10 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.ProdutoTipo, opt => opt.MapFrom(src => src.ProdutoTipo.Nome))
                 .ForMember(dest => dest.TipoDetalhado, opt => opt.MapFrom(src => src.TipoDetalhado.Nome))
                 ;
+
+            CreateMap<Etapa, EtapaDto>()
+                .ForMember(dest => dest.Produto, opt => opt.MapFrom(src => src.Produto.Titulo));
+            CreateMap<EtapaRequest, Etapa>();
         }
     }
 }
