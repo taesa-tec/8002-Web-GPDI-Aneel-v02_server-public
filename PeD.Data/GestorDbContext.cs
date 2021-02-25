@@ -142,6 +142,7 @@ namespace PeD.Data
                 b.HasOne(c => c.Proposta).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<Escopo>();
+            builder.Entity<Meta>();
             builder.Entity<Etapa>(b =>
             {
                 b.Property(e => e.Meses).HasConversion(
