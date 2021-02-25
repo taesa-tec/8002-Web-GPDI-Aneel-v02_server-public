@@ -46,6 +46,9 @@ namespace PeD.Mapping
 
             CreateMap<Escopo, PropostaEscopoDto>().ReverseMap();
             CreateMap<Meta, PropostaEscopoDto.MetaDto>().ReverseMap();
+
+            CreateMap<Risco, PropostaRiscoDto>();
+            CreateMap<RiscoRequest, Risco>();
         }
     }
 }
