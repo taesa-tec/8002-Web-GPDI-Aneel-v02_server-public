@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PeD.Core.ApiModels.Sistema;
 using PeD.Core.Models;
+using PeD.Data;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
@@ -28,9 +29,13 @@ namespace PeD.Controllers.Sistema
         }
 
         [HttpPost]
-        public ActionResult Save(List<ClausulaDto> clausulas)
+        public ActionResult Save(List<ClausulaDto> clausulas, [FromServices] GestorDbContext context)
         {
             int o = 0;
+            var ids = clausulas.Where(c => c.Id > 0).Select(c => c.Id);
+            var excluidas = context.Set<Clausula>().Where(c => !ids.Contains(c.Id)).ToList();
+            context.RemoveRange(excluidas);
+            context.SaveChanges();
             clausulas.ForEach(clausula =>
             {
                 var c = Mapper.Map<Clausula>(clausula);
