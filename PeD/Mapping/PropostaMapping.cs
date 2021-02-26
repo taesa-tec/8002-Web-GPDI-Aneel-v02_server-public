@@ -49,6 +49,11 @@ namespace PeD.Mapping
 
             CreateMap<Risco, PropostaRiscoDto>();
             CreateMap<RiscoRequest, Risco>();
+
+            CreateMap<RecursoHumano, RecursoHumanoDto>()
+                .ForMember(dest => dest.Empresa, opt =>
+                    opt.MapFrom(src => src.Empresa != null ? src.Empresa.Nome : src.CoExecutor.RazaoSocial ?? ""));
+            CreateMap<RecursoHumanoRequest, RecursoHumano>();
         }
     }
 }

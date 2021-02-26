@@ -15,8 +15,7 @@ namespace PeD.Core.Models.Propostas
         //Cpf ou Passaport
         public string Documento { get; set; }
 
-        [Column(TypeName = "decimal(10, 2)")]
-        public decimal ValorHora { get; set; }
+        [Column(TypeName = "decimal(10, 2)")] public decimal ValorHora { get; set; }
         public string UrlCurriculo { get; set; }
 
         public int? CoExecutorId { get; set; }

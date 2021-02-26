@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
@@ -19,17 +20,15 @@ namespace PeD.Controllers.Fornecedores.Propostas
     [ApiController]
     [Authorize("Bearer", Roles = Roles.Fornecedor)]
     [Route("api/Fornecedor/Propostas/{captacaoId:int}/[controller]")]
-    public class RiscosController : ControllerServiceBase<Risco>
+    public class RiscosController : PropostaNodeBaseController<Risco, RiscoRequest, PropostaRiscoDto>
     {
-        private PropostaService _propostaService;
-
         public RiscosController(IService<Risco> service, IMapper mapper, PropostaService propostaService) : base(
-            service, mapper)
+            service, mapper, propostaService)
         {
-            _propostaService = propostaService;
         }
 
 
+        /*
         [HttpGet("")]
         public IActionResult Get([FromRoute] int captacaoId)
         {
@@ -93,5 +92,6 @@ namespace PeD.Controllers.Fornecedores.Propostas
 
             return Ok();
         }
+        */
     }
 }
