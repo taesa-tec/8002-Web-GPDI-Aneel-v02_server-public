@@ -16,19 +16,23 @@ namespace PeD.Controllers.Fornecedores.Propostas
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer", Roles = Roles.Fornecedor)]
-    [Route("api/Fornecedor/Propostas/{captacaoId:int}/[controller]")]
-    public class RecursosMateriaisController : PropostaNodeBaseController<RecursoMaterial, RecursoMaterialRequest,
-        RecursoMaterialDto>
+    [Route("api/Fornecedor/Propostas/{captacaoId:int}/RecursosHumanos/Alocacao")]
+    public class
+        AlocacaoRecursosHumanosController : PropostaNodeBaseController<RecursoHumano.Alocacao,
+            AlocacaoRecursoHumanoRequest,
+            AlocacaoRecursoHumanoDto>
     {
-        public RecursosMateriaisController(IService<RecursoMaterial> service, IMapper mapper,
+        public AlocacaoRecursosHumanosController(IService<RecursoHumano.Alocacao> service, IMapper mapper,
             PropostaService propostaService) : base(service, mapper, propostaService)
         {
         }
 
-        protected override IQueryable<RecursoMaterial> Includes(IQueryable<RecursoMaterial> queryable)
+        protected override IQueryable<RecursoHumano.Alocacao> Includes(IQueryable<RecursoHumano.Alocacao> queryable)
         {
             return queryable
-                    .Include(r => r.CategoriaContabil)
+                    .Include(r => r.Recurso)
+                    .Include(r => r.Etapa)
+                    .Include(r => r.EmpresaFinanciadora)
                 ;
         }
     }

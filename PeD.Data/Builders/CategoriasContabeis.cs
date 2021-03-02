@@ -95,6 +95,28 @@ namespace PeD.Data.Builders
                 },
                 new CategoriaContabil
                 {
+                    Valor = "CT",
+                    Nome = "CITENEL",
+                    Atividades = new List<CategoriaContabilAtividade>
+                    {
+                        new CategoriaContabilAtividade {Valor = "AC", Nome = "Apoio à realização do CITENEL."}
+                    }
+                },
+                new CategoriaContabil
+                {
+                    Valor = "AC",
+                    Nome = "Auditoria Contábil e Financeira",
+                    Atividades = new List<CategoriaContabilAtividade>
+                    {
+                        new CategoriaContabilAtividade
+                        {
+                            Valor = "CA",
+                            Nome = "Contratação de auditoria contábil e financeira para os projetos concluídos."
+                        }
+                    }
+                },
+                new CategoriaContabil
+                {
                     Valor = "OU",
                     Nome = "Outros",
                     Atividades = new List<CategoriaContabilAtividade>
@@ -114,28 +136,6 @@ namespace PeD.Data.Builders
                         {
                             Valor = "BA",
                             Nome = "Buscas de anterioridade no Instituto Nacional da Propriedade Industrial (INPI)."
-                        }
-                    }
-                },
-                new CategoriaContabil
-                {
-                    Valor = "CT",
-                    Nome = "CITENEL",
-                    Atividades = new List<CategoriaContabilAtividade>
-                    {
-                        new CategoriaContabilAtividade {Valor = "AC", Nome = "Apoio à realização do CITENEL."}
-                    }
-                },
-                new CategoriaContabil
-                {
-                    Valor = "AC",
-                    Nome = "Auditoria Contábil e Financeira",
-                    Atividades = new List<CategoriaContabilAtividade>
-                    {
-                        new CategoriaContabilAtividade
-                        {
-                            Valor = "CA",
-                            Nome = "Contratação de auditoria contábil e financeira para os projetos concluídos."
                         }
                     }
                 }
@@ -173,7 +173,8 @@ namespace PeD.Data.Builders
             return builder;
         }
 
-        public static EntityTypeBuilder<CategoriaContabilAtividade> Seed(this EntityTypeBuilder<CategoriaContabilAtividade> builder)
+        public static EntityTypeBuilder<CategoriaContabilAtividade> Seed(
+            this EntityTypeBuilder<CategoriaContabilAtividade> builder)
         {
             var atividades = GetCategorias().SelectMany(c => c.Atividades);
             builder.HasData(atividades);

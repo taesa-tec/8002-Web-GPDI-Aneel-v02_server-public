@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PeD.Core.Models.Propostas
@@ -27,7 +28,7 @@ namespace PeD.Core.Models.Propostas
             public int RecursoId { get; set; }
 
             public RecursoHumano Recurso { get; set; }
-            // @todo Horas Alocadas
+            public Dictionary<short, short> HoraMeses { get; set; }
         }
     }
 }

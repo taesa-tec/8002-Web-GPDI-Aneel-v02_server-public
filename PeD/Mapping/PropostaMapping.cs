@@ -54,6 +54,44 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.Empresa, opt =>
                     opt.MapFrom(src => src.Empresa != null ? src.Empresa.Nome : src.CoExecutor.RazaoSocial ?? ""));
             CreateMap<RecursoHumanoRequest, RecursoHumano>();
+
+            CreateMap<AlocacaoRecursoHumanoRequest, RecursoHumano.Alocacao>();
+            CreateMap<RecursoHumano.Alocacao, AlocacaoRecursoHumanoDto>()
+                .ForMember(dest => dest.EmpresaFinanciadora, opt =>
+                    opt.MapFrom(src =>
+                        src.EmpresaFinanciadora != null
+                            ? src.EmpresaFinanciadora.Nome
+                            : src.CoExecutorFinanciador.RazaoSocial ?? ""))
+                .ForMember(dest => dest.Recurso, opt => opt
+                    .MapFrom(src => src.Recurso.NomeCompleto))
+                .ForMember(dest => dest.Valor, opt =>
+                    opt.MapFrom(src => src.Recurso.ValorHora * src.HoraMeses.Sum(m => m.Value)))
+                ;
+
+            CreateMap<RecursoMaterialRequest, RecursoMaterial>();
+            CreateMap<RecursoMaterial, RecursoMaterialDto>()
+                .ForMember(dest => dest.CategoriaContabil, opt =>
+                    opt.MapFrom(src => src.CategoriaContabil.Nome));
+
+            CreateMap<AlocacaoRecursoMaterialRequest, RecursoMaterial.Alocacao>();
+            CreateMap<RecursoMaterial.Alocacao, AlocacaoRecursoMaterialDto>()
+                .ForMember(dest => dest.EmpresaFinanciadora, opt =>
+                    opt.MapFrom(src =>
+                        src.EmpresaFinanciadora != null
+                            ? src.EmpresaFinanciadora.Nome
+                            : src.CoExecutorFinanciador.RazaoSocial ?? ""))
+                .ForMember(dest => dest.EmpresaRecebedora, opt =>
+                    opt.MapFrom(src =>
+                        src.EmpresaRecebedora != null
+                            ? src.EmpresaRecebedora.Nome
+                            : src.CoExecutorRecebedor.RazaoSocial ?? ""))
+                .ForMember(dest => dest.Recurso, opt => opt.MapFrom(src =>
+                    src.Recurso.Nome))
+                .ForMember(dest => dest.RecursoCategoria, opt => opt.MapFrom(src =>
+                    src.Recurso.CategoriaContabil.Nome))
+                .ForMember(dest => dest.Valor, opt =>
+                    opt.MapFrom(src => src.Recurso.ValorUnitario * src.Quantidade))
+                ;
         }
     }
 }
