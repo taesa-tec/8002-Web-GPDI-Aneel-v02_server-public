@@ -64,6 +64,8 @@ namespace PeD.Mapping
                             : src.CoExecutorFinanciador.RazaoSocial ?? ""))
                 .ForMember(dest => dest.Recurso, opt => opt
                     .MapFrom(src => src.Recurso.NomeCompleto))
+                .ForMember(dest => dest.Etapa, opt => opt
+                    .MapFrom(src => src.Etapa.Ordem))
                 .ForMember(dest => dest.Valor, opt =>
                     opt.MapFrom(src => src.Recurso.ValorHora * src.HoraMeses.Sum(m => m.Value)))
                 ;

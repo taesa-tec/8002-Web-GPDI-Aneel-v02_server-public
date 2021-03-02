@@ -29,6 +29,18 @@ namespace PeD.Controllers.Fornecedores.Propostas
             _propostaService = propostaService;
         }
 
+        protected void UpdateOrder(int captacaoId)
+        {
+            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            var etapas = Service.Filter(q => q
+                .Include(p => p.Produto)
+                .OrderBy(e => e.Id)
+                .Where(p => p.PropostaId == proposta.Id)).ToList();
+            short o = 1;
+            etapas.ForEach(etapa => etapa.Ordem = o++);
+            Service.Put(etapas);
+        }
+
         [HttpGet("")]
         public IActionResult Get([FromRoute] int captacaoId)
         {
@@ -37,11 +49,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 .Include(p => p.Produto)
                 .OrderBy(e => e.Id)
                 .Where(p => p.PropostaId == proposta.Id));
-            var etapasDtos = Mapper.Map<List<EtapaDto>>(etapas).Select((dto, i) =>
-            {
-                dto.Ordem = i + 1;
-                return dto;
-            });
+            var etapasDtos = Mapper.Map<List<EtapaDto>>(etapas);
 
             return Ok(etapasDtos);
         }
@@ -66,6 +74,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var etapa = Mapper.Map<Etapa>(request);
             etapa.PropostaId = proposta.Id;
             Service.Post(etapa);
+            UpdateOrder(captacaoId);
             return Ok();
         }
 
@@ -84,7 +93,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             etapa.PropostaId = proposta.Id;
 
             Service.Put(etapa);
-
+            UpdateOrder(captacaoId);
             return Ok(Mapper.Map<EtapaDto>(etapa));
         }
 
@@ -96,7 +105,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             if (etapa == null)
                 return NotFound();
             Service.Delete(etapa.Id);
-
+            UpdateOrder(captacaoId);
             return Ok();
         }
     }

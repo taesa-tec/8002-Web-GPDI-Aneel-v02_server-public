@@ -10,7 +10,7 @@ namespace PeD.Core.Models.Propostas
 
         public int ProdutoId { get; set; }
         public Produto Produto { get; set; }
-
         public List<int> Meses { get; set; }
+        public short Ordem { get; set; }
     }
 }

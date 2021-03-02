@@ -10,6 +10,6 @@ namespace PeD.Core.ApiModels.Propostas
         public string Produto { get; set; }
 
         public List<int> Meses { get; set; }
-        public int Ordem { get; set; }
+        public short Ordem { get; set; }
     }
 }

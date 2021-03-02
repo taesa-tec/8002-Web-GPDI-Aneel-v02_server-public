@@ -8,6 +8,7 @@ namespace PeD.Core.ApiModels.Propostas
         public int RecursoId { get; set; }
         public string Recurso { get; set; }
         public int EtapaId { get; set; }
+        public short Etapa { get; set; }
         public int? EmpresaFinanciadoraId { get; set; }
         public string EmpresaFinanciadora { get; set; }
         public int? CoExecutorFinanciadoraId { get; set; }
