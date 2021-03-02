@@ -10,6 +10,7 @@ using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Extensions;
 using PeD.Core.Models;
+using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
@@ -47,6 +48,29 @@ namespace PeD.Controllers.Fornecedores.Propostas
         {
             var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
             return Mapper.Map<PropostaDto>(proposta);
+        }
+
+        [HttpGet("{id}/Empresas")]
+        public ActionResult GetPropostaEmpresas(int id,
+            [FromServices] IService<CoExecutor> coexecutoresService,
+            [FromServices] IService<Empresa> empresasService,
+            [FromServices] IService<Fornecedor> fornecedorService
+        )
+        {
+            var currentUser = this.UserId();
+            var proposta = Service.GetPropostaPorResponsavel(id, currentUser);
+            var empresa = empresasService.Filter(q => q.OrderBy(e => e.Id).Take(1)).FirstOrDefault();
+            var fornecedor = fornecedorService.Filter(q =>
+                q.Where(e => e.ResponsavelId == currentUser)).FirstOrDefault();
+            var coExecutores = coexecutoresService.Filter(q =>
+                q.Where(e => e.PropostaId == proposta.Id));
+            var response = new
+            {
+                empresa,
+                fornecedor,
+                coExecutores = Mapper.Map<List<CoExecutorDto>>(coExecutores)
+            };
+            return Ok(response);
         }
 
         [HttpPut("{id}/Rejeitar")]

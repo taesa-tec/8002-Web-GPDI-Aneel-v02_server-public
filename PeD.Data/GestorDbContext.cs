@@ -165,6 +165,9 @@ namespace PeD.Data
                 b.HasOne(a => a.Etapa).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Proposta).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.Property(e => e.HoraMeses).HasConversion(
+                    meses => JsonConvert.SerializeObject(meses),
+                    meses => JsonConvert.DeserializeObject<Dictionary<short, short>>(meses));
             });
             builder.Entity<RecursoMaterial.Alocacao>(b =>
             {

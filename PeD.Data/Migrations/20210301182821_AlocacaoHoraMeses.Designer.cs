@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PeD.Data;
 
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210301182821_AlocacaoHoraMeses")]
+    partial class AlocacaoHoraMeses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2763,10 +2765,7 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CoExecutorFinanciadorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaFinanciadoraId")
+                    b.Property<int>("EmpresaFinanciadoraId")
                         .HasColumnType("int");
 
                     b.Property<int>("EtapaId")
@@ -2785,8 +2784,6 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CoExecutorFinanciadorId");
 
                     b.HasIndex("EmpresaFinanciadoraId");
 
@@ -2837,16 +2834,10 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CoExecutorFinanciadorId")
+                    b.Property<int>("EmpresaFinanciadoraId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CoExecutorRecebedorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaFinanciadoraId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaRecebedoraId")
+                    b.Property<int>("EmpresaRecebedoraId")
                         .HasColumnType("int");
 
                     b.Property<int>("EtapaId")
@@ -2865,10 +2856,6 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CoExecutorFinanciadorId");
-
-                    b.HasIndex("CoExecutorRecebedorId");
 
                     b.HasIndex("EmpresaFinanciadoraId");
 
@@ -3364,14 +3351,11 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano+Alocacao", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutorFinanciador")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorFinanciadorId");
-
                     b.HasOne("PeD.Core.Models.Empresa", "EmpresaFinanciadora")
                         .WithMany()
                         .HasForeignKey("EmpresaFinanciadoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
                         .WithMany()
@@ -3409,23 +3393,17 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial+Alocacao", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutorFinanciador")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorFinanciadorId");
-
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutorRecebedor")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorRecebedorId");
-
                     b.HasOne("PeD.Core.Models.Empresa", "EmpresaFinanciadora")
                         .WithMany()
                         .HasForeignKey("EmpresaFinanciadoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Empresa", "EmpresaRecebedora")
                         .WithMany()
                         .HasForeignKey("EmpresaRecebedoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
                         .WithMany()
