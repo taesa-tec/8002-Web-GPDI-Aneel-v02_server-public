@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using PeD.Core.Models.Captacoes;
 using TaesaCore.Models;
 
@@ -14,10 +15,6 @@ namespace PeD.Core.Models.Propostas
 
     public class Proposta : BaseEntity
     {
-        public int FornecedorId { get; set; }
-        public Fornecedores.Fornecedor Fornecedor { get; set; }
-        public int CaptacaoId { get; set; }
-        public Captacao Captacao { get; set; }
         public bool Finalizado { get; set; }
         public StatusParticipacao Participacao { get; set; }
         public DateTime DataCriacao { get; set; }
@@ -25,8 +22,24 @@ namespace PeD.Core.Models.Propostas
         public DateTime? DataClausulasAceitas { get; set; }
 
         public short Duracao { get; set; }
+        public int FornecedorId { get; set; }
+        public Fornecedores.Fornecedor Fornecedor { get; set; }
+        public int CaptacaoId { get; set; }
+        public Captacao Captacao { get; set; }
+
+        public PlanoTrabalho PlanoTrabalho { get; set; }
+        public Escopo Escopo { get; set; }
         public List<PropostaContrato> Contratos { get; set; }
         public List<PropostaArquivo> Arquivos { get; set; }
+        public List<CoExecutor> CoExecutores { get; set; }
+        public List<Produto> Produtos { get; set; }
+        public List<Etapa> Etapas { get; set; }
+        public List<Meta> Metas { get; set; }
+        public List<Risco> Riscos { get; set; }
+        public List<RecursoHumano> RecursosHumanos { get; set; }
+        public List<RecursoMaterial> RecursosMateriais { get; set; }
+        [InverseProperty("Proposta")] public List<RecursoHumano.Alocacao> RecursosHumanosAlocacoes { get; set; }
+        [InverseProperty("Proposta")] public List<RecursoMaterial.Alocacao> RecursosMateriaisAlocacoes { get; set; }
     }
 
     public class PropostaNode : BaseEntity

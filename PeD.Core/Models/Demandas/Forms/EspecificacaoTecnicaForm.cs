@@ -1,9 +1,11 @@
 namespace PeD.Core.Models.Demandas.Forms
 {
-
     public class EspecificacaoTecnicaForm : FieldList
     {
-        public EspecificacaoTecnicaForm() : base("especificacao-tecnica", "ESPECIFICAÇÃO TÉCNICA DEMANDA", Type.Form)
+        public const string TemaPath = "children.escopo-fornecimento.children.tema-aneel.value";
+        public const string Key = "especificacao-tecnica";
+
+        public EspecificacaoTecnicaForm() : base(Key, "ESPECIFICAÇÃO TÉCNICA DEMANDA", Type.Form)
         {
             // 1
             AddRichText("apresentacao-objetivo", "APRESENTAÇÃO E OBJETIVO");
@@ -17,17 +19,21 @@ namespace PeD.Core.Models.Demandas.Forms
             //2.3
             escopoFornecimento.AddRichText("descricao-problema", "DESCRIÇÃO COMPLETA DO PROBLEMA");
             //2.4
-            var resultadosEsperados = escopoFornecimento.AddFieldList("resultados-esperados", "RESULTADOS ESPERADOS DE PESQUISA", Type.RichText);
+            var resultadosEsperados = escopoFornecimento.AddFieldList("resultados-esperados",
+                "RESULTADOS ESPERADOS DE PESQUISA", Type.RichText);
             //2.4.x <
             resultadosEsperados.AddRichText("produto-principal", "PRODUTO PRINCIPAL");
-            resultadosEsperados.AddRichTextList("produtos-complementares", "PRODUTOS COMPLEMENTARES", "").ItemTitle = "Produto Complementar";
-            resultadosEsperados.AddRichText("produtos-academicos", "PRODUTOS ACADEMICOS - ARTIGOS, TESES E DISSERTAÇÕES");
+            resultadosEsperados.AddRichTextList("produtos-complementares", "PRODUTOS COMPLEMENTARES", "").ItemTitle =
+                "Produto Complementar";
+            resultadosEsperados.AddRichText("produtos-academicos",
+                "PRODUTOS ACADEMICOS - ARTIGOS, TESES E DISSERTAÇÕES");
             resultadosEsperados.AddRichText("produtos-outros", "OUTROS PRODUTOS");
             resultadosEsperados.AddRichText("conhecimentos-cientificos", "INTERNALIZAÇÃO DE CONHECIMENTO CIENTÍFICO");
             //2.4.x >
 
             //2.5 
-            var fasesCadeiaInovacao = escopoFornecimento.AddFieldList("fases-cadeia-inovacao", "Fases da Cadeia de Inovação", Type.RichText);
+            var fasesCadeiaInovacao =
+                escopoFornecimento.AddFieldList("fases-cadeia-inovacao", "Fases da Cadeia de Inovação", Type.RichText);
             fasesCadeiaInovacao.AddRichText("de", "DESENVOLVIMENTO EXPERIMENTAL (DE)");
             fasesCadeiaInovacao.AddRichText("cs", "CABEÇA DE SÉRIE (CS)");
             fasesCadeiaInovacao.AddRichText("im", "INSERÇÃO NO MERCADO (IM)");
@@ -49,12 +55,6 @@ namespace PeD.Core.Models.Demandas.Forms
             //AddRichText("analise-selecao-proposta", "OBRIGAÇÕES DO PROPONENTE E/OU CONTRATADO");
             // escopoFornecimento.Add(resultadosEsperados);
             // escopoFornecimento.Add(new RichTextField("", ""));
-
-
-
-
         }
-
-
     }
 }

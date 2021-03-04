@@ -122,6 +122,8 @@ namespace PeD.Data
                 .ToTable("CaptacaoSugestoesFornecedores")
                 .HasKey(a => new {a.FornecedorId, a.CaptacaoId});
 
+            builder.Entity<CaptacaoSubTema>();
+
             #region Proposta
 
             builder.Entity<Proposta>(_builder =>
@@ -162,8 +164,11 @@ namespace PeD.Data
             builder.Entity<RecursoHumano.Alocacao>(b =>
             {
                 b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(a => a.Etapa).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(a => a.Proposta).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Etapa).WithMany(e => e.RecursosHumanosAlocacoes).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Proposta)
+                    .WithMany(e => e.RecursosHumanosAlocacoes)
+                    .HasForeignKey(a => a.PropostaId)
+                    .OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.Property(e => e.HoraMeses).HasConversion(
                     meses => JsonConvert.SerializeObject(meses),
@@ -171,9 +176,13 @@ namespace PeD.Data
             });
             builder.Entity<RecursoMaterial.Alocacao>(b =>
             {
+                b.HasOne(a => a.Etapa).WithMany(e => e.RecursosMateriaisAlocacoes).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.EmpresaRecebedora).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(a => a.Proposta).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Proposta)
+                    .WithMany(e => e.RecursosMateriaisAlocacoes)
+                    .HasForeignKey(a => a.PropostaId)
+                    .OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<Risco>();

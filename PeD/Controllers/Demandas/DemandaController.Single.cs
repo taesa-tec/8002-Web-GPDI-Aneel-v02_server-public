@@ -12,8 +12,10 @@ using DiffPlex.Chunkers;
 using DiffPlex.DiffBuilder;
 using HtmlAgilityPack;
 using PeD.Core.ApiModels;
+using PeD.Core.ApiModels.Demandas;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models.Demandas;
+using PeD.Core.Models.Demandas.Forms;
 using PeD.Core.Requests.Demanda;
 using PeD.Data;
 using PeD.Services;
@@ -111,10 +113,6 @@ namespace PeD.Controllers.Demandas
                 {
                     return BadRequest(exception);
                 }
-                catch (System.Exception)
-                {
-                    throw;
-                }
 
                 return GetById(id);
             }
@@ -206,19 +204,19 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpGet("{id:int}/Form/{form}")]
-        public ActionResult<object> GetDemandaFormValue(int id, string form)
+        public ActionResult<DemandaFormValuesDto> GetDemandaFormValue(int id, string form)
         {
             var data = DemandaService.GetDemandaFormData(id, form);
             if (data != null)
             {
-                return data;
+                return Mapper.Map<DemandaFormValuesDto>(data);
             }
 
-            return default(object);
+            return null;
         }
 
         [HttpPut("{id}/Form/{form}")]
-        public ActionResult<object> SalvarDemandaFormValue(int id, string form, [FromBody] JObject data)
+        public ActionResult<DemandaFormValuesDto> SalvarDemandaFormValue(int id, string form, [FromBody] JObject data)
         {
             if (DemandaService.DemandaExist(id))
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PeD.Core.Models.Catalogos;
 using PeD.Core.Models.Demandas;
 using PeD.Core.Models.Propostas;
 using TaesaCore.Models;
@@ -42,6 +43,11 @@ namespace PeD.Core.Models.Captacoes
         //Para fornecedores
         public string Consideracoes { get; set; }
 
+        public int? TemaId { get; set; }
+        public Tema Tema { get; set; }
+        public string TemaOutro { get; set; }
+
+        public List<CaptacaoSubTema> SubTemas { get; set; }
         public List<CaptacaoSugestaoFornecedor> FornecedoresSugeridos { get; set; }
         public List<CaptacaoFornecedor> FornecedoresConvidados { get; set; }
         public List<CaptacaoContrato> Contratos { get; set; }

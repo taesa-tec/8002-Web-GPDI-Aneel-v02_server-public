@@ -26,7 +26,6 @@ namespace PeD.Core.Models.Propostas
         public class Alocacao : Propostas.Alocacao
         {
             public int RecursoId { get; set; }
-
             public RecursoHumano Recurso { get; set; }
             public Dictionary<short, short> HoraMeses { get; set; }
         }

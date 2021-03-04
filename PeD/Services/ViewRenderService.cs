@@ -14,6 +14,7 @@ namespace PeD.Services
 {
     public interface IViewRenderService
     {
+        Task<string> RenderToStringAsync<T>(string viewName, T model);
         Task<string> RenderToStringAsync(string viewName, object model);
     }
 
@@ -33,6 +34,11 @@ namespace PeD.Services
         }
 
         public async Task<string> RenderToStringAsync(string viewName, object model)
+        {
+            return await RenderToStringAsync<object>(viewName, model);
+        }
+
+        public async Task<string> RenderToStringAsync<T>(string viewName, T model)
         {
             var httpContext = new DefaultHttpContext {RequestServices = _serviceProvider};
             var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());

@@ -50,7 +50,8 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 PropostaId = proposta.Id,
                 RazaoSocial = request.RazaoSocial,
                 UF = request.UF,
-                CNPJ = request.CNPJ
+                CNPJ = request.CNPJ,
+                Funcao = request.Funcao
             };
             Service.Save(coExecutor);
             return Ok();
@@ -68,6 +69,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 coExecutor.RazaoSocial = request.RazaoSocial;
                 coExecutor.UF = request.UF;
                 coExecutor.CNPJ = request.CNPJ;
+                coExecutor.Funcao = request.Funcao;
                 Service.Save(coExecutor);
                 return Ok();
             }
