@@ -12,5 +12,7 @@ namespace PeD.Core.Models.Propostas
         public Produto Produto { get; set; }
         public List<int> Meses { get; set; }
         public short Ordem { get; set; }
+        public List<RecursoHumano.Alocacao> RecursosHumanosAlocacoes { get; set; }
+        public List<RecursoMaterial.Alocacao> RecursosMateriaisAlocacoes { get; set; }
     }
 }

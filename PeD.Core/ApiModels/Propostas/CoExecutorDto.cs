@@ -7,5 +7,6 @@ namespace PeD.Core.ApiModels.Propostas
         public string CNPJ { get; set; }
         public string UF { get; set; }
         public string RazaoSocial { get; set; }
+        public string Funcao { get; set; }
     }
 }

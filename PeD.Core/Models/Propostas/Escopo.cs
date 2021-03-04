@@ -6,6 +6,8 @@ namespace PeD.Core.Models.Propostas
     public class Escopo : PropostaNode
     {
         public string Objetivo { get; set; }
+        public string ResultadoEsperado { get; set; }
+
         public string BeneficioTaesa { get; set; }
         public string BeneficioInstitucional { get; set; }
         public string BeneficioIndustria { get; set; }

@@ -12,15 +12,25 @@ namespace PeD.Core.Models.Demandas
         public int DemandaId { get; set; }
         public string FormKey { get; set; }
         public int Revisao { get; set; }
-        
+
         public DateTime LastUpdate { get; set; }
 
         [Column(TypeName = "varchar(max)")] public string Data { get; set; }
 
+        private JObject _jObject;
+
         [NotMapped]
         public JObject Object
         {
-            get { return this.ToJObject(); }
+            get
+            {
+                if (_jObject == null)
+                {
+                    _jObject = ToJObject();
+                }
+
+                return _jObject;
+            }
         }
 
         public List<DemandaFormFile> Files { get; set; }
@@ -31,9 +41,9 @@ namespace PeD.Core.Models.Demandas
 
         public JObject ToJObject()
         {
-            if (this.Data != null)
+            if (Data != null)
             {
-                return JsonConvert.DeserializeObject<JObject>(this.Data);
+                return JsonConvert.DeserializeObject<JObject>(Data);
             }
 
             return JsonConvert.DeserializeObject<JObject>("{}");
@@ -41,7 +51,7 @@ namespace PeD.Core.Models.Demandas
 
         public void SetValue(object Value)
         {
-            this.Data = JsonConvert.SerializeObject(Value);
+            Data = JsonConvert.SerializeObject(Value);
         }
     }
 }

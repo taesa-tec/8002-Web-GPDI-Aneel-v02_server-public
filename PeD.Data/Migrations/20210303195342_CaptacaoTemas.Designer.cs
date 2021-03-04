@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PeD.Data;
 
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210303195342_CaptacaoTemas")]
+    partial class CaptacaoTemas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2401,9 +2403,6 @@ namespace PeD.Data.Migrations
                     b.Property<string>("CNPJ")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Funcao")
-                        .HasColumnType("int");
-
                     b.Property<int>("PropostaId")
                         .HasColumnType("int");
 
@@ -2454,13 +2453,9 @@ namespace PeD.Data.Migrations
                     b.Property<int>("PropostaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ResultadoEsperado")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("PropostaId")
-                        .IsUnique();
+                    b.HasIndex("PropostaId");
 
                     b.ToTable("PropostaEscopos");
                 });
@@ -2571,13 +2566,7 @@ namespace PeD.Data.Migrations
                     b.Property<string>("Originalidade")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PesquisasCorrelatasExecutora")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PesquisasCorrelatasPeD")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PesquisasCorrelatasPeDAneel")
+                    b.Property<string>("PesquisasCorrelatas")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PropostaId")
@@ -3265,8 +3254,8 @@ namespace PeD.Data.Migrations
             modelBuilder.Entity("PeD.Core.Models.Propostas.Escopo", b =>
                 {
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
-                        .WithOne("Escopo")
-                        .HasForeignKey("PeD.Core.Models.Propostas.Escopo", "PropostaId")
+                        .WithMany()
+                        .HasForeignKey("PropostaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -3441,7 +3430,7 @@ namespace PeD.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
-                        .WithMany("RecursosHumanosAlocacoes")
+                        .WithMany()
                         .HasForeignKey("EtapaId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -3495,9 +3484,9 @@ namespace PeD.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
-                        .WithMany("RecursosMateriaisAlocacoes")
+                        .WithMany()
                         .HasForeignKey("EtapaId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")

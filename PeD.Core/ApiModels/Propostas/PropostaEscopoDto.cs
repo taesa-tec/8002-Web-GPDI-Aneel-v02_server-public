@@ -13,6 +13,8 @@ namespace PeD.Core.ApiModels.Propostas
         }
 
         public string Objetivo { get; set; }
+        public string ResultadoEsperado { get; set; }
+        
         public string BeneficioTaesa { get; set; }
         public string BeneficioInstitucional { get; set; }
         public string BeneficioIndustria { get; set; }

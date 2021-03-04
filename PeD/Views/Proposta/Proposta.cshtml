@@ -1,0 +1,136 @@
+@page
+@model PeD.Views.Proposta.Proposta
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<!doctype html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Proposta</title>
+    <style>
+        body{
+            padding: 0;
+            font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+            width: 210mm;
+            display: block;
+            margin-left: auto;        
+            margin-right: auto;        
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h1>Plano de Trabalho de Projeto de Pesquisa e Desenvolvimento</h1>
+    <hr>
+    <h2>1. Título do Projeto: [Campo “Título Resumido do Projeto”]</h2>
+    <h2>2. Meses de duração do projeto: [Campo ID 41 – Duração do Projeto]</h2>
+    <h2>3. Fases da Cadeia de Inovação:</h2>
+    [Campo ID 38 – “FASE DA CADEIA DE INOVAÇÃO DO PRODUTO” que estiver atrelado “Produto Final – Campo ID 36” ]
+    <h2>4. Tema ANEEL:</h2>
+    [Campo ID 31 – Tema – Etapa 2.1]
+
+    <h2>5. Demanda Aneel:</h2>
+    [Campo ID 34/35 – Sub-Tema – Etapa 2.1]
+
+    <h2>6. Entidades</h2>
+
+    <h2>7. Justificativa e Motivação (limite de 1.000 caracteres)</h2>
+    [Campo ID 25 – Motivação]
+    <h2>8. Busca de Anterioridade Detalhada</h2>
+    [Campo ID 908 – Busca de Anterioridade Detalha]
+
+    <h2>9. Bibliografia</h2>
+    [Campo ID 909 – Bibliografia]
+    <h2>10. Metodologia de Trabalho</h2>
+    [Campo ID 910 – Metodologia de Trabalho]
+
+    <h2>11. Escopo</h2>
+    <div>
+        <h3>a. Objetivos do Projeto</h3>
+        [Campo ID 911 – Objetivo do Projeto]
+
+        <h3>b. Metas do Projeto</h3>
+        [Campo ID 912 – Objetivo que será desenvolvido – 1 linha para cada input]
+        [Campo ID 913 –N de Meses– 1 linha para cada imput]
+
+        <h3>c. Resultados Esperados</h3>
+        [Campo ID 927 – Resultados Esperados]
+
+        <h3>d. Benefícios</h3>
+        <div>
+
+            i. A Taesa
+            [Campo ID 914 – A Taesa]
+
+            ii. A Instituição de Ensino/Pesquisa ou Empresa parceira:
+            [Campo ID 915 – A INSTITUIÇÃO DE ENSINO/PESQUISA OU EMPRESA PARCEIRA]
+            iii. A Indústria
+            [Campo ID 916 – A INDUSTRIA]
+
+            iv. Ao Setor Elétrico
+            [Campo ID 917 – SETOR ELETRICO]
+            v. Sociedade
+            [Campo ID 918 – A SOCIEDADE]
+        </div>
+    </div>
+
+    <h2>12. Especificação do Produtos do Projeto</h2>
+
+
+    <h2>13. Originalidade (limite de 2.000 caracteres)</h2>
+    [Campo ID 26 – ORIGINALIDADE).
+
+    <h2>14. Aplicabilidade (limite de 1.000 caracteres)</h2>
+    [Campo ID 27 – APLICABILIDADE).
+
+    <h2>15. Relevância (limite de 1.000 caracteres)</h2>
+    [Campo ID 28 – RELEVÂNCIA).
+
+
+    <h2>16. Estudo de Viabilidade Econômica do Projeto (EVE) e Razoabilidade dos Custos (limite de 1.000 caracteres)</h2>
+    [Campo ID 29– RAZOABILIDADE DOS CUSTOS).
+
+
+    <h2>17. Pesquisas Correlatas (limite de 1.000 caracteres)</h2>
+
+    <div>
+        a. Pesquisas Correlatas desenvolvidas no Programa P&D ANEEL.
+        [Campo ID 927– Pesquisas Correlatas desenvolvidas no Programa P&D ANEEL).
+
+        b. Pesquisas Correlatas desenvolvidas fora do Programa P&D ANEEL.
+        [Campo ID 928– Pesquisas Correlatas desenvolvidas fora do Programa P&D).
+
+        c. Pesquisas Correlatas desenvolvidas pela Empresa Executora
+        [Campo ID 929– Pesquisas Correlatas desenvolvidas pela Empresa Executora).
+    </div>
+
+    <h2>18. Tabela de Riscos</h2>
+
+    <h2>19. Experiência Prévia das Empresas Parceiras no Tema</h2>
+    [Campo ID 919– Experiência Previa das empresas parceiras no tema).
+
+    <h2>20. Contrapartidas</h2>
+    [Campo ID 920– Contrapartidas).
+
+
+    <h2>21. Direitos Sobre a Propriedade Intelectual/Industrial(a)</h2>
+    <div>
+
+        a. Proporção de direitos sobre a Propriedade Intelectual serão partilhados entre a PROPONENTE, COOPERADA e a EXECUTORA proporcionalmente ao aporte financeiro no PROJETO objeto deste CONVÊNIO conforme exigido pelo Manual do Programa de Pesquisa e Desenvolvimento Tecnológico do Setor de Energia Elétrica – ANEEL e descritos no art.9º, parágrafo 3º, da Lei no 10.973 de 2004.
+
+        b. O(s) Softwares, protótipo(s), cabeça de série ou lote pioneiro, será(ão) de propriedade da Empresa Taesa.
+
+    </div>
+
+    <h2>22. Recursos Financeiros – Etapas</h2>
+    [Tabela preenchida pelo Somatório dos itens cadastrados em “Alocar Recursos Humanos” e “Alocar Recursos Materiais” subdividindo ela em Etapas e Rubricas. Será criada uma tabela para cada etapa cadastra trada no projeto]
+</div>
+</body>
+</html>

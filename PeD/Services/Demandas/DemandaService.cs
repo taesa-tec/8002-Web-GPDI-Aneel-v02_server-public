@@ -396,12 +396,40 @@ namespace PeD.Services.Demandas
             var demanda = GetById(id);
             if (demanda != null && demanda.EtapaAtual != DemandaEtapa.Captacao)
             {
+                var especificacaoTecnicaForm = GetDemandaFormData(id, EspecificacaoTecnicaForm.Key);
+                var temaAneel =
+                    especificacaoTecnicaForm.Object.SelectToken(EspecificacaoTecnicaForm.TemaPath) as JObject;
+
+                if (temaAneel == null)
+                    throw new DemandaException("Tema Aneel ausente");
+
+                var temaId = temaAneel.GetValue("catalogTemaId")?.Value<int?>();
+                var temaOutro = temaAneel.GetValue("outroDesc")?.Value<string>();
+                var subtemas = temaAneel.GetValue("subTemas") as JArray;
+                var captacaoSubTema = subtemas?.Select(t =>
+                {
+                    var subtema = (t as JObject);
+                    if (subtema != null)
+                    {
+                        return new CaptacaoSubTema()
+                        {
+                            SubTemaId = subtema.GetValue("catalogSubTemaId")?.Value<int>() ?? 0,
+                            Outro = subtema.GetValue("outroDesc")?.Value<string>() ?? ""
+                        };
+                    }
+
+                    return null;
+                }).Where(s => s != null);
+
                 var captacao = _context.Set<Captacao>().FirstOrDefault(c => c.DemandaId == id) ?? new Captacao
                 {
                     DemandaId = id,
-                    CriadorId = userId,
+                    CriadorId = demanda.CriadorId,
+                    TemaId = temaId,
+                    TemaOutro = temaOutro,
                     Titulo = demanda.Titulo,
-                    Status = Captacao.CaptacaoStatus.Pendente
+                    Status = Captacao.CaptacaoStatus.Pendente,
+                    SubTemas = captacaoSubTema?.ToList() ?? new List<CaptacaoSubTema>()
                 };
                 demanda.EtapaAtual = DemandaEtapa.Captacao;
                 demanda.Status = DemandaStatus.Concluido;
@@ -522,7 +550,6 @@ namespace PeD.Services.Demandas
                 .FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
             if (dfData != null)
             {
-                formanexos.ToList().ForEach(i => Console.WriteLine(i.Value<int>()));
                 dfData.SetValue(formdata);
                 dfData.Files = formanexos.ToList().Select(item => new DemandaFormFile
                 {
@@ -618,7 +645,6 @@ namespace PeD.Services.Demandas
                 CreatedAt = DateTime.Now,
             };
             _context.DemandaFormHistoricos.Add(historico);
-            Console.WriteLine(historico.FormValuesId);
             _context.SaveChanges();
 
             return historico;

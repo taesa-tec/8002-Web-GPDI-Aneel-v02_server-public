@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Net.Http.Headers;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Extensions;
 using PeD.Core.Models;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
+using PeD.Services;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -119,6 +121,16 @@ namespace PeD.Controllers.Fornecedores.Propostas
             }
 
             return StatusCode(428);
+        }
+
+        [AllowAnonymous] // @todo remover
+        [HttpGet("{id}/Documento")]
+        public ActionResult PropostaDoc(int id, [FromServices] IViewRenderService renderService)
+        {
+            // var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            var view = renderService.RenderToStringAsync("Proposta/Proposta", null).Result;
+
+            return Content(view, "text/html");
         }
     }
 }
