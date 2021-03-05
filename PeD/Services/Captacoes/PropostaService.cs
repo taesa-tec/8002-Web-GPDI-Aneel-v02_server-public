@@ -32,6 +32,39 @@ namespace PeD.Services.Captacoes
                 .FirstOrDefault(p => p.Id == id);
         }
 
+        public Proposta GetPropostaFull(int id)
+        {
+            return _captacaoPropostas
+                //Captacao
+                .Include("Captacao.Tema")
+                .Include(p => p.Captacao).ThenInclude(c => c.SubTemas).ThenInclude(s => s.SubTema)
+                //
+
+                // Produto
+                .Include("Etapas.Produto.ProdutoTipo")
+                .Include("Etapas.Produto.FaseCadeia")
+                .Include("Etapas.Produto.TipoDetalhado")
+                // RH
+                .Include("Etapas.RecursosHumanosAlocacoes.Recurso")
+                .Include("Etapas.RecursosHumanosAlocacoes.EmpresaFinanciadora")
+                .Include("Etapas.RecursosHumanosAlocacoes.CoExecutorFinanciador")
+                // RM
+                .Include("Etapas.RecursosMateriaisAlocacoes.Recurso")
+                .Include("Etapas.RecursosMateriaisAlocacoes.EmpresaFinanciadora")
+                .Include("Etapas.RecursosMateriaisAlocacoes.CoExecutorFinanciador")
+                .Include("Etapas.RecursosMateriaisAlocacoes.EmpresaRecebedora")
+                .Include("Etapas.RecursosMateriaisAlocacoes.CoExecutorRecebedor")
+                .Include(p => p.CoExecutores)
+                .Include(p => p.Escopo)
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Metas)
+                .Include(p => p.PlanoTrabalho)
+                .Include(p => p.Produtos)
+                .ThenInclude(p => p.FaseCadeia)
+                .Include(p => p.Riscos)
+                .FirstOrDefault(p => p.Id == id);
+        }
+
 
         public Proposta GetPropostaPorFornecedor(int captacaoId, int fornecedorId) =>
             _captacaoPropostas

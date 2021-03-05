@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace PeD.Core.Models.Propostas
 {
@@ -28,6 +29,11 @@ namespace PeD.Core.Models.Propostas
             public int RecursoId { get; set; }
             public RecursoHumano Recurso { get; set; }
             public Dictionary<short, short> HoraMeses { get; set; }
+
+            public override decimal Valor
+            {
+                get { return HoraMeses.Sum(i => i.Value) * (Recurso?.ValorHora ?? 0); }
+            }
         }
     }
 }

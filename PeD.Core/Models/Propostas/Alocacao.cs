@@ -11,5 +11,6 @@ namespace PeD.Core.Models.Propostas
         public CoExecutor CoExecutorFinanciador { get; set; }
 
         public string Justificativa { get; set; }
+        public abstract decimal Valor { get; }
     }
 }

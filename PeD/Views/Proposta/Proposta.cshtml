@@ -1,12 +1,4 @@
-@page
 @model PeD.Views.Proposta.Proposta
-
-@{
-    Layout = null;
-}
-
-<!DOCTYPE html>
-
 <!doctype html>
 <html lang="pt">
 <head>
@@ -23,114 +15,248 @@
             margin-left: auto;        
             margin-right: auto;        
         }
+        table{
+            width: 100%;
+            border: 1px solid #000;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            
+        }   
+        td, th{
+            padding: 0.5rem;        
+        }
+        .inner{
+            padding-left: 2rem;        
+        }
     </style>
 </head>
 <body>
-<div>
+    <div>
     <h1>Plano de Trabalho de Projeto de Pesquisa e Desenvolvimento</h1>
     <hr>
-    <h2>1. Título do Projeto: [Campo “Título Resumido do Projeto”]</h2>
-    <h2>2. Meses de duração do projeto: [Campo ID 41 – Duração do Projeto]</h2>
+
+    <h2>1. Título do Projeto:</h2>
+    @Model.Titulo
+
+    <h2>2. Meses de duração do projeto:</h2>
+    @Model.Duracao
+
     <h2>3. Fases da Cadeia de Inovação:</h2>
-    [Campo ID 38 – “FASE DA CADEIA DE INOVAÇÃO DO PRODUTO” que estiver atrelado “Produto Final – Campo ID 36” ]
+    @Model.FaseCadeia?.Nome
     <h2>4. Tema ANEEL:</h2>
-    [Campo ID 31 – Tema – Etapa 2.1]
+    @if (Model.Tema != null)
+    {
+        @Model.Tema.Nome
+    }
+    else
+    {
+        @Model.TemaOutro
+    }
 
     <h2>5. Demanda Aneel:</h2>
-    [Campo ID 34/35 – Sub-Tema – Etapa 2.1]
+    @foreach (var d in Model.Demandas)
+    {
+        <p>
+            @if (d.SubTema != null)
+            {
+                @d.SubTema.Nome
+            }
+            else
+            {
+                @d.Outro
+            }
+        </p>
+    }
 
     <h2>6. Entidades</h2>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th>Função</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        @foreach (var e in Model.CoExecutores)
+        {
+            <tr>
+                <td>@e.Proposta.Fornecedor.Nome</td>
+                <td>@e.RazaoSocial</td>
+                <td>@e.Funcao</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 
     <h2>7. Justificativa e Motivação (limite de 1.000 caracteres)</h2>
-    [Campo ID 25 – Motivação]
+    @Model.Motivacao
+
     <h2>8. Busca de Anterioridade Detalhada</h2>
-    [Campo ID 908 – Busca de Anterioridade Detalha]
+    @Model.BuscaAnterioridade
 
     <h2>9. Bibliografia</h2>
-    [Campo ID 909 – Bibliografia]
+    @Model.Bibliografia
+
     <h2>10. Metodologia de Trabalho</h2>
-    [Campo ID 910 – Metodologia de Trabalho]
+    @Model.MetodologiaTrabalho
 
     <h2>11. Escopo</h2>
-    <div>
+    <div class="inner">
         <h3>a. Objetivos do Projeto</h3>
-        [Campo ID 911 – Objetivo do Projeto]
+        @Model.Objetivo
 
         <h3>b. Metas do Projeto</h3>
-        [Campo ID 912 – Objetivo que será desenvolvido – 1 linha para cada input]
-        [Campo ID 913 –N de Meses– 1 linha para cada imput]
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Objeto que será Desenvolvido</th>
+                <th width="20%">Nº de meses</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var meta in Model.Metas)
+            {
+                <tr>
+                    <td>@meta.Objetivo</td>
+                    <td>@meta.Meses</td>
+                </tr>
+            }
+            </tbody>
+        </table>
 
         <h3>c. Resultados Esperados</h3>
-        [Campo ID 927 – Resultados Esperados]
+        @Model.ResultadoEsperado
 
         <h3>d. Benefícios</h3>
-        <div>
+        <div class="inner">
 
-            i. A Taesa
-            [Campo ID 914 – A Taesa]
+            <h4>i. A Taesa</h4>
+            <div>@Model.BeneficioTaesa</div>
 
-            ii. A Instituição de Ensino/Pesquisa ou Empresa parceira:
-            [Campo ID 915 – A INSTITUIÇÃO DE ENSINO/PESQUISA OU EMPRESA PARCEIRA]
-            iii. A Indústria
-            [Campo ID 916 – A INDUSTRIA]
+            <h4>ii. A Instituição de Ensino/Pesquisa ou Empresa parceira:</h4>
+            <div>@Model.BeneficioInstitucional</div>
 
-            iv. Ao Setor Elétrico
-            [Campo ID 917 – SETOR ELETRICO]
-            v. Sociedade
-            [Campo ID 918 – A SOCIEDADE]
+            <h4>iii. A Indústria</h4>
+            <div>@Model.BeneficioIndustria</div>
+
+            <h4>iv. Ao Setor Elétrico</h4>
+            <div>@Model.BeneficioSetorEletrico</div>
+
+            <h4>v. Sociedade</h4>
+            <div>@Model.BeneficioSociedade</div>
         </div>
     </div>
 
     <h2>12. Especificação do Produtos do Projeto</h2>
 
+    @foreach (var produto in @Model.Produtos)
+    {
+        <table border="1" style="margin-bottom: 1rem">
+            <tr>
+                <th width="30%">Classificação:</th>
+                <td>@produto.Classificacao</td>
+            </tr>
+            <tr>
+                <th width="30%">Tipo de Produto:</th>
+                <td>@produto.ProdutoTipo.Nome</td>
+            </tr>
+            <tr>
+                <th width="30%">Fase da Cadeia de Inovação:</th>
+                <td>@produto.FaseCadeia?.Nome</td>
+            </tr>
+            <tr>
+                <th>Tipo de Produto Detalhado:</th>
+                <td>@produto.TipoDetalhado?.Nome</td>
+            </tr>
+            <tr>
+                <th colspan="2">Titulo do Produto:</th>
+            </tr>
+            <tr>
+                <td colspan="2">@produto.Titulo</td>
+            </tr>
+            <tr>
+                <th colspan="2">Descrição Detalhada do Produto:</th>
+            </tr>
+            <tr>
+                <td colspan="2">@produto.Descricao</td>
+            </tr>
+        </table>
+    }
 
     <h2>13. Originalidade (limite de 2.000 caracteres)</h2>
-    [Campo ID 26 – ORIGINALIDADE).
+    @Model.Originalidade
 
     <h2>14. Aplicabilidade (limite de 1.000 caracteres)</h2>
-    [Campo ID 27 – APLICABILIDADE).
+    @Model.Aplicabilidade
 
     <h2>15. Relevância (limite de 1.000 caracteres)</h2>
-    [Campo ID 28 – RELEVÂNCIA).
+    @Model.Relevancia
 
 
     <h2>16. Estudo de Viabilidade Econômica do Projeto (EVE) e Razoabilidade dos Custos (limite de 1.000 caracteres)</h2>
-    [Campo ID 29– RAZOABILIDADE DOS CUSTOS).
+    @Model.RazoabilidadeCustos
 
 
     <h2>17. Pesquisas Correlatas (limite de 1.000 caracteres)</h2>
 
-    <div>
-        a. Pesquisas Correlatas desenvolvidas no Programa P&D ANEEL.
-        [Campo ID 927– Pesquisas Correlatas desenvolvidas no Programa P&D ANEEL).
+    <div class="inner">
+        <h3>a. Pesquisas Correlatas desenvolvidas no Programa P&D ANEEL.</h3>
+        <div>@Model.PesquisasCorrelatasPeDAneel</div>
 
-        b. Pesquisas Correlatas desenvolvidas fora do Programa P&D ANEEL.
-        [Campo ID 928– Pesquisas Correlatas desenvolvidas fora do Programa P&D).
+        <h3>b. Pesquisas Correlatas desenvolvidas fora do Programa P&D ANEEL.</h3>
+        <div>@Model.PesquisasCorrelatasPeD</div>
 
-        c. Pesquisas Correlatas desenvolvidas pela Empresa Executora
-        [Campo ID 929– Pesquisas Correlatas desenvolvidas pela Empresa Executora).
+        <h3>c. Pesquisas Correlatas desenvolvidas pela Empresa Executora</h3>
+        <div>@Model.PesquisasCorrelatasExecutora</div>
     </div>
 
     <h2>18. Tabela de Riscos</h2>
+    @foreach (var risco in Model.Riscos)
+    {
+        <table border="1" style="margin-bottom: 1rem">
+            <tr>
+                <th width="30%">Classificação</th>
+                <td>@risco.Classificacao</td>
+            </tr>
+            <tr>
+                <th>Probabilidade</th>
+                <td>@risco.Probabilidade</td>
+            </tr>
+            <tr>
+                <th colspan="2">Titulo:</th>
+            </tr>
+            <tr>
+                <td colspan="2">@risco.Item</td>
+            </tr>
+            <tr>
+                <th colspan="2">Justificativa:</th>
+            </tr>
+            <tr>
+                <td colspan="2">@risco.Justificativa</td>
+            </tr>
+        </table>
+    }
 
     <h2>19. Experiência Prévia das Empresas Parceiras no Tema</h2>
-    [Campo ID 919– Experiência Previa das empresas parceiras no tema).
+    <p>@Model.ExperienciaPrevia</p>
 
     <h2>20. Contrapartidas</h2>
-    [Campo ID 920– Contrapartidas).
+    <p>@Model.Contrapartidas</p>
 
 
     <h2>21. Direitos Sobre a Propriedade Intelectual/Industrial(a)</h2>
-    <div>
+    <div class="inner">
 
-        a. Proporção de direitos sobre a Propriedade Intelectual serão partilhados entre a PROPONENTE, COOPERADA e a EXECUTORA proporcionalmente ao aporte financeiro no PROJETO objeto deste CONVÊNIO conforme exigido pelo Manual do Programa de Pesquisa e Desenvolvimento Tecnológico do Setor de Energia Elétrica – ANEEL e descritos no art.9º, parágrafo 3º, da Lei no 10.973 de 2004.
+        <p>a. Proporção de direitos sobre a Propriedade Intelectual serão partilhados entre a PROPONENTE, COOPERADA e a EXECUTORA proporcionalmente ao aporte financeiro no PROJETO objeto deste CONVÊNIO conforme exigido pelo Manual do Programa de Pesquisa e Desenvolvimento Tecnológico do Setor de Energia Elétrica – ANEEL e descritos no art.9º, parágrafo 3º, da Lei no 10.973 de 2004.</p>
 
-        b. O(s) Softwares, protótipo(s), cabeça de série ou lote pioneiro, será(ão) de propriedade da Empresa Taesa.
+        <p>b. O(s) Softwares, protótipo(s), cabeça de série ou lote pioneiro, será(ão) de propriedade da Empresa Taesa.</p>
 
     </div>
 
     <h2>22. Recursos Financeiros – Etapas</h2>
     [Tabela preenchida pelo Somatório dos itens cadastrados em “Alocar Recursos Humanos” e “Alocar Recursos Materiais” subdividindo ela em Etapas e Rubricas. Será criada uma tabela para cada etapa cadastra trada no projeto]
-</div>
+    </div>
 </body>
 </html>

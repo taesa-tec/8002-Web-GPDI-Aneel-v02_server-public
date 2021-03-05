@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Extensions;
@@ -127,10 +128,17 @@ namespace PeD.Controllers.Fornecedores.Propostas
         [HttpGet("{id}/Documento")]
         public ActionResult PropostaDoc(int id, [FromServices] IViewRenderService renderService)
         {
-            // var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
-            var view = renderService.RenderToStringAsync("Proposta/Proposta", null).Result;
+            //var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            var proposta = Service.GetPropostaFull(id);
+            var modelView = Mapper.Map<Views.Proposta.Proposta>(proposta);
+            if (modelView != null)
+            {
+                var view = renderService.RenderToStringAsync("Proposta/Proposta", modelView).Result;
 
-            return Content(view, "text/html");
+                return Content(view, "text/html");
+            }
+
+            return NotFound("EE");
         }
     }
 }

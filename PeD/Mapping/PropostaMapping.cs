@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using PeD.Core.ApiModels.Propostas;
+using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
 
@@ -93,6 +94,21 @@ namespace PeD.Mapping
                     src.Recurso.CategoriaContabil.Nome))
                 .ForMember(dest => dest.Valor, opt =>
                     opt.MapFrom(src => src.Recurso.ValorUnitario * src.Quantidade))
+                ;
+
+            CreateMap<Captacao, Views.Proposta.Proposta>();
+            CreateMap<Escopo, Views.Proposta.Proposta>();
+            CreateMap<PlanoTrabalho, Views.Proposta.Proposta>();
+            CreateMap<Proposta, Views.Proposta.Proposta>()
+                .IncludeMembers(
+                    p => p.Captacao,
+                    p => p.PlanoTrabalho,
+                    p => p.Escopo)
+                .ForMember(dest => dest.FaseCadeia, opt =>
+                    opt.MapFrom(src =>
+                        src.Produtos.Find(p => p.Classificacao == ProdutoClassificacao.Final).FaseCadeia))
+                .ForMember(dest => dest.Demandas, opt =>
+                    opt.MapFrom(src => src.Captacao.SubTemas))
                 ;
         }
     }

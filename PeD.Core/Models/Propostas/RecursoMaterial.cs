@@ -22,6 +22,8 @@ namespace PeD.Core.Models.Propostas
             public int? CoExecutorRecebedorId { get; set; }
             public CoExecutor CoExecutorRecebedor { get; set; }
             [Column(TypeName = "decimal(18, 2)")] public decimal Quantidade { get; set; }
+
+            public override decimal Valor => Quantidade * (Recurso?.ValorUnitario ?? 0);
         }
     }
 }
