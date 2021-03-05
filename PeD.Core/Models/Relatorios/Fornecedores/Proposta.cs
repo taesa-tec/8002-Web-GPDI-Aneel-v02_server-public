@@ -1,13 +1,19 @@
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Catalogos;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
 
-namespace PeD.Views.Proposta
+namespace PeD.Core.Models.Relatorios.Fornecedores
 {
     public class Proposta
     {
+        /// <summary>
+        /// 22  - Recursos Financeiros - Etapas     Proposta.Etapas 
+        ///</summary>
+        public List<EtapaRelatorio> Etapas { get; set; }
+
         /// <summary>
         /// 1   - Título do Projeto                 Proposta.Captacao.Titulo 
         ///</summary>
@@ -177,10 +183,6 @@ namespace PeD.Views.Proposta
         ///</summary>
         public string Contrapartidas { get; set; }
 
-        /// <summary>
-        /// 22  - Recursos Financeiros - Etapas     Proposta.Etapas 
-        ///</summary>
-        public List<Etapa> Etapas { get; set; }
 
         public void OnGet()
         {

@@ -130,12 +130,20 @@ namespace PeD.Controllers.Fornecedores.Propostas
         {
             //var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
             var proposta = Service.GetPropostaFull(id);
-            var modelView = Mapper.Map<Views.Proposta.Proposta>(proposta);
+            var modelView = Mapper.Map<Core.Models.Relatorios.Fornecedores.Proposta>(proposta);
             if (modelView != null)
             {
+                /*
+                var jsonConfig = new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                };
+                var json = JsonConvert.SerializeObject(modelView, jsonConfig);
+                return Content(json, "text/json");
+                /*/
                 var view = renderService.RenderToStringAsync("Proposta/Proposta", modelView).Result;
-
                 return Content(view, "text/html");
+                //*/
             }
 
             return NotFound("EE");

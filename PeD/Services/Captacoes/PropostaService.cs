@@ -49,7 +49,7 @@ namespace PeD.Services.Captacoes
                 .Include("Etapas.RecursosHumanosAlocacoes.EmpresaFinanciadora")
                 .Include("Etapas.RecursosHumanosAlocacoes.CoExecutorFinanciador")
                 // RM
-                .Include("Etapas.RecursosMateriaisAlocacoes.Recurso")
+                .Include("Etapas.RecursosMateriaisAlocacoes.Recurso.CategoriaContabil")
                 .Include("Etapas.RecursosMateriaisAlocacoes.EmpresaFinanciadora")
                 .Include("Etapas.RecursosMateriaisAlocacoes.CoExecutorFinanciador")
                 .Include("Etapas.RecursosMateriaisAlocacoes.EmpresaRecebedora")
