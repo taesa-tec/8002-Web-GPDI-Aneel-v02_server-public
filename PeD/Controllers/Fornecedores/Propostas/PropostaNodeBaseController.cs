@@ -79,6 +79,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var risco = Mapper.Map<T>(request);
             risco.PropostaId = Proposta.Id;
             Service.Post(risco);
+            PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
             return Ok();
         }
 
@@ -96,6 +97,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             node.PropostaId = Proposta.Id;
 
             Service.Put(node);
+            PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
 
             return Ok(Mapper.Map<TResponse>(node));
         }
@@ -107,6 +109,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             if (node == null)
                 return NotFound();
             Service.Delete(node.Id);
+            PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
 
             return Ok();
         }

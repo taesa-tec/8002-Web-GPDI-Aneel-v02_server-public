@@ -71,6 +71,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 coExecutor.CNPJ = request.CNPJ;
                 coExecutor.Funcao = request.Funcao;
                 Service.Save(coExecutor);
+                propostaService.UpdatePropostaDataAlteracao(proposta.Id);
                 return Ok();
             }
 
@@ -90,6 +91,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             if (coExecutor.PropostaId == proposta.Id)
             {
                 Service.Delete(id);
+                propostaService.UpdatePropostaDataAlteracao(proposta.Id);
                 return Ok();
             }
 

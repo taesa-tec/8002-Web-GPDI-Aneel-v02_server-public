@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Catalogos;
@@ -9,10 +11,32 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
 {
     public class Proposta
     {
-        /// <summary>
-        /// 22  - Recursos Financeiros - Etapas     Proposta.Etapas 
-        ///</summary>
-        public List<EtapaRelatorio> Etapas { get; set; }
+        public Dictionary<string, string> EmpresasFinanciadoras
+        {
+            get
+            {
+                return Etapas.SelectMany(i => i.Alocacoes)
+                    .GroupBy(i => i.EmpresaFinanciadoraCodigo)
+                    .Select(i => i.First())
+                    .ToDictionary(a => a.EmpresaFinanciadoraCodigo, a => a.EmpresaFinanciadora);
+            }
+        }
+
+        public Dictionary<string, string> EmpresasRecebedoras
+        {
+            get
+            {
+                return Etapas.SelectMany(i => i.Alocacoes)
+                    .GroupBy(i => i.EmpresaRecebedoraCodigo)
+                    .Select(i => i.First())
+                    .ToDictionary(a => a.EmpresaRecebedoraCodigo, a => a.EmpresaRecebedora);
+            }
+        }
+
+        public List<RecursoHumano> RecursosHumanos { get; set; }
+        public List<RecursoMaterial> RecursosMateriais { get; set; }
+        public List<RecursoHumano.Alocacao> RecursosHumanosAlocacoes { get; set; }
+        public List<RecursoMaterial.Alocacao> RecursosMateriaisAlocacoes { get; set; }
 
         /// <summary>
         /// 1   - Título do Projeto                 Proposta.Captacao.Titulo 
@@ -183,9 +207,9 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
         ///</summary>
         public string Contrapartidas { get; set; }
 
-
-        public void OnGet()
-        {
-        }
+        /// <summary>
+        /// 22  - Recursos Financeiros - Etapas     Proposta.Etapas 
+        ///</summary>
+        public List<EtapaRelatorio> Etapas { get; set; }
     }
 }

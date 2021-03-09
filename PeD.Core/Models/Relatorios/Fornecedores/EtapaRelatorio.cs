@@ -23,9 +23,29 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
                 .ToDictionary(i => i.Key, i => i.ToList());
         }
 
-        public static string ValorPorCategoria(List<AlocacaoRecurso> list, string categoria)
+        public static decimal CustoPorCategoria(List<AlocacaoRecurso> list, string categoria)
         {
-            return list.Where(a => a.CategoriaContabil == categoria).Sum(i => i.Valor).ToString("C");
+            return list.Where(a => a.CategoriaContabil == categoria).Sum(i => i.Valor);
+        }
+
+        public static decimal CustoEntreEmpresas(List<AlocacaoRecurso> list, string financiadora, string recebedora)
+        {
+            return list.Where(i =>
+                    i.EmpresaFinanciadoraCodigo == financiadora && i.EmpresaRecebedoraCodigo == recebedora)
+                .Sum(x => x.Valor);
+        }
+
+        public static decimal CustoFinanciadora(List<AlocacaoRecurso> list, string financiadora, bool interno = true)
+        {
+            return list.Where(i =>
+                    i.EmpresaFinanciadoraCodigo == financiadora &&
+                    (interno || i.EmpresaRecebedoraCodigo != financiadora))
+                .Sum(x => x.Valor);
+        }
+
+        public static decimal CustoFinanciadora(List<EtapaRelatorio> list, string financiadora, bool interno = true)
+        {
+            return CustoFinanciadora(list.SelectMany(e => e.Alocacoes).ToList(), financiadora, interno);
         }
 
         public string DescricaoAtividades { get; set; }
@@ -34,6 +54,14 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
         public Produto Produto { get; set; }
         public List<int> Meses { get; set; }
         public short Ordem { get; set; }
+
+        public decimal CustoTotal(bool interno = true)
+        {
+            if (interno)
+                return Alocacoes.Sum(a => a.Valor);
+            return Alocacoes.Where(i => i.EmpresaFinanciadoraCodigo != i.EmpresaRecebedoraCodigo).Sum(a => a.Valor);
+        }
+
         public List<AlocacaoRecurso> Alocacoes { get; set; }
 
         public List<AlocacaoRecurso> AlocacoesInternas
@@ -57,6 +85,7 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
                     .ToList();
             }
         }
+
 
         public Dictionary<string, Dictionary<string, List<AlocacaoRecurso>>> AlocacoesEntreEmpresas
         {

@@ -1,6 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AutoMapper;
+using FluentValidation.Results;
+using iText.Html2pdf;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +18,7 @@ using PeD.Core.Extensions;
 using PeD.Core.Models;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
+using PeD.Core.Validators;
 using PeD.Services;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
@@ -104,6 +109,21 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return StatusCode(428);
         }
 
+        [HttpPut("{id}/Finalizar")]
+        public ActionResult Finalizar(int id)
+        {
+            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            if (proposta.Participacao == StatusParticipacao.Pendente)
+            {
+                proposta.Finalizado = true;
+                proposta.DataResposta = DateTime.Now;
+                Service.Put(proposta);
+                return Ok();
+            }
+
+            return StatusCode(428);
+        }
+
         [HttpPut("{id}/Duracao")]
         public ActionResult PropostaDuracao(int id, [FromServices] IService<Etapa> etapaService, [FromBody] short meses)
         {
@@ -124,29 +144,63 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return StatusCode(428);
         }
 
-        [AllowAnonymous] // @todo remover
-        [HttpGet("{id}/Documento")]
-        public ActionResult PropostaDoc(int id, [FromServices] IViewRenderService renderService)
+        [HttpGet("{id}/Erros")]
+        public ActionResult<ValidationResult> GetPropostaErros(int id)
         {
-            //var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
-            var proposta = Service.GetPropostaFull(id);
-            var modelView = Mapper.Map<Core.Models.Relatorios.Fornecedores.Proposta>(proposta);
-            if (modelView != null)
+            var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            if (tempproposta == null)
             {
-                /*
-                var jsonConfig = new JsonSerializerSettings()
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                };
-                var json = JsonConvert.SerializeObject(modelView, jsonConfig);
-                return Content(json, "text/json");
-                /*/
-                var view = renderService.RenderToStringAsync("Proposta/Proposta", modelView).Result;
-                return Content(view, "text/html");
-                //*/
+                return NotFound();
             }
 
-            return NotFound("EE");
+            var relatorio = Service.GetRelatorio(tempproposta.Id);
+            if (relatorio != null)
+            {
+                return relatorio.Validacao;
+            }
+
+            return NotFound();
+        }
+
+        [HttpGet("{id}/Documento")]
+        public ActionResult PropostaDoc(int id)
+        {
+            var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            if (tempproposta == null)
+            {
+                return NotFound();
+            }
+
+            var relatorio = Service.GetRelatorio(tempproposta.Id);
+            if (relatorio != null)
+            {
+                return Content(relatorio.Content, "text/html");
+            }
+
+            return NotFound();
+        }
+
+        [HttpGet("{id}/Documento/Download")]
+        public ActionResult PropostaDocDownload(int id)
+        {
+            var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            if (tempproposta == null)
+            {
+                return NotFound();
+            }
+
+            var relatorio = Service.GetRelatorio(tempproposta.Id);
+            if (relatorio != null)
+            {
+                var file = Path.GetTempFileName();
+                var stream = new FileStream(file, FileMode.Create);
+                HtmlConverter.ConvertToPdf(relatorio.Content, stream);
+                stream.Close();
+
+                return PhysicalFile(file, "application/octet-stream");
+            }
+
+            return NotFound();
         }
     }
 }

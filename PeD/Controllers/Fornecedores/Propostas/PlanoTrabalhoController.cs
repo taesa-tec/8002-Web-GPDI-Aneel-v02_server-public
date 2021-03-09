@@ -70,6 +70,8 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 Service.Post(plano);
             }
 
+            _propostaService.UpdatePropostaDataAlteracao(proposta.Id);
+
             return Ok();
         }
     }

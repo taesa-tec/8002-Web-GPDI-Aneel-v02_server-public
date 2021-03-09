@@ -66,6 +66,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             produto.PropostaId = proposta.Id;
             produto.Created = DateTime.Now;
             Service.Post(produto);
+            _propostaService.UpdatePropostaDataAlteracao(proposta.Id);
             return Ok();
         }
 
@@ -85,7 +86,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             produto.Created = produtoPrev.Created;
 
             Service.Put(produto);
-
+            _propostaService.UpdatePropostaDataAlteracao(proposta.Id);
             return Ok(Mapper.Map<PropostaProdutoDto>(produto));
         }
 
@@ -97,6 +98,8 @@ namespace PeD.Controllers.Fornecedores.Propostas
             if (produto == null)
                 return NotFound();
             Service.Delete(produto.Id);
+
+            _propostaService.UpdatePropostaDataAlteracao(proposta.Id);
 
             return Ok();
         }
