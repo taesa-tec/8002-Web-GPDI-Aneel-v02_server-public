@@ -96,10 +96,10 @@ namespace PeD.Mapping
                     opt.MapFrom(src => src.Recurso.ValorUnitario * src.Quantidade))
                 ;
 
-            CreateMap<Captacao, Views.Proposta.Proposta>();
-            CreateMap<Escopo, Views.Proposta.Proposta>();
-            CreateMap<PlanoTrabalho, Views.Proposta.Proposta>();
-            CreateMap<Proposta, Views.Proposta.Proposta>()
+            CreateMap<Captacao, Core.Models.Relatorios.Fornecedores.Proposta>();
+            CreateMap<Escopo, Core.Models.Relatorios.Fornecedores.Proposta>();
+            CreateMap<PlanoTrabalho, Core.Models.Relatorios.Fornecedores.Proposta>();
+            CreateMap<Proposta, Core.Models.Relatorios.Fornecedores.Proposta>()
                 .IncludeMembers(
                     p => p.Captacao,
                     p => p.PlanoTrabalho,

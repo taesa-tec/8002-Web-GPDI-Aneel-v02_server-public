@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -129,6 +130,7 @@ namespace PeD.Data
             builder.Entity<Proposta>(_builder =>
             {
                 _builder.HasIndex(p => new {p.CaptacaoId, p.FornecedorId}).IsUnique();
+                _builder.HasOne(p => p.Relatorio);
                 _builder.ToTable("Propostas");
             });
             builder.Entity<PropostaArquivo>(b =>
@@ -137,6 +139,16 @@ namespace PeD.Data
                 b.ToTable("PropostasArquivos");
             });
 
+
+            builder.Entity<Relatorio>(builder =>
+            {
+                builder.HasOne(r => r.Proposta)
+                    .WithMany(p => p.HistoricoRelatorios)
+                    .HasForeignKey(r => r.PropostaId);
+                builder.Property(r => r.Validacao).HasConversion(
+                    validacao => JsonConvert.SerializeObject(validacao),
+                    validacao => JsonConvert.DeserializeObject<ValidationResult>(validacao));
+            });
             builder.Entity<CoExecutor>();
             builder.Entity<PeD.Core.Models.Propostas.PropostaContrato>();
             builder.Entity<PeD.Core.Models.Propostas.PropostaContratoRevisao>(b =>

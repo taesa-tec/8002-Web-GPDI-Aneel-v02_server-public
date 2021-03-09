@@ -18,8 +18,14 @@ namespace PeD.Core.Models.Propostas
         public bool Finalizado { get; set; }
         public StatusParticipacao Participacao { get; set; }
         public DateTime DataCriacao { get; set; }
+        public DateTime DataAlteracao { get; set; }
         public DateTime? DataResposta { get; set; }
         public DateTime? DataClausulasAceitas { get; set; }
+
+        public int? RelatorioId { get; set; }
+        [ForeignKey("RelatorioId")] public Relatorio Relatorio { get; set; }
+
+        public List<Relatorio> HistoricoRelatorios { get; set; }
 
         public short Duracao { get; set; }
         public int FornecedorId { get; set; }
