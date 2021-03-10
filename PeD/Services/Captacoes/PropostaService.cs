@@ -145,22 +145,22 @@ namespace PeD.Services.Captacoes
                 .FirstOrDefault(c => c.PropostaId == propostaId && c.ParentId == contratoId);
         }
 
-        public List<PropostaContratoRevisao> GetContratoRevisoes(int contratoId, int propostaId)
+        public List<PropostaContratoRevisao> GetContratoRevisoes(int propostaId)
         {
             return context.Set<PropostaContratoRevisao>()
                 .Include(cr => cr.Parent)
                 .ThenInclude(c => c.Parent)
-                .Where(cr => cr.Parent.ParentId == contratoId && cr.PropostaId == propostaId)
+                .Where(cr => cr.PropostaId == propostaId)
                 .OrderByDescending(cr => cr.CreatedAt)
                 .ToList();
         }
 
-        public PropostaContratoRevisao GetContratoRevisao(int contratoId, int propostaId, int id)
+        public PropostaContratoRevisao GetContratoRevisao(int propostaId, int id)
         {
             return context.Set<PropostaContratoRevisao>()
                 .Include(cr => cr.Parent)
                 .ThenInclude(c => c.Parent)
-                .FirstOrDefault(cr => cr.Parent.ParentId == contratoId && cr.PropostaId == propostaId && cr.Id == id);
+                .FirstOrDefault(cr => cr.PropostaId == propostaId && cr.Id == id);
         }
 
         public void UpdatePropostaDataAlteracao(int propostaId, DateTime time)

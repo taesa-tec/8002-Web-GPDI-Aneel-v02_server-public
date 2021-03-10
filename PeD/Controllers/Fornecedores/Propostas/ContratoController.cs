@@ -17,6 +17,7 @@ using PeD.Data;
 using PeD.Services;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
+using TaesaCore.Extensions;
 using TaesaCore.Interfaces;
 
 namespace PeD.Controllers.Fornecedores.Propostas
@@ -54,6 +55,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
         public ActionResult Post([FromRoute] int captacaoId, [FromBody] ContratoRequest request)
         {
             var contratoProposta = propostaService.GetContrato(captacaoId, this.UserId());
+            var hash = contratoProposta.Conteudo.ToMD5();
             contratoProposta.Finalizado = !request.Draft;
             contratoProposta.Conteudo = request.Conteudo;
             if (contratoProposta.Id != 0)
@@ -68,42 +70,46 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 contratoProposta.Parent = parent;
             }
 
-            var revisao = contratoProposta.ToRevisao();
-            revisao.UserId = this.UserId();
-            _context.Add(revisao);
-            _context.SaveChanges();
+            // Só criar revisão se tiver alguma alteração de texto relevante
+            if (!hash.Equals(request.Conteudo.ToMD5()))
+            {
+                var revisao = contratoProposta.ToRevisao();
+                revisao.UserId = this.UserId();
+                _context.Add(revisao);
+                _context.SaveChanges();
+            }
 
             return Ok();
         }
 
         [HttpGet("Revisoes")]
-        public ActionResult<List<ContratoRevisaoListItemDto>> GetRevisoes([FromRoute] int captacaoId,
-            [FromRoute] int contratoId)
+        public ActionResult<List<ContratoRevisaoListItemDto>> GetRevisoes([FromRoute] int captacaoId)
         {
             var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var revisoes = propostaService.GetContratoRevisoes(contratoId, proposta.Id);
+            var revisoes = propostaService.GetContratoRevisoes(proposta.Id);
             return mapper.Map<List<ContratoRevisaoListItemDto>>(revisoes);
         }
 
         [HttpGet("Revisoes/{id}")]
-        public ActionResult<ContratoRevisaoDto> GetRevisao([FromRoute] int captacaoId,
-            [FromRoute] int contratoId, [FromRoute] int id)
+        public ActionResult<ContratoRevisaoDto> GetRevisao([FromRoute] int captacaoId, [FromRoute] int id)
         {
             var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var revisao = propostaService.GetContratoRevisao(contratoId, proposta.Id, id);
+            var revisao = propostaService.GetContratoRevisao(proposta.Id, id);
             return mapper.Map<ContratoRevisaoDto>(revisao);
         }
 
         [HttpGet("Revisoes/{id}/Diff")]
-        public async Task<ActionResult<string>> GetRevisaoDiff([FromRoute] int captacaoId,
-            [FromRoute] int contratoId, [FromRoute] int id, [FromServices] IViewRenderService viewRenderService)
+        public async Task<ActionResult<string>> GetRevisaoDiff([FromRoute] int captacaoId, [FromRoute] int id,
+            [FromServices] IViewRenderService viewRenderService)
         {
             var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var revisao = propostaService.GetContratoRevisao(contratoId, proposta.Id, id);
-            //var contrato = Get(captacaoId, contratoId);
-            //var diff = DiffService.Html(contrato.Value.Conteudo, revisao.Conteudo);
-            //var render = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
-            return "";
+            var contrato = propostaService.GetContrato(captacaoId, this.UserId());
+            var revisao = propostaService.GetContratoRevisao(proposta.Id, id);
+
+            var diff = DiffService.Html(contrato.Conteudo,
+                revisao.Conteudo);
+            var render = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
+            return render;
         }
     }
 }
