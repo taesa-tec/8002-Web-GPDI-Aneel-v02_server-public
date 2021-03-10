@@ -18,16 +18,16 @@ namespace PeD.Controllers.Fornecedores.Propostas
     [Authorize("Bearer", Roles = Roles.Fornecedor)]
     [Route("api/Fornecedor/Propostas/{captacaoId:int}/RecursosHumanos/Alocacao")]
     public class
-        AlocacaoRecursosHumanosController : PropostaNodeBaseController<RecursoHumano.Alocacao,
+        AlocacaoRecursosHumanosController : PropostaNodeBaseController<RecursoHumano.AlocacaoRh,
             AlocacaoRecursoHumanoRequest,
             AlocacaoRecursoHumanoDto>
     {
-        public AlocacaoRecursosHumanosController(IService<RecursoHumano.Alocacao> service, IMapper mapper,
+        public AlocacaoRecursosHumanosController(IService<RecursoHumano.AlocacaoRh> service, IMapper mapper,
             PropostaService propostaService) : base(service, mapper, propostaService)
         {
         }
 
-        protected override IQueryable<RecursoHumano.Alocacao> Includes(IQueryable<RecursoHumano.Alocacao> queryable)
+        protected override IQueryable<RecursoHumano.AlocacaoRh> Includes(IQueryable<RecursoHumano.AlocacaoRh> queryable)
         {
             return queryable
                     .Include(r => r.Recurso)

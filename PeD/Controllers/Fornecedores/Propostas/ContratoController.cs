@@ -6,6 +6,7 @@ using AutoMapper;
 using DiffPlex.DiffBuilder.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
@@ -24,7 +25,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
     [ApiController]
     [Authorize("Bearer", Roles = Roles.Fornecedor)]
     [Route("api/Fornecedor/Propostas/{captacaoId:int}/[controller]")]
-    public class ContratosController : Controller
+    public class ContratoController : Controller
     {
         private PropostaService propostaService;
         private CaptacaoService captacaoService;
@@ -32,7 +33,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
         private GestorDbContext _context;
         private IMapper mapper;
 
-        public ContratosController(PropostaService propostaService, IMapper mapper, CaptacaoService captacaoService,
+        public ContratoController(PropostaService propostaService, IMapper mapper, CaptacaoService captacaoService,
             IService<PropostaContrato> service, GestorDbContext context)
         {
             this.propostaService = propostaService;
@@ -43,65 +44,28 @@ namespace PeD.Controllers.Fornecedores.Propostas
         }
 
         [HttpGet("")]
-        public ActionResult<List<ContratoListItemDto>> Index([FromRoute] int captacaoId)
+        public ActionResult<PropostaContratoDto> Get([FromRoute] int captacaoId)
         {
-            var contratosPropostas = propostaService.GetContratos(captacaoId, this.UserId());
-            var contratos = captacaoService.GetContratos(captacaoId);
-            var ausentes = contratos.Where(c => !contratosPropostas.Any(cp => cp.ParentId == c.Id))
-                .Select(c => new PropostaContrato()
-                {
-                    ParentId = c.Id,
-                    Parent = c
-                });
-            //contratosPropostas = ;
-            return mapper.Map<List<ContratoListItemDto>>(contratosPropostas.Concat(ausentes));
+            var contrato = propostaService.GetContrato(captacaoId, this.UserId());
+            return Ok(mapper.Map<PropostaContratoDto>(contrato));
         }
 
-        [HttpGet("{contratoId}")]
-        public ActionResult<PropostaContratoDto> Get([FromRoute] int captacaoId, [FromRoute] int contratoId)
+        [HttpPost("")]
+        public ActionResult Post([FromRoute] int captacaoId, [FromBody] ContratoRequest request)
         {
-            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var contratoProposta = propostaService.GetContrato(contratoId, proposta.Id);
-            if (contratoProposta != null)
-                return mapper.Map<PropostaContratoDto>(contratoProposta);
-            var contrato = captacaoService.GetContrato(contratoId);
-
-            return mapper.Map<PropostaContratoDto>(new PropostaContrato()
+            var contratoProposta = propostaService.GetContrato(captacaoId, this.UserId());
+            contratoProposta.Finalizado = !request.Draft;
+            contratoProposta.Conteudo = request.Conteudo;
+            if (contratoProposta.Id != 0)
             {
-                ParentId = contrato.Id,
-                Parent = contrato
-            });
-        }
-
-        [HttpPost("{contratoId}")]
-        public ActionResult Post([FromRoute] int captacaoId, [FromRoute] int contratoId,
-            [FromBody] ContratoRequest request)
-        {
-            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var contrato = captacaoService.GetContrato(contratoId);
-
-            if (proposta == null || contrato == null)
-            {
-                return NotFound();
-            }
-
-            var contratoProposta = propostaService.GetContrato(contratoId, proposta.Id);
-            if (contratoProposta != null)
-            {
-                contratoProposta.Finalizado = !request.Draft;
-                contratoProposta.Conteudo = request.Conteudo;
                 Service.Put(contratoProposta);
             }
             else
             {
-                contratoProposta = new PropostaContrato()
-                {
-                    Conteudo = request.Conteudo,
-                    Finalizado = !request.Draft,
-                    ParentId = contrato.Id,
-                    PropostaId = proposta.Id
-                };
+                var parent = contratoProposta.Parent;
+                contratoProposta.Parent = null;
                 Service.Post(contratoProposta);
+                contratoProposta.Parent = parent;
             }
 
             var revisao = contratoProposta.ToRevisao();
@@ -112,7 +76,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return Ok();
         }
 
-        [HttpGet("{contratoId}/Revisoes")]
+        [HttpGet("Revisoes")]
         public ActionResult<List<ContratoRevisaoListItemDto>> GetRevisoes([FromRoute] int captacaoId,
             [FromRoute] int contratoId)
         {
@@ -121,7 +85,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return mapper.Map<List<ContratoRevisaoListItemDto>>(revisoes);
         }
 
-        [HttpGet("{contratoId}/Revisoes/{id}")]
+        [HttpGet("Revisoes/{id}")]
         public ActionResult<ContratoRevisaoDto> GetRevisao([FromRoute] int captacaoId,
             [FromRoute] int contratoId, [FromRoute] int id)
         {
@@ -130,16 +94,16 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return mapper.Map<ContratoRevisaoDto>(revisao);
         }
 
-        [HttpGet("{contratoId}/Revisoes/{id}/Diff")]
+        [HttpGet("Revisoes/{id}/Diff")]
         public async Task<ActionResult<string>> GetRevisaoDiff([FromRoute] int captacaoId,
             [FromRoute] int contratoId, [FromRoute] int id, [FromServices] IViewRenderService viewRenderService)
         {
             var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
             var revisao = propostaService.GetContratoRevisao(contratoId, proposta.Id, id);
-            var contrato = Get(captacaoId, contratoId);
-            var diff = DiffService.Html(contrato.Value.Conteudo, revisao.Conteudo);
-            var render = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
-            return render;
+            //var contrato = Get(captacaoId, contratoId);
+            //var diff = DiffService.Html(contrato.Value.Conteudo, revisao.Conteudo);
+            //var render = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
+            return "";
         }
     }
 }

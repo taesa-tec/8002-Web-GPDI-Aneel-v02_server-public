@@ -79,7 +79,7 @@ namespace PeD.Controllers.Captacoes
             try
             {
                 await service.ConfigurarCaptacao(id, request.Termino, request.Consideracoes, request.Arquivos,
-                    request.Fornecedores, request.Contratos);
+                    request.Fornecedores, request.ContratoId);
                 await service.EnviarParaFornecedores(id);
             }
             catch (Exception e)

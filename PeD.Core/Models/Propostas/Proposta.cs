@@ -35,7 +35,7 @@ namespace PeD.Core.Models.Propostas
 
         public PlanoTrabalho PlanoTrabalho { get; set; }
         public Escopo Escopo { get; set; }
-        public List<PropostaContrato> Contratos { get; set; }
+        public PropostaContrato Contrato { get; set; }
         public List<PropostaArquivo> Arquivos { get; set; }
         public List<CoExecutor> CoExecutores { get; set; }
         public List<Produto> Produtos { get; set; }
@@ -44,8 +44,8 @@ namespace PeD.Core.Models.Propostas
         public List<Risco> Riscos { get; set; }
         public List<RecursoHumano> RecursosHumanos { get; set; }
         public List<RecursoMaterial> RecursosMateriais { get; set; }
-        [InverseProperty("Proposta")] public List<RecursoHumano.Alocacao> RecursosHumanosAlocacoes { get; set; }
-        [InverseProperty("Proposta")] public List<RecursoMaterial.Alocacao> RecursosMateriaisAlocacoes { get; set; }
+        [InverseProperty("Proposta")] public List<RecursoHumano.AlocacaoRh> RecursosHumanosAlocacoes { get; set; }
+        [InverseProperty("Proposta")] public List<RecursoMaterial.AlocacaoRm> RecursosMateriaisAlocacoes { get; set; }
     }
 
     public class PropostaNode : BaseEntity

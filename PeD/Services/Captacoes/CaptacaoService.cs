@@ -17,7 +17,6 @@ namespace PeD.Services.Captacoes
         private GestorDbContext _context;
         private DbSet<CaptacaoArquivo> _captacaoArquivos;
         private DbSet<CaptacaoFornecedor> _captacaoFornecedors;
-        private DbSet<CaptacaoContrato> _captacaoContratos;
         private DbSet<Proposta> _captacaoPropostas;
 
         public CaptacaoService(IRepository<Captacao> repository, GestorDbContext context) : base(repository)
@@ -25,7 +24,6 @@ namespace PeD.Services.Captacoes
             _context = context;
             _captacaoArquivos = context.Set<CaptacaoArquivo>();
             _captacaoFornecedors = context.Set<CaptacaoFornecedor>();
-            _captacaoContratos = context.Set<CaptacaoContrato>();
             _captacaoPropostas = context.Set<Proposta>();
         }
 
@@ -38,12 +36,13 @@ namespace PeD.Services.Captacoes
         }
 
         public async Task ConfigurarCaptacao(int id, DateTime termino, string consideracoes,
-            IEnumerable<int> arquivosIds, IEnumerable<int> fornecedoresIds, IEnumerable<int> contratosIds)
+            IEnumerable<int> arquivosIds, IEnumerable<int> fornecedoresIds, int contratoId)
         {
             ThrowIfNotExist(id);
             var captacao = Get(id);
             captacao.Termino = termino;
             captacao.Consideracoes = consideracoes;
+            captacao.ContratoId = contratoId;
 
             #region Arquivos
 
@@ -64,17 +63,6 @@ namespace PeD.Services.Captacoes
 
             #endregion
 
-            #region Contratos
-
-            var contratosOld = _captacaoContratos.Where(c => c.CaptacaoId == id).ToList();
-            _captacaoContratos.RemoveRange(contratosOld);
-            _captacaoContratos.AddRange(contratosIds.Select(cid => new CaptacaoContrato()
-            {
-                CaptacaoId = id, ContratoId = cid
-            }));
-
-            #endregion
-
             await _context.SaveChangesAsync();
         }
 
@@ -91,6 +79,10 @@ namespace PeD.Services.Captacoes
             {
                 FornecedorId = f.Id,
                 CaptacaoId = id,
+                Contrato = new PropostaContrato()
+                {
+                    ParentId = (int) captacao.ContratoId
+                },
                 Participacao = StatusParticipacao.Pendente,
                 DataCriacao = DateTime.Now
             });
@@ -134,26 +126,6 @@ namespace PeD.Services.Captacoes
                     cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
                     cp.Participacao != StatusParticipacao.Rejeitado)
                 .ToList();
-        }
-
-        public IEnumerable<Contrato> GetContratos(int captacaoId)
-        {
-            return
-                _captacaoContratos
-                    .Include(cc => cc.Contrato)
-                    .Where(cc => cc.CaptacaoId == captacaoId)
-                    .Select(cc => cc.Contrato)
-                    .ToList();
-        }
-
-        public Contrato GetContrato(int contratoId)
-        {
-            return
-                _captacaoContratos
-                    .Include(cc => cc.Contrato)
-                    .FirstOrDefault(cc => cc.ContratoId == contratoId)
-                    ?.Contrato;
-            ;
         }
     }
 }

@@ -130,13 +130,13 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
             if (proposta.Participacao == StatusParticipacao.Aceito)
             {
-                var max = etapaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id))
-                    .Select(e => e.Meses.Max())
-                    .Max();
+                var etapas = etapaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id));
+                var max = etapas.Any() ? etapas.Select(e => e.Meses.Max()).Max() : 0;
                 if (meses < max)
                     return Problem("Há etapas em meses superiores à duração desejada",
                         title: "Alteração não permitida", statusCode: StatusCodes.Status428PreconditionRequired);
                 proposta.Duracao = meses;
+                proposta.DataAlteracao = DateTime.Now;
                 Service.Put(proposta);
                 return Ok();
             }

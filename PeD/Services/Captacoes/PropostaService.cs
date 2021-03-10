@@ -115,21 +115,27 @@ namespace PeD.Services.Captacoes
                                       cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
                                       cp.Participacao != StatusParticipacao.Rejeitado);
 
-        public IEnumerable<PropostaContrato> GetContratos(int captacaoId, string userId)
+        public PropostaContrato GetContrato(int captacaoId, string userId)
         {
             var proposta = _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
-                .Include(p => p.Contratos)
+                .ThenInclude(c => c.Contrato)
+                .Include(p => p.Contrato)
                 .ThenInclude(c => c.Parent)
                 .FirstOrDefault(cp => cp.Fornecedor.ResponsavelId == userId &&
                                       cp.CaptacaoId == captacaoId &&
                                       cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
                                       cp.Participacao != StatusParticipacao.Rejeitado);
             if (proposta != null)
-                return proposta.Contratos;
+                return proposta.Contrato ?? new PropostaContrato()
+                {
+                    PropostaId = proposta.Id,
+                    Parent = proposta.Captacao.Contrato,
+                    ParentId = (int) proposta.Captacao?.ContratoId,
+                };
 
-            return new List<PropostaContrato>();
+            return null;
         }
 
         public PropostaContrato GetContrato(int contratoId, int propostaId)

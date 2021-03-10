@@ -105,16 +105,6 @@ namespace PeD.Data
             });
             builder.Entity<CaptacaoArquivo>().ToTable("CaptacaoArquivos");
 
-            builder.Entity<CaptacaoContrato>(b =>
-            {
-                b.ToTable("CaptacaoContratos")
-                    .HasKey(cc => new {cc.CaptacaoId, cc.ContratoId});
-                b.HasOne(cc => cc.Captacao).WithMany(c => c.Contratos).HasForeignKey("CaptacaoId")
-                    .OnDelete(DeleteBehavior.Restrict);
-                b.HasOne(cc => cc.Contrato).WithMany().HasForeignKey("ContratoId")
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
-
             builder.Entity<CaptacaoFornecedor>()
                 .ToTable("CaptacoesFornecedores")
                 .HasKey(a => new {a.FornecedorId, PropostaConfiguracaoId = a.CaptacaoId});
@@ -131,6 +121,7 @@ namespace PeD.Data
             {
                 _builder.HasIndex(p => new {p.CaptacaoId, p.FornecedorId}).IsUnique();
                 _builder.HasOne(p => p.Relatorio);
+                _builder.HasOne(p => p.Contrato).WithOne(c => c.Proposta);
                 _builder.ToTable("Propostas");
             });
             builder.Entity<PropostaArquivo>(b =>
@@ -173,7 +164,7 @@ namespace PeD.Data
             builder.Entity<Produto>();
             builder.Entity<RecursoHumano>();
             builder.Entity<RecursoMaterial>();
-            builder.Entity<RecursoHumano.Alocacao>(b =>
+            builder.Entity<RecursoHumano.AlocacaoRh>(b =>
             {
                 b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Etapa).WithMany(e => e.RecursosHumanosAlocacoes).OnDelete(DeleteBehavior.NoAction);
@@ -186,7 +177,7 @@ namespace PeD.Data
                     meses => JsonConvert.SerializeObject(meses),
                     meses => JsonConvert.DeserializeObject<Dictionary<short, short>>(meses));
             });
-            builder.Entity<RecursoMaterial.Alocacao>(b =>
+            builder.Entity<RecursoMaterial.AlocacaoRm>(b =>
             {
                 b.HasOne(a => a.Etapa).WithMany(e => e.RecursosMateriaisAlocacoes).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.EmpresaRecebedora).WithMany().OnDelete(DeleteBehavior.NoAction);

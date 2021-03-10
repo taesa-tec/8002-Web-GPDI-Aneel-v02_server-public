@@ -18,16 +18,16 @@ namespace PeD.Controllers.Fornecedores.Propostas
     [Authorize("Bearer", Roles = Roles.Fornecedor)]
     [Route("api/Fornecedor/Propostas/{captacaoId:int}/RecursosMateriais/Alocacao")]
     public class
-        AlocacaoRecursosMateriaisController : PropostaNodeBaseController<RecursoMaterial.Alocacao,
+        AlocacaoRecursosMateriaisController : PropostaNodeBaseController<RecursoMaterial.AlocacaoRm,
             AlocacaoRecursoMaterialRequest,
             AlocacaoRecursoMaterialDto>
     {
-        public AlocacaoRecursosMateriaisController(IService<RecursoMaterial.Alocacao> service, IMapper mapper,
+        public AlocacaoRecursosMateriaisController(IService<RecursoMaterial.AlocacaoRm> service, IMapper mapper,
             PropostaService propostaService) : base(service, mapper, propostaService)
         {
         }
 
-        protected override IQueryable<RecursoMaterial.Alocacao> Includes(IQueryable<RecursoMaterial.Alocacao> queryable)
+        protected override IQueryable<RecursoMaterial.AlocacaoRm> Includes(IQueryable<RecursoMaterial.AlocacaoRm> queryable)
         {
             return queryable
                     .Include(r => r.Recurso)

@@ -10,7 +10,7 @@ namespace PeD.Mapping
     {
         public RelatorioMapping()
         {
-            CreateMap<RecursoHumano.Alocacao, AlocacaoRecurso>()
+            CreateMap<RecursoHumano.AlocacaoRh, AlocacaoRecurso>()
                 .ForMember(c => c.CategoriaContabil, opt => opt.MapFrom(s => "RH"))
                 .ForMember(c => c.EmpresaFinanciadoraCodigo, opt => opt
                     .MapFrom(s =>
@@ -31,7 +31,7 @@ namespace PeD.Mapping
                     etapa.EmpresaRecebedora = etapa.EmpresaFinanciadora;
                 });
 
-            CreateMap<RecursoMaterial.Alocacao, AlocacaoRecurso>()
+            CreateMap<RecursoMaterial.AlocacaoRm, AlocacaoRecurso>()
                 .ForMember(c => c.CategoriaContabil, opt => opt
                     .MapFrom(s => s.Recurso.CategoriaContabil.Valor)
                 )

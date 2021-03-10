@@ -24,7 +24,7 @@ namespace PeD.Core.Models.Propostas
         public CoExecutor CoExecutor { get; set; }
 
         [Table("PropostaRecursosHumanosAlocacao")]
-        public class Alocacao : Propostas.Alocacao
+        public class AlocacaoRh : Propostas.Alocacao
         {
             public int RecursoId { get; set; }
             public RecursoHumano Recurso { get; set; }

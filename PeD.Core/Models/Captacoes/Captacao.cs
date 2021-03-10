@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using PeD.Core.Models.Catalogos;
 using PeD.Core.Models.Demandas;
 using PeD.Core.Models.Propostas;
@@ -30,6 +31,9 @@ namespace PeD.Core.Models.Captacoes
         public int? ContratoSugeridoId { get; set; }
         public Contrato ContratoSugerido { get; set; }
 
+        public int? ContratoId { get; set; }
+        [ForeignKey("ContratoId")] public Contrato Contrato { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public DateTime? EnvioCaptacao { get; set; }
         public DateTime? Termino { get; set; }
@@ -50,7 +54,6 @@ namespace PeD.Core.Models.Captacoes
         public List<CaptacaoSubTema> SubTemas { get; set; }
         public List<CaptacaoSugestaoFornecedor> FornecedoresSugeridos { get; set; }
         public List<CaptacaoFornecedor> FornecedoresConvidados { get; set; }
-        public List<CaptacaoContrato> Contratos { get; set; }
         public List<CaptacaoArquivo> Arquivos { get; set; }
         public List<Proposta> Propostas { get; set; }
     }

@@ -35,8 +35,8 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
 
         public List<RecursoHumano> RecursosHumanos { get; set; }
         public List<RecursoMaterial> RecursosMateriais { get; set; }
-        public List<RecursoHumano.Alocacao> RecursosHumanosAlocacoes { get; set; }
-        public List<RecursoMaterial.Alocacao> RecursosMateriaisAlocacoes { get; set; }
+        public List<RecursoHumano.AlocacaoRh> RecursosHumanosAlocacoes { get; set; }
+        public List<RecursoMaterial.AlocacaoRm> RecursosMateriaisAlocacoes { get; set; }
 
         /// <summary>
         /// 1   - Título do Projeto                 Proposta.Captacao.Titulo 

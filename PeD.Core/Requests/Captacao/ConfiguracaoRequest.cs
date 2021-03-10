@@ -14,9 +14,9 @@ namespace PeD.Core.Requests.Captacao
         public DateTime Termino { get; set; }
 
         /// <summary>
-        /// Ids dos contratos
+        /// Id do contrato
         /// </summary>
-        public List<int> Contratos { get; set; }
+        public int ContratoId { get; set; }
 
         /// <summary>
         /// Ids dos arquivos que devem ser disponibilizados aos fornecedores
