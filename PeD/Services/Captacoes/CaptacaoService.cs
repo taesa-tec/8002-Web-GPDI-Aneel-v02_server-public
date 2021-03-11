@@ -35,6 +35,9 @@ namespace PeD.Services.Captacoes
             }
         }
 
+        public string UserSuprimento(int id) => _context.Set<Captacao>().Where(c => c.Id == id)
+            .Select(c => c.UsuarioSuprimentoId).FirstOrDefault();
+
         public async Task ConfigurarCaptacao(int id, DateTime termino, string consideracoes,
             IEnumerable<int> arquivosIds, IEnumerable<int> fornecedoresIds, int contratoId)
         {
@@ -66,6 +69,14 @@ namespace PeD.Services.Captacoes
             await _context.SaveChangesAsync();
         }
 
+        public void EstenderCaptacao(int id, DateTime termino)
+        {
+            ThrowIfNotExist(id);
+            var captacao = Get(id);
+            captacao.Termino = termino;
+            Put(captacao);
+        }
+
         public async Task EnviarParaFornecedores(int id)
         {
             ThrowIfNotExist(id);
@@ -90,6 +101,16 @@ namespace PeD.Services.Captacoes
             _context.AddRange(propostas);
             _context.Update(captacao);
             await _context.SaveChangesAsync();
+        }
+
+        public void CancelarCaptacao(int id)
+        {
+            ThrowIfNotExist(id);
+            var captacao = Get(id);
+            captacao.Status = Captacao.CaptacaoStatus.Cancelada;
+            captacao.Cancelamento = DateTime.Now;
+            Put(captacao);
+            // var fornecedores = _captacaoFornecedors.Include(cf => cf.Fornecedor).Where(cf => cf.CaptacaoId == id).Select(cf => cf.Fornecedor);
         }
 
         public Proposta GetProposta(int id)

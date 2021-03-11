@@ -26,7 +26,12 @@ namespace PeD.Mapping
 
             CreateMap<Captacao, CaptacaoDetalhesDto>()
                 .ForMember(c => c.FornecedoresSugeridos,
-                    opt => opt.MapFrom(src => src.FornecedoresSugeridos.Select(fs => fs.Fornecedor)));
+                    opt => opt.MapFrom(src => src.FornecedoresSugeridos.Select(fs => fs.Fornecedor)))
+                .ForMember(c => c.FornecedoresConvidados,
+                    opt => opt.MapFrom(src => src.FornecedoresConvidados.Select(fs => fs.Fornecedor)))
+                .ForMember(c => c.Contrato, opt => opt.MapFrom(src => src.Contrato.Titulo))
+                .ForMember(c => c.ContratoSugerido, opt => opt.MapFrom(src => src.ContratoSugerido.Titulo))
+                ;
 
             CreateMap<CaptacaoArquivo, CaptacaoArquivoDto>()
                 .ForMember(dest => dest.Uri,

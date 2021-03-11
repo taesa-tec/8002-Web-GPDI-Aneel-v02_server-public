@@ -55,6 +55,8 @@ namespace PeD.Controllers.Captacoes
                 .Include(c => c.Arquivos)
                 .Include(c => c.FornecedoresSugeridos)
                 .ThenInclude(fs => fs.Fornecedor)
+                .Include(c => c.FornecedoresConvidados)
+                .ThenInclude(fs => fs.Fornecedor)
                 .Where(c => (c.Status == Captacao.CaptacaoStatus.Elaboracao ||
                              c.Status == Captacao.CaptacaoStatus.Fornecedor) &&
                             c.UsuarioSuprimentoId == this.UserId() &&
@@ -78,9 +80,16 @@ namespace PeD.Controllers.Captacoes
         {
             try
             {
-                await service.ConfigurarCaptacao(id, request.Termino, request.Consideracoes, request.Arquivos,
-                    request.Fornecedores, request.ContratoId);
-                await service.EnviarParaFornecedores(id);
+                if (service.UserSuprimento(id) == this.UserId())
+                {
+                    await service.ConfigurarCaptacao(id, request.Termino, request.Consideracoes, request.Arquivos,
+                        request.Fornecedores, request.ContratoId);
+                    await service.EnviarParaFornecedores(id);
+                }
+                else
+                {
+                    return Forbid();
+                }
             }
             catch (Exception e)
             {
@@ -91,18 +100,74 @@ namespace PeD.Controllers.Captacoes
             return Ok();
         }
 
+        [HttpPut("{id}/Estender")]
+        public ActionResult EstenderCaptacao(int id, ConfiguracaoRequest request)
+        {
+            try
+            {
+                if (service.UserSuprimento(id) == this.UserId())
+                {
+                    service.EstenderCaptacao(id, request.Termino);
+                }
+                else
+                {
+                    return Forbid();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete("{id}/Cancelar")]
+        public ActionResult CancelarCaptacao(int id)
+        {
+            try
+            {
+                if (service.UserSuprimento(id) == this.UserId())
+                {
+                    service.CancelarCaptacao(id);
+                }
+                else
+                {
+                    return Forbid();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return Problem(e.Message);
+            }
+
+            return Ok();
+        }
+
         [HttpGet("{id}/Propostas")]
         public ActionResult<List<PropostaDto>> GetPropostas(int id)
         {
-            var propostas = service.GetPropostasPorCaptacao(id);
-            return Mapper.Map<List<PropostaDto>>(propostas);
+            if (service.UserSuprimento(id) == this.UserId())
+            {
+                var propostas = service.GetPropostasPorCaptacao(id);
+                return Mapper.Map<List<PropostaDto>>(propostas);
+            }
+
+            return Forbid();
         }
 
         [HttpGet("{id}/Propostas/{status}")]
         public ActionResult<List<PropostaDto>> GetPropostas(int id, StatusParticipacao status)
         {
-            var propostas = service.GetPropostasPorCaptacao(id, status);
-            return Mapper.Map<List<PropostaDto>>(propostas);
+            if (service.UserSuprimento(id) == this.UserId())
+            {
+                var propostas = service.GetPropostasPorCaptacao(id, status);
+                return Mapper.Map<List<PropostaDto>>(propostas);
+            }
+
+            return Forbid();
         }
     }
 }
