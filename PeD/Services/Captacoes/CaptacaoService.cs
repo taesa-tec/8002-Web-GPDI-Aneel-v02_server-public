@@ -35,6 +35,9 @@ namespace PeD.Services.Captacoes
             }
         }
 
+        public string UserSuprimento(int id) => _context.Set<Captacao>().Where(c => c.Id == id)
+            .Select(c => c.UsuarioSuprimentoId).FirstOrDefault();
+
         public async Task ConfigurarCaptacao(int id, DateTime termino, string consideracoes,
             IEnumerable<int> arquivosIds, IEnumerable<int> fornecedoresIds, int contratoId)
         {
@@ -66,6 +69,14 @@ namespace PeD.Services.Captacoes
             await _context.SaveChangesAsync();
         }
 
+        public void EstenderCaptacao(int id, DateTime termino)
+        {
+            ThrowIfNotExist(id);
+            var captacao = Get(id);
+            captacao.Termino = termino;
+            Put(captacao);
+        }
+
         public async Task EnviarParaFornecedores(int id)
         {
             ThrowIfNotExist(id);
@@ -92,11 +103,22 @@ namespace PeD.Services.Captacoes
             await _context.SaveChangesAsync();
         }
 
+        public void CancelarCaptacao(int id)
+        {
+            ThrowIfNotExist(id);
+            var captacao = Get(id);
+            captacao.Status = Captacao.CaptacaoStatus.Cancelada;
+            captacao.Cancelamento = DateTime.Now;
+            Put(captacao);
+            // var fornecedores = _captacaoFornecedors.Include(cf => cf.Fornecedor).Where(cf => cf.CaptacaoId == id).Select(cf => cf.Fornecedor);
+        }
+
         public Proposta GetProposta(int id)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
+                .Include(p => p.Contrato)
                 .FirstOrDefault(p => p.Id == id);
         }
 
@@ -113,6 +135,30 @@ namespace PeD.Services.Captacoes
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Where(cp => cp.CaptacaoId == id && cp.Participacao == status)
+                .ToList();
+        }
+
+        public IEnumerable<Proposta> GetPropostasEmAberto(int captacaoId)
+        {
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Contrato)
+                .Where(cp => cp.CaptacaoId == captacaoId && cp.Participacao != StatusParticipacao.Rejeitado &&
+                             (!cp.Finalizado || (cp.Contrato != null && !cp.Contrato.Finalizado))
+                )
+                .ToList();
+        }
+
+        public IEnumerable<Proposta> GetPropostasRecebidas(int captacaoId)
+        {
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Contrato)
+                .Where(cp => cp.CaptacaoId == captacaoId &&
+                             cp.Participacao == StatusParticipacao.Aceito &&
+                             cp.Finalizado && cp.Contrato != null &&
+                             cp.Contrato.Finalizado
+                )
                 .ToList();
         }
 

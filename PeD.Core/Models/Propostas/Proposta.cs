@@ -20,6 +20,7 @@ namespace PeD.Core.Models.Propostas
         public DateTime DataCriacao { get; set; }
         public DateTime DataAlteracao { get; set; }
         public DateTime? DataResposta { get; set; }
+        public DateTime? DataParticipacao { get; set; }
         public DateTime? DataClausulasAceitas { get; set; }
 
         public int? RelatorioId { get; set; }

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using PeD.Data;
 using AutoMapper;
+using iText.Html2pdf;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -55,6 +57,8 @@ namespace PeD.Controllers.Captacoes
                 .Include(c => c.Arquivos)
                 .Include(c => c.FornecedoresSugeridos)
                 .ThenInclude(fs => fs.Fornecedor)
+                .Include(c => c.FornecedoresConvidados)
+                .ThenInclude(fs => fs.Fornecedor)
                 .Where(c => (c.Status == Captacao.CaptacaoStatus.Elaboracao ||
                              c.Status == Captacao.CaptacaoStatus.Fornecedor) &&
                             c.UsuarioSuprimentoId == this.UserId() &&
@@ -78,9 +82,16 @@ namespace PeD.Controllers.Captacoes
         {
             try
             {
-                await service.ConfigurarCaptacao(id, request.Termino, request.Consideracoes, request.Arquivos,
-                    request.Fornecedores, request.ContratoId);
-                await service.EnviarParaFornecedores(id);
+                if (service.UserSuprimento(id) == this.UserId())
+                {
+                    await service.ConfigurarCaptacao(id, request.Termino, request.Consideracoes, request.Arquivos,
+                        request.Fornecedores, request.ContratoId);
+                    await service.EnviarParaFornecedores(id);
+                }
+                else
+                {
+                    return Forbid();
+                }
             }
             catch (Exception e)
             {
@@ -91,18 +102,184 @@ namespace PeD.Controllers.Captacoes
             return Ok();
         }
 
+        [HttpPut("{id}/Estender")]
+        public ActionResult EstenderCaptacao(int id, ConfiguracaoRequest request)
+        {
+            try
+            {
+                if (service.UserSuprimento(id) == this.UserId())
+                {
+                    service.EstenderCaptacao(id, request.Termino);
+                }
+                else
+                {
+                    return Forbid();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete("{id}/Cancelar")]
+        public ActionResult CancelarCaptacao(int id)
+        {
+            try
+            {
+                if (service.UserSuprimento(id) == this.UserId())
+                {
+                    service.CancelarCaptacao(id);
+                }
+                else
+                {
+                    return Forbid();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return Problem(e.Message);
+            }
+
+            return Ok();
+        }
+
         [HttpGet("{id}/Propostas")]
         public ActionResult<List<PropostaDto>> GetPropostas(int id)
         {
-            var propostas = service.GetPropostasPorCaptacao(id);
-            return Mapper.Map<List<PropostaDto>>(propostas);
+            if (service.UserSuprimento(id) == this.UserId())
+            {
+                var propostas = service.GetPropostasPorCaptacao(id);
+                return Mapper.Map<List<PropostaDto>>(propostas);
+            }
+
+            return Forbid();
         }
 
-        [HttpGet("{id}/Propostas/{status}")]
+        [HttpGet("{id}/Propostas/Status/{status}")]
         public ActionResult<List<PropostaDto>> GetPropostas(int id, StatusParticipacao status)
         {
-            var propostas = service.GetPropostasPorCaptacao(id, status);
-            return Mapper.Map<List<PropostaDto>>(propostas);
+            if (service.UserSuprimento(id) == this.UserId())
+            {
+                var propostas = service.GetPropostasPorCaptacao(id, status);
+                return Mapper.Map<List<PropostaDto>>(propostas);
+            }
+
+            return Forbid();
+        }
+
+        [HttpGet("{id}/Propostas/EmAberto")]
+        public ActionResult<List<PropostaDto>> GetPropostasEmAberto(int id)
+        {
+            if (service.UserSuprimento(id) == this.UserId())
+            {
+                var propostas = service.GetPropostasEmAberto(id);
+                return Mapper.Map<List<PropostaDto>>(propostas);
+            }
+
+            return Forbid();
+        }
+
+        [HttpGet("{id}/Propostas/Recebidas")]
+        public ActionResult<List<PropostaDto>> GetPropostasRecebidas(int id)
+        {
+            if (service.UserSuprimento(id) == this.UserId())
+            {
+                var propostas = service.GetPropostasRecebidas(id);
+                return Mapper.Map<List<PropostaDto>>(propostas);
+            }
+
+            return Forbid();
+        }
+
+        [HttpGet("{id}/Propostas/Negadas")]
+        public ActionResult<List<PropostaDto>> GetPropostasNegadas(int id)
+        {
+            if (service.UserSuprimento(id) == this.UserId())
+            {
+                var propostas = service.GetPropostasPorCaptacao(id, StatusParticipacao.Rejeitado);
+                return Mapper.Map<List<PropostaDto>>(propostas);
+            }
+
+            return Forbid();
+        }
+
+        [HttpGet("{id}/Propostas/{propostaId}/Detalhes")]
+        public ActionResult<PropostaDto> GetPropostaDetalhes(int id, int propostaId)
+        {
+            if (service.UserSuprimento(id) == this.UserId())
+            {
+                var captacao = service.Get(id);
+                if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                    captacao.Termino < DateTime.Now)
+                {
+                    var propostas = service.GetProposta(propostaId);
+                    return Mapper.Map<PropostaDto>(propostas);
+                }
+            }
+
+            return Forbid();
+        }
+
+        [HttpGet("{id}/Propostas/{propostaId}/PlanoTrabalho")]
+        [HttpGet("{id}/Propostas/{propostaId}/PlanoTrabalho.pdf")]
+        public ActionResult PropostaDocDownload(int id, int propostaId, [FromServices] PropostaService serviceProposta)
+        {
+            if (service.UserSuprimento(id) != this.UserId())
+            {
+                return Forbid();
+            }
+
+            var captacao = service.Get(id);
+            if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                captacao.Termino < DateTime.Now)
+            {
+                var relatorio = serviceProposta.GetRelatorio(propostaId);
+                if (relatorio != null)
+                {
+                    var file = Path.GetTempFileName();
+                    var stream = new FileStream(file, FileMode.Create);
+                    HtmlConverter.ConvertToPdf(relatorio.Content, stream);
+                    stream.Close();
+
+                    return PhysicalFile(file, "application/octet-stream");
+                }
+            }
+
+            return NotFound();
+        }
+
+        [HttpGet("{id}/Propostas/{propostaId}/Contrato")]
+        [HttpGet("{id}/Propostas/{propostaId}/Contrato.pdf")]
+        public ActionResult PropostaContratoDownload(int id, int propostaId,
+            [FromServices] PropostaService serviceProposta)
+        {
+            if (service.UserSuprimento(id) != this.UserId())
+            {
+                return Forbid();
+            }
+
+            var captacao = service.Get(id);
+            if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                captacao.Termino < DateTime.Now)
+            {
+                var contrato = serviceProposta.PrintContrato(propostaId);
+                if (contrato != null)
+                {
+                    var file = Path.GetTempFileName();
+                    var stream = new FileStream(file, FileMode.Create);
+                    HtmlConverter.ConvertToPdf(contrato, stream);
+                    stream.Close();
+
+                    return PhysicalFile(file, "application/octet-stream");
+                }
+            }
+
+            return NotFound();
         }
     }
 }

@@ -17,9 +17,10 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.Captacao, opt => opt.MapFrom(src => src.Captacao.Titulo))
                 .ForMember(dest => dest.DataTermino, opt => opt.MapFrom(src => src.Captacao.Termino))
                 .ForMember(dest => dest.Consideracoes, opt => opt.MapFrom(src => src.Captacao.Consideracoes))
+                .ForMember(dest => dest.ContratoFinalizado, opt => opt.MapFrom(src => src.Contrato.Finalizado))
+                .ForMember(dest => dest.PlanoFinalizado, opt => opt.MapFrom(src => src.Finalizado))
                 .ForMember(dest => dest.Arquivos,
-                    opt => opt
-                        .MapFrom(src => src.Captacao.Arquivos.Where(a => a.AcessoFornecedor)))
+                    opt => opt.MapFrom(src => src.Captacao.Arquivos.Where(a => a.AcessoFornecedor)))
                 ;
 
             CreateMap<PropostaContrato, PropostaContratoDto>()
