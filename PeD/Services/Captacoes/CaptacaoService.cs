@@ -118,6 +118,7 @@ namespace PeD.Services.Captacoes
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
+                .Include(p => p.Contrato)
                 .FirstOrDefault(p => p.Id == id);
         }
 
@@ -134,6 +135,30 @@ namespace PeD.Services.Captacoes
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Where(cp => cp.CaptacaoId == id && cp.Participacao == status)
+                .ToList();
+        }
+
+        public IEnumerable<Proposta> GetPropostasEmAberto(int captacaoId)
+        {
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Contrato)
+                .Where(cp => cp.CaptacaoId == captacaoId && cp.Participacao != StatusParticipacao.Rejeitado &&
+                             (!cp.Finalizado || (cp.Contrato != null && !cp.Contrato.Finalizado))
+                )
+                .ToList();
+        }
+
+        public IEnumerable<Proposta> GetPropostasRecebidas(int captacaoId)
+        {
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Contrato)
+                .Where(cp => cp.CaptacaoId == captacaoId &&
+                             cp.Participacao == StatusParticipacao.Aceito &&
+                             cp.Finalizado && cp.Contrato != null &&
+                             cp.Contrato.Finalizado
+                )
                 .ToList();
         }
 

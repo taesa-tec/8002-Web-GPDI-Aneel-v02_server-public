@@ -18,6 +18,9 @@ namespace PeD.Core.ApiModels.Captacao
 
         public int? ContratoId { get; set; }
         public string Contrato { get; set; }
+
+        public bool Finalizada => Termino < DateTime.Today;
+
         public List<FornecedorDto> FornecedoresSugeridos { get; set; }
         public List<FornecedorDto> FornecedoresConvidados { get; set; }
         public List<CaptacaoArquivoDto> Arquivos { get; set; }

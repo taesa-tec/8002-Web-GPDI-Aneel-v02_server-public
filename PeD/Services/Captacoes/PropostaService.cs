@@ -138,11 +138,21 @@ namespace PeD.Services.Captacoes
             return null;
         }
 
-        public PropostaContrato GetContrato(int contratoId, int propostaId)
+        public PropostaContrato GetContrato(int propostaId)
         {
-            return _propostasContratos
-                .Include(p => p.Parent)
-                .FirstOrDefault(c => c.PropostaId == propostaId && c.ParentId == contratoId);
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Captacao)
+                .ThenInclude(c => c.Contrato)
+                .Include(p => p.Contrato)
+                .ThenInclude(c => c.Parent)
+                .FirstOrDefault(c => c.Id == propostaId)?.Contrato;
+        }
+
+        public string PrintContrato(int propostaId)
+        {
+            var contrato = GetContrato(propostaId);
+            return renderService.RenderToStringAsync("Proposta/Contrato", contrato).Result;
         }
 
         public List<PropostaContratoRevisao> GetContratoRevisoes(int propostaId)

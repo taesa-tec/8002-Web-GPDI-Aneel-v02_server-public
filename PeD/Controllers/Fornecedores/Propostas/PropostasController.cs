@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using AutoMapper;
 using FluentValidation.Results;
 using iText.Html2pdf;
@@ -88,6 +89,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             if (proposta.Participacao == StatusParticipacao.Pendente)
             {
                 proposta.Participacao = StatusParticipacao.Rejeitado;
+                proposta.DataResposta = DateTime.Now;
                 Service.Put(proposta);
                 return Ok();
             }
@@ -102,6 +104,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             if (proposta.Participacao == StatusParticipacao.Pendente)
             {
                 proposta.Participacao = StatusParticipacao.Aceito;
+                proposta.DataParticipacao = DateTime.Now;
                 Service.Put(proposta);
                 return Ok();
             }
@@ -113,7 +116,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
         public ActionResult Finalizar(int id)
         {
             var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
-            if (proposta.Participacao == StatusParticipacao.Pendente)
+            if (proposta.Participacao == StatusParticipacao.Aceito)
             {
                 proposta.Finalizado = true;
                 proposta.DataResposta = DateTime.Now;
