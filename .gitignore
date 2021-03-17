@@ -31,10 +31,11 @@ bld/
 msbuild.log
 msbuild.err
 msbuild.wrn
-
+[Ll]ogs
 # Visual Studio 2015
 .vs/
 
 appsettings.json
 appsettings.*.json
 !appsettings.example.json
+*.log

@@ -15,66 +15,80 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="10.1.1" />
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
-        <PackageReference Include="ClosedXML" Version="0.95.4" />
-        <PackageReference Include="ClosedXML.Extensions.WebApi" Version="0.2.1" />
-        <PackageReference Include="DiffPlex" Version="1.6.3" />
-        <PackageReference Include="FluentValidation" Version="9.4.0" />
-        <PackageReference Include="FluentValidation.AspNetCore" Version="9.4.0" />
-        <PackageReference Include="GlobalExceptionHandler" Version="4.0.2" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
-        <PackageReference Include="itext7.pdfhtml" Version="3.0.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.11" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.11" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.11" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.11" />
+        <PackageReference Include="AutoMapper" Version="10.1.1"/>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0"/>
+        <PackageReference Include="ClosedXML" Version="0.95.4"/>
+        <PackageReference Include="ClosedXML.Extensions.WebApi" Version="0.2.1"/>
+        <PackageReference Include="DiffPlex" Version="1.6.3"/>
+        <PackageReference Include="FluentValidation" Version="9.4.0"/>
+        <PackageReference Include="FluentValidation.AspNetCore" Version="9.4.0"/>
+        <PackageReference Include="GlobalExceptionHandler" Version="4.0.2"/>
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.29"/>
+        <PackageReference Include="itext7.pdfhtml" Version="3.0.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.11"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.11"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.11"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.11"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.11" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.11"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.11">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.8.0" />
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-        <PackageReference Include="Sendgrid" Version="9.22.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.6.3" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
-        <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.11" />
-        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.11" />
-        <PackageReference Include="TaesaCore" Version="3.1.1" />
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.8.0"/>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4"/>
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3"/>
+        <PackageReference Include="Sendgrid" Version="9.22.0"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="4.0.0"/>
+        <PackageReference Include="Serilog.Extensions.Logging.File" Version="2.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.6.3"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.11"/>
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.11"/>
+        <PackageReference Include="TaesaCore" Version="3.1.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\PeD.Auth\PeD.Auth.csproj" />
-        <ProjectReference Include="..\PeD.Core\PeD.Core.csproj" />
-        <ProjectReference Include="..\PeD.Data\PeD.Data.csproj" />
+        <ProjectReference Include="..\PeD.Auth\PeD.Auth.csproj"/>
+        <ProjectReference Include="..\PeD.Core\PeD.Core.csproj"/>
+        <ProjectReference Include="..\PeD.Data\PeD.Data.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <_ContentIncludedByDefault Remove="Views\Email\Captacao\NovaCaptacao.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Email\RecoverAccount.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Email\RegisterAccount.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Email\Simple.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Pdf\DemandaFormView.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Pdf\Diff.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Pdf\_FieldItem.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Pdf\_Style.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\_EmailBase.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Email\Captacao\NovaCaptacao.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Email\RecoverAccount.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Email\RegisterAccount.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Email\Simple.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Pdf\DemandaFormView.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Pdf\Diff.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Pdf\_FieldItem.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Pdf\_Style.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Shared\_EmailBase.cshtml"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\Fornecedores" />
+        <Folder Include="Controllers\Fornecedores"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Remove="logs\**"/>
+        <Content Update="appsettings.example.json">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ProjectExtensions>
         <VisualStudio>
-            <UserProperties />
+            <UserProperties/>
         </VisualStudio>
     </ProjectExtensions>
 
