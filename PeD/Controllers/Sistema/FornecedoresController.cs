@@ -75,8 +75,7 @@ namespace PeD.Controllers.Sistema
                 if (userResult.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(responsavel, Roles.Fornecedor);
-                    await AccessManager.SendRecoverAccountEmail(responsavel.Email, true,
-                        "Seja bem-vindo ao Gerenciador P&D Taesa");
+                    await AccessManager.SendNewFornecedorAccountEmail(responsavel.Email);
                 }
                 else
                 {

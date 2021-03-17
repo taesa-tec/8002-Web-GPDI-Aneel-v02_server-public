@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PeD.Auth;
 using PeD.Core.ApiModels;
 using PeD.Core.Models;
 using PeD.Core.Models.Catalogos;
@@ -211,10 +212,7 @@ namespace PeD.Services
             return resultado;
         }
 
-        public Resultado CreateUser(
-            ApplicationUser user,
-            string password,
-            string initialRole = null)
+        public Resultado CreateUser(ApplicationUser user, string password, string initialRole = null)
         {
             var resultado = new Resultado();
             resultado.Acao = "Inclusão de User";
@@ -316,6 +314,14 @@ namespace PeD.Services
             var user = Obter(id);
             user.FotoPerfil = $"/avatar/{filename}";
             Atualizar(user);
+        }
+
+        public List<ApplicationUser> GetInRole(string role)
+        {
+            return _context.Users.AsQueryable()
+                .Where(p => p.Role == role)
+                .Include("Empresa")
+                .ToList();
         }
     }
 }

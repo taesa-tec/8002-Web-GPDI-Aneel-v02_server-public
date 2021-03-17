@@ -1,0 +1,19 @@
+@model PeD.Views.Email.Captacao.CancelamentoCaptacao
+
+@{
+    Layout = "_EmailBase";
+}
+
+@section Header
+{
+    A equipe de Suprimentos cancelou o processo
+    de captação de propostas do projeto "@Model.Projeto".
+}
+
+
+<p>
+    A equipe de suprimentos da Taesa cancelou o processo
+    de captação de propostas referentes ao projeto "@Model.Projeto".
+    Não será mais possível submeter alterações
+    ou acessar os dados deste projeto.
+</p>

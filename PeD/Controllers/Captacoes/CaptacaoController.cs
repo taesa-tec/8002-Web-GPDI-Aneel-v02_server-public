@@ -15,6 +15,7 @@ using PeD.Core.Models.Captacoes;
 using PeD.Core.Requests.Captacao;
 using PeD.Data;
 using PeD.Services;
+using PeD.Services.Captacoes;
 using PeD.Views.Email.Captacao;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -32,8 +33,9 @@ namespace PeD.Controllers.Captacoes
         private UserManager<ApplicationUser> _userManager;
         private IUrlHelper _urlHelper;
         private IService<CaptacaoInfo> _serviceInfo;
+        private new CaptacaoService Service;
 
-        public CaptacaoController(IService<Captacao> service, IMapper mapper, UserManager<ApplicationUser> userManager,
+        public CaptacaoController(CaptacaoService service, IMapper mapper, UserManager<ApplicationUser> userManager,
             IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor,
             IService<CaptacaoInfo> serviceInfo)
             : base(service, mapper)
@@ -41,6 +43,7 @@ namespace PeD.Controllers.Captacoes
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _userManager = userManager;
             _serviceInfo = serviceInfo;
+            Service = service;
         }
 
         [HttpGet("")]
@@ -110,6 +113,29 @@ namespace PeD.Controllers.Captacoes
             return Ok(mapped);
         }
 
+        // @todo Authorization GetCaptacao
+        [HttpGet("{id}")]
+        public ActionResult<CaptacaoDetalhesDto> GetCaptacao(int id)
+        {
+            var captacao = Service.Filter(q => q
+                .Include(c => c.Arquivos)
+                .Include(c => c.FornecedoresSugeridos)
+                .ThenInclude(fs => fs.Fornecedor)
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao &&
+                            c.UsuarioSuprimentoId == this.UserId() &&
+                            c.Id == id
+                )).FirstOrDefault();
+            if (captacao == null)
+            {
+                return NotFound();
+            }
+
+            var detalhes = Mapper.Map<CaptacaoDetalhesDto>(captacao);
+            detalhes.EspecificacaoTecnicaUrl = _urlHelper.Link("DemandaPdf",
+                new {id = captacao.DemandaId, form = "especificacao-tecnica"});
+
+            return Ok(detalhes);
+        }
 
         [HttpPost("NovaCaptacao")]
         public async Task<ActionResult> NovaCaptacao(NovaCaptacaoRequest request,
@@ -157,7 +183,11 @@ namespace PeD.Controllers.Captacoes
                 CaptacaoId = captacao.Id,
                 CaptacaoTitulo = captacao.Titulo
             };
-            await sendGridService.Send("diego.franca@lojainterativa.com", "Novo Projeto para captação",
+            var suprimentoUsers = context.Users.AsQueryable()
+                .Where(u => u.Role == "Suprimento")
+                .Select(u => u.Email)
+                .ToList();
+            await sendGridService.Send(suprimentoUsers, "Novo Projeto para Captação de Proposta no Mercado cadastrado",
                 "Email/Captacao/NovaCaptacao", nova);
             return Ok();
         }
@@ -173,11 +203,6 @@ namespace PeD.Controllers.Captacoes
             return Ok();
         }
 
-        public class CaptacaoPrazoRequest : BaseEntity
-        {
-            public DateTime Termino { get; set; }
-        }
-
         [HttpPut("AlterarPrazo")]
         public ActionResult AlterarPrazo(CaptacaoPrazoRequest request)
         {
@@ -185,30 +210,6 @@ namespace PeD.Controllers.Captacoes
             captacao.Termino = request.Termino;
             Service.Put(captacao);
             return Ok();
-        }
-
-        // @todo Authorization GetCaptacao
-        [HttpGet("{id}")]
-        public ActionResult<CaptacaoDetalhesDto> GetCaptacao(int id)
-        {
-            var captacao = Service.Filter(q => q
-                .Include(c => c.Arquivos)
-                .Include(c => c.FornecedoresSugeridos)
-                .ThenInclude(fs => fs.Fornecedor)
-                .Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao &&
-                            c.UsuarioSuprimentoId == this.UserId() &&
-                            c.Id == id
-                )).FirstOrDefault();
-            if (captacao == null)
-            {
-                return NotFound();
-            }
-
-            var detalhes = Mapper.Map<CaptacaoDetalhesDto>(captacao);
-            detalhes.EspecificacaoTecnicaUrl = _urlHelper.Link("DemandaPdf",
-                new {id = captacao.DemandaId, form = "especificacao-tecnica"});
-
-            return Ok(detalhes);
         }
     }
 }

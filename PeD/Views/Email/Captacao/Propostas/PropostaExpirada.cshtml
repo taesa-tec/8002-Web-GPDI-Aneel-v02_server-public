@@ -1,0 +1,23 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.Propostas.PropostaExpirada
+
+@{
+    Layout = "_EmailBase";
+}
+
+@{
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+    Os itens do projeto "@Model.Projeto" não foram
+    enviados até a data máxima.
+}
+
+<p>
+    Sua participação no projeto "@Model.Projeto" foi
+    arquivada devido ao não envio de todos os pontos da
+    proposta até a data limite. Obrigado pela participação.
+</p>

@@ -91,6 +91,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 proposta.Participacao = StatusParticipacao.Rejeitado;
                 proposta.DataResposta = DateTime.Now;
                 Service.Put(proposta);
+                Service.SendEmailFinalizado(proposta).Wait();
                 return Ok();
             }
 
@@ -121,6 +122,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 proposta.Finalizado = true;
                 proposta.DataResposta = DateTime.Now;
                 Service.Put(proposta);
+                Service.SendEmailFinalizado(proposta).Wait();
                 return Ok();
             }
 

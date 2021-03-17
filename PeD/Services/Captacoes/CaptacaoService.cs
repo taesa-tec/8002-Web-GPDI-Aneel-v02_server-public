@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
+using PeD.Views.Email.Captacao;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 using Contrato = PeD.Core.Models.Contrato;
@@ -14,14 +15,17 @@ namespace PeD.Services.Captacoes
 {
     public class CaptacaoService : BaseService<Captacao>
     {
+        private SendGridService _sendGridService;
         private GestorDbContext _context;
         private DbSet<CaptacaoArquivo> _captacaoArquivos;
         private DbSet<CaptacaoFornecedor> _captacaoFornecedors;
         private DbSet<Proposta> _captacaoPropostas;
 
-        public CaptacaoService(IRepository<Captacao> repository, GestorDbContext context) : base(repository)
+        public CaptacaoService(IRepository<Captacao> repository, GestorDbContext context,
+            SendGridService sendGridService) : base(repository)
         {
             _context = context;
+            _sendGridService = sendGridService;
             _captacaoArquivos = context.Set<CaptacaoArquivo>();
             _captacaoFornecedors = context.Set<CaptacaoFornecedor>();
             _captacaoPropostas = context.Set<Proposta>();
@@ -69,13 +73,6 @@ namespace PeD.Services.Captacoes
             await _context.SaveChangesAsync();
         }
 
-        public void EstenderCaptacao(int id, DateTime termino)
-        {
-            ThrowIfNotExist(id);
-            var captacao = Get(id);
-            captacao.Termino = termino;
-            Put(captacao);
-        }
 
         public async Task EnviarParaFornecedores(int id)
         {
@@ -83,7 +80,10 @@ namespace PeD.Services.Captacoes
 
             var captacao = Get(id);
             captacao.Status = Captacao.CaptacaoStatus.Fornecedor;
-            var fornecedores = _captacaoFornecedors.Include(cf => cf.Fornecedor).Where(cf => cf.CaptacaoId == id)
+            var fornecedores = _captacaoFornecedors
+                .Include(cf => cf.Fornecedor)
+                .ThenInclude(f => f.Responsavel)
+                .Where(cf => cf.CaptacaoId == id)
                 .Select(cf => cf.Fornecedor);
 
             var propostas = fornecedores.Select(f => new Proposta()
@@ -97,19 +97,85 @@ namespace PeD.Services.Captacoes
                 Participacao = StatusParticipacao.Pendente,
                 DataCriacao = DateTime.Now
             });
-            // @todo Enviar email para fornecedores
+
             _context.AddRange(propostas);
             _context.Update(captacao);
             await _context.SaveChangesAsync();
+
+            await fornecedores.ForEachAsync(f =>
+            {
+                var convite = new ConviteFornecedor()
+                {
+                    Fornecedor = f.Nome,
+                    Projeto = captacao.Titulo,
+                    CaptacaoId = id
+                };
+                _sendGridService
+                    .Send(f.Responsavel.Email,
+                        "Você foi convidado para participar de um novo projeto para a área de P&D da Taesa",
+                        "Email/Captacao/ConviteFornecedor",
+                        convite)
+                    .Wait();
+            });
         }
 
-        public void CancelarCaptacao(int id)
+        public async Task EstenderCaptacao(int id, DateTime termino)
+        {
+            ThrowIfNotExist(id);
+            var captacao = Get(id);
+            captacao.Termino = termino;
+            Put(captacao);
+
+            var fornecedores = _captacaoFornecedors
+                .Include(cf => cf.Fornecedor)
+                .ThenInclude(f => f.Responsavel)
+                .Where(cf => cf.CaptacaoId == id)
+                .Select(cf => cf.Fornecedor);
+
+            await fornecedores.ForEachAsync(f =>
+            {
+                var cancelamento = new AlteracaoPrazo()
+                {
+                    Projeto = captacao.Titulo,
+                    Prazo = termino,
+                    CaptacaoId = captacao.Id
+                };
+                _sendGridService
+                    .Send(f.Responsavel.Email,
+                        $"A equipe de Suprimentos alterou a data máxima de envio de propostas para o projeto \"{captacao.Titulo}\".",
+                        "Email/Captacao/AlteracaoPrazo",
+                        cancelamento)
+                    .Wait();
+            });
+        }
+
+        public async Task CancelarCaptacao(int id)
         {
             ThrowIfNotExist(id);
             var captacao = Get(id);
             captacao.Status = Captacao.CaptacaoStatus.Cancelada;
             captacao.Cancelamento = DateTime.Now;
             Put(captacao);
+
+            var fornecedores = _captacaoFornecedors
+                .Include(cf => cf.Fornecedor)
+                .ThenInclude(f => f.Responsavel)
+                .Where(cf => cf.CaptacaoId == id)
+                .Select(cf => cf.Fornecedor);
+
+            await fornecedores.ForEachAsync(f =>
+            {
+                var cancelamento = new CancelamentoCaptacao()
+                {
+                    Projeto = captacao.Titulo,
+                };
+                _sendGridService
+                    .Send(f.Responsavel.Email,
+                        $"A equipe de Suprimentos cancelou o processo de captação de propostas do projeto \"{captacao.Titulo}\".",
+                        "Email/Captacao/CancelamentoCaptacao",
+                        cancelamento)
+                    .Wait();
+            });
             // var fornecedores = _captacaoFornecedors.Include(cf => cf.Fornecedor).Where(cf => cf.CaptacaoId == id).Select(cf => cf.Fornecedor);
         }
 

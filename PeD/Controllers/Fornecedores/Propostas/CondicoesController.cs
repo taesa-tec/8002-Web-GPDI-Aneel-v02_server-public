@@ -48,13 +48,16 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 if (request.ClausulasAceita)
                 {
                     proposta.DataClausulasAceitas = DateTime.Now;
+                    propostaService.Put(proposta);
                 }
                 else
                 {
                     proposta.Participacao = StatusParticipacao.Rejeitado;
+                    proposta.DataResposta = DateTime.Now;
+                    propostaService.Put(proposta);
+                    propostaService.SendEmailFinalizado(proposta).Wait();
                 }
 
-                propostaService.Put(proposta);
 
                 return Ok(Mapper.Map<PropostaDto>(proposta));
             }
