@@ -55,7 +55,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
         public ActionResult Post([FromRoute] int captacaoId, [FromBody] ContratoRequest request)
         {
             var contratoProposta = propostaService.GetContrato(captacaoId, this.UserId());
-            var hash = contratoProposta.Conteudo.ToMD5();
+            var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
             contratoProposta.Finalizado = !request.Draft;
             contratoProposta.Conteudo = request.Conteudo;
             if (contratoProposta.Id != 0)
@@ -78,6 +78,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 _context.Add(revisao);
                 _context.SaveChanges();
             }
+            propostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);
 
             return Ok();
         }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
@@ -23,9 +24,8 @@ namespace PeD.Controllers.Fornecedores.Propostas
     {
         private PropostaService _propostaService;
 
-        public ArquivosController(GestorDbContext context, IWebHostEnvironment hostingEnvironment,
-            PropostaService propostaService) : base(context,
-            hostingEnvironment)
+        public ArquivosController(GestorDbContext context, IConfiguration configuration,
+            PropostaService propostaService) : base(context, configuration)
         {
             _propostaService = propostaService;
         }

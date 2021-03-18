@@ -192,6 +192,22 @@ namespace PeD.Services.Captacoes
             UpdatePropostaDataAlteracao(propostaId, DateTime.Now);
         }
 
+        public async Task FinalizarProposta(int propostaId)
+        {
+            await FinalizarProposta(GetProposta(propostaId));
+        }
+
+        public async Task FinalizarProposta(Proposta proposta)
+        {
+            if (proposta.Participacao == StatusParticipacao.Aceito)
+            {
+                proposta.Finalizado = true;
+                proposta.DataResposta = DateTime.Now;
+                Put(proposta);
+                await SendEmailFinalizado(proposta);
+            }
+        }
+
 
         public Relatorio GetRelatorio(int propostaId)
         {
@@ -248,11 +264,14 @@ namespace PeD.Services.Captacoes
         {
             var pf = _mapper.Map<PropostaFinalizada>(proposta);
             var suprimentoUsers = _userService.GetInRole("Suprimento").Select(u => u.Email);
-            var subject = pf.Cancelada ? $"O fornecedor “{pf.Fornecedor}” cancelou sua participação no projeto":$"O fornecedor “{pf.Fornecedor}” finalizou com sucesso a sua participação no projeto";
+            var subject = pf.Cancelada
+                ? $"O fornecedor “{pf.Fornecedor}” cancelou sua participação no projeto"
+                : $"O fornecedor “{pf.Fornecedor}” finalizou com sucesso a sua participação no projeto";
             await _sendGridService.Send(suprimentoUsers,
                 subject,
                 "Email/Captacao/Propostas/PropostaFinalizada", pf);
         }
+
         #endregion
     }
 }

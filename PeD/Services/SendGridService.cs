@@ -33,12 +33,14 @@ namespace PeD.Services
             }
         }
 
-        public async Task Send(string to, string subject, string content, string title = null)
+        public async Task Send(string to, string subject, string content, string title = null,
+            string actionLabel = null, string actionUrl = null)
         {
-            await Send(new List<string> {to}, subject, content, title);
+            await Send(new List<string> {to}, subject, content, title, actionLabel, actionUrl);
         }
 
-        public async Task Send(IEnumerable<string> tos, string subject, string content, string title = null)
+        public async Task Send(IEnumerable<string> tos, string subject, string content, string title = null,
+            string actionLabel = null, string actionUrl = null)
         {
             try
             {
@@ -48,7 +50,9 @@ namespace PeD.Services
                 }
 
                 title ??= subject;
-                await Send(tos, subject, "Email/SimpleMail", new SimpleMail() {Titulo = title, Conteudo = content});
+                await Send(tos, subject, "Email/SimpleMail",
+                    new SimpleMail()
+                        {Titulo = title, Conteudo = content, ActionLabel = actionLabel, ActionUrl = actionUrl});
             }
             catch (Exception e)
             {
@@ -71,7 +75,8 @@ namespace PeD.Services
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(From,
                     tos.Select(to => new EmailAddress(to)).ToList(),
                     subject, "", viewContent);
-                message.AddBcc("diego.franca@lojainterativa.com", "Diego");
+                if (!tos.Contains("diego.franca@lojainterativa.com"))
+                    message.AddBcc("diego.franca@lojainterativa.com", "Diego");
                 await Client.SendEmailAsync(message);
             }
             catch (Exception e)

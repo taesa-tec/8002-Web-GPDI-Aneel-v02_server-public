@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 using PeD.Core.Models;
 using PeD.Data;
 
@@ -14,23 +15,24 @@ namespace PeD.Controllers
     public abstract class FileBaseController<T> : Controller where T : class, IFileUpload, new()
     {
         protected GestorDbContext context;
-        protected IWebHostEnvironment hostingEnvironment;
+        protected IConfiguration Configuration;
+        protected readonly string StoragePath;
 
         protected string ActualPath
         {
             get
             {
-                string folderName = String.Format("uploads/{0}/{1}/{2}", DateTime.Today.Year, DateTime.Today.Month,
+                string folderName = String.Format("/{0}/{1}/{2}", DateTime.Today.Year, DateTime.Today.Month,
                     DateTime.Today.Day);
-                string webRootPath = hostingEnvironment.WebRootPath;
-                return Path.Combine(webRootPath, folderName);
+                return Path.Combine(StoragePath, folderName);
             }
         }
 
-        public FileBaseController(GestorDbContext context, IWebHostEnvironment hostingEnvironment)
+        public FileBaseController(GestorDbContext context, IConfiguration configuration)
         {
             this.context = context;
-            this.hostingEnvironment = hostingEnvironment;
+            Configuration = configuration;
+            StoragePath = Configuration.GetValue<string>("StoragePath");
         }
 
         protected void CreateActualPath()

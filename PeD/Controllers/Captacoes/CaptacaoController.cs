@@ -140,7 +140,6 @@ namespace PeD.Controllers.Captacoes
         [HttpPost("NovaCaptacao")]
         public async Task<ActionResult> NovaCaptacao(NovaCaptacaoRequest request,
             [FromServices] GestorDbContext context,
-            [FromServices] SendGridService sendGridService,
             [FromServices] IService<Contrato> contratoService)
         {
             var captacao = Service.Get(request.Id);
@@ -177,39 +176,36 @@ namespace PeD.Controllers.Captacoes
 
             var currentUser = await _userManager.GetUserAsync(User);
 
-            var nova = new NovaCaptacao()
-            {
-                Autor = currentUser.NomeCompleto,
-                CaptacaoId = captacao.Id,
-                CaptacaoTitulo = captacao.Titulo
-            };
-            var suprimentoUsers = context.Users.AsQueryable()
-                .Where(u => u.Role == "Suprimento")
-                .Select(u => u.Email)
-                .ToList();
-            await sendGridService.Send(suprimentoUsers, "Novo Projeto para Captação de Proposta no Mercado cadastrado",
-                "Email/Captacao/NovaCaptacao", nova);
+            await Service.SendEmailSuprimento(captacao, currentUser.NomeCompleto);
             return Ok();
         }
 
         [HttpPut("Cancelar")]
-        public ActionResult Cancelar(BaseEntity request)
+        public async Task<ActionResult> Cancelar(BaseEntity request)
         {
-            var captacao = Service.Get(request.Id);
-
-            captacao.Status = Captacao.CaptacaoStatus.Cancelada;
-            captacao.Cancelamento = DateTime.Now;
-            Service.Put(captacao);
-            return Ok();
+            try
+            {
+                await Service.CancelarCaptacao(request.Id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
         }
 
         [HttpPut("AlterarPrazo")]
-        public ActionResult AlterarPrazo(CaptacaoPrazoRequest request)
+        public async Task<ActionResult> AlterarPrazo(CaptacaoPrazoRequest request)
         {
-            var captacao = Service.Get(request.Id);
-            captacao.Termino = request.Termino;
-            Service.Put(captacao);
-            return Ok();
+            try
+            {
+                await Service.EstenderCaptacao(request.Id, request.Termino);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
         }
     }
 }

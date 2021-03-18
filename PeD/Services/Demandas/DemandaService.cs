@@ -54,8 +54,8 @@ namespace PeD.Services.Demandas
         public readonly DemandaLogService LogService;
         private IConfiguration Configuration;
         SistemaService sistemaService;
-        MailerService mailer;
         GestorDbContext _context;
+        private SendGridService _sendGridService;
 
         #endregion
 
@@ -64,11 +64,10 @@ namespace PeD.Services.Demandas
         public DemandaService(
             IRepository<Demanda> repository,
             GestorDbContext context,
-            MailerService mailer,
             DemandaLogService logService,
             IWebHostEnvironment hostingEnvironment,
             SistemaService sistemaService, IViewRenderService viewRender, IService<Captacao> serviceCaptacao,
-            IConfiguration configuration)
+            IConfiguration configuration, SendGridService sendGridService)
             : base(repository)
         {
             _context = context;
@@ -78,7 +77,7 @@ namespace PeD.Services.Demandas
             _viewRender = viewRender;
             _serviceCaptacao = serviceCaptacao;
             Configuration = configuration;
-            this.mailer = mailer;
+            _sendGridService = sendGridService;
             LogService = logService;
 
 
@@ -777,66 +776,81 @@ namespace PeD.Services.Demandas
 
         public void NotificarSuperior(Demanda demanda)
         {
+            var url = Configuration.GetValue<string>("Url");
             var titulo = $"Nova Demanda para Pré-Aprovação:\"{demanda.Titulo}\"";
-
             var body =
                 $"O usuário {demanda.Criador.NomeCompleto} enviou a demanda \"{demanda.Titulo}\" para Pré-Aprovação pelo seu superior direto. Clique abaixo para mais detalhes.";
 
-            mailer.SendMailBase(demanda.SuperiorDireto, titulo, body,
-                ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+            _sendGridService.Send(demanda.SuperiorDireto.Email, titulo, body,
+                actionLabel: "Ver Demanda",
+                actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
         }
 
         public void NotificarReprovacao(Demanda demanda, ApplicationUser avaliador)
         {
+            var url = Configuration.GetValue<string>("Url");
             var titulo = $"Foram solicitados ajustes para o \"{demanda.Titulo}\" na etapa de Revisão";
 
             var body =
                 $"O usuário {avaliador.NomeCompleto} revisor da sua demanda, inseriu alguns comentários e solicitou alterações no projeto. Clique abaixo para mais detalhes e enviar novamentepara revisão";
-
-            mailer.SendMailBase(demanda.Criador, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+            _sendGridService.Send(demanda.Criador.Email, titulo, body, actionLabel: "Ver Demanda",
+                actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
         }
 
         public void NotificarReprovacaoPermanente(Demanda demanda, ApplicationUser avaliador)
         {
+            var url = Configuration.GetValue<string>("Url");
             var titulo =
                 $"Sua demanda \"{demanda.Titulo}\" foi reprovada e arquivada na etapa de Revisão. Nova Demanda para Pré-Aprovação:";
 
             var body =
                 $"O usuário {avaliador.NomeCompleto} revisor da sua demanda, reprovou e arquivou sua demanda . Clique abaixo para mais detalhes:";
-
-            mailer.SendMailBase(demanda.Criador, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+            _sendGridService.Send(demanda.Criador.Email, titulo, body,
+                actionLabel: "Ver Demanda",
+                actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
         }
 
         public void NotificarRevisorPendente(Demanda demanda)
         {
-            var Coordenador = _context.Users.Find(sistemaService.GetEquipePeD().Coordenador);
+            var url = Configuration.GetValue<string>("Url");
+            var coordenador = _context.Users.Find(sistemaService.GetEquipePeD().Coordenador);
             var titulo = $"Nova Demanda para Definição de Revisor: \"{demanda.Titulo}\"";
 
             var body =
                 $"O usuário {demanda.Criador.NomeCompleto} cadastrou uma nova demanda \"{demanda.Titulo}\" que já foi pré-aprovada pelo seu superior direto. Precisamos agora que seja definido o revisor responsável pela demanda. Clique abaixo para mais detalhes.";
 
-            mailer.SendMailBase(Coordenador, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+            _sendGridService.Send(coordenador.Email, titulo, body,
+                actionLabel: "Ver Demanda",
+                actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
         }
 
         public void NotificarRevisor(Demanda demanda)
         {
-            var Coordenador = _context.Users.Find(sistemaService.GetEquipePeD().Coordenador);
+            var url = Configuration.GetValue<string>("Url");
+            var coordenador = _context.Users.Find(sistemaService.GetEquipePeD().Coordenador);
             var titulo = $"Nova Demanda para Revisão: \"{demanda.Titulo}\"";
 
             var body =
-                $"O usuário {Coordenador.NomeCompleto} enviou a demanda \"{demanda.Titulo}\" para Revisão. Clique abaixo para mais detalhes.";
+                $"O usuário {coordenador.NomeCompleto} enviou a demanda \"{demanda.Titulo}\" para Revisão. Clique abaixo para mais detalhes.";
 
-            mailer.SendMailBase(demanda.Revisor, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+            _sendGridService.Send(coordenador.Email, titulo, body,
+                actionLabel: "Ver Demanda",
+                actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
         }
 
         public void NotificarAprovador(Demanda demanda, string avaliadorAnteriorId)
         {
+            var url = Configuration.GetValue<string>("Url");
             var avaliador = _context.Users.Find(avaliadorAnteriorId);
             var responsavel = _context.Users.Find(GetResponsavelAtual(demanda));
             var titulo = $"Nova Demanda para Aprovação: \"{demanda.Titulo}\"";
             var body =
                 $"O usuário {avaliador.NomeCompleto} enviou a demanda \"{demanda.Titulo}\" para Aprovação. Clique abaixo para mais detalhes.";
-            mailer.SendMailBase(responsavel, titulo, body, ("Ver Demanda", $"/dashboard/demanda/{demanda.Id}"));
+            //.SendMailBase(responsavel, titulo, body, ("Ver Demanda", $"/gestor/demandas/{demanda.Id}"));
+            _sendGridService.Send(responsavel.Email, titulo, body,
+                    actionLabel: "Ver Demanda",
+                    actionUrl: $"{url}/gestor/demandas/{demanda.Id}")
+                .Wait();
         }
 
         #endregion
