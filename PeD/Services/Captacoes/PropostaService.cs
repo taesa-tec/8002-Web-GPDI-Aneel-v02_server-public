@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
@@ -22,13 +24,15 @@ namespace PeD.Services.Captacoes
         private DbSet<Proposta> _captacaoPropostas;
         private DbSet<PropostaContrato> _propostasContratos;
         private IMapper _mapper;
+        private ILogger<PropostaService> _logger;
         private IViewRenderService renderService;
         private GestorDbContext context;
         private SendGridService _sendGridService;
         private UserService _userService;
 
         public PropostaService(IRepository<Proposta> repository, GestorDbContext context, IMapper mapper,
-            IViewRenderService renderService, SendGridService sendGridService, UserService userService)
+            IViewRenderService renderService, SendGridService sendGridService, UserService userService,
+            ILogger<PropostaService> logger)
             : base(repository)
         {
             this.context = context;
@@ -36,6 +40,7 @@ namespace PeD.Services.Captacoes
             this.renderService = renderService;
             _sendGridService = sendGridService;
             _userService = userService;
+            _logger = logger;
             _captacaoPropostas = context.Set<Proposta>();
             _propostasContratos = context.Set<PropostaContrato>();
         }
@@ -86,6 +91,18 @@ namespace PeD.Services.Captacoes
                 .ThenInclude(p => p.FaseCadeia)
                 .Include(p => p.Riscos)
                 .FirstOrDefault(p => p.Id == id);
+        }
+
+        public IEnumerable<Proposta> GetPropostasEncerradasPendentes()
+        {
+            return _captacaoPropostas
+                .AsQueryable()
+                .Include(p => p.Fornecedor)
+                .ThenInclude(f => f.Responsavel)
+                .Include(p => p.Captacao)
+                .Where(p => p.Participacao == StatusParticipacao.Aceito
+                            && p.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor
+                            && p.Captacao.Termino < DateTime.Today).ToList();
         }
 
 
@@ -208,6 +225,20 @@ namespace PeD.Services.Captacoes
             }
         }
 
+        public async Task FinalizarPropostasExpiradas(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation("Finalizando Propostas expiradas");
+            if (stoppingToken.IsCancellationRequested)
+                return;
+            var propostas = GetPropostasEncerradasPendentes();
+            _logger.LogInformation($"Propostas expiradas: {propostas.Count()}");
+            foreach (var proposta in propostas)
+            {
+                proposta.Participacao = StatusParticipacao.Concluido;
+                Put(proposta);
+                await SendEmailCaptacaoEncerrada(proposta);
+            }
+        }
 
         public Relatorio GetRelatorio(int propostaId)
         {
@@ -270,6 +301,18 @@ namespace PeD.Services.Captacoes
             await _sendGridService.Send(suprimentoUsers,
                 subject,
                 "Email/Captacao/Propostas/PropostaFinalizada", pf);
+        }
+
+        public async Task SendEmailCaptacaoEncerrada(Proposta proposta)
+        {
+            var pf = _mapper.Map<PropostaFinalizada>(proposta);
+
+            var subject = pf.Finalizado
+                ? $"Sua participação no projeto “{pf.Projeto}” foi concluída com sucesso."
+                : $"Os itens do projeto “{pf.Projeto}” não foram enviados até a data máxima.";
+            await _sendGridService.Send(proposta.Fornecedor.Responsavel.Email,
+                subject,
+                "Email/Captacao/Propostas/PropostaEncerrada", pf);
         }
 
         #endregion

@@ -25,6 +25,7 @@ using PeD.Core;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
 using PeD.Data;
+using PeD.HostedServices;
 using PeD.Services;
 using PeD.Services.Captacoes;
 using PeD.Services.Demandas;
@@ -51,6 +52,8 @@ namespace PeD
         public void ConfigureServices(IServiceCollection services)
         {
             var spaPath = Configuration.GetValue<string>("SpaPath");
+
+            services.AddHostedService<PropostasServices>();
             services.AddTransient<IStartupFilter, IdentityInitializer>();
             services.AddAutoMapper(typeof(Startup));
 
