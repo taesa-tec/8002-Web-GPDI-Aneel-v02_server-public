@@ -1,0 +1,27 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.AlteracaoPrazo
+
+@{
+    Layout = "_EmailBase";
+}
+
+@{
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+    A equipe de Suprimentos alterou a data máxima
+    de envio de propostas para o projeto "@Model.Projeto"
+}
+
+<p>
+    A equipe de suprimentos da Taesa alterou a data
+    máxima de envio de propostas do projeto "@Model.Projeto" para @Model.Prazo.ToString("d")
+</p>
+
+@section Action
+{
+    <a href="@url/fornecedor/propostas/@Model.CaptacaoId" style="display: inline-block; background: #042769; font-weight: bold; color:#FFF; border-radius: 4px; padding: 8px 16px; text-decoration: none; text-transform: uppercase;">Ver Projeto</a>
+}

@@ -10,7 +10,7 @@
         rel="stylesheet"/>
     <title></title>
     <partial name="Pdf/_Style"/>
-    @Html.Partial("_Style.cshtml")
+    @Html.PartialAsync("_Style.cshtml").Result
 </head>
 
 <body>
@@ -271,7 +271,7 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
         <div class="bPage">&nbsp;</div>
 
         <div class="content" id="main-content">
-            @Html.Partial("_FieldItem.cshtml", @Model.Rendered)
+            @Html.PartialAsync("_FieldItem.cshtml", Model.Rendered).Result
         </div>
     </td>
 </tr>

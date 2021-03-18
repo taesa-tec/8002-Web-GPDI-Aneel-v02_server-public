@@ -15,6 +15,7 @@ using PeD.Core.Models.Captacoes;
 using PeD.Core.Requests.Captacao;
 using PeD.Data;
 using PeD.Services;
+using PeD.Services.Captacoes;
 using PeD.Views.Email.Captacao;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -32,8 +33,9 @@ namespace PeD.Controllers.Captacoes
         private UserManager<ApplicationUser> _userManager;
         private IUrlHelper _urlHelper;
         private IService<CaptacaoInfo> _serviceInfo;
+        private new CaptacaoService Service;
 
-        public CaptacaoController(IService<Captacao> service, IMapper mapper, UserManager<ApplicationUser> userManager,
+        public CaptacaoController(CaptacaoService service, IMapper mapper, UserManager<ApplicationUser> userManager,
             IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor,
             IService<CaptacaoInfo> serviceInfo)
             : base(service, mapper)
@@ -41,6 +43,7 @@ namespace PeD.Controllers.Captacoes
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _userManager = userManager;
             _serviceInfo = serviceInfo;
+            Service = service;
         }
 
         [HttpGet("")]
@@ -110,11 +113,33 @@ namespace PeD.Controllers.Captacoes
             return Ok(mapped);
         }
 
+        // @todo Authorization GetCaptacao
+        [HttpGet("{id}")]
+        public ActionResult<CaptacaoDetalhesDto> GetCaptacao(int id)
+        {
+            var captacao = Service.Filter(q => q
+                .Include(c => c.Arquivos)
+                .Include(c => c.FornecedoresSugeridos)
+                .ThenInclude(fs => fs.Fornecedor)
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao &&
+                            c.UsuarioSuprimentoId == this.UserId() &&
+                            c.Id == id
+                )).FirstOrDefault();
+            if (captacao == null)
+            {
+                return NotFound();
+            }
+
+            var detalhes = Mapper.Map<CaptacaoDetalhesDto>(captacao);
+            detalhes.EspecificacaoTecnicaUrl = _urlHelper.Link("DemandaPdf",
+                new {id = captacao.DemandaId, form = "especificacao-tecnica"});
+
+            return Ok(detalhes);
+        }
 
         [HttpPost("NovaCaptacao")]
         public async Task<ActionResult> NovaCaptacao(NovaCaptacaoRequest request,
             [FromServices] GestorDbContext context,
-            [FromServices] SendGridService sendGridService,
             [FromServices] IService<Contrato> contratoService)
         {
             var captacao = Service.Get(request.Id);
@@ -151,64 +176,36 @@ namespace PeD.Controllers.Captacoes
 
             var currentUser = await _userManager.GetUserAsync(User);
 
-            var nova = new NovaCaptacao()
-            {
-                Autor = currentUser.NomeCompleto,
-                CaptacaoId = captacao.Id,
-                CaptacaoTitulo = captacao.Titulo
-            };
-            await sendGridService.Send("diego.franca@lojainterativa.com", "Novo Projeto para captação",
-                "Email/Captacao/NovaCaptacao", nova);
+            await Service.SendEmailSuprimento(captacao, currentUser.NomeCompleto);
             return Ok();
         }
 
         [HttpPut("Cancelar")]
-        public ActionResult Cancelar(BaseEntity request)
+        public async Task<ActionResult> Cancelar(BaseEntity request)
         {
-            var captacao = Service.Get(request.Id);
-
-            captacao.Status = Captacao.CaptacaoStatus.Cancelada;
-            captacao.Cancelamento = DateTime.Now;
-            Service.Put(captacao);
-            return Ok();
-        }
-
-        public class CaptacaoPrazoRequest : BaseEntity
-        {
-            public DateTime Termino { get; set; }
+            try
+            {
+                await Service.CancelarCaptacao(request.Id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
         }
 
         [HttpPut("AlterarPrazo")]
-        public ActionResult AlterarPrazo(CaptacaoPrazoRequest request)
+        public async Task<ActionResult> AlterarPrazo(CaptacaoPrazoRequest request)
         {
-            var captacao = Service.Get(request.Id);
-            captacao.Termino = request.Termino;
-            Service.Put(captacao);
-            return Ok();
-        }
-
-        // @todo Authorization GetCaptacao
-        [HttpGet("{id}")]
-        public ActionResult<CaptacaoDetalhesDto> GetCaptacao(int id)
-        {
-            var captacao = Service.Filter(q => q
-                .Include(c => c.Arquivos)
-                .Include(c => c.FornecedoresSugeridos)
-                .ThenInclude(fs => fs.Fornecedor)
-                .Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao &&
-                            c.UsuarioSuprimentoId == this.UserId() &&
-                            c.Id == id
-                )).FirstOrDefault();
-            if (captacao == null)
+            try
             {
-                return NotFound();
+                await Service.EstenderCaptacao(request.Id, request.Termino);
+                return Ok();
             }
-
-            var detalhes = Mapper.Map<CaptacaoDetalhesDto>(captacao);
-            detalhes.EspecificacaoTecnicaUrl = _urlHelper.Link("DemandaPdf",
-                new {id = captacao.DemandaId, form = "especificacao-tecnica"});
-
-            return Ok(detalhes);
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
         }
     }
 }

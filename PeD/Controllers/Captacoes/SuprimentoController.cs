@@ -95,21 +95,20 @@ namespace PeD.Controllers.Captacoes
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                return NotFound();
+                return Problem(e.Message);
             }
 
             return Ok();
         }
 
         [HttpPut("{id}/Estender")]
-        public ActionResult EstenderCaptacao(int id, ConfiguracaoRequest request)
+        public async Task<ActionResult> EstenderCaptacao(int id, ConfiguracaoRequest request)
         {
             try
             {
                 if (service.UserSuprimento(id) == this.UserId())
                 {
-                    service.EstenderCaptacao(id, request.Termino);
+                    await service.EstenderCaptacao(id, request.Termino);
                 }
                 else
                 {
@@ -126,13 +125,13 @@ namespace PeD.Controllers.Captacoes
         }
 
         [HttpDelete("{id}/Cancelar")]
-        public ActionResult CancelarCaptacao(int id)
+        public async Task<ActionResult> CancelarCaptacao(int id)
         {
             try
             {
                 if (service.UserSuprimento(id) == this.UserId())
                 {
-                    service.CancelarCaptacao(id);
+                    await service.CancelarCaptacao(id);
                 }
                 else
                 {

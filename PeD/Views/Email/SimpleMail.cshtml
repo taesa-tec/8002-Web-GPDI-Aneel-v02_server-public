@@ -1,0 +1,22 @@
+@model PeD.Views.Email.SimpleMail
+
+@{
+    Layout = "_EmailBase";
+}
+
+@section Header
+{
+    @Model.Titulo
+}
+
+@Html.Raw(Model.Conteudo)
+
+@section Action
+{
+    @if (!string.IsNullOrWhiteSpace(Model.ActionLabel))
+    {
+        <a href="@Model.ActionUrl" style="display: inline-block; background: #042769; font-weight: bold; color:#FFF; border-radius: 4px; padding: 8px 16px; text-decoration: none; text-transform: uppercase;">
+            @Model.ActionLabel
+        </a>
+    }
+}

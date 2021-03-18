@@ -54,7 +54,7 @@
             color: inherit;
         }
     </style>
-@Html.Partial("_Style.cshtml")
+@Html.PartialAsync("_Style.cshtml").Result
 @foreach (var line in @Model.Lines)
 {
     if (!Regex.IsMatch(line.Text, "<[\\w|\\d]+(?:\\b[^>]*)?>\\s*|\\s*</[\\w|\\d]+>\\s*"))

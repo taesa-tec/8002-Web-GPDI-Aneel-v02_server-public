@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 using PeD.Core.Models;
 using PeD.Data;
 
@@ -16,7 +17,7 @@ namespace PeD.Controllers
     [Authorize("Bearer")]
     public class FileController : FileBaseController<FileUpload>
     {
-        public FileController(GestorDbContext context, IWebHostEnvironment hostingEnvironment) : base(context, hostingEnvironment)
+        public FileController(GestorDbContext context, IConfiguration configuration) : base(context, configuration)
         {
         }
 
@@ -24,11 +25,10 @@ namespace PeD.Controllers
         [HttpGet]
         public ActionResult<List<FileUpload>> GetFiles()
         {
-
             return context
-            .Files
-            .Where(file => file.UserId == this.UserId())
-            .ToList();
+                .Files
+                .Where(file => file.UserId == this.UserId())
+                .ToList();
         }
 
         [HttpPost]

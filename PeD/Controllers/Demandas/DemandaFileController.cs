@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using PeD.Core.Models.Demandas;
 using PeD.Data;
 
@@ -16,8 +17,8 @@ namespace PeD.Controllers.Demandas
     [Authorize("Bearer")]
     public class DemandaFileController : FileBaseController<DemandaFile>
     {
-        public DemandaFileController(GestorDbContext context, IWebHostEnvironment hostingEnvironment) : base(context,
-            hostingEnvironment)
+        public DemandaFileController(GestorDbContext context, IConfiguration configuration) : base(context,
+            configuration)
         {
         }
 

@@ -1,0 +1,30 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.ConviteFornecedor
+
+@{
+    Layout = "_EmailBase";
+}
+@{
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+    Você foi convidado para participar de um novo
+    projeto para a área de P&D da Taesa
+}
+
+@section Action
+{
+    <a href="@url/fornecedor/propostas/@Model.CaptacaoId" style="display: inline-block; background: #042769; font-weight: bold; color:#FFF; border-radius: 4px; padding: 8px 16px; text-decoration: none; text-transform: uppercase;">
+        Ver Demanda
+    </a>
+}
+
+<p>
+    A Equipe de Suprimentos Taesa convida a @Model.Fornecedor
+    para participar do processo de cotação e proposta do
+    projeto "@Model.Projeto". Clique abaixo para mais
+    detalhes.
+</p>

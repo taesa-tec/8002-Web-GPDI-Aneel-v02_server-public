@@ -5,7 +5,7 @@
     <div class="field-item-children">
         @foreach (var item in Model.Children)
         {
-            @Html.Partial("_FieldItem.cshtml", item)
+            @Html.PartialAsync("_FieldItem.cshtml", item).Result
         }
     </div>
 </div>

@@ -140,8 +140,6 @@ namespace PeD
             services.AddScoped<DemandaService>();
             services.AddScoped<DemandaLogService>();
             services.AddScoped<SistemaService>();
-            services.AddScoped<MailerService>();
-
             services.AddScoped<CaptacaoService>();
             services.AddScoped<PropostaService>();
             services.AddScoped<CoExecutorService>();

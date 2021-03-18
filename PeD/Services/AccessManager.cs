@@ -12,6 +12,7 @@ using PeD.Auth;
 using PeD.Core.ApiModels;
 using PeD.Core.ApiModels.Auth;
 using PeD.Core.Models;
+using PeD.Core.Models.Fornecedores;
 using PeD.Core.Requests;
 using PeD.Data;
 using PeD.Views.Email;
@@ -184,12 +185,33 @@ namespace PeD.Services
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) throw new Exception("Email não encontrado");
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            Console.WriteLine(token);
+            // Console.WriteLine(token);
             await SendGridService.Send(email, subject, newAccount ? "Email/RegisterAccount" : "Email/RecoverAccount",
                 new RecoverAccount()
                 {
                     Email = email,
                     Token = token
+                });
+        }
+
+        public async Task SendNewFornecedorAccountEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) throw new Exception("Email não encontrado");
+            var fornecedor = GestorDbContext.Set<Fornecedor>().AsQueryable()
+                .FirstOrDefault(f => f.ResponsavelId == user.Id);
+            if (fornecedor == null) throw new Exception("Email não encontrado");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            // Console.WriteLine(token);
+            await SendGridService.Send(email,
+                "Você foi convidado para participar do Gestor P&D da Taesa como Fornecedor Cadastrado",
+                "Email/FornecedorAccount",
+                new FornecedorAccount()
+                {
+                    Email = email,
+                    Token = token,
+                    Fornecedor = fornecedor.Nome
                 });
         }
     }

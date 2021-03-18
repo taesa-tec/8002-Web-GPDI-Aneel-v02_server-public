@@ -1,0 +1,42 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.FornecedorAccount;
+@{
+    Layout = "_EmailBase";
+}
+@{
+    var appName = Configuration.GetValue<string>("AppName");
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+
+    Você foi convidado para participar do @appName da Taesa como Fornecedor Cadastrado
+    <br>
+    
+}
+
+@section Action
+{
+    @{
+        var urlr = string.Format("{0}/login/nova-senha/?email={1}&token={2}", url, Model.Email, Uri.EscapeUriString(Model.Token));
+    }
+    <a href="@urlr">
+        <img src="https://projetosped.taesa.com.br/images/gerar-senha.png" alt="Taesa">
+    </a>
+}
+
+<p>
+    A Taesa convidou a @Model.Fornecedor para se cadastrar no
+    sistema @appName com o objetivo de participar do
+    processo de cotação e envio de propostas de seus
+    projetos.
+</p>
+<p>
+    <span style="color: #042769">Usuário: @Model.Email</span>
+</p>
+<p>
+    Para acessar o sistema clique no botão abaixo para criar uma senha e acessar
+    o sistema:
+</p>

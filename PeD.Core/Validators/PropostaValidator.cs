@@ -29,7 +29,7 @@ namespace PeD.Core.Validators
 
             RuleFor(p => p.Objetivo).NotEmpty().WithMessage("Objetivo não informado");
             RuleFor(p => p.ResultadoEsperado).NotEmpty().WithMessage("Resultado Esperado não informado");
-            RuleFor(p => p.Metas.Count).GreaterThan(1).WithMessage("Nenhuma meta do projeto cadastrada");
+            RuleFor(p => p.Metas.Count).GreaterThan(0).WithMessage("Nenhuma meta do projeto cadastrada");
             RuleFor(p => p.BeneficioIndustria).NotEmpty().WithMessage("Benefício à industria não informado");
             RuleFor(p => p.BeneficioInstitucional).NotEmpty()
                 .WithMessage("Benefícios à Instituição de Ensino/Pesquisa ou Empresa parceira não informado");

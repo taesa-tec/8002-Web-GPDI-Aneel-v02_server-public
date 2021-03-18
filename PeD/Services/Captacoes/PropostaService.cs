@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Validators;
 using PeD.Data;
+using PeD.Views.Email.Captacao.Propostas;
 using TaesaCore.Extensions;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
@@ -22,14 +24,18 @@ namespace PeD.Services.Captacoes
         private IMapper _mapper;
         private IViewRenderService renderService;
         private GestorDbContext context;
+        private SendGridService _sendGridService;
+        private UserService _userService;
 
         public PropostaService(IRepository<Proposta> repository, GestorDbContext context, IMapper mapper,
-            IViewRenderService renderService)
+            IViewRenderService renderService, SendGridService sendGridService, UserService userService)
             : base(repository)
         {
             this.context = context;
             _mapper = mapper;
             this.renderService = renderService;
+            _sendGridService = sendGridService;
+            _userService = userService;
             _captacaoPropostas = context.Set<Proposta>();
             _propostasContratos = context.Set<PropostaContrato>();
         }
@@ -186,6 +192,22 @@ namespace PeD.Services.Captacoes
             UpdatePropostaDataAlteracao(propostaId, DateTime.Now);
         }
 
+        public async Task FinalizarProposta(int propostaId)
+        {
+            await FinalizarProposta(GetProposta(propostaId));
+        }
+
+        public async Task FinalizarProposta(Proposta proposta)
+        {
+            if (proposta.Participacao == StatusParticipacao.Aceito)
+            {
+                proposta.Finalizado = true;
+                proposta.DataResposta = DateTime.Now;
+                Put(proposta);
+                await SendEmailFinalizado(proposta);
+            }
+        }
+
 
         public Relatorio GetRelatorio(int propostaId)
         {
@@ -235,5 +257,21 @@ namespace PeD.Services.Captacoes
             context.SaveChanges();
             return relatorio;
         }
+
+        #region Emails
+
+        public async Task SendEmailFinalizado(Proposta proposta)
+        {
+            var pf = _mapper.Map<PropostaFinalizada>(proposta);
+            var suprimentoUsers = _userService.GetInRole("Suprimento").Select(u => u.Email);
+            var subject = pf.Cancelada
+                ? $"O fornecedor “{pf.Fornecedor}” cancelou sua participação no projeto"
+                : $"O fornecedor “{pf.Fornecedor}” finalizou com sucesso a sua participação no projeto";
+            await _sendGridService.Send(suprimentoUsers,
+                subject,
+                "Email/Captacao/Propostas/PropostaFinalizada", pf);
+        }
+
+        #endregion
     }
 }

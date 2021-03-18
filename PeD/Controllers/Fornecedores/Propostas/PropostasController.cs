@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation.Results;
 using iText.Html2pdf;
@@ -91,6 +92,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 proposta.Participacao = StatusParticipacao.Rejeitado;
                 proposta.DataResposta = DateTime.Now;
                 Service.Put(proposta);
+                Service.SendEmailFinalizado(proposta).Wait();
                 return Ok();
             }
 
@@ -112,20 +114,6 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return StatusCode(428);
         }
 
-        [HttpPut("{id}/Finalizar")]
-        public ActionResult Finalizar(int id)
-        {
-            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
-            if (proposta.Participacao == StatusParticipacao.Aceito)
-            {
-                proposta.Finalizado = true;
-                proposta.DataResposta = DateTime.Now;
-                Service.Put(proposta);
-                return Ok();
-            }
-
-            return StatusCode(428);
-        }
 
         [HttpPut("{id}/Duracao")]
         public ActionResult PropostaDuracao(int id, [FromServices] IService<Etapa> etapaService, [FromBody] short meses)
@@ -204,6 +192,19 @@ namespace PeD.Controllers.Fornecedores.Propostas
             }
 
             return NotFound();
+        }
+
+        [HttpPut("{id}/Finalizar")]
+        public async Task<ActionResult> Finalizar(int id)
+        {
+            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            if (proposta.Participacao == StatusParticipacao.Aceito)
+            {
+                await Service.FinalizarProposta(proposta);
+                return Ok();
+            }
+
+            return StatusCode(428);
         }
     }
 }

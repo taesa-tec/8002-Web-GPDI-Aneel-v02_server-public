@@ -1,0 +1,42 @@
+@using Microsoft.Extensions.Configuration
+@model PeD.Views.Email.Captacao.Propostas.PropostaFinalizada
+@inject IConfiguration Configuration
+@{
+    Layout = "_EmailBase";
+}
+
+@section Header
+{
+    @if (Model.Cancelada)
+    {
+        <span>
+            O fornecedor “@Model.Fornecedor” cancelou
+            sua participação no projeto.
+        </span>
+    }
+    else
+    {
+        <span>
+            O fornecedor “@Model.Fornecedor” finalizou
+            com sucesso a sua participação no projeto.
+        </span>
+    }
+}
+
+@if (Model.Cancelada)
+{
+    <p>
+        O fornecedor "@Model.Fornecedor" cancelou sua
+        participação no projeto "@Model.Projeto" informando
+        que não irá participar deste processo de captação de
+        propostas.
+    </p>
+}
+else
+{
+    <p>
+        O fornecedor "@Model.Fornecedor" finalizou com
+        sucesso a participação no projeto "@Model.Projeto", enviando seu
+        Plano de Trabalho completo e contratos
+    </p>
+}

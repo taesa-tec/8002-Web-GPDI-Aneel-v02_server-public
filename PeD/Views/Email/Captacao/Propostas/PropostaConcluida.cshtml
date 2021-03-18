@@ -1,0 +1,19 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.Propostas.PropostaConcluida
+
+@{
+    Layout = "_EmailBase";
+}
+
+@section Header
+{
+    Sua participação no projeto "@Model.Projeto" foi
+    concluída com sucesso.
+}
+
+<p>
+    Sua participação no projeto "@Model.Projeto" foi
+    concluída com sucesso e sua proposta seguirá para
+    análise da Equipe Taesa. Obrigado pela participação.
+</p>

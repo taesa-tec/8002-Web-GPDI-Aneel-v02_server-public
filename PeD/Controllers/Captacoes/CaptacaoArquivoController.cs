@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using PeD.Core.Models.Captacoes;
 using PeD.Data;
 using Swashbuckle.AspNetCore.Annotations;
@@ -18,8 +19,8 @@ namespace PeD.Controllers.Captacoes
     [Authorize("Bearer")]
     public class CaptacaoArquivoController : FileBaseController<CaptacaoArquivo>
     {
-        public CaptacaoArquivoController(GestorDbContext context, IWebHostEnvironment hostingEnvironment) : base(
-            context, hostingEnvironment)
+        public CaptacaoArquivoController(GestorDbContext context, IConfiguration configuration) : base(
+            context, configuration)
         {
         }
 

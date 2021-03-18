@@ -5,6 +5,7 @@ using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
+using PeD.Views.Email.Captacao.Propostas;
 
 namespace PeD.Mapping
 {
@@ -111,6 +112,14 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.Demandas, opt =>
                     opt.MapFrom(src => src.Captacao.SubTemas))
                 ;
+
+            CreateMap<Proposta, PropostaFinalizada>()
+                .ForMember(dest => dest.Projeto, opt => opt.MapFrom(src =>
+                    src.Captacao.Titulo))
+                .ForMember(dest => dest.Fornecedor, opt => opt.MapFrom(src =>
+                    src.Fornecedor.Nome))
+                .ForMember(dest => dest.Cancelada, opt => opt.MapFrom(src => src
+                    .Participacao == StatusParticipacao.Rejeitado));
         }
     }
 }
