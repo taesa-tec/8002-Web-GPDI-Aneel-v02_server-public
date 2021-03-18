@@ -11,7 +11,6 @@ using PeD.Data;
 using PeD.Views.Email.Captacao;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
-using Contrato = PeD.Core.Models.Contrato;
 
 namespace PeD.Services.Captacoes
 {
@@ -22,14 +21,14 @@ namespace PeD.Services.Captacoes
         private DbSet<CaptacaoArquivo> _captacaoArquivos;
         private DbSet<CaptacaoFornecedor> _captacaoFornecedors;
         private DbSet<Proposta> _captacaoPropostas;
-        private ILogger<CaptacaoService> Logger;
+        private ILogger<CaptacaoService> _logger;
 
         public CaptacaoService(IRepository<Captacao> repository, GestorDbContext context,
             SendGridService sendGridService, ILogger<CaptacaoService> logger) : base(repository)
         {
             _context = context;
             _sendGridService = sendGridService;
-            Logger = logger;
+            _logger = logger;
             _captacaoArquivos = context.Set<CaptacaoArquivo>();
             _captacaoFornecedors = context.Set<CaptacaoFornecedor>();
             _captacaoPropostas = context.Set<Proposta>();
@@ -202,6 +201,21 @@ namespace PeD.Services.Captacoes
                 .ToList();
         }
 
+        public void EncerrarCaptacoesExpiradas()
+        {
+            _logger.LogInformation("Encerrando Captações expiradas");
+            var expiradas = Filter(q =>
+                    q.Where(c => c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino < DateTime.Today))
+                .ToList();
+            _logger.LogInformation($"Captações expiradas: {expiradas.Count}");
+            foreach (var expirada in expiradas)
+            {
+                expirada.Status = Captacao.CaptacaoStatus.Encerrada;
+            }
+
+            Put(expiradas);
+        }
+
         #region Emails
 
         public async Task SendEmailSuprimento(Captacao captacao, string autor)
@@ -232,11 +246,11 @@ namespace PeD.Services.Captacoes
                 };
                 if (fornecedor.Responsavel == null || string.IsNullOrWhiteSpace(fornecedor.Responsavel.Email))
                 {
-                    Logger.LogWarning("Fornecedor como responsável|email vazio, não será possível enviar o convite");
+                    _logger.LogWarning("Fornecedor como responsável|email vazio, não será possível enviar o convite");
                 }
                 else
                 {
-                    Logger.LogInformation($"Enviando convite para {fornecedor.Responsavel.Email}");
+                    _logger.LogInformation($"Enviando convite para {fornecedor.Responsavel.Email}");
                     await _sendGridService
                         .Send(fornecedor.Responsavel.Email,
                             "Você foi convidado para participar de um novo projeto para a área de P&D da Taesa",

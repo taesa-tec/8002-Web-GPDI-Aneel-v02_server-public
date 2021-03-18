@@ -1,0 +1,41 @@
+@using Microsoft.Extensions.Configuration
+@model PeD.Views.Email.Captacao.Propostas.PropostaFinalizada
+@inject IConfiguration Configuration
+@{
+    Layout = "_EmailBase";
+}
+
+@section Header
+{
+    @if (Model.Finalizado)
+    {
+        <span>
+            Sua participação no projeto "@Model.Projeto" foi
+            concluída com sucesso.
+        </span>
+    }
+    else
+    {
+        <span>
+            Os itens do projeto "@Model.Projeto" não foram
+            enviados até a data máxima.
+        </span>
+    }
+}
+
+@if (Model.Finalizado)
+{
+    <p>
+        Sua participação no projeto "@Model.Projeto" foi
+        concluída com sucesso e sua proposta seguirá para
+        análise da Equipe Taesa. Obrigado pela participação.
+    </p>
+}
+else
+{
+    <p>
+        Sua participação no projeto "@Model.Projeto" foi
+        arquivada devido ao não envio de todos os pontos da
+        proposta até a data limite. Obrigado pela participação.
+    </p>
+}

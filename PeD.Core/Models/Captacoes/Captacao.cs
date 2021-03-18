@@ -15,7 +15,8 @@ namespace PeD.Core.Models.Captacoes
             Cancelada,
             Pendente,
             Elaboracao,
-            Fornecedor
+            Fornecedor,
+            Encerrada
         }
 
         public string Titulo { get; set; }

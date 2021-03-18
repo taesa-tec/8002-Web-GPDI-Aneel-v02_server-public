@@ -10,7 +10,8 @@ namespace PeD.Core.Models.Propostas
     {
         Pendente,
         Aceito,
-        Rejeitado
+        Rejeitado,
+        Concluido
     }
 
     public class Proposta : BaseEntity
