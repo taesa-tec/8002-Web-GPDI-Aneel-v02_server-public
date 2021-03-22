@@ -10,6 +10,7 @@ using PeD.Core.Models.Catalogos;
 using PeD.Core.Models.Demandas;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
+using PeD.Core.Models.Sistema;
 using PeD.Data.Builders;
 using CategoriaContabil = PeD.Core.Models.Catalogos.CategoriaContabil;
 using Contrato = PeD.Core.Models.Contrato;
@@ -91,6 +92,7 @@ namespace PeD.Data
             builder.Entity<Contrato>().ToTable("Contratos");
             builder.Entity<Clausula>().ToTable("Clausulas");
             builder.Entity<FaseTipoDetalhado>().Config();
+            builder.Entity<ItemAjuda>(b => { b.HasIndex(i => i.Codigo).IsUnique(); });
 
             #endregion
 
