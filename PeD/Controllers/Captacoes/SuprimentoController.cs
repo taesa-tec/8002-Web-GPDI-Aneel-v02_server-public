@@ -31,22 +31,20 @@ namespace PeD.Controllers.Captacoes
     {
         private IUrlHelper _urlHelper;
         private CaptacaoService service;
+        private GestorDbContext _context;
 
         public SuprimentoController(CaptacaoService service, IMapper mapper, IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor) : base(service, mapper)
+            IActionContextAccessor actionContextAccessor, GestorDbContext context) : base(service, mapper)
         {
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             this.service = service;
+            _context = context;
         }
 
         [HttpGet("")]
         public ActionResult GetCaptacoes()
         {
-            var captacoes = Service.Filter(q =>
-                q.Include(c => c.UsuarioSuprimento)
-                    .Where(c => (c.Status == Captacao.CaptacaoStatus.Elaboracao ||
-                                 c.Status == Captacao.CaptacaoStatus.Fornecedor) &&
-                                c.UsuarioSuprimentoId == this.UserId()));
+            var captacoes = service.GetCaptacoesPorSuprimento(this.UserId());
             return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
         }
 
@@ -60,7 +58,9 @@ namespace PeD.Controllers.Captacoes
                 .Include(c => c.FornecedoresConvidados)
                 .ThenInclude(fs => fs.Fornecedor)
                 .Where(c => (c.Status == Captacao.CaptacaoStatus.Elaboracao ||
-                             c.Status == Captacao.CaptacaoStatus.Fornecedor) &&
+                             c.Status == Captacao.CaptacaoStatus.Fornecedor ||
+                             c.Status == Captacao.CaptacaoStatus.Encerrada
+                            ) &&
                             c.UsuarioSuprimentoId == this.UserId() &&
                             c.Id == id
                 )).FirstOrDefault();
@@ -213,11 +213,15 @@ namespace PeD.Controllers.Captacoes
             if (service.UserSuprimento(id) == this.UserId())
             {
                 var captacao = service.Get(id);
-                if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
                     captacao.Termino < DateTime.Now)
                 {
                     var propostas = service.GetProposta(propostaId);
                     return Mapper.Map<PropostaDto>(propostas);
+                }
+                else
+                {
+                    return NotFound();
                 }
             }
 
@@ -234,7 +238,7 @@ namespace PeD.Controllers.Captacoes
             }
 
             var captacao = service.Get(id);
-            if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+            if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
                 captacao.Termino < DateTime.Now)
             {
                 var relatorio = serviceProposta.GetRelatorio(propostaId);
@@ -263,7 +267,7 @@ namespace PeD.Controllers.Captacoes
             }
 
             var captacao = service.Get(id);
-            if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+            if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
                 captacao.Termino < DateTime.Now)
             {
                 var contrato = serviceProposta.PrintContrato(propostaId);

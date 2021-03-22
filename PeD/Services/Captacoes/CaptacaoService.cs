@@ -45,6 +45,58 @@ namespace PeD.Services.Captacoes
         public string UserSuprimento(int id) => _context.Set<Captacao>().Where(c => c.Id == id)
             .Select(c => c.UsuarioSuprimentoId).FirstOrDefault();
 
+        public List<Captacao> GetCaptacoes(Captacao.CaptacaoStatus status)
+        {
+            return Filter(q => q
+                    .Include(c => c.Criador)
+                    .Include(c => c.UsuarioSuprimento)
+                    .Include(c => c.Propostas)
+                    .ThenInclude(p => p.Fornecedor)
+                    .Where(c => c.Status == status))
+                .ToList();
+        }
+
+        public List<Captacao> GetCaptacoesFalhas()
+        {
+            return Filter(q => q
+                    .Include(c => c.Criador)
+                    .Include(c => c.UsuarioSuprimento)
+                    .Include(c => c.Propostas)
+                    .Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada ||
+                                c.Status == Captacao.CaptacaoStatus.Encerrada && c.Propostas.Count == 0))
+                .ToList();
+        }
+
+        public List<Captacao> GetCaptacoesEncerradas()
+        {
+            return Filter(q => q
+                    .Include(c => c.Criador)
+                    .Include(c => c.UsuarioSuprimento)
+                    .Include(c => c.Propostas)
+                    .ThenInclude(p => p.Fornecedor)
+                    .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada || c.Termino < DateTime.Today))
+                .ToList();
+        }
+
+        public List<Captacao> GetCaptacoesPorSuprimento(string userId)
+        {
+            var captacoesQuery =
+                from captacao in _context.Set<Captacao>().AsQueryable()
+                where
+                    captacao.UsuarioSuprimentoId == userId &&
+                    (
+                        captacao.Status == Captacao.CaptacaoStatus.Elaboracao ||
+                        captacao.Status == Captacao.CaptacaoStatus.Fornecedor ||
+                        captacao.Status == Captacao.CaptacaoStatus.Encerrada
+                    )
+                select captacao;
+
+
+            return captacoesQuery
+                .Include(c => c.UsuarioSuprimento)
+                .ToList();
+        }
+
         public async Task ConfigurarCaptacao(int id, DateTime termino, string consideracoes,
             IEnumerable<int> arquivosIds, IEnumerable<int> fornecedoresIds, int contratoId)
         {
@@ -182,7 +234,8 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Contrato)
                 .Where(cp => cp.CaptacaoId == captacaoId &&
-                             cp.Participacao == StatusParticipacao.Aceito &&
+                             (cp.Participacao == StatusParticipacao.Aceito ||
+                              cp.Participacao == StatusParticipacao.Concluido) &&
                              cp.Finalizado && cp.Contrato != null &&
                              cp.Contrato.Finalizado
                 )

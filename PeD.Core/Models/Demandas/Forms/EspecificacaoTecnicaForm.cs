@@ -3,7 +3,7 @@ namespace PeD.Core.Models.Demandas.Forms
     public class EspecificacaoTecnicaForm : FieldList
     {
         public const string TemaPath = "children.escopo-fornecimento.children.tema-aneel.value";
-        public const string Key = "especificacao-tecnica";
+        public new const string Key = "especificacao-tecnica";
 
         public EspecificacaoTecnicaForm() : base(Key, "ESPECIFICAÇÃO TÉCNICA DEMANDA", Type.Form)
         {

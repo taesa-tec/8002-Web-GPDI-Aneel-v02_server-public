@@ -60,8 +60,7 @@ namespace PeD.Controllers.Captacoes
         public ActionResult<List<CaptacaoPendenteDto>> GetPendentes()
         {
             //Service.Paged()
-            var captacoes = Service.Filter(q =>
-                q.Include(c => c.Criador).Where(c => c.Status == Captacao.CaptacaoStatus.Pendente));
+            var captacoes = Service.GetCaptacoes(Captacao.CaptacaoStatus.Pendente);
             var mapped = Mapper.Map<List<CaptacaoPendenteDto>>(captacoes);
             return Ok(mapped);
         }
@@ -70,8 +69,7 @@ namespace PeD.Controllers.Captacoes
         public ActionResult<List<CaptacaoElaboracaoDto>> GetEmElaboracao()
         {
             //Service.Paged()
-            var captacoes = Service.Filter(q =>
-                q.Include(c => c.UsuarioSuprimento).Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao));
+            var captacoes = Service.GetCaptacoes(Captacao.CaptacaoStatus.Elaboracao);
             var mapped = Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes);
             return Ok(mapped);
         }
@@ -80,9 +78,7 @@ namespace PeD.Controllers.Captacoes
         public ActionResult<List<CaptacaoElaboracaoDto>> GetCanceladas()
         {
             //Service.Paged()
-            var captacoes =
-                Service.Filter(q =>
-                    q.Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada)); // ou com zero propostas
+            var captacoes = Service.GetCaptacoesFalhas();
             var mapped = Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes);
             return Ok(mapped);
         }
@@ -104,11 +100,8 @@ namespace PeD.Controllers.Captacoes
         public ActionResult<List<CaptacaoDto>> GetEncerradas()
         {
             //Service.Paged()
-            var captacoes =
-                Service.Filter(q =>
-                    q.Where(c =>
-                        c.Status == Captacao.CaptacaoStatus.Fornecedor &&
-                        c.Termino <= DateTime.Today));
+            var captacoes = Service.GetCaptacoesEncerradas();
+                
             var mapped = Mapper.Map<List<CaptacaoDto>>(captacoes);
             return Ok(mapped);
         }

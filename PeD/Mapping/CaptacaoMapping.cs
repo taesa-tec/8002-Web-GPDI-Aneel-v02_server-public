@@ -23,7 +23,7 @@ namespace PeD.Mapping
                 opt => opt.MapFrom(src => src.UsuarioSuprimento.NomeCompleto));
 
             CreateMap<Captacao, CaptacaoDto>()
-                .ForMember(c => c.ConvidadosTotal, opt => opt.MapFrom(src => src.FornecedoresConvidados.Count));
+                .ForMember(c => c.ConvidadosTotal, opt => opt.MapFrom(src => src.Propostas.Count));
 
             CreateMap<Captacao, CaptacaoDetalhesDto>()
                 .ForMember(c => c.FornecedoresSugeridos,

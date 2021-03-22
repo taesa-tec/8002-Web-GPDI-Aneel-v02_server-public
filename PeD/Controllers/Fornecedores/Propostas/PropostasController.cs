@@ -12,16 +12,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
-using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
-using PeD.Core.Extensions;
 using PeD.Core.Models;
+using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
-using PeD.Core.Validators;
-using PeD.Services;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -53,12 +48,20 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return Ok(Mapper.Map<List<PropostaDto>>(propostas));
         }
 
+        [HttpGet("Encerradas")]
+        public ActionResult<List<PropostaDto>> GetPropostasEncerradas()
+        {
+            var propostas = Service.GetPropostasPorResponsavel(this.UserId(), Captacao.CaptacaoStatus.Encerrada);
+            return Ok(Mapper.Map<List<PropostaDto>>(propostas));
+        }
+
         [HttpGet("{id}")]
         public ActionResult<PropostaDto> GetProposta(int id)
         {
             var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
             return Mapper.Map<PropostaDto>(proposta);
         }
+
 
         [HttpGet("{id}/Empresas")]
         public ActionResult GetPropostaEmpresas(int id,
@@ -171,24 +174,40 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return NotFound();
         }
 
+        [HttpGet("{id}/Download/PlanoTrabalho")]
         [HttpGet("{id}/Documento/Download")]
         public ActionResult PropostaDocDownload(int id)
         {
-            var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId(), Captacao.CaptacaoStatus.Fornecedor,
+                Captacao.CaptacaoStatus.Encerrada);
             if (tempproposta == null)
             {
                 return NotFound();
             }
 
-            var relatorio = Service.GetRelatorio(tempproposta.Id);
+            var relatorio = Service.GetRelatorioPdf(tempproposta.Id);
             if (relatorio != null)
             {
-                var file = Path.GetTempFileName();
-                var stream = new FileStream(file, FileMode.Create);
-                HtmlConverter.ConvertToPdf(relatorio.Content, stream);
-                stream.Close();
+                return PhysicalFile(relatorio, "application/octet-stream");
+            }
 
-                return PhysicalFile(file, "application/octet-stream");
+            return NotFound();
+        }
+
+        [HttpGet("{id}/Download/Contrato")]
+        public ActionResult PropostaContratoDownload(int id)
+        {
+            var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId(), Captacao.CaptacaoStatus.Fornecedor,
+                Captacao.CaptacaoStatus.Encerrada);
+            if (tempproposta == null)
+            {
+                return NotFound();
+            }
+
+            var contrato = Service.GetContratoPdf(tempproposta.Id);
+            if (contrato != null)
+            {
+                return PhysicalFile(contrato, "application/octet-stream");
             }
 
             return NotFound();
@@ -204,7 +223,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 return Ok();
             }
 
-            return StatusCode(428);
+            return Problem("A participação nesse projeto foi recusada!");
         }
     }
 }

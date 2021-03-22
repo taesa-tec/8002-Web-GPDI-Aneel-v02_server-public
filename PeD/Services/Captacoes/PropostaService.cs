@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using iText.Html2pdf;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PeD.Core.Models.Captacoes;
@@ -116,27 +118,37 @@ namespace PeD.Services.Captacoes
                                       cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
                                       cp.Participacao != StatusParticipacao.Rejeitado);
 
-        public IEnumerable<Proposta> GetPropostasPorResponsavel(string userId)
+        public IEnumerable<Proposta> GetPropostasPorResponsavel(string userId,
+            Captacao.CaptacaoStatus status = Captacao.CaptacaoStatus.Fornecedor)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
+                .Include(p => p.Contrato)
                 .Where(cp =>
                     cp.Fornecedor.ResponsavelId == userId &&
-                    cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                    cp.Captacao.Status == status &&
                     cp.Participacao != StatusParticipacao.Rejeitado)
                 .ToList();
         }
 
-        public Proposta GetPropostaPorResponsavel(int captacaoId, string userId) =>
-            _captacaoPropostas
+        public Proposta GetPropostaPorResponsavel(int captacaoId, string userId)
+        {
+            return GetPropostaPorResponsavel(captacaoId, userId, Captacao.CaptacaoStatus.Fornecedor);
+        }
+
+        public Proposta GetPropostaPorResponsavel(int captacaoId, string userId,
+            params Captacao.CaptacaoStatus[] status)
+        {
+            return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
                 .ThenInclude(c => c.Arquivos)
                 .FirstOrDefault(cp => cp.Fornecedor.ResponsavelId == userId &&
                                       cp.CaptacaoId == captacaoId &&
-                                      cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                                      status.Contains(cp.Captacao.Status) &&
                                       cp.Participacao != StatusParticipacao.Rejeitado);
+        }
 
         public PropostaContrato GetContrato(int captacaoId, string userId)
         {
@@ -251,6 +263,47 @@ namespace PeD.Services.Captacoes
                 }
 
                 return proposta.Relatorio ?? UpdateRelatorio(propostaId);
+            }
+
+            return null;
+        }
+
+        public string GetRelatorioPdf(int propostaId)
+        {
+            var proposta = _captacaoPropostas.AsQueryable().Include(p => p.Captacao)
+                .FirstOrDefault(p => p.Id == propostaId);
+            if (proposta != null)
+            {
+                var captacao = proposta.Captacao;
+                if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
+                    captacao.Termino < DateTime.Now)
+                {
+                    var relatorio = GetRelatorio(propostaId);
+                    if (relatorio != null)
+                    {
+                        var file = Path.GetTempFileName();
+                        var stream = new FileStream(file, FileMode.Create);
+                        HtmlConverter.ConvertToPdf(relatorio.Content, stream);
+                        stream.Close();
+
+                        return file;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public string GetContratoPdf(int propostaId)
+        {
+            var contrato = PrintContrato(propostaId);
+            if (contrato != null)
+            {
+                var file = Path.GetTempFileName();
+                var stream = new FileStream(file, FileMode.Create);
+                HtmlConverter.ConvertToPdf(contrato, stream);
+                stream.Close();
+
+                return file;
             }
 
             return null;

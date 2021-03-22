@@ -48,7 +48,7 @@ namespace PeD.HostedServices
                     _logger.LogError(e.Message);
                 }
 
-                await Task.Delay(TimeSpan.FromHours(1));
+                await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
             }
         }
     }
