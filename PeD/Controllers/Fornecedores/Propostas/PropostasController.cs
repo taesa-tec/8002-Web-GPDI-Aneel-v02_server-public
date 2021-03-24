@@ -138,24 +138,6 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return StatusCode(428);
         }
 
-        [HttpGet("{id}/Erros")]
-        public ActionResult<ValidationResult> GetPropostaErros(int id)
-        {
-            var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId());
-            if (tempproposta == null)
-            {
-                return NotFound();
-            }
-
-            var relatorio = Service.GetRelatorio(tempproposta.Id);
-            if (relatorio != null)
-            {
-                return relatorio.Validacao;
-            }
-
-            return NotFound();
-        }
-
         [HttpGet("{id}/Documento")]
         public ActionResult PropostaDoc(int id)
         {
@@ -168,14 +150,17 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var relatorio = Service.GetRelatorio(tempproposta.Id);
             if (relatorio != null)
             {
-                return Content(relatorio.Content, "text/html");
+                return Ok(new
+                {
+                    relatorio.Content,
+                    relatorio.Validacao
+                });
             }
 
             return NotFound();
         }
 
         [HttpGet("{id}/Download/PlanoTrabalho")]
-        [HttpGet("{id}/Documento/Download")]
         public ActionResult PropostaDocDownload(int id)
         {
             var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId(), Captacao.CaptacaoStatus.Fornecedor,
@@ -188,7 +173,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var relatorio = Service.GetRelatorioPdf(tempproposta.Id);
             if (relatorio != null)
             {
-                return PhysicalFile(relatorio, "application/octet-stream");
+                return PhysicalFile(relatorio.Path, "application/pdf", relatorio.FileName);
             }
 
             return NotFound();
@@ -207,7 +192,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var contrato = Service.GetContratoPdf(tempproposta.Id);
             if (contrato != null)
             {
-                return PhysicalFile(contrato, "application/octet-stream");
+                return PhysicalFile(contrato.Path, "application/octet-stream", contrato.FileName);
             }
 
             return NotFound();

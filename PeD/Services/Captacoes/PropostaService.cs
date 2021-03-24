@@ -9,6 +9,8 @@ using FluentValidation;
 using iText.Html2pdf;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PeD.Core.ApiModels.Propostas;
+using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
@@ -24,17 +26,17 @@ namespace PeD.Services.Captacoes
     public class PropostaService : BaseService<Proposta>
     {
         private DbSet<Proposta> _captacaoPropostas;
-        private DbSet<PropostaContrato> _propostasContratos;
         private IMapper _mapper;
         private ILogger<PropostaService> _logger;
         private IViewRenderService renderService;
         private GestorDbContext context;
         private SendGridService _sendGridService;
         private UserService _userService;
+        private ArquivoService _arquivoService;
 
         public PropostaService(IRepository<Proposta> repository, GestorDbContext context, IMapper mapper,
             IViewRenderService renderService, SendGridService sendGridService, UserService userService,
-            ILogger<PropostaService> logger)
+            ILogger<PropostaService> logger, ArquivoService arquivoService)
             : base(repository)
         {
             this.context = context;
@@ -43,8 +45,8 @@ namespace PeD.Services.Captacoes
             _sendGridService = sendGridService;
             _userService = userService;
             _logger = logger;
+            _arquivoService = arquivoService;
             _captacaoPropostas = context.Set<Proposta>();
-            _propostasContratos = context.Set<PropostaContrato>();
         }
 
         public Proposta GetProposta(int id)
@@ -179,14 +181,32 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
                 .ThenInclude(c => c.Contrato)
+                .Include(p => p.Contrato).ThenInclude(c => c.File)
                 .Include(p => p.Contrato)
                 .ThenInclude(c => c.Parent)
                 .FirstOrDefault(c => c.Id == propostaId)?.Contrato;
         }
 
+        public PropostaContrato GetContratoFull(int propostaId)
+        {
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Captacao)
+                .ThenInclude(c => c.Contrato)
+                .Include(p => p.Contrato)
+                .ThenInclude(c => c.Parent)
+                .Include(p => p.Etapas)
+                .ThenInclude(e => e.RecursosHumanosAlocacoes)
+                .ThenInclude(r => r.Recurso)
+                .Include(p => p.Etapas)
+                .ThenInclude(e => e.RecursosMateriaisAlocacoes)
+                .ThenInclude(r => r.Recurso)
+                .FirstOrDefault(c => c.Id == propostaId)?.Contrato;
+        }
+
         public string PrintContrato(int propostaId)
         {
-            var contrato = GetContrato(propostaId);
+            var contrato = _mapper.Map<PropostaContratoDto>(GetContratoFull(propostaId));
             return renderService.RenderToStringAsync("Proposta/Contrato", contrato).Result;
         }
 
@@ -252,63 +272,6 @@ namespace PeD.Services.Captacoes
             }
         }
 
-        public Relatorio GetRelatorio(int propostaId)
-        {
-            var proposta = _captacaoPropostas.Include(p => p.Relatorio).FirstOrDefault(p => p.Id == propostaId);
-            if (proposta != null)
-            {
-                if (proposta.Relatorio != null && proposta.Relatorio.DataAlteracao < proposta.DataAlteracao)
-                {
-                    return UpdateRelatorio(propostaId);
-                }
-
-                return proposta.Relatorio ?? UpdateRelatorio(propostaId);
-            }
-
-            return null;
-        }
-
-        public string GetRelatorioPdf(int propostaId)
-        {
-            var proposta = _captacaoPropostas.AsQueryable().Include(p => p.Captacao)
-                .FirstOrDefault(p => p.Id == propostaId);
-            if (proposta != null)
-            {
-                var captacao = proposta.Captacao;
-                if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
-                    captacao.Termino < DateTime.Now)
-                {
-                    var relatorio = GetRelatorio(propostaId);
-                    if (relatorio != null)
-                    {
-                        var file = Path.GetTempFileName();
-                        var stream = new FileStream(file, FileMode.Create);
-                        HtmlConverter.ConvertToPdf(relatorio.Content, stream);
-                        stream.Close();
-
-                        return file;
-                    }
-                }
-            }
-            return null;
-        }
-
-        public string GetContratoPdf(int propostaId)
-        {
-            var contrato = PrintContrato(propostaId);
-            if (contrato != null)
-            {
-                var file = Path.GetTempFileName();
-                var stream = new FileStream(file, FileMode.Create);
-                HtmlConverter.ConvertToPdf(contrato, stream);
-                stream.Close();
-
-                return file;
-            }
-
-            return null;
-        }
-
         public Relatorio UpdateRelatorio(int propostaId)
         {
             var proposta = GetPropostaFull(propostaId);
@@ -322,7 +285,7 @@ namespace PeD.Services.Captacoes
                 PropostaId = propostaId,
                 Validacao = validacao
             };
-
+            SaveRelatorioPdf(relatorio);
             if (relatorio.Id == 0)
             {
                 context.Add(relatorio);
@@ -335,11 +298,87 @@ namespace PeD.Services.Captacoes
                 context.Update(relatorio);
             }
 
+
             context.SaveChanges();
             proposta.RelatorioId = relatorio.Id;
             context.Update(proposta);
             context.SaveChanges();
             return relatorio;
+        }
+
+        public Relatorio GetRelatorio(int propostaId)
+        {
+            var proposta = _captacaoPropostas.Include(p => p.Relatorio).FirstOrDefault(p => p.Id == propostaId);
+            if (proposta != null)
+            {
+                if (proposta.Relatorio == null || proposta.Relatorio.DataAlteracao < proposta.DataAlteracao)
+                {
+                    return UpdateRelatorio(propostaId);
+                }
+
+                return proposta.Relatorio;
+            }
+
+            return null;
+        }
+
+
+        public FileUpload SaveRelatorioPdf(Relatorio relatorio)
+        {
+            if (relatorio != null)
+            {
+                var file = Path.GetTempFileName();
+                var stream = new FileStream(file, FileMode.OpenOrCreate);
+                HtmlConverter.ConvertToPdf(relatorio.Content, stream);
+                stream.Close();
+
+                var arquivo = _arquivoService.FromPath(file, "application/pdf",
+                    $"relatorio-{relatorio.PropostaId}-{relatorio.DataAlteracao}.pdf");
+                relatorio.File = arquivo;
+                relatorio.FileId = arquivo.Id;
+                return arquivo;
+            }
+
+            return null;
+        }
+
+        public FileUpload GetRelatorioPdf(int propostaId)
+        {
+            var proposta = _captacaoPropostas.AsQueryable().Include(p => p.Relatorio)
+                .ThenInclude(r => r.File)
+                .FirstOrDefault(p => p.Id == propostaId);
+            if (proposta != null && proposta?.Relatorio.File != null)
+            {
+                return proposta.Relatorio.File;
+            }
+
+            return null;
+        }
+
+
+        public FileUpload SaveContratoPdf(PropostaContrato contrato)
+        {
+            var contratoContent = PrintContrato(contrato.PropostaId);
+            if (contratoContent != null)
+            {
+                var file = Path.GetTempFileName();
+                var stream = new FileStream(file, FileMode.Create);
+                HtmlConverter.ConvertToPdf(contratoContent, stream);
+                stream.Close();
+                var arquivo = _arquivoService.FromPath(file, "application/pdf",
+                    $"contrato-{contrato.PropostaId}.pdf");
+                contrato.File = arquivo;
+                contrato.FileId = arquivo.Id;
+                return arquivo;
+            }
+
+            return null;
+        }
+
+        public FileUpload GetContratoPdf(int propostaId)
+        {
+            var contrato = GetContrato(propostaId);
+            return contrato.File;
         }
 
         #region Emails

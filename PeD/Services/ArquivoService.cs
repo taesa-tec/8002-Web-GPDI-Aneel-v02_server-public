@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +24,32 @@ namespace PeD.Services
             StoragePath = Configuration.GetValue<string>("StoragePath");
         }
 
+        protected string NewFilenameVersion(string filename)
+        {
+            if (!File.Exists(filename))
+                return filename;
+            var ext = "";
+            var name = "";
+            var extMatch = Regex.Match(filename, @"(.+)\.(.+)$");
+            if (extMatch.Success)
+            {
+                name = extMatch.Groups[0].Value;
+                ext = extMatch.Groups[1].Value;
+            }
+
+            var versionMatch = Regex.Match(name, @".+(\(\d+\))$");
+            if (versionMatch.Success)
+            {
+                var version = int.Parse(versionMatch.Groups[0].Value) + 1;
+                name = string.Concat(name, $"({version})");
+            }
+
+            if (string.IsNullOrWhiteSpace(ext))
+                return name;
+
+            return string.Concat(name, ".", ext);
+        }
+
         protected string NewFileName()
         {
             return NewFileName(Path.GetRandomFileName());
@@ -35,8 +62,12 @@ namespace PeD.Services
             if (string.IsNullOrWhiteSpace(filename))
                 throw new ApplicationException("Nome de arquivo inválido");
 
+
             return Path.Combine(GetFolderByDate(), filename.ToFileName());
+
+            //return NewFilenameVersion(newfilename);
         }
+
 
         private string GetFolderByDate()
         {

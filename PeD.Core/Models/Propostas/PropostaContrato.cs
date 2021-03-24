@@ -14,6 +14,9 @@ namespace PeD.Core.Models.Propostas
         public List<PropostaContratoRevisao> Revisoes { get; set; }
         public bool Finalizado { get; set; }
 
+        public int? FileId { get; set; }
+        public FileUpload File { get; set; }
+
         public override string ToString()
         {
             return Parent?.Titulo;

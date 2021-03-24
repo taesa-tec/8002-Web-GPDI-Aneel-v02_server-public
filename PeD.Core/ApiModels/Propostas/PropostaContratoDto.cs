@@ -21,6 +21,9 @@ namespace PeD.Core.ApiModels.Propostas
         public string Conteudo { get; set; }
         public List<ContratoRevisaoDto> Revisoes { get; set; }
         public bool Finalizado { get; set; }
+        
+        public string Header { get; set; }
+        public string Footer { get; set; }
     }
 
     public class ContratoRevisaoDto : PropostaNodeDto

@@ -15,5 +15,8 @@ namespace PeD.Core.Models.Propostas
         public DateTime DataAlteracao { get; set; }
 
         public ValidationResult Validacao { get; set; }
+        
+        public int? FileId { get; set; }
+        public FileUpload File { get; set; }
     }
 }

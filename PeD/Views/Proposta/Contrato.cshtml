@@ -1,4 +1,4 @@
-@model PeD.Core.Models.Propostas.PropostaContrato
+@model PeD.Core.ApiModels.Propostas.PropostaContratoDto
 <!doctype html>
 <html lang="pt-br">
 <head>
@@ -8,8 +8,8 @@
     <title>Contrato - @Model.Parent.Titulo</title>
 </head>
 <body>
-<section>@Html.Raw(Model.Parent.Header)</section>
+<section>@Html.Raw(Model.Header)</section>
 <section>@Html.Raw(Model.Conteudo)</section>
-<section>@Html.Raw(Model.Parent.Footer)</section>
+<section>@Html.Raw(Model.Footer)</section>
 </body>
 </html>

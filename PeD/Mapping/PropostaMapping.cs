@@ -5,6 +5,7 @@ using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
+using PeD.Services.Captacoes;
 using PeD.Views.Email.Captacao.Propostas;
 
 namespace PeD.Mapping
@@ -25,7 +26,13 @@ namespace PeD.Mapping
                 ;
 
             CreateMap<PropostaContrato, PropostaContratoDto>()
-                .ForMember(c => c.Titulo, opt => opt.MapFrom(src => src.Parent.Titulo));
+                .ForMember(c => c.Titulo, opt => opt.MapFrom(src => src.Parent.Titulo))
+                .ForMember(c => c.Header,
+                    opt => opt.MapFrom(src => ContratoService.ReplaceShortcodes(src.Parent.Header, src.Proposta)))
+                .ForMember(c => c.Footer,
+                    opt => opt.MapFrom(src => ContratoService.ReplaceShortcodes(src.Parent.Footer, src.Proposta)))
+                ;
+
             CreateMap<PropostaContrato, ContratoListItemDto>()
                 .ForMember(c => c.Titulo, opt => opt.MapFrom(src => src.Parent.Titulo));
             CreateMap<PropostaContratoRevisao, ContratoRevisaoDto>();

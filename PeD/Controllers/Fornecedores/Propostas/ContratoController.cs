@@ -58,6 +58,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
             contratoProposta.Finalizado = !request.Draft;
             contratoProposta.Conteudo = request.Conteudo;
+            propostaService.SaveContratoPdf(contratoProposta);
             if (contratoProposta.Id != 0)
             {
                 Service.Put(contratoProposta);
@@ -78,6 +79,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
                 _context.Add(revisao);
                 _context.SaveChanges();
             }
+
             propostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);
 
             return Ok();
