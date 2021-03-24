@@ -365,6 +365,7 @@ namespace PeD.Services.Captacoes
                 var stream = new FileStream(file, FileMode.Create);
                 HtmlConverter.ConvertToPdf(contratoContent, stream);
                 stream.Close();
+                PdfHelper.AddPagesToPdf(file, 475, 90);
                 var arquivo = _arquivoService.FromPath(file, "application/pdf",
                     $"contrato-{contrato.PropostaId}.pdf");
                 contrato.File = arquivo;
