@@ -14,6 +14,7 @@ using PeD.Core.Models.Sistema;
 using PeD.Data.Builders;
 using CategoriaContabil = PeD.Core.Models.Catalogos.CategoriaContabil;
 using Contrato = PeD.Core.Models.Contrato;
+using ItemAjuda = PeD.Core.Models.Sistema.ItemAjuda;
 using ProdutoTipo = PeD.Core.Models.Catalogos.ProdutoTipo;
 
 namespace PeD.Data
@@ -92,7 +93,7 @@ namespace PeD.Data
             builder.Entity<Contrato>().ToTable("Contratos");
             builder.Entity<Clausula>().ToTable("Clausulas");
             builder.Entity<FaseTipoDetalhado>().Config();
-            builder.Entity<ItemAjuda>(b => { b.HasIndex(i => i.Codigo).IsUnique(); });
+            builder.Entity<ItemAjuda>().Config();
 
             #endregion
 
