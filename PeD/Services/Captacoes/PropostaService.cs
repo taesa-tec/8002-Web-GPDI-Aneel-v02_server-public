@@ -379,7 +379,7 @@ namespace PeD.Services.Captacoes
         public FileUpload GetContratoPdf(int propostaId)
         {
             var contrato = GetContrato(propostaId);
-            return contrato.File;
+            return contrato?.File;
         }
 
         #region Emails

@@ -22,7 +22,7 @@ namespace PeD.Controllers
         {
             get
             {
-                string folderName = String.Format("/{0}/{1}/{2}", DateTime.Today.Year, DateTime.Today.Month,
+                string folderName = String.Format("{0}/{1}/{2}", DateTime.Today.Year, DateTime.Today.Month,
                     DateTime.Today.Day);
                 return Path.Combine(StoragePath, folderName);
             }
@@ -39,6 +39,7 @@ namespace PeD.Controllers
         {
             if (!Directory.Exists(ActualPath))
             {
+                Console.WriteLine(StoragePath);
                 Directory.CreateDirectory(ActualPath);
             }
         }

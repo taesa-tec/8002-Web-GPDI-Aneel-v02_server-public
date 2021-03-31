@@ -194,12 +194,11 @@ namespace PeD.Services
                 });
         }
 
-        public async Task SendNewFornecedorAccountEmail(string email)
+        public async Task SendNewFornecedorAccountEmail(string email, Fornecedor fornecedor)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) throw new Exception("Email não encontrado");
-            var fornecedor = GestorDbContext.Set<Fornecedor>().AsQueryable()
-                .FirstOrDefault(f => f.ResponsavelId == user.Id);
+
             if (fornecedor == null) throw new Exception("Email não encontrado");
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);

@@ -58,7 +58,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
             contratoProposta.Finalizado = !request.Draft;
             contratoProposta.Conteudo = request.Conteudo;
-            propostaService.SaveContratoPdf(contratoProposta);
+
             if (contratoProposta.Id != 0)
             {
                 Service.Put(contratoProposta);
@@ -72,12 +72,18 @@ namespace PeD.Controllers.Fornecedores.Propostas
             }
 
             // Só criar revisão se tiver alguma alteração de texto relevante
-            if (!hash.Equals(request.Conteudo.ToMD5()))
+            var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
+            if (hasChanges)
             {
                 var revisao = contratoProposta.ToRevisao();
                 revisao.UserId = this.UserId();
                 _context.Add(revisao);
                 _context.SaveChanges();
+            }
+
+            if (hasChanges || contratoProposta.FileId == null)
+            {
+                propostaService.SaveContratoPdf(contratoProposta);
             }
 
             propostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);
