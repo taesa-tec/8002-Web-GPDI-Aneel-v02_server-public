@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using PeD.Auth;
 using PeD.Core.ApiModels.Auth;
 using PeD.Core.Requests;
@@ -19,13 +20,12 @@ namespace PeD.Controllers
             [FromBody] Login user,
             [FromServices] AccessManager accessManager)
         {
-            // @todo Validar o status retornado 
             if (accessManager.ValidateCredentials(user))
             {
                 return accessManager.GenerateToken(user);
             }
 
-            return StatusCode((int) HttpStatusCode.Unauthorized);
+            return Problem("Usuário ou senha incorreto", null, StatusCodes.Status401Unauthorized);
         }
 
         [HttpPost("recuperar-senha")]

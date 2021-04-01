@@ -75,7 +75,7 @@ namespace PeD.Controllers.Sistema
                 if (userResult.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(responsavel, Roles.Fornecedor);
-                    await AccessManager.SendNewFornecedorAccountEmail(responsavel.Email);
+                    await AccessManager.SendNewFornecedorAccountEmail(responsavel.Email, fornecedor);
                 }
                 else
                 {
@@ -153,11 +153,6 @@ namespace PeD.Controllers.Sistema
 
             fornecedor.Nome = model.Nome;
             fornecedor.Cnpj = model.Cnpj;
-            if (!model.Ativo && fornecedor.Ativo)
-            {
-                DesativarFonecedor(fornecedor).Wait();
-                return Ok(fornecedor);
-            }
 
             if (model.TrocarResponsavel)
             {
@@ -165,14 +160,19 @@ namespace PeD.Controllers.Sistema
                 UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
             }
 
+            if (!model.Ativo && fornecedor.Ativo)
+            {
+                DesativarFonecedor(fornecedor).Wait();
+                return Ok(fornecedor);
+            }
+
             if (model.Ativo && !fornecedor.Ativo)
             {
                 AtivarFonecedor(fornecedor).Wait();
+                return Ok(fornecedor);
             }
-            else
-            {
-                Service.Put(fornecedor);
-            }
+
+            Service.Put(fornecedor);
 
             return Ok(fornecedor);
         }

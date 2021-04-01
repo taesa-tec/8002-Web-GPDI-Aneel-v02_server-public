@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using PeD.Core.Models.Propostas;
+using Serilog;
 
 namespace PeD.Services.Captacoes
 {
@@ -40,15 +41,19 @@ namespace PeD.Services.Captacoes
                 return "";
             foreach (var replacer in shortcodes)
             {
+                var shortcode = @$"{{{replacer.Key}}}";
+                var value = "NÃO ENCONTRADO";
                 try
                 {
-                    var shortcode = @$"{{{replacer.Key}}}";
-                    var value = replacer.Value(proposta);
-                    text = text.Replace(shortcode, value ?? "Erro!");
+                    value = replacer.Value(proposta);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Log.Error("Erro shortcode {Shortcode}: {Message}\n {Trace}", shortcode, e.Message, e.StackTrace);
+                }
+                finally
+                {
+                    text = text.Replace(shortcode, value);
                 }
             }
 
