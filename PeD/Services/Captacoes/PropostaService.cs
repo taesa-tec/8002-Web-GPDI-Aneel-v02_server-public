@@ -285,10 +285,12 @@ namespace PeD.Services.Captacoes
                 PropostaId = propostaId,
                 Validacao = validacao
             };
-            SaveRelatorioPdf(relatorio);
+            
+            
             if (relatorio.Id == 0)
             {
                 context.Add(relatorio);
+                context.SaveChanges();
             }
             else
             {
@@ -296,10 +298,12 @@ namespace PeD.Services.Captacoes
                 relatorio.DataAlteracao = DateTime.Now;
                 relatorio.Validacao = validacao;
                 context.Update(relatorio);
+                context.SaveChanges();
             }
-
-
-            context.SaveChanges();
+            
+            var file = SaveRelatorioPdf(relatorio);
+            relatorio.File = file;
+            relatorio.FileId = file.Id;
             proposta.RelatorioId = relatorio.Id;
             context.Update(proposta);
             context.SaveChanges();
@@ -334,8 +338,7 @@ namespace PeD.Services.Captacoes
 
                 var arquivo = _arquivoService.FromPath(file, "application/pdf",
                     $"relatorio-{relatorio.PropostaId}-{relatorio.DataAlteracao}.pdf");
-                relatorio.File = arquivo;
-                relatorio.FileId = arquivo.Id;
+              
                 return arquivo;
             }
 
@@ -368,8 +371,6 @@ namespace PeD.Services.Captacoes
                 PdfHelper.AddPagesToPdf(file, 475, 90);
                 var arquivo = _arquivoService.FromPath(file, "application/pdf",
                     $"contrato-{contrato.PropostaId}.pdf");
-                contrato.File = arquivo;
-                contrato.FileId = arquivo.Id;
                 return arquivo;
             }
 

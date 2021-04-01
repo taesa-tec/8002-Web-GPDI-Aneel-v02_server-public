@@ -56,9 +56,9 @@ namespace PeD.Controllers.Fornecedores.Propostas
         {
             var contratoProposta = propostaService.GetContrato(captacaoId, this.UserId());
             var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
+            var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
             contratoProposta.Finalizado = !request.Draft;
             contratoProposta.Conteudo = request.Conteudo;
-
             if (contratoProposta.Id != 0)
             {
                 Service.Put(contratoProposta);
@@ -72,7 +72,6 @@ namespace PeD.Controllers.Fornecedores.Propostas
             }
 
             // Só criar revisão se tiver alguma alteração de texto relevante
-            var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
             if (hasChanges)
             {
                 var revisao = contratoProposta.ToRevisao();
@@ -83,7 +82,10 @@ namespace PeD.Controllers.Fornecedores.Propostas
 
             if (hasChanges || contratoProposta.FileId == null)
             {
-                propostaService.SaveContratoPdf(contratoProposta);
+                var file = propostaService.SaveContratoPdf(contratoProposta);
+                contratoProposta.File = file;
+                contratoProposta.FileId = file.Id;
+                Service.Put(contratoProposta);
             }
 
             propostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);

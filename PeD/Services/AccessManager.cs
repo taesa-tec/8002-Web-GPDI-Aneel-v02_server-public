@@ -121,8 +121,6 @@ namespace PeD.Services
 
             return new Token()
             {
-                Created = dataCriacao.ToString("yyyy-MM-dd HH:mm:ss"),
-                Expiration = dataExpiracao.ToString("yyyy-MM-dd HH:mm:ss"),
                 AccessToken = token,
                 User = Mapper.Map<ApplicationUserDto>(userIdentity)
             };
