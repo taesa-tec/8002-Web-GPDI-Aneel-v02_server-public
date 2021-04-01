@@ -310,10 +310,6 @@ namespace PeD.Services
                     File.Delete(fullname + ".old");
                 }
             }
-
-            var user = Obter(id);
-            user.FotoPerfil = $"/avatar/{filename}";
-            Atualizar(user);
         }
 
         public List<ApplicationUser> GetInRole(string role)

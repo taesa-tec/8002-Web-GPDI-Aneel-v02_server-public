@@ -90,7 +90,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
 
             propostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);
 
-            return Ok();
+            return Ok(contratoProposta.Id);
         }
 
         [HttpGet("Revisoes")]

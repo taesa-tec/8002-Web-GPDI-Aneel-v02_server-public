@@ -218,11 +218,12 @@ namespace PeD
                     Directory.CreateDirectory(Path.Combine(storagePath, "avatar"));
                 }
 
-                app.UseStaticFiles(new StaticFileOptions()
-                {
-                    FileProvider = new PhysicalFileProvider(Path.Combine(storagePath, "avatar")),
-                    RequestPath = "/Avatar"
-                });
+                // app.UseStaticFiles(new StaticFileOptions()
+                // {
+                //     ServeUnknownFileTypes = true,
+                //     FileProvider = new PhysicalFileProvider(Path.Combine(storagePath, "avatar")),
+                //     RequestPath = "/Avatar"
+                // });
             }
 
             if (env.IsDevelopment())

@@ -17,7 +17,7 @@ namespace PeD.Core.Models
         public int? EmpresaId;
         [ForeignKey("EmpresaId")] public Empresa Empresa { get; set; }
         public string RazaoSocial { get; set; }
-        public string FotoPerfil { get; set; }
+        [NotMapped] public string FotoPerfil => $"/avatar/{Id}.jpg";
         public string Role { get; set; }
         [NotMapped] public List<string> Roles { get; set; }
         public string Cpf { get; set; }
