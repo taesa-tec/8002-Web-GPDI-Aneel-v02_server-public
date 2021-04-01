@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PeD.Services.Sistema;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using PeD.Core;
 using PeD.Views.Email;
 using SendGrid;
@@ -17,10 +16,12 @@ namespace PeD.Services
         protected EmailAddress From;
         protected EmailConfig EmailConfig;
         protected IViewRenderService ViewRender;
+        protected ILogger<SendGridService> Logger;
 
-        public SendGridService(IViewRenderService viewRender, EmailConfig emailConfig)
+        public SendGridService(IViewRenderService viewRender, EmailConfig emailConfig, ILogger<SendGridService> logger)
         {
             EmailConfig = emailConfig;
+            Logger = logger;
             if (!string.IsNullOrEmpty(EmailConfig.ApiKey))
             {
                 Client = new SendGridClient(EmailConfig.ApiKey);
@@ -56,7 +57,7 @@ namespace PeD.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Logger.LogError("Erro no disparo de email: {Message}", e.Message);
                 // @todo Log Send email
             }
         }
@@ -81,7 +82,6 @@ namespace PeD.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 // @todo Log Send email
             }
         }
