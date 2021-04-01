@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -25,11 +26,21 @@ namespace PeD.Controllers
     {
         private UserService _service;
         private IMapper mapper;
+        private IConfiguration Configuration;
+        private string StoragePath;
+        private string AvatarPath;
+        private IWebHostEnvironment env;
 
-        public UsersController(UserService service, IMapper mapper)
+
+        public UsersController(UserService service, IMapper mapper, IConfiguration configuration,
+            IWebHostEnvironment env)
         {
             _service = service;
             this.mapper = mapper;
+            Configuration = configuration;
+            this.env = env;
+            StoragePath = Configuration.GetValue<string>("StoragePath");
+            AvatarPath = Path.Combine(StoragePath, "avatar");
         }
 
         [HttpGet]
@@ -68,6 +79,20 @@ namespace PeD.Controllers
         {
             await _service.UpdateAvatar(userId, file);
             return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("/avatar/{userId}.jpg")]
+        [ResponseCache(Duration = 3600)]
+        public FileResult GetAvatar(string userId)
+        {
+            var filename = Path.Combine(AvatarPath, $"{userId}.jpg");
+            if (!System.IO.File.Exists(filename))
+            {
+                filename = Path.Combine(env.ContentRootPath, "./wwwroot/Assets/default_avatar.jpg");
+            }
+
+            return PhysicalFile(filename, "image/jpg");
         }
 
         [HttpPut]
