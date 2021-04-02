@@ -21,6 +21,7 @@ using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
+using Log = Serilog.Log;
 
 namespace PeD.Controllers.Fornecedores.Propostas
 {
@@ -51,7 +52,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
         [HttpGet("Encerradas")]
         public ActionResult<List<PropostaDto>> GetPropostasEncerradas()
         {
-            var propostas = Service.GetPropostasPorResponsavel(this.UserId(), Captacao.CaptacaoStatus.Encerrada);
+            var propostas = Service.GetPropostasEncerradarFornecedor(this.UserEmpresaId());
             return Ok(Mapper.Map<List<PropostaDto>>(propostas));
         }
 

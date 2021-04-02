@@ -49,6 +49,46 @@ namespace PeD.Services.Captacoes
             _captacaoPropostas = context.Set<Proposta>();
         }
 
+        #region Lists
+
+        public IEnumerable<Proposta> GetPropostasEncerradasPendentes()
+        {
+            return _captacaoPropostas
+                .AsQueryable()
+                .Include(p => p.Fornecedor)
+                .ThenInclude(f => f.Responsavel)
+                .Include(p => p.Captacao)
+                .Where(p => p.Participacao == StatusParticipacao.Aceito
+                            && p.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor
+                            && p.Captacao.Termino < DateTime.Today).ToList();
+        }
+
+
+        public List<Proposta> GetPropostasEncerradarFornecedor(int fornecedorId) =>
+            _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p =>
+                    p.Captacao)
+                .Where(cp => cp.Fornecedor.Id == fornecedorId &&
+                             (cp.Captacao.Status == Captacao.CaptacaoStatus.Encerrada ||
+                              cp.Participacao == StatusParticipacao.Rejeitado)).ToList();
+
+        public IEnumerable<Proposta> GetPropostasPorResponsavel(string userId,
+            Captacao.CaptacaoStatus status = Captacao.CaptacaoStatus.Fornecedor)
+        {
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Captacao)
+                .Include(p => p.Contrato)
+                .Where(cp =>
+                    cp.Fornecedor.ResponsavelId == userId &&
+                    cp.Captacao.Status == status &&
+                    cp.Participacao != StatusParticipacao.Rejeitado)
+                .ToList();
+        }
+
+        #endregion
+
         public Proposta GetProposta(int id)
         {
             return _captacaoPropostas
@@ -97,20 +137,7 @@ namespace PeD.Services.Captacoes
                 .FirstOrDefault(p => p.Id == id);
         }
 
-        public IEnumerable<Proposta> GetPropostasEncerradasPendentes()
-        {
-            return _captacaoPropostas
-                .AsQueryable()
-                .Include(p => p.Fornecedor)
-                .ThenInclude(f => f.Responsavel)
-                .Include(p => p.Captacao)
-                .Where(p => p.Participacao == StatusParticipacao.Aceito
-                            && p.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor
-                            && p.Captacao.Termino < DateTime.Today).ToList();
-        }
-
-
-        public Proposta GetPropostaPorFornecedor(int captacaoId, int fornecedorId) =>
+        public Proposta GetPropostaFornecedor(int captacaoId, int fornecedorId) =>
             _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p =>
@@ -120,19 +147,6 @@ namespace PeD.Services.Captacoes
                                       cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
                                       cp.Participacao != StatusParticipacao.Rejeitado);
 
-        public IEnumerable<Proposta> GetPropostasPorResponsavel(string userId,
-            Captacao.CaptacaoStatus status = Captacao.CaptacaoStatus.Fornecedor)
-        {
-            return _captacaoPropostas
-                .Include(p => p.Fornecedor)
-                .Include(p => p.Captacao)
-                .Include(p => p.Contrato)
-                .Where(cp =>
-                    cp.Fornecedor.ResponsavelId == userId &&
-                    cp.Captacao.Status == status &&
-                    cp.Participacao != StatusParticipacao.Rejeitado)
-                .ToList();
-        }
 
         public Proposta GetPropostaPorResponsavel(int captacaoId, string userId)
         {
@@ -285,8 +299,8 @@ namespace PeD.Services.Captacoes
                 PropostaId = propostaId,
                 Validacao = validacao
             };
-            
-            
+
+
             if (relatorio.Id == 0)
             {
                 context.Add(relatorio);
@@ -300,7 +314,7 @@ namespace PeD.Services.Captacoes
                 context.Update(relatorio);
                 context.SaveChanges();
             }
-            
+
             var file = SaveRelatorioPdf(relatorio);
             relatorio.File = file;
             relatorio.FileId = file.Id;
@@ -338,7 +352,7 @@ namespace PeD.Services.Captacoes
 
                 var arquivo = _arquivoService.FromPath(file, "application/pdf",
                     $"relatorio-{relatorio.PropostaId}-{relatorio.DataAlteracao}.pdf");
-              
+
                 return arquivo;
             }
 

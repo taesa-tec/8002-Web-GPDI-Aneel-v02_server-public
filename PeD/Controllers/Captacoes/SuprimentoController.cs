@@ -270,15 +270,10 @@ namespace PeD.Controllers.Captacoes
             if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
                 captacao.Termino < DateTime.Now)
             {
-                var contrato = serviceProposta.PrintContrato(propostaId);
+                var contrato = serviceProposta.GetContratoPdf(propostaId);
                 if (contrato != null)
                 {
-                    var file = Path.GetTempFileName();
-                    var stream = new FileStream(file, FileMode.Create);
-                    HtmlConverter.ConvertToPdf(contrato, stream);
-                    stream.Close();
-
-                    return PhysicalFile(file, "application/octet-stream");
+                    return PhysicalFile(contrato.Path, "application/octet-stream", contrato.FileName);
                 }
             }
 

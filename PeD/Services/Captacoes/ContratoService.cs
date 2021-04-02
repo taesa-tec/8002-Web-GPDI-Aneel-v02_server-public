@@ -12,14 +12,38 @@ namespace PeD.Services.Captacoes
         private static Dictionary<string, Func<Proposta, string>> shortcodes =
             new Dictionary<string, Func<Proposta, string>>()
             {
-                {"Fornecedor.Nome", p => p.Fornecedor.Nome},
+                {
+                    "Date.Today",
+                    p => DateTime.Today.ToString("d")
+                },
+                {
+                    "Fornecedor.Nome",
+                    p => p.Fornecedor.Nome
+                },
                 {
                     "Fornecedor.CNPJ",
                     p => Regex.Replace(p.Fornecedor.Cnpj, @"^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$", "$1.$2.$3/$4-$5")
                 },
-                {"Projeto.Prazo", p => p.Duracao.ToString()},
                 {
-                    "Projeto.Valor", p =>
+                    "Projeto.FaseCadeia",
+                    p => p.Produtos.FirstOrDefault(pd => pd.Classificacao == ProdutoClassificacao.Final)?.FaseCadeia
+                        .Nome ?? ""
+                },
+                {
+                    "Projeto.Prazo",
+                    p => p.Duracao.ToString()
+                },
+                {
+                    "Projeto.Tema",
+                    p => p.Captacao.Tema?.Nome ?? p.Captacao.TemaOutro
+                },
+                {
+                    "Projeto.Titulo",
+                    p => p.Captacao.Titulo
+                },
+                {
+                    "Projeto.Valor",
+                    p =>
                     {
                         try
                         {

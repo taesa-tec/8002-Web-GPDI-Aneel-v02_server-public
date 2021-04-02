@@ -76,11 +76,6 @@ namespace PeD.Services
         {
             var userIdentity = _userManager
                 .FindByEmailAsync(user.Email).Result;
-            if (userIdentity.EmpresaId != null)
-            {
-                userIdentity.Empresa =
-                    GestorDbContext.Empresas.FirstOrDefault(ce => ce.Id == userIdentity.EmpresaId);
-            }
 
             var roles = _userManager.GetRolesAsync(userIdentity).Result.ToList();
             // Correção de funções do usuário
@@ -98,6 +93,7 @@ namespace PeD.Services
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, userIdentity.Id),
                     new Claim(JwtRegisteredClaimNames.UniqueName, user.Email),
+                    new Claim(ClaimTypes.GroupSid, userIdentity.EmpresaId.ToString()),
                     new Claim(ClaimTypes.Role,
                         userIdentity.Role ?? ""), // @todo Remover do sistema o uso do Role da tabela de usuários
                 }.Concat(roles.Select(r => new Claim(ClaimTypes.Role, r)))
