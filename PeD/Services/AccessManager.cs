@@ -76,6 +76,11 @@ namespace PeD.Services
         {
             var userIdentity = _userManager
                 .FindByEmailAsync(user.Email).Result;
+            if (userIdentity.EmpresaId != null)
+            {
+                userIdentity.Empresa =
+                    GestorDbContext.Empresas.FirstOrDefault(ce => ce.Id == userIdentity.EmpresaId);
+            }
 
             var roles = _userManager.GetRolesAsync(userIdentity).Result.ToList();
             // Correção de funções do usuário

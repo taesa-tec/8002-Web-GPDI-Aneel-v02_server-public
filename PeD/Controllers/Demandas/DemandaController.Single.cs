@@ -11,6 +11,7 @@ using DiffPlex;
 using DiffPlex.Chunkers;
 using DiffPlex.DiffBuilder;
 using HtmlAgilityPack;
+using Microsoft.AspNetCore.Http;
 using PeD.Core.ApiModels;
 using PeD.Core.ApiModels.Demandas;
 using PeD.Core.Exceptions.Demandas;
@@ -137,17 +138,24 @@ namespace PeD.Controllers.Demandas
         public ActionResult<Demanda> SetEtapa(int id, [FromBody] JObject data)
         {
             var etapa = (DemandaEtapa) data.Value<int>("status");
-            if (etapa < DemandaEtapa.Captacao)
+            try
             {
-                DemandaService.SetEtapa(id, etapa, this.UserId());
-            }
-            else
-            {
-                DemandaService.EnviarCaptacao(id, this.UserId());
-            }
+                if (etapa < DemandaEtapa.Captacao)
+                {
+                    DemandaService.SetEtapa(id, etapa, this.UserId());
+                }
+                else
+                {
+                    DemandaService.EnviarCaptacao(id, this.UserId());
+                }
 
 
-            return GetById(id);
+                return GetById(id);
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message, null, StatusCodes.Status409Conflict);
+            }
         }
 
         [HttpPut("{id:int}/Reiniciar")]
