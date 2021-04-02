@@ -9,41 +9,60 @@ namespace PeD.Services.Captacoes
 {
     public class ContratoService
     {
-        private static Dictionary<string, Func<Proposta, string>> shortcodes =
-            new Dictionary<string, Func<Proposta, string>>()
+        public struct Shortcode
+        {
+            public string Code { get; set; }
+            public string Label { get; set; }
+            public Func<Proposta, string> Replacer { get; set; }
+        }
+
+        public static List<Shortcode> Shortcodes =
+            new List<Shortcode>()
             {
+                new Shortcode()
                 {
-                    "Date.Today",
-                    p => DateTime.Today.ToString("d")
+                    Label = "Fornecedor Nome",
+                    Code = "Fornecedor.Nome",
+                    Replacer = p => p.Fornecedor.Nome
                 },
+                new Shortcode()
                 {
-                    "Fornecedor.Nome",
-                    p => p.Fornecedor.Nome
+                    Label = "Fornecedor CNPJ",
+                    Code = "Fornecedor.CNPJ",
+                    Replacer = p =>
+                        Regex.Replace(p.Fornecedor.Cnpj, @"^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$", "$1.$2.$3/$4-$5")
                 },
+                new Shortcode()
                 {
-                    "Fornecedor.CNPJ",
-                    p => Regex.Replace(p.Fornecedor.Cnpj, @"^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$", "$1.$2.$3/$4-$5")
-                },
-                {
-                    "Projeto.FaseCadeia",
-                    p => p.Produtos.FirstOrDefault(pd => pd.Classificacao == ProdutoClassificacao.Final)?.FaseCadeia
+                    Label = "Fase da cadeia de inovação",
+                    Code = "Projeto.FaseCadeia",
+                    Replacer = p => p.Produtos.FirstOrDefault(pd => pd.Classificacao == ProdutoClassificacao.Final)
+                        ?.FaseCadeia
                         .Nome ?? ""
                 },
+                new Shortcode()
                 {
-                    "Projeto.Prazo",
-                    p => p.Duracao.ToString()
+                    Label = "Prazo do projeto",
+                    Code = "Projeto.Prazo",
+                    Replacer = p => p.Duracao.ToString()
                 },
+                new Shortcode()
                 {
-                    "Projeto.Tema",
-                    p => p.Captacao.Tema?.Nome ?? p.Captacao.TemaOutro
+                    Label = "Tema do projeto",
+                    Code = "Projeto.Tema",
+                    Replacer = p => p.Captacao.Tema?.Nome ?? p.Captacao.TemaOutro
                 },
+                new Shortcode()
                 {
-                    "Projeto.Titulo",
-                    p => p.Captacao.Titulo
+                    Label = "Titulo do projeto",
+                    Code = "Projeto.Titulo",
+                    Replacer = p => p.Captacao.Titulo
                 },
+                new Shortcode()
                 {
-                    "Projeto.Valor",
-                    p =>
+                    Label = "Valor do projeto",
+                    Code = "Projeto.Valor",
+                    Replacer = p =>
                     {
                         try
                         {
@@ -59,25 +78,30 @@ namespace PeD.Services.Captacoes
                 },
             };
 
+        public static List<List<string>> GetShortcodesDescriptions()
+        {
+            return Shortcodes.Select(src => new List<string>() {src.Code, src.Label}).ToList();
+        }
+
         public static string ReplaceShortcodes(string text, Proposta proposta)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return "";
-            foreach (var replacer in shortcodes)
+            foreach (var shortcode in Shortcodes)
             {
-                var shortcode = @$"{{{replacer.Key}}}";
+                var placeholder = @$"{{{shortcode.Code}}}";
                 var value = "NÃO ENCONTRADO";
                 try
                 {
-                    value = replacer.Value(proposta);
+                    value = shortcode.Replacer(proposta);
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Erro shortcode {Shortcode}: {Message}\n {Trace}", shortcode, e.Message, e.StackTrace);
+                    Log.Error("Erro shortcode {Shortcode}: {Message}\n {Trace}", placeholder, e.Message, e.StackTrace);
                 }
                 finally
                 {
-                    text = text.Replace(shortcode, value);
+                    text = text.Replace(placeholder, value);
                 }
             }
 
