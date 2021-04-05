@@ -33,6 +33,8 @@ namespace PeD.Controllers.Fornecedores.Propostas
                     .Include(r => r.Recurso)
                     .Include(r => r.Etapa)
                     .Include(r => r.EmpresaFinanciadora)
+                    .Include(r => r.CoExecutorFinanciador)
+                    
                 ;
         }
     }

@@ -11,7 +11,7 @@ namespace PeD.Core.ApiModels.Propostas
         public short Etapa { get; set; }
         public int? EmpresaFinanciadoraId { get; set; }
         public string EmpresaFinanciadora { get; set; }
-        public int? CoExecutorFinanciadoraId { get; set; }
+        public int? CoExecutorFinanciadorId { get; set; }
         public string Justificativa { get; set; }
         public Dictionary<short, short> HoraMeses { get; set; }
         public decimal Valor { get; set; }

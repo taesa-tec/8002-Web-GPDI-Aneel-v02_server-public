@@ -36,9 +36,18 @@ namespace PeD.Services.Captacoes
                 {
                     Label = "Fase da cadeia de inovação",
                     Code = "Projeto.FaseCadeia",
-                    Replacer = p => p.Produtos.FirstOrDefault(pd => pd.Classificacao == ProdutoClassificacao.Final)
-                        ?.FaseCadeia
-                        .Nome ?? ""
+                    Replacer = p =>
+                    {
+                        if (p.Produtos != null)
+                        {
+                            var produto =
+                                p.Produtos.FirstOrDefault(pd => pd.Classificacao == ProdutoClassificacao.Final);
+
+                            return produto?.FaseCadeia?.Nome ?? "";
+                        }
+
+                        return "";
+                    }
                 },
                 new Shortcode()
                 {

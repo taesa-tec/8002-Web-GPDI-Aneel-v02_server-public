@@ -25,11 +25,13 @@ namespace PeD.Controllers.Fornecedores.Propostas
     public class ProdutosController : ControllerServiceBase<Produto>
     {
         private PropostaService _propostaService;
+        private GestorDbContext _context;
 
-        public ProdutosController(IService<Produto> service, IMapper mapper, PropostaService propostaService) : base(
+        public ProdutosController(IService<Produto> service, IMapper mapper, PropostaService propostaService, GestorDbContext context) : base(
             service, mapper)
         {
             _propostaService = propostaService;
+            _context = context;
         }
 
         [HttpGet("")]
@@ -115,8 +117,13 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var produto = Service.Filter(q => q.Where(p => p.PropostaId == proposta.Id && p.Id == id)).FirstOrDefault();
             if (produto == null)
                 return NotFound();
+            
+            if (_context.Set<Etapa>().AsQueryable().Any(a => a.ProdutoId == id))
+            {
+                return Problem("Não é possível apagar um produto associado a uma etapa", null, StatusCodes.Status409Conflict);
+            }
+            
             Service.Delete(produto.Id);
-
             _propostaService.UpdatePropostaDataAlteracao(proposta.Id);
 
             return Ok();
