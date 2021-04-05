@@ -204,9 +204,14 @@ namespace PeD.Services.Captacoes
         public PropostaContrato GetContratoFull(int propostaId)
         {
             return _captacaoPropostas
+                .AsNoTracking()
                 .Include(p => p.Fornecedor)
+                .Include(p => p.Produtos)
+                .ThenInclude(p => p.FaseCadeia)
                 .Include(p => p.Captacao)
                 .ThenInclude(c => c.Contrato)
+                .Include(p => p.Captacao)
+                .ThenInclude(c => c.Tema)
                 .Include(p => p.Contrato)
                 .ThenInclude(c => c.Parent)
                 .Include(p => p.Etapas)
@@ -220,8 +225,10 @@ namespace PeD.Services.Captacoes
 
         public string PrintContrato(int propostaId)
         {
-            var contrato = _mapper.Map<PropostaContratoDto>(GetContratoFull(propostaId));
-            return renderService.RenderToStringAsync("Proposta/Contrato", contrato).Result;
+            var contrato = GetContratoFull(propostaId);
+            _logger.LogInformation("Total de produtos {Total}", contrato.Proposta.Produtos.Count);
+            var contratoDto = _mapper.Map<PropostaContratoDto>(contrato);
+            return renderService.RenderToStringAsync("Proposta/Contrato", contratoDto).Result;
         }
 
         public List<PropostaContratoRevisao> GetContratoRevisoes(int propostaId)

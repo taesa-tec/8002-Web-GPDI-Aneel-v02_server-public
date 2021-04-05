@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
@@ -8,6 +10,7 @@ using PeD.Core.Extensions;
 using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
+using PeD.Data;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -24,12 +27,14 @@ namespace PeD.Controllers.Fornecedores.Propostas
         private PropostaService propostaService;
         private CoExecutorService Service;
         private IMapper mapper;
+        private GestorDbContext _context;
 
-        public CoExecutoresController(CoExecutorService service, IMapper mapper, PropostaService propostaService)
+        public CoExecutoresController(CoExecutorService service, IMapper mapper, PropostaService propostaService, GestorDbContext context)
         {
             Service = service;
             this.mapper = mapper;
             this.propostaService = propostaService;
+            _context = context;
         }
 
         [HttpGet]
@@ -90,6 +95,12 @@ namespace PeD.Controllers.Fornecedores.Propostas
 
             if (coExecutor.PropostaId == proposta.Id)
             {
+                
+                if (_context.Set<RecursoMaterial.AlocacaoRm>().AsQueryable().Any(a => a.CoExecutorRecebedorId == id || a.CoExecutorFinanciadorId == id) ||
+                    _context.Set<RecursoHumano.AlocacaoRh>().AsQueryable().Any(a => a.CoExecutorFinanciadorId == id))
+                {
+                    return Problem("Não é possível apagar uma entidade relacionada com alocações de recursos", null, StatusCodes.Status409Conflict);
+                }
                 Service.Delete(id);
                 propostaService.UpdatePropostaDataAlteracao(proposta.Id);
                 return Ok();

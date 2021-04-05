@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
+using PeD.Data;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -22,11 +24,14 @@ namespace PeD.Controllers.Fornecedores.Propostas
     public class EtapasController : ControllerServiceBase<Etapa>
     {
         private PropostaService _propostaService;
+        private GestorDbContext _context;
 
-        public EtapasController(IService<Etapa> service, IMapper mapper, PropostaService propostaService) : base(
+        public EtapasController(IService<Etapa> service, IMapper mapper, PropostaService propostaService,
+            GestorDbContext context) : base(
             service, mapper)
         {
             _propostaService = propostaService;
+            _context = context;
         }
 
         protected void UpdateOrder(int captacaoId)
@@ -104,6 +109,13 @@ namespace PeD.Controllers.Fornecedores.Propostas
             var etapa = Service.Filter(q => q.Where(p => p.PropostaId == proposta.Id && p.Id == id)).FirstOrDefault();
             if (etapa == null)
                 return NotFound();
+
+            if (_context.Set<RecursoMaterial.AlocacaoRm>().AsQueryable().Any(a => a.EtapaId == id) ||
+                _context.Set<RecursoHumano.AlocacaoRh>().AsQueryable().Any(a => a.EtapaId == id))
+            {
+                return Problem("Não é possível apagar uma etapa com alocações de recursos", null, StatusCodes.Status409Conflict);
+            }
+
             Service.Delete(etapa.Id);
             UpdateOrder(captacaoId);
             return Ok();
