@@ -78,11 +78,13 @@ namespace PeD.Services
                     subject, "", viewContent);
                 if (!tos.Contains("diego.franca@lojainterativa.com"))
                     message.AddBcc("diego.franca@lojainterativa.com", "Diego");
+                if (!tos.Contains("bruno.galindo@lojainterativa.com"))
+                    message.AddBcc("bruno.galindo@lojainterativa.com", "Bruno");
                 await Client.SendEmailAsync(message);
             }
             catch (Exception e)
             {
-                // @todo Log Send email
+                Logger.LogError("Erro no disparo de email:{Error}", e.Message);
             }
         }
 

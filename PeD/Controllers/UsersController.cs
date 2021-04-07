@@ -83,7 +83,6 @@ namespace PeD.Controllers
 
         [AllowAnonymous]
         [HttpGet("/avatar/{userId}.jpg")]
-        [ResponseCache(Duration = 3600)]
         public FileResult GetAvatar(string userId)
         {
             var filename = Path.Combine(AvatarPath, $"{userId}.jpg");

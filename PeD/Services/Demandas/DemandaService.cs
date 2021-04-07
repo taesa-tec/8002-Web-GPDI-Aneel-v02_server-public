@@ -324,10 +324,6 @@ namespace PeD.Services.Demandas
                 if (DemandaProgressCheck[demanda.EtapaAtual](demanda, userId))
                 {
                     demanda.ReprovarReiniciar();
-                    _context.DemandaFormValues
-                        .Where(form => form.DemandaId == id)
-                        .ToList()
-                        .ForEach(f => f.Revisao++);
                     _context.SaveChanges();
                     NotificarReprovacao(demanda, _context.Users.Find(userId));
                     var user = _context.Users.Find(userId);
@@ -408,19 +404,27 @@ namespace PeD.Services.Demandas
                 var captacaoSubTema = subtemas?.Select(t =>
                 {
                     var subtema = (t as JObject);
-                    if (subtema != null)
+                    if (subtema != null && subtema.TryGetValue("catalogSubTemaId", out var subtemaId))
                     {
-                        return new CaptacaoSubTema()
+                        try
                         {
-                            SubTemaId = subtema.GetValue("catalogSubTemaId")?.Value<int>() ?? 0,
-                            Outro = subtema.GetValue("outroDesc")?.Value<string>() ?? ""
-                        };
+                            return new CaptacaoSubTema()
+                            {
+                                SubTemaId = subtemaId.Value<int>(),
+                                Outro = subtema.GetValue("outroDesc")?.Value<string>() ?? ""
+                            };
+                        }
+                        catch (Exception)
+                        {
+                            return null;
+                        }
                     }
-
                     return null;
                 }).Where(s => s != null);
 
-                var captacao = _context.Set<Captacao>().FirstOrDefault(c => c.DemandaId == id) ?? new Captacao
+                var prevCaptcao = _context.Set<Captacao>().FirstOrDefault(c => c.DemandaId == id);
+
+                var captacao = prevCaptcao ?? new Captacao
                 {
                     DemandaId = id,
                     CriadorId = demanda.CriadorId,
