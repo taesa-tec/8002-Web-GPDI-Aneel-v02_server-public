@@ -106,6 +106,11 @@ namespace PeD.Data
                     .IsRequired(false);
                 eb.ToTable("Captacoes");
             });
+            builder.Entity<PropostaSelecao>(b =>
+            {
+                b.HasOne(p => p.Captacao).WithOne(c => c.Selecao);
+                b.ToTable("CaptacaoSelecoes");
+            });
             builder.Entity<CaptacaoArquivo>().ToTable("CaptacaoArquivos");
 
             builder.Entity<CaptacaoFornecedor>()
