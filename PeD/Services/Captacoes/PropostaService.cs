@@ -353,7 +353,7 @@ namespace PeD.Services.Captacoes
             if (relatorio != null)
             {
                 var file = Path.GetTempFileName();
-                var stream = new FileStream(file, FileMode.OpenOrCreate);
+                var stream = new FileStream(file, FileMode.Create);
                 HtmlConverter.ConvertToPdf(relatorio.Content, stream);
                 stream.Close();
 
