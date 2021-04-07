@@ -28,7 +28,6 @@ namespace PeD.Core.Models.Captacoes
         public ApplicationUser Criador { get; set; }
         public string UsuarioSuprimentoId { get; set; }
         public ApplicationUser UsuarioSuprimento { get; set; }
-
         public int? ContratoSugeridoId { get; set; }
         public Contrato ContratoSugerido { get; set; }
 
@@ -56,6 +55,8 @@ namespace PeD.Core.Models.Captacoes
         public int? TemaId { get; set; }
         public Tema Tema { get; set; }
         public string TemaOutro { get; set; }
+
+        public PropostaSelecao Selecao { get; set; }
 
         public List<CaptacaoSubTema> SubTemas { get; set; }
         public List<CaptacaoSugestaoFornecedor> FornecedoresSugeridos { get; set; }
