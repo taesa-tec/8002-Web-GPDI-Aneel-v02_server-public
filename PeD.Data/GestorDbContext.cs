@@ -104,12 +104,8 @@ namespace PeD.Data
                 eb.HasOne(c => c.ContratoSugerido).WithMany()
                     .HasForeignKey("ContratoSugeridoId")
                     .IsRequired(false);
+                eb.HasMany(c => c.Propostas).WithOne(p => p.Captacao);
                 eb.ToTable("Captacoes");
-            });
-            builder.Entity<PropostaSelecao>(b =>
-            {
-                b.HasOne(p => p.Captacao).WithOne(c => c.Selecao);
-                b.ToTable("CaptacaoSelecoes");
             });
             builder.Entity<CaptacaoArquivo>().ToTable("CaptacaoArquivos");
 

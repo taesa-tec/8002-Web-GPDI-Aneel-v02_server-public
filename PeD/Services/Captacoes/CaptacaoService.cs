@@ -79,6 +79,24 @@ namespace PeD.Services.Captacoes
                 .ToList();
         }
 
+        public List<Captacao> GetCaptacoesSelecaoPendente()
+        {
+            return Filter(q => q
+                    .Include(c => c.Propostas)
+                    .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada && c.PropostaSelecionadaId == null))
+                .ToList();
+        }
+
+        public List<Captacao> GetCaptacoesSelecaoFinalizada()
+        {
+            return Filter(q => q
+                    .Include(c => c.Propostas)
+                    .ThenInclude(p => p.Fornecedor)
+                    .Include(c => c.UsuarioRefinamento)
+                    .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada && c.PropostaSelecionadaId != null))
+                .ToList();
+        }
+
         public List<Captacao> GetCaptacoesPorSuprimento(string userId)
         {
             var captacoesQuery =

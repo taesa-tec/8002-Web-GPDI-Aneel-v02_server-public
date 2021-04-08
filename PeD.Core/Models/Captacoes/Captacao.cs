@@ -47,21 +47,49 @@ namespace PeD.Core.Models.Captacoes
             Termino < DateTime.Now;
 
         // Para equipe suprimento
+        /// <summary>
+        /// Observações para equipe de suprimentos
+        /// </summary>
         public string Observacoes { get; set; }
 
-        //Para fornecedores
+        /// <summary>
+        /// Considerações para os fornecedores
+        /// </summary>
         public string Consideracoes { get; set; }
+
+        #region Temas
 
         public int? TemaId { get; set; }
         public Tema Tema { get; set; }
         public string TemaOutro { get; set; }
 
-        public PropostaSelecao Selecao { get; set; }
-
         public List<CaptacaoSubTema> SubTemas { get; set; }
+
+        #endregion
+
         public List<CaptacaoSugestaoFornecedor> FornecedoresSugeridos { get; set; }
         public List<CaptacaoFornecedor> FornecedoresConvidados { get; set; }
         public List<CaptacaoArquivo> Arquivos { get; set; }
+
+        /// <summary>
+        /// Propostas Recebidas
+        /// </summary>
         public List<Proposta> Propostas { get; set; }
+
+        #region Seleção de proposta
+
+        public string UsuarioRefinamentoId { get; set; }
+        public ApplicationUser UsuarioRefinamento { get; set; }
+
+        public DateTime? DataAlvo { get; set; }
+
+        public int? ArquivoComprobatorioId { get; set; }
+        public FileUpload ArquivoComprobatorio { get; set; }
+
+        public int? PropostaSelecionadaId { get; set; }
+        [ForeignKey("PropostaSelecionadaId")]
+        public Proposta PropostaSelecionada { get; set; }
+
+        #endregion
     }
 }

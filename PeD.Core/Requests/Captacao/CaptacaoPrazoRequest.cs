@@ -7,4 +7,11 @@ namespace PeD.Core.Requests.Captacao
     {
         public DateTime Termino { get; set; }
     }
+
+    public class CaptacaoSelecaoPropostaRequest
+    {
+        public int PropostaId { get; set; }
+        public string UsuarioRefinamentoId { get; set; }
+        public DateTime DataAlvo { get; set; }
+    }
 }
