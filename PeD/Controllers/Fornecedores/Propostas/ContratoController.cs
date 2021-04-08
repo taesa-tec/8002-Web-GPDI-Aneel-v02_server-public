@@ -48,7 +48,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
         public ActionResult<PropostaContratoDto> Get([FromRoute] int captacaoId)
         {
             var contrato = propostaService.GetContrato(captacaoId, this.UserId());
-            contrato = propostaService.GetContratoFull(contrato.PropostaId);
+            contrato = propostaService.GetContratoFull(contrato.PropostaId) ;
             return Ok(mapper.Map<PropostaContratoDto>(contrato));
         }
 

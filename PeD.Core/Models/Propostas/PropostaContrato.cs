@@ -8,6 +8,7 @@ namespace PeD.Core.Models.Propostas
     [Table("PropostaContratos")]
     public class PropostaContrato : PropostaNode
     {
+        
         public int ParentId { get; set; }
         [ForeignKey("ParentId")] public Contrato Parent { get; set; }
         public string Conteudo { get; set; }

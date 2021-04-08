@@ -178,7 +178,7 @@ namespace PeD.Services.Captacoes
                                       cp.CaptacaoId == captacaoId &&
                                       cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
                                       cp.Participacao != StatusParticipacao.Rejeitado);
-            if (proposta != null)
+            if (proposta?.Captacao?.ContratoId != null)
                 return proposta.Contrato ?? new PropostaContrato()
                 {
                     PropostaId = proposta.Id,
@@ -191,19 +191,30 @@ namespace PeD.Services.Captacoes
 
         public PropostaContrato GetContrato(int propostaId)
         {
-            return _captacaoPropostas
+            var proposta = _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
                 .ThenInclude(c => c.Contrato)
                 .Include(p => p.Contrato).ThenInclude(c => c.File)
                 .Include(p => p.Contrato)
                 .ThenInclude(c => c.Parent)
-                .FirstOrDefault(c => c.Id == propostaId)?.Contrato;
+                .FirstOrDefault(c => c.Id == propostaId);
+
+
+            if (proposta?.Captacao?.ContratoId != null)
+                return proposta.Contrato ?? new PropostaContrato()
+                {
+                    PropostaId = proposta.Id,
+                    Parent = proposta.Captacao.Contrato,
+                    ParentId = (int) proposta.Captacao?.ContratoId,
+                };
+
+            return null;
         }
 
         public PropostaContrato GetContratoFull(int propostaId)
         {
-            return _captacaoPropostas
+            var proposta = _captacaoPropostas
                 .AsNoTracking()
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Produtos)
@@ -220,7 +231,15 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Etapas)
                 .ThenInclude(e => e.RecursosMateriaisAlocacoes)
                 .ThenInclude(r => r.Recurso)
-                .FirstOrDefault(c => c.Id == propostaId)?.Contrato;
+                .FirstOrDefault(c => c.Id == propostaId);
+            if (proposta?.Captacao?.ContratoId != null)
+                return proposta.Contrato ?? new PropostaContrato()
+                {
+                    PropostaId = proposta.Id,
+                    Parent = proposta.Captacao.Contrato,
+                    ParentId = (int) proposta.Captacao?.ContratoId,
+                };
+            return null;
         }
 
         public string PrintContrato(int propostaId)
