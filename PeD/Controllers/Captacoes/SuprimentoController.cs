@@ -7,6 +7,7 @@ using PeD.Data;
 using AutoMapper;
 using iText.Html2pdf;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -118,7 +119,7 @@ namespace PeD.Controllers.Captacoes
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return NotFound();
+                return Problem(e.Message, null, StatusCodes.Status409Conflict);
             }
 
             return Ok();

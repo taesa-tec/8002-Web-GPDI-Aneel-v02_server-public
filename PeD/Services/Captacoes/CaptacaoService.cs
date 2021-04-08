@@ -164,6 +164,11 @@ namespace PeD.Services.Captacoes
         {
             ThrowIfNotExist(id);
             var captacao = Get(id);
+            if (termino < DateTime.Today || termino < captacao.Termino)
+            {
+                throw new Exception("A data máxima não pode ser anterior a data previamente escolhida");
+            }
+
             captacao.Termino = termino;
             Put(captacao);
 
