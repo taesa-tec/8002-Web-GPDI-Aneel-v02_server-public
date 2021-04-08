@@ -34,6 +34,12 @@ namespace PeD.Mapping
                 .ForMember(c => c.ContratoSugerido, opt => opt.MapFrom(src => src.ContratoSugerido.Titulo))
                 ;
 
+            CreateMap<Captacao, CaptacaoSelecaoPendenteDto>()
+                .ForMember(c => c.PropostasRecebidas, opt => opt.MapFrom(src => src.Propostas.Count));
+            CreateMap<Captacao, CaptacaoFinalizadaDto>()
+                .ForMember(c => c.Proposta, opt => opt.MapFrom(src => src.PropostaSelecionada.Fornecedor.Nome))
+                .ForMember(c => c.Responsavel, opt => opt.MapFrom(src => src.UsuarioRefinamento.NomeCompleto));
+
             CreateMap<CaptacaoArquivo, CaptacaoArquivoDto>()
                 .ForMember(dest => dest.Uri,
                     opt => opt.MapFrom(src => $"/api/Captacoes/{src.CaptacaoId}/Arquivos/{src.Id}"))

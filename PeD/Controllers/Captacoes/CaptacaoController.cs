@@ -101,8 +101,28 @@ namespace PeD.Controllers.Captacoes
         {
             //Service.Paged()
             var captacoes = Service.GetCaptacoesEncerradas();
-                
+
             var mapped = Mapper.Map<List<CaptacaoDto>>(captacoes);
+            return Ok(mapped);
+        }
+
+        [HttpGet("SelecaoPendente")]
+        public ActionResult<List<CaptacaoDto>> GetSelecaoPendente()
+        {
+            //Service.Paged()
+            var captacoes = Service.GetCaptacoesSelecaoPendente();
+
+            var mapped = Mapper.Map<List<CaptacaoSelecaoPendenteDto>>(captacoes);
+            return Ok(mapped);
+        }
+
+        [HttpGet("Finalizada")]
+        public ActionResult<List<CaptacaoDto>> GetFinalizada()
+        {
+            //Service.Paged()
+            var captacoes = Service.GetCaptacoesSelecaoFinalizada();
+
+            var mapped = Mapper.Map<List<CaptacaoFinalizadaDto>>(captacoes);
             return Ok(mapped);
         }
 
