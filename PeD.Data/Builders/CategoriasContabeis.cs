@@ -158,6 +158,7 @@ namespace PeD.Data.Builders
 
         public static EntityTypeBuilder<CategoriaContabil> Config(this EntityTypeBuilder<CategoriaContabil> builder)
         {
+            builder.HasQueryFilter(cc => cc.Valor != "RH");
             return builder.Seed();
         }
 
