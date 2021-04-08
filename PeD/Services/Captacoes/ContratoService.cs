@@ -81,6 +81,7 @@ namespace PeD.Services.Captacoes
                         }
                         catch (Exception e)
                         {
+                            Log.Error("Erro shortcode Valor do Projeto: {Error}", e.Message);
                             return 0.ToString("C");
                         }
                     }
