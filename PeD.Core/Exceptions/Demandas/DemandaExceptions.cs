@@ -1,7 +1,7 @@
 namespace PeD.Core.Exceptions.Demandas
 {
     [System.Serializable]
-    public class DemandaException : System.Exception
+    public class DemandaException : PeDException
     {
         public DemandaException() { }
         public DemandaException(string message) : base(message) { }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PeD.Core.Exceptions.Captacoes;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
@@ -114,6 +115,10 @@ namespace PeD.Services.Captacoes
             IEnumerable<int> arquivosIds, IEnumerable<int> fornecedoresIds, int contratoId)
         {
             ThrowIfNotExist(id);
+            if (termino < DateTime.Today)
+            {
+                throw new CaptacaoException("A data máxima não pode ser anterior a data de hoje");
+            }
             var captacao = Get(id);
             captacao.Termino = termino;
             captacao.Consideracoes = consideracoes;
@@ -179,7 +184,7 @@ namespace PeD.Services.Captacoes
             var captacao = Get(id);
             if (termino < DateTime.Today || termino < captacao.Termino)
             {
-                throw new Exception("A data máxima não pode ser anterior a data previamente escolhida");
+                throw new CaptacaoException("A data máxima não pode ser anterior a data previamente escolhida");
             }
 
             captacao.Termino = termino;

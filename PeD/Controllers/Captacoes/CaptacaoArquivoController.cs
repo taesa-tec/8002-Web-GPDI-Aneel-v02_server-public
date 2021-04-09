@@ -24,7 +24,6 @@ namespace PeD.Controllers.Captacoes
         {
         }
 
-        [AllowAnonymous]
         [HttpGet("{id}/Arquivos/{fileId}", Name = "DownloadCaptacaoFile")]
         public IActionResult DownloadFile(int id, int fileId)
         {

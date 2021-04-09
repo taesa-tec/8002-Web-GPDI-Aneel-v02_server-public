@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
+using PeD.Core.Exceptions.Captacoes;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Captacao;
@@ -122,6 +123,10 @@ namespace PeD.Controllers.Captacoes
                     return Forbid();
                 }
             }
+            catch (CaptacaoException e)
+            {
+                return Problem(e.Message, null, StatusCodes.Status409Conflict);
+            }
             catch (Exception e)
             {
                 return Problem(e.Message);
@@ -144,10 +149,13 @@ namespace PeD.Controllers.Captacoes
                     return Forbid();
                 }
             }
+            catch (CaptacaoException e)
+            {
+                return Problem(e.Message, null, StatusCodes.Status409Conflict);
+            }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                return Problem(e.Message, null, StatusCodes.Status409Conflict);
+                return Problem(e.Message);
             }
 
             return Ok();
