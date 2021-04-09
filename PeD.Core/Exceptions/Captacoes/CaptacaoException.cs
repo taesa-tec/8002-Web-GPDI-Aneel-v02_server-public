@@ -13,11 +13,11 @@ namespace PeD.Core.Exceptions.Captacoes
         {
         }
 
-        public CaptacaoException(string? message) : base(message)
+        public CaptacaoException(string message) : base(message)
         {
         }
 
-        public CaptacaoException(string? message, Exception? innerException) : base(message, innerException)
+        public CaptacaoException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

@@ -13,11 +13,11 @@ namespace PeD.Core.Exceptions
         {
         }
 
-        public PeDException(string? message) : base(message)
+        public PeDException(string message) : base(message)
         {
         }
 
-        public PeDException(string? message, Exception? innerException) : base(message, innerException)
+        public PeDException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }
