@@ -97,6 +97,19 @@ namespace PeD.Services.Captacoes
                 .ToList();
         }
 
+        public List<Captacao> GetCaptacoesPorSuprimento(string userId, Captacao.CaptacaoStatus status)
+        {
+            var captacoesQuery =
+                from captacao in _context.Set<Captacao>().AsQueryable()
+                where
+                    captacao.UsuarioSuprimentoId == userId && captacao.Status == status
+                select captacao;
+
+            return captacoesQuery
+                .Include(c => c.UsuarioSuprimento)
+                .ToList();
+        }
+
         public async Task ConfigurarCaptacao(int id, DateTime termino, string consideracoes,
             IEnumerable<int> arquivosIds, IEnumerable<int> fornecedoresIds, int contratoId)
         {

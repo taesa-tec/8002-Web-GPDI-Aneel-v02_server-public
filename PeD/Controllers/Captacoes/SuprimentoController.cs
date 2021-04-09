@@ -49,7 +49,35 @@ namespace PeD.Controllers.Captacoes
             return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("Pendentes")]
+        public ActionResult GetCaptacoesPendentes()
+        {
+            var captacoes = service.GetCaptacoesPorSuprimento(this.UserId(), Captacao.CaptacaoStatus.Elaboracao);
+            return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
+        }
+
+        [HttpGet("Abertas")]
+        public ActionResult GetCaptacoesEmElaboracao()
+        {
+            var captacoes = service.GetCaptacoesPorSuprimento(this.UserId(), Captacao.CaptacaoStatus.Fornecedor);
+            return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
+        }
+
+        [HttpGet("Finalizadas")]
+        public ActionResult GetCaptacoesFinalizadas()
+        {
+            var captacoes = service.GetCaptacoesPorSuprimento(this.UserId(), Captacao.CaptacaoStatus.Encerrada);
+            return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
+        }
+
+        [HttpGet("Canceladas")]
+        public ActionResult GetCaptacoesCanceladas()
+        {
+            var captacoes = service.GetCaptacoesPorSuprimento(this.UserId(), Captacao.CaptacaoStatus.Cancelada);
+            return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
+        }
+
+        [HttpGet("{id:int}")]
         public ActionResult<CaptacaoDetalhesDto> GetCaptacao(int id)
         {
             var captacao = Service.Filter(q => q
@@ -78,7 +106,7 @@ namespace PeD.Controllers.Captacoes
         }
 
         // @todo Authorization ConfigurarCaptacao
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<ActionResult> ConfigurarCaptacao(int id, ConfiguracaoRequest request)
         {
             try
@@ -102,7 +130,7 @@ namespace PeD.Controllers.Captacoes
             return Ok();
         }
 
-        [HttpPut("{id}/Estender")]
+        [HttpPut("{id:int}/Estender")]
         public async Task<ActionResult> EstenderCaptacao(int id, ConfiguracaoRequest request)
         {
             try
@@ -125,7 +153,7 @@ namespace PeD.Controllers.Captacoes
             return Ok();
         }
 
-        [HttpDelete("{id}/Cancelar")]
+        [HttpDelete("{id:int}/Cancelar")]
         public async Task<ActionResult> CancelarCaptacao(int id)
         {
             try
@@ -148,7 +176,7 @@ namespace PeD.Controllers.Captacoes
             return Ok();
         }
 
-        [HttpGet("{id}/Propostas")]
+        [HttpGet("{id:int}/Propostas")]
         public ActionResult<List<PropostaDto>> GetPropostas(int id)
         {
             if (service.UserSuprimento(id) == this.UserId())
@@ -160,7 +188,7 @@ namespace PeD.Controllers.Captacoes
             return Forbid();
         }
 
-        [HttpGet("{id}/Propostas/Status/{status}")]
+        [HttpGet("{id:int}/Propostas/Status/{status}")]
         public ActionResult<List<PropostaDto>> GetPropostas(int id, StatusParticipacao status)
         {
             if (service.UserSuprimento(id) == this.UserId())
@@ -172,7 +200,7 @@ namespace PeD.Controllers.Captacoes
             return Forbid();
         }
 
-        [HttpGet("{id}/Propostas/EmAberto")]
+        [HttpGet("{id:int}/Propostas/EmAberto")]
         public ActionResult<List<PropostaDto>> GetPropostasEmAberto(int id)
         {
             if (service.UserSuprimento(id) == this.UserId())
@@ -184,7 +212,7 @@ namespace PeD.Controllers.Captacoes
             return Forbid();
         }
 
-        [HttpGet("{id}/Propostas/Recebidas")]
+        [HttpGet("{id:int}/Propostas/Recebidas")]
         public ActionResult<List<PropostaDto>> GetPropostasRecebidas(int id)
         {
             if (service.UserSuprimento(id) == this.UserId())
@@ -196,7 +224,7 @@ namespace PeD.Controllers.Captacoes
             return Forbid();
         }
 
-        [HttpGet("{id}/Propostas/Negadas")]
+        [HttpGet("{id:int}/Propostas/Negadas")]
         public ActionResult<List<PropostaDto>> GetPropostasNegadas(int id)
         {
             if (service.UserSuprimento(id) == this.UserId())
@@ -208,7 +236,7 @@ namespace PeD.Controllers.Captacoes
             return Forbid();
         }
 
-        [HttpGet("{id}/Propostas/{propostaId}/Detalhes")]
+        [HttpGet("{id:int}/Propostas/{propostaId:int}/Detalhes")]
         public ActionResult<PropostaDto> GetPropostaDetalhes(int id, int propostaId)
         {
             if (service.UserSuprimento(id) == this.UserId())
@@ -229,8 +257,8 @@ namespace PeD.Controllers.Captacoes
             return Forbid();
         }
 
-        [HttpGet("{id}/Propostas/{propostaId}/PlanoTrabalho")]
-        [HttpGet("{id}/Propostas/{propostaId}/PlanoTrabalho.pdf")]
+        [HttpGet("{id:int}/Propostas/{propostaId:int}/PlanoTrabalho")]
+        [HttpGet("{id:int}/Propostas/{propostaId:int}/PlanoTrabalho.pdf")]
         public ActionResult PropostaDocDownload(int id, int propostaId, [FromServices] PropostaService serviceProposta)
         {
             if (service.UserSuprimento(id) != this.UserId())
@@ -257,8 +285,8 @@ namespace PeD.Controllers.Captacoes
             return NotFound();
         }
 
-        [HttpGet("{id}/Propostas/{propostaId}/Contrato")]
-        [HttpGet("{id}/Propostas/{propostaId}/Contrato.pdf")]
+        [HttpGet("{id:int}/Propostas/{propostaId:int}/Contrato")]
+        [HttpGet("{id:int}/Propostas/{propostaId:int}/Contrato.pdf")]
         public ActionResult PropostaContratoDownload(int id, int propostaId,
             [FromServices] PropostaService serviceProposta)
         {
