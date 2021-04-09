@@ -26,23 +26,19 @@ namespace PeD.Services
         private SignInManager<ApplicationUser> _signInManager;
         private SigningConfigurations _signingConfigurations;
         private TokenConfigurations _tokenConfigurations;
-        private IWebHostEnvironment _hostingEnvironment;
-        private MailService _mailService;
         protected SendGridService SendGridService;
         protected IMapper Mapper;
 
         public AccessManager(
             UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            SigningConfigurations signingConfigurations, IWebHostEnvironment hostingEnvironment,
-            TokenConfigurations tokenConfigurations, MailService mailService,
+            SigningConfigurations signingConfigurations,
+            TokenConfigurations tokenConfigurations,
             SendGridService sendGridService, IMapper mapper, GestorDbContext gestorDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _signingConfigurations = signingConfigurations;
-            _hostingEnvironment = hostingEnvironment;
             _tokenConfigurations = tokenConfigurations;
-            _mailService = mailService;
             SendGridService = sendGridService;
             Mapper = mapper;
             GestorDbContext = gestorDbContext;
