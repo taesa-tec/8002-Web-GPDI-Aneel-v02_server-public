@@ -42,6 +42,11 @@ namespace PeD.Core.Models.Captacoes
 
         public CaptacaoStatus Status { get; set; }
 
+        [NotMapped]
+        public bool IsPropostasOpen =>
+            Status == CaptacaoStatus.Cancelada || Status == CaptacaoStatus.Encerrada &&
+            Termino < DateTime.Now;
+
         // Para equipe suprimento
         public string Observacoes { get; set; }
 

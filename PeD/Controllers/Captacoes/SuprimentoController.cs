@@ -87,10 +87,7 @@ namespace PeD.Controllers.Captacoes
                 .ThenInclude(fs => fs.Fornecedor)
                 .Include(c => c.FornecedoresConvidados)
                 .ThenInclude(fs => fs.Fornecedor)
-                .Where(c => (c.Status == Captacao.CaptacaoStatus.Elaboracao ||
-                             c.Status == Captacao.CaptacaoStatus.Fornecedor ||
-                             c.Status == Captacao.CaptacaoStatus.Encerrada
-                            ) &&
+                .Where(c => c.Status != Captacao.CaptacaoStatus.Pendente &&
                             c.UsuarioSuprimentoId == this.UserId() &&
                             c.Id == id
                 )).FirstOrDefault();
@@ -106,7 +103,6 @@ namespace PeD.Controllers.Captacoes
             return Ok(detalhes);
         }
 
-        // @todo Authorization ConfigurarCaptacao
         [HttpPut("{id:int}")]
         public async Task<ActionResult> ConfigurarCaptacao(int id, ConfiguracaoRequest request)
         {
@@ -250,8 +246,7 @@ namespace PeD.Controllers.Captacoes
             if (service.UserSuprimento(id) == this.UserId())
             {
                 var captacao = service.Get(id);
-                if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
-                    captacao.Termino < DateTime.Now)
+                if (captacao is {IsPropostasOpen: true})
                 {
                     var propostas = service.GetProposta(propostaId);
                     return Mapper.Map<PropostaDto>(propostas);
@@ -275,8 +270,7 @@ namespace PeD.Controllers.Captacoes
             }
 
             var captacao = service.Get(id);
-            if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
-                captacao.Termino < DateTime.Now)
+            if (captacao is {IsPropostasOpen: true})
             {
                 var relatorio = serviceProposta.GetRelatorio(propostaId);
                 if (relatorio != null)
