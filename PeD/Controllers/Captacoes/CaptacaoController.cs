@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Captacao;
+using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Requests.Captacao;
@@ -45,6 +47,8 @@ namespace PeD.Controllers.Captacoes
             _serviceInfo = serviceInfo;
             Service = service;
         }
+
+        #region 2.2
 
         [HttpGet("")]
         public ActionResult GetCaptacoes()
@@ -106,25 +110,6 @@ namespace PeD.Controllers.Captacoes
             return Ok(mapped);
         }
 
-        [HttpGet("SelecaoPendente")]
-        public ActionResult<List<CaptacaoDto>> GetSelecaoPendente()
-        {
-            //Service.Paged()
-            var captacoes = Service.GetCaptacoesSelecaoPendente();
-
-            var mapped = Mapper.Map<List<CaptacaoSelecaoPendenteDto>>(captacoes);
-            return Ok(mapped);
-        }
-
-        [HttpGet("Finalizada")]
-        public ActionResult<List<CaptacaoDto>> GetFinalizada()
-        {
-            //Service.Paged()
-            var captacoes = Service.GetCaptacoesSelecaoFinalizada();
-
-            var mapped = Mapper.Map<List<CaptacaoFinalizadaDto>>(captacoes);
-            return Ok(mapped);
-        }
 
         // @todo Authorization GetCaptacao
         [HttpGet("{id}")]
@@ -220,5 +205,157 @@ namespace PeD.Controllers.Captacoes
                 return Problem(e.Message);
             }
         }
+
+        #endregion
+
+        #region 2.3
+
+        [HttpGet("SelecaoPendente")]
+        public ActionResult<List<CaptacaoDto>> GetSelecaoPendente()
+        {
+            //Service.Paged()
+            var captacoes = Service.GetCaptacoesSelecaoPendente();
+
+            var mapped = Mapper.Map<List<CaptacaoSelecaoPendenteDto>>(captacoes);
+            return Ok(mapped);
+        }
+
+        [HttpGet("Finalizada")]
+        public ActionResult<List<CaptacaoDto>> GetFinalizada()
+        {
+            //Service.Paged()
+            var captacoes = Service.GetCaptacoesSelecaoFinalizada();
+
+            var mapped = Mapper.Map<List<CaptacaoFinalizadaDto>>(captacoes);
+            return Ok(mapped);
+        }
+
+        [HttpGet("{id}/Propostas")]
+        public ActionResult<List<PropostaSelecaoDto>> GetCaptacaoPropostas(int id,
+            [FromServices] PropostaService propostaService)
+        {
+            var captacao = Service.Filter(q => q
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                            //c.UsuarioSuprimentoId == this.UserId() &&
+                            c.Id == id
+                )).FirstOrDefault();
+            if (captacao == null)
+            {
+                return NotFound();
+            }
+
+            var propostas = propostaService.Filter(q =>
+                q.Include(p => p.Contrato)
+                    .Include(p => p.Fornecedor)
+                    .Where(p => p.Finalizado && p.CaptacaoId == id && p.Contrato != null));
+
+            return Mapper.Map<List<PropostaSelecaoDto>>(propostas);
+        }
+
+        [HttpGet("{id}/Propostas/{propostaId}/PlanoTrabalho")]
+        public ActionResult DownloadPlanoTrabalho(int id, int propostaId,
+            [FromServices] PropostaService propostaService)
+        {
+            var captacao = Service.Filter(q => q
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                            //c.UsuarioSuprimentoId == this.UserId() &&
+                            c.Id == id
+                )).FirstOrDefault();
+
+            var proposta = propostaService.Filter(q =>
+                q.Include(p => p.Relatorio)
+                    .ThenInclude(r => r.File)
+                    .Include(p => p.Fornecedor)
+                    .Where(p => p.CaptacaoId == id && p.Finalizado && p.Id == propostaId)).FirstOrDefault();
+            if (captacao == null || proposta == null || proposta.Relatorio?.File == null)
+            {
+                return NotFound();
+            }
+
+            var file = proposta.Relatorio.File;
+            return PhysicalFile(file.Path, file.ContentType,
+                $"{captacao.Titulo}-plano-de-trabalho({proposta.Fornecedor.Nome}).pdf");
+        }
+
+
+        [HttpGet("{id}/Propostas/{propostaId}/Contrato")]
+        public ActionResult DownloadContrato(int id, int propostaId,
+            [FromServices] PropostaService propostaService)
+        {
+            var captacao = Service.Filter(q => q
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                            //c.UsuarioSuprimentoId == this.UserId() &&
+                            c.Id == id
+                )).FirstOrDefault();
+
+            var proposta = propostaService.Filter(q =>
+                q.Include(p => p.Contrato)
+                    .ThenInclude(r => r.File)
+                    .Include(p => p.Fornecedor)
+                    .Where(p => p.CaptacaoId == id && p.Finalizado && p.Id == propostaId)).FirstOrDefault();
+            if (captacao == null || proposta == null || proposta.Contrato?.File == null)
+            {
+                return NotFound();
+            }
+
+            var file = proposta.Contrato.File;
+            return PhysicalFile(file.Path, file.ContentType,
+                $"{captacao.Titulo}-contrato({proposta.Fornecedor.Nome}).pdf");
+        }
+
+        [HttpPost("{id}/SelecionarProposta")]
+        public ActionResult SelecionarProposta(int id, [FromBody] CaptacaoSelecaoRequest request)
+        {
+            var captacao = Service.Filter(q => q
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                            //c.UsuarioSuprimentoId == this.UserId() &&
+                            c.Id == id
+                )).FirstOrDefault();
+
+            if (captacao == null)
+            {
+                return NotFound();
+            }
+
+            if (request.DataAlvo < DateTime.Today)
+            {
+                return Problem("Data alvo não pode ser menor que hoje", null, StatusCodes.Status409Conflict);
+            }
+
+            captacao.DataAlvo = request.DataAlvo;
+            captacao.UsuarioRefinamentoId = request.ResponsavelId;
+            captacao.PropostaSelecionadaId = request.PropostaId;
+            Service.Put(captacao);
+            return Ok();
+        }
+
+        [HttpPost("{id}/SelecionarProposta/Arquivo")]
+        public async Task<ActionResult> ArquivoProbatorio(int id, [FromServices] ArquivoService arquivoService)
+        {
+            var upload = Request.Form.Files.FirstOrDefault();
+            if (upload is null)
+            {
+                return Problem("O arquivo comprobatório não foi enviado", null,
+                    StatusCodes.Status422UnprocessableEntity);
+            }
+
+            var captacao = Service.Filter(q => q
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                            //c.UsuarioSuprimentoId == this.UserId() &&
+                            c.Id == id
+                )).FirstOrDefault();
+
+            if (captacao == null)
+            {
+                return NotFound();
+            }
+
+            var file = await arquivoService.SaveFile(upload);
+            captacao.ArquivoComprobatorioId = file.Id;
+            Service.Put(captacao);
+            return Ok();
+        }
+
+        #endregion
     }
 }
