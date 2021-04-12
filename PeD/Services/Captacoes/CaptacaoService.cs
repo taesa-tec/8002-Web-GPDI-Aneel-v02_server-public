@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PeD.Core.Exceptions.Captacoes;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
@@ -115,10 +116,27 @@ namespace PeD.Services.Captacoes
                 .ToList();
         }
 
+        public List<Captacao> GetCaptacoesPorSuprimento(string userId, Captacao.CaptacaoStatus status)
+        {
+            var captacoesQuery =
+                from captacao in _context.Set<Captacao>().AsQueryable()
+                where
+                    captacao.UsuarioSuprimentoId == userId && captacao.Status == status
+                select captacao;
+
+            return captacoesQuery
+                .Include(c => c.UsuarioSuprimento)
+                .ToList();
+        }
+
         public async Task ConfigurarCaptacao(int id, DateTime termino, string consideracoes,
             IEnumerable<int> arquivosIds, IEnumerable<int> fornecedoresIds, int contratoId)
         {
             ThrowIfNotExist(id);
+            if (termino < DateTime.Today)
+            {
+                throw new CaptacaoException("A data máxima não pode ser anterior a data de hoje");
+            }
             var captacao = Get(id);
             captacao.Termino = termino;
             captacao.Consideracoes = consideracoes;
@@ -182,6 +200,11 @@ namespace PeD.Services.Captacoes
         {
             ThrowIfNotExist(id);
             var captacao = Get(id);
+            if (termino < DateTime.Today || termino < captacao.Termino)
+            {
+                throw new CaptacaoException("A data máxima não pode ser anterior a data previamente escolhida");
+            }
+
             captacao.Termino = termino;
             Put(captacao);
 

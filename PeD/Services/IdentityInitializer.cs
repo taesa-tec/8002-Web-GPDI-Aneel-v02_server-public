@@ -18,7 +18,6 @@ namespace PeD.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private UserService _userService;
-        private MailService _mailService;
         private ILogger<IdentityInitializer> logger;
 
         public IConfiguration Configuration { get; }
@@ -31,7 +30,6 @@ namespace PeD.Services
             _context = scope.ServiceProvider.GetRequiredService<GestorDbContext>();
             _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            _mailService = scope.ServiceProvider.GetRequiredService<MailService>();
             _userService = new UserService(_context, _userManager, scope.ServiceProvider.GetService<AccessManager>(),
                 Configuration);
             this.Configuration = Configuration;

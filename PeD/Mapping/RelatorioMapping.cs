@@ -24,12 +24,13 @@ namespace PeD.Mapping
                             ? s.EmpresaFinanciadora.Nome
                             : s.CoExecutorFinanciador.RazaoSocial
                     )
-                )
-                .AfterMap((alocacao, etapa) =>
-                {
-                    etapa.EmpresaRecebedoraCodigo = etapa.EmpresaFinanciadoraCodigo;
-                    etapa.EmpresaRecebedora = etapa.EmpresaFinanciadora;
-                });
+                ).ForMember(c => c.EmpresaRecebedoraCodigo, opt => opt
+                    .MapFrom(s => s.Recurso.Empresa.Categoria.ToString() + "-" + s.Recurso.Empresa.Id
+                    )
+                ).ForMember(c => c.EmpresaRecebedora, opt => opt
+                    .MapFrom(s => s.Recurso.Empresa.Nome)
+                );
+                
 
             CreateMap<RecursoMaterial.AlocacaoRm, AlocacaoRecurso>()
                 .ForMember(c => c.CategoriaContabil, opt => opt

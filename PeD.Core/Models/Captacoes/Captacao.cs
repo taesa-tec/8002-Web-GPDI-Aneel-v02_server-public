@@ -41,6 +41,11 @@ namespace PeD.Core.Models.Captacoes
 
         public CaptacaoStatus Status { get; set; }
 
+        [NotMapped]
+        public bool IsPropostasOpen =>
+            Status == CaptacaoStatus.Cancelada || Status == CaptacaoStatus.Encerrada &&
+            Termino < DateTime.Now;
+
         /// <summary>
         /// Observações para equipe de suprimentos
         /// </summary>
@@ -81,8 +86,7 @@ namespace PeD.Core.Models.Captacoes
         public FileUpload ArquivoComprobatorio { get; set; }
 
         public int? PropostaSelecionadaId { get; set; }
-        [ForeignKey("PropostaSelecionadaId")]
-        public Proposta PropostaSelecionada { get; set; }
+        [ForeignKey("PropostaSelecionadaId")] public Proposta PropostaSelecionada { get; set; }
 
         #endregion
     }

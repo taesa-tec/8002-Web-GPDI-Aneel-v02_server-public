@@ -138,7 +138,6 @@ namespace PeD
 
             services.AddScoped<SendGridService>();
             services.AddScoped<ArquivoService>();
-            services.AddScoped<MailService>();
             services.AddScoped<UserService>();
             services.AddScoped<DemandaService>();
             services.AddScoped<DemandaLogService>();
@@ -301,6 +300,7 @@ namespace PeD
             // app.UseHttpsRedirection();
 
 
+            app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
             app.UseSpa(spa => { });
