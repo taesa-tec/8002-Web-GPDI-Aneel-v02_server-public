@@ -21,7 +21,7 @@ namespace PeD.Controllers.Sistema
         }
 
         [ResponseCache(Duration = 3200)]
-        [Route("/api/Ajuda/{codigo}")]
+        [HttpGet("/api/Ajuda/{codigo}")]
         public ItemAjudaDto GetPorCodigo(string codigo)
         {
             var item = Service.Filter(q => q.Where(i => i.Codigo == codigo))
@@ -30,7 +30,7 @@ namespace PeD.Controllers.Sistema
         }
 
         [ResponseCache(Duration = 3200)]
-        [Route("/api/Ajuda/{codigo}/Conteudo")]
+        [HttpGet("/api/Ajuda/{codigo}/Conteudo")]
         public string GetConteudoPorCodigo(string codigo)
         {
             return Service.Filter(q => q.Where(i => i.Codigo == codigo))

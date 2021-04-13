@@ -14,6 +14,11 @@ namespace PeD.Mapping
     {
         public PropostaMapping()
         {
+            CreateMap<Proposta, PropostaSelecaoDto>()
+                .ForMember(dest => dest.Fornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome))
+                .ForMember(dest => dest.DataTermino, opt => opt.MapFrom(src => src.Captacao.Termino))
+                .ForMember(dest => dest.ContratoFinalizado, opt => opt.MapFrom(src => src.Contrato.Finalizado))
+                .ForMember(dest => dest.PlanoFinalizado, opt => opt.MapFrom(src => src.Finalizado));
             CreateMap<Proposta, PropostaDto>()
                 .ForMember(dest => dest.Fornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome))
                 .ForMember(dest => dest.Captacao, opt => opt.MapFrom(src => src.Captacao.Titulo))

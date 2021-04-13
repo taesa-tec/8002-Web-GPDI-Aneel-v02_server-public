@@ -38,6 +38,23 @@ namespace PeD.Controllers
             return await base.Upload();
         }
 
+        [HttpDelete("{id}")]
+        public ActionResult Delete(int id)
+        {
+            var file = context
+                .Files
+                .FirstOrDefault(f => f.UserId == this.UserId() && f.Id == id);
+            if (file is null)
+            {
+                return NotFound();
+            }
+
+            context.Remove(file);
+            context.SaveChanges();
+            System.IO.File.Delete(file.Path);
+            return Ok();
+        }
+
         protected override FileUpload FromFormFile(IFormFile file, string filename)
         {
             return new FileUpload()
