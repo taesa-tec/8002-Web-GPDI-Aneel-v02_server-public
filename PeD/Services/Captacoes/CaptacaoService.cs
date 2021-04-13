@@ -137,6 +137,7 @@ namespace PeD.Services.Captacoes
             {
                 throw new CaptacaoException("A data máxima não pode ser anterior a data de hoje");
             }
+
             var captacao = Get(id);
             captacao.Termino = termino;
             captacao.Consideracoes = consideracoes;
@@ -263,6 +264,7 @@ namespace PeD.Services.Captacoes
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Contrato)
+                .Include(p => p.Captacao)
                 .Where(cp => cp.CaptacaoId == captacaoId && cp.Participacao != StatusParticipacao.Rejeitado &&
                              (!cp.Finalizado || (cp.Contrato != null && !cp.Contrato.Finalizado))
                 )
@@ -274,6 +276,7 @@ namespace PeD.Services.Captacoes
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Contrato)
+                .Include(p => p.Captacao)
                 .Where(cp => cp.CaptacaoId == captacaoId &&
                              (cp.Participacao == StatusParticipacao.Aceito ||
                               cp.Participacao == StatusParticipacao.Concluido) &&
@@ -288,6 +291,7 @@ namespace PeD.Services.Captacoes
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
+                .Include(p => p.Captacao)
                 .Where(cp =>
                     cp.Fornecedor.ResponsavelId == userId &&
                     cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
@@ -297,17 +301,15 @@ namespace PeD.Services.Captacoes
 
         public void EncerrarCaptacoesExpiradas()
         {
-            _logger.LogInformation("Encerrando Captações expiradas");
             var expiradas = Filter(q =>
                     q.Where(c => c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino < DateTime.Today))
                 .ToList();
-            _logger.LogInformation($"Captações expiradas: {expiradas.Count}");
             foreach (var expirada in expiradas)
             {
                 expirada.Status = Captacao.CaptacaoStatus.Encerrada;
             }
-
             Put(expiradas);
+            _logger.LogInformation($"Captações expiradas: {expiradas.Count}");
         }
 
         #region Emails
