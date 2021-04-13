@@ -303,6 +303,33 @@ namespace PeD.Controllers.Captacoes
                 $"{captacao.Titulo}-contrato({proposta.Fornecedor.Nome}).pdf");
         }
 
+
+        [HttpGet("{id}/PropostaSelecionada/PlanoTrabalho")]
+        public ActionResult DownloadPlanoTrabalhoPropostaSelecionada(int id,
+            [FromServices] PropostaService propostaService)
+        {
+            var captacao = Service.Get(id);
+            if (captacao == null || captacao.PropostaSelecionadaId == null)
+            {
+                return NotFound();
+            }
+
+            return DownloadPlanoTrabalho(id, captacao.PropostaSelecionadaId.Value, propostaService);
+        }
+
+        [HttpGet("{id}/PropostaSelecionada/Contrato")]
+        public ActionResult DownloadContratoPropostaSelecionada(int id,
+            [FromServices] PropostaService propostaService)
+        {
+            var captacao = Service.Get(id);
+            if (captacao == null || captacao.PropostaSelecionadaId == null)
+            {
+                return NotFound();
+            }
+
+            return DownloadContrato(id, captacao.PropostaSelecionadaId.Value, propostaService);
+        }
+
         [HttpPost("{id}/SelecionarProposta")]
         public ActionResult SelecionarProposta(int id, [FromBody] CaptacaoSelecaoRequest request)
         {
