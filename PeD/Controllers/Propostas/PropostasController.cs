@@ -1,17 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
-using FluentValidation.Results;
-using iText.Html2pdf;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
@@ -21,24 +16,23 @@ using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
-using Log = Serilog.Log;
 
-namespace PeD.Controllers.Fornecedores.Propostas
+namespace PeD.Controllers.Propostas
 {
     [SwaggerTag("Proposta Fornecedor")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Fornecedor/Propostas")]
+    [Route("api/Propostas")]
     public class PropostasController : ControllerServiceBase<Proposta>
     {
         private new PropostaService Service;
-        private readonly IAuthorizationService _authorizationService;
+        public readonly IAuthorizationService AuthorizationService;
 
         public PropostasController(PropostaService service, IMapper mapper, IAuthorizationService authorizationService)
             : base(service, mapper)
         {
             Service = service;
-            _authorizationService = authorizationService;
+            AuthorizationService = authorizationService;
         }
 
         [HttpGet("")]
@@ -65,58 +59,75 @@ namespace PeD.Controllers.Fornecedores.Propostas
         }
 
         [HttpGet("{id:guid}")]
-        public ActionResult<PropostaDto> GetProposta(Guid id)
+        public async Task<ActionResult<PropostaDto>> GetProposta(Guid id)
         {
             var proposta = Service.GetProposta(id);
+            var authorizationResult = await this.Authorize(proposta);
 
-
-            return Mapper.Map<PropostaDto>(proposta);
+            if (authorizationResult.Succeeded)
+            {
+                return Mapper.Map<PropostaDto>(proposta);
+            }
+            return Unauthorized();
         }
 
 
-        [HttpGet("{id}/Empresas")]
-        public ActionResult GetPropostaEmpresas(int id,
+        [HttpGet("{id:guid}/Empresas")]
+        public async Task<ActionResult> GetPropostaEmpresas(Guid id,
             [FromServices] IService<CoExecutor> coexecutoresService,
             [FromServices] IService<Empresa> empresasService,
             [FromServices] IService<Fornecedor> fornecedorService
         )
         {
-            var currentUser = this.UserId();
-            var proposta = Service.GetPropostaPorResponsavel(id, currentUser);
-            var empresa = empresasService.Filter(q => q.OrderBy(e => e.Id).Take(1)).FirstOrDefault();
-            var fornecedor = fornecedorService.Filter(q =>
-                q.Where(e => e.ResponsavelId == currentUser)).FirstOrDefault();
-            var coExecutores = coexecutoresService.Filter(q =>
-                q.Where(e => e.PropostaId == proposta.Id));
-            var response = new
-            {
-                empresa,
-                fornecedor,
-                coExecutores = Mapper.Map<List<CoExecutorDto>>(coExecutores)
-            };
-            return Ok(response);
-        }
+            var proposta = Service.GetProposta(id);
+            var authorizationResult = await this.Authorize(proposta);
 
-        [HttpPut("{id}/Rejeitar")]
-        public ActionResult RejeitarCaptacao(int id)
-        {
-            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
-            if (proposta.Participacao == StatusParticipacao.Pendente)
+            if (authorizationResult.Succeeded)
             {
-                proposta.Participacao = StatusParticipacao.Rejeitado;
-                proposta.DataResposta = DateTime.Now;
-                Service.Put(proposta);
-                Service.SendEmailFinalizado(proposta).Wait();
-                return Ok();
+                var empresa = empresasService.Filter(q => q.OrderBy(e => e.Id).Take(1)).FirstOrDefault();
+                var fornecedor = fornecedorService.Filter(q =>
+                    q.Where(e => e.ResponsavelId == proposta.ResponsavelId)).FirstOrDefault();
+                var coExecutores = coexecutoresService.Filter(q =>
+                    q.Where(e => e.PropostaId == proposta.Id));
+                var response = new
+                {
+                    empresa,
+                    fornecedor,
+                    coExecutores = Mapper.Map<List<CoExecutorDto>>(coExecutores)
+                };
+                return Ok(response);
             }
 
-            return StatusCode(428);
+            return Forbid();
         }
 
-        [HttpPut("{id}/Participar")]
-        public ActionResult ParticiparCaptacao(int id)
+        [Authorize(Roles = Roles.Fornecedor)]
+        [HttpPut("{id:guid}/Rejeitar")]
+        public async Task<ActionResult> RejeitarCaptacao(Guid id)
         {
-            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            var proposta = Service.GetProposta(id);
+            var result = await this.Authorize(proposta);
+            if (result.Succeeded)
+            {
+                if (proposta.Participacao == StatusParticipacao.Pendente)
+                {
+                    proposta.Participacao = StatusParticipacao.Rejeitado;
+                    proposta.DataResposta = DateTime.Now;
+                    Service.Put(proposta);
+                    Service.SendEmailFinalizado(proposta).Wait();
+                    return Ok();
+                }
+
+                return StatusCode(428);
+            }
+
+            return Forbid();
+        }
+
+        [HttpPut("{id:guid}/Participar")]
+        public ActionResult ParticiparCaptacao(Guid id)
+        {
+            var proposta = Service.GetProposta(id);
             if (proposta.Participacao == StatusParticipacao.Pendente)
             {
                 proposta.Participacao = StatusParticipacao.Aceito;
@@ -129,10 +140,10 @@ namespace PeD.Controllers.Fornecedores.Propostas
         }
 
 
-        [HttpPut("{id}/Duracao")]
+        [HttpPut("{id:guid}/Duracao")]
         public ActionResult PropostaDuracao(int id, [FromServices] IService<Etapa> etapaService, [FromBody] short meses)
         {
-            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            var proposta = Service.GetProposta(id);
             if (proposta.Participacao == StatusParticipacao.Aceito)
             {
                 var etapas = etapaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id));
@@ -149,10 +160,10 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return StatusCode(428);
         }
 
-        [HttpGet("{id}/Documento")]
-        public ActionResult PropostaDoc(int id)
+        [HttpGet("{id:guid}/Documento")]
+        public ActionResult PropostaDoc(Guid id)
         {
-            var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            var tempproposta = Service.GetProposta(id);
             if (tempproposta == null)
             {
                 return NotFound();
@@ -171,7 +182,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return NotFound();
         }
 
-        [HttpGet("{id}/Download/PlanoTrabalho")]
+        [HttpGet("{id:guid}/Download/PlanoTrabalho")]
         public ActionResult PropostaDocDownload(int id)
         {
             var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId(), Captacao.CaptacaoStatus.Fornecedor,
@@ -190,36 +201,48 @@ namespace PeD.Controllers.Fornecedores.Propostas
             return NotFound();
         }
 
-        [HttpGet("{id}/Download/Contrato")]
-        public ActionResult PropostaContratoDownload(int id)
+        [HttpGet("{id:guid}/Download/Contrato")]
+        public async Task<ActionResult> PropostaContratoDownload(Guid id)
         {
-            var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId(), Captacao.CaptacaoStatus.Fornecedor,
-                Captacao.CaptacaoStatus.Encerrada);
-            if (tempproposta == null)
+            var tempproposta = Service.GetProposta(id);
+            if (tempproposta == null || (tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Encerrada &&
+                                         tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Encerrada))
             {
                 return NotFound();
             }
 
-            var contrato = Service.GetContratoPdf(tempproposta.Id);
-            if (contrato != null)
+            var result = await this.Authorize(tempproposta);
+            if (result.Succeeded)
             {
-                return PhysicalFile(contrato.Path, "application/octet-stream", contrato.FileName);
+                var contrato = Service.GetContratoPdf(tempproposta.Id);
+                if (contrato != null)
+                {
+                    return PhysicalFile(contrato.Path, "application/octet-stream", contrato.FileName);
+                }
+
+                return NotFound();
             }
 
-            return NotFound();
+            return Forbid();
         }
 
-        [HttpPut("{id}/Finalizar")]
-        public async Task<ActionResult> Finalizar(int id)
+        [HttpPut("{id:guid}/Finalizar")]
+        public async Task<ActionResult> Finalizar(Guid id)
         {
-            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
-            if (proposta.Participacao == StatusParticipacao.Aceito)
+            var proposta = Service.GetProposta(id);
+            var result = await this.Authorize(proposta);
+            if (result.Succeeded)
             {
-                await Service.FinalizarProposta(proposta);
-                return Ok();
+                if (proposta.Participacao == StatusParticipacao.Aceito)
+                {
+                    await Service.FinalizarProposta(proposta);
+                    return Ok();
+                }
+
+                return Problem("A participação nesse projeto foi recusada!");
             }
 
-            return Problem("A participação nesse projeto foi recusada!");
+            return Forbid();
         }
     }
 }

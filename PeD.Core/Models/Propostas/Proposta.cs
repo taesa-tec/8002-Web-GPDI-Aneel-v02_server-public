@@ -16,6 +16,7 @@ namespace PeD.Core.Models.Propostas
 
     public class Proposta : BaseEntity
     {
+        public Guid Guid { get; set; }
         public bool Finalizado { get; set; }
         public StatusParticipacao Participacao { get; set; }
         public DateTime DataCriacao { get; set; }
@@ -32,6 +33,9 @@ namespace PeD.Core.Models.Propostas
         public short Duracao { get; set; }
         public int FornecedorId { get; set; }
         public Fornecedores.Fornecedor Fornecedor { get; set; }
+
+        public string ResponsavelId { get; set; }
+        [ForeignKey("ResponsavelId")] public ApplicationUser Responsavel { get; set; }
         public int CaptacaoId { get; set; }
         public Captacao Captacao { get; set; }
 
