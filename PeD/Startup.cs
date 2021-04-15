@@ -21,6 +21,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using PeD.Auth;
+using PeD.Authorizations;
 using PeD.Core;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
@@ -205,6 +206,8 @@ namespace PeD
                     opt.RootPath = "StaticFiles/DefaultSpa";
                 }
             });
+
+            services.AddPropostaAuthorizations();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

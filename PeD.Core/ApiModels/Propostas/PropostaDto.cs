@@ -8,6 +8,7 @@ namespace PeD.Core.ApiModels.Propostas
 {
     public class PropostaDto : BaseEntity
     {
+        public Guid Guid { get; set; }
         public string Captacao { get; set; }
         public string CaptacaoStatus { get; set; }
         public int FornecedorId { get; set; }

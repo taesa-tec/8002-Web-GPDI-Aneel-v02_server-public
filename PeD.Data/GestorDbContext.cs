@@ -126,6 +126,7 @@ namespace PeD.Data
                 _builder.HasIndex(p => new {p.CaptacaoId, p.FornecedorId}).IsUnique();
                 _builder.HasOne(p => p.Relatorio);
                 _builder.HasOne(p => p.Contrato).WithOne(c => c.Proposta);
+                _builder.Property(p => p.Guid).HasDefaultValueSql("NEWID()");
                 _builder.ToTable("Propostas");
             });
             builder.Entity<PropostaArquivo>(b =>
