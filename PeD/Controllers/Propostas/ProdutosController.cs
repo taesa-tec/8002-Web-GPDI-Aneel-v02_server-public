@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,115 +23,80 @@ namespace PeD.Controllers.Propostas
     [ApiController]
     [Authorize("Bearer")]
     [Route("api/Propostas/{propostaId:guid}/[controller]")]
-    public class ProdutosController : ControllerServiceBase<Produto>
+    public class ProdutosController : PropostaNodeBaseController<Produto, PropostaProdutoRequest, PropostaProdutoDto>
     {
-        private PropostaService _propostaService;
         private GestorDbContext _context;
 
-        public ProdutosController(IService<Produto> service, IMapper mapper, PropostaService propostaService,
-            GestorDbContext context) : base(
-            service, mapper)
+        public ProdutosController(IService<Produto> service, IMapper mapper, IAuthorizationService authorizationService,
+            PropostaService propostaService, GestorDbContext context) : base(service, mapper, authorizationService,
+            propostaService)
         {
-            _propostaService = propostaService;
             _context = context;
         }
 
-        [HttpGet("")]
-        public IActionResult Get([FromRoute] int captacaoId)
+        protected override IQueryable<Produto> Includes(IQueryable<Produto> queryable)
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var produtos = Service.Filter(q => q
+            return queryable
                 .Include(p => p.FaseCadeia)
                 .Include(p => p.TipoDetalhado)
-                .Include(p => p.ProdutoTipo)
-                .Where(p => p.PropostaId == proposta.Id));
-
-            return Ok(Mapper.Map<List<PropostaProdutoDto>>(produtos));
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult Get([FromRoute] int captacaoId, [FromRoute] int id)
-        {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var produto = Service.Filter(q => q
-                .Include(p => p.FaseCadeia)
-                .Include(p => p.TipoDetalhado)
-                .Include(p => p.ProdutoTipo)
-                .Where(p => p.PropostaId == proposta.Id && p.Id == id)).FirstOrDefault();
-            if (produto == null)
-                return NotFound();
-
-            return Ok(Mapper.Map<PropostaProdutoDto>(produto));
+                .Include(p => p.ProdutoTipo);
         }
 
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
-        public ActionResult Post([FromRoute] int captacaoId, [FromBody] PropostaProdutoRequest request,
-            [FromServices] GestorDbContext context)
+        public override async Task<IActionResult> Post(PropostaProdutoRequest request)
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            if (!await HasAccess())
+                return Forbid();
             var produto = Mapper.Map<Produto>(request);
-            produto.PropostaId = proposta.Id;
+            produto.PropostaId = Proposta.Id;
             produto.Created = DateTime.Now;
-            if (produto.Classificacao != ProdutoClassificacao.Final || !context.Set<Produto>()
-                .Any(p => p.Classificacao == ProdutoClassificacao.Final && p.PropostaId == proposta.Id))
+            if (produto.Classificacao != ProdutoClassificacao.Final || !_context.Set<Produto>()
+                .Any(p => p.Classificacao == ProdutoClassificacao.Final && p.PropostaId == Proposta.Id))
             {
                 Service.Post(produto);
 
-                _propostaService.UpdatePropostaDataAlteracao(proposta.Id);
+                PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
+                return Ok();
+            }
+
+            return Problem("Somente um produto final por proposta", null, StatusCodes.Status409Conflict);
+
+
+            return await base.Post(request);
+        }
+
+        [Authorize(Roles = Roles.Fornecedor)]
+        [HttpPut]
+        public override async Task<IActionResult> Put(PropostaProdutoRequest request)
+        {
+            if (!await HasAccess())
+                return Forbid();
+            var produto = Mapper.Map<Produto>(request);
+            produto.PropostaId = Proposta.Id;
+            produto.Created = DateTime.Now;
+            if (produto.Classificacao != ProdutoClassificacao.Final || !_context.Set<Produto>()
+                .Any(p => p.Classificacao == ProdutoClassificacao.Final && p.PropostaId == Proposta.Id))
+            {
+                Service.Post(produto);
+                PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
                 return Ok();
             }
 
             return Problem("Somente um produto final por proposta", null, StatusCodes.Status409Conflict);
         }
 
-        [Authorize(Roles = Roles.Fornecedor)]
-        [HttpPut]
-        public IActionResult Put([FromRoute] int captacaoId,
-            [FromBody] PropostaProdutoRequest request,
-            [FromServices] GestorDbContext context)
+        public override async Task<IActionResult> Delete(int id)
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var produtoPrev = Service
-                .Filter(q => q.AsNoTracking().Where(p => p.PropostaId == proposta.Id && p.Id == request.Id))
-                .FirstOrDefault();
-            if (produtoPrev == null)
-                return NotFound();
-
-            var produto = Mapper.Map<Produto>(request);
-            produto.PropostaId = proposta.Id;
-            produto.Created = produtoPrev.Created;
-
-            if (produto.Classificacao != ProdutoClassificacao.Final || !context.Set<Produto>()
-                .Any(p => p.Classificacao == ProdutoClassificacao.Final && p.PropostaId == proposta.Id &&
-                          p.Id != produto.Id))
-            {
-                Service.Put(produto);
-                _propostaService.UpdatePropostaDataAlteracao(proposta.Id);
-                return Ok(Mapper.Map<PropostaProdutoDto>(produto));
-            }
-
-            return Problem("Somente um produto final por proposta", null, StatusCodes.Status409Conflict);
-        }
-
-        [HttpDelete]
-        public IActionResult Delete([FromRoute] int captacaoId, [FromQuery] int id)
-        {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var produto = Service.Filter(q => q.Where(p => p.PropostaId == proposta.Id && p.Id == id)).FirstOrDefault();
-            if (produto == null)
-                return NotFound();
-
+            if (!await HasAccess())
+                return Forbid();
             if (_context.Set<Etapa>().AsQueryable().Any(a => a.ProdutoId == id))
             {
                 return Problem("Não é possível apagar um produto associado a uma etapa", null,
                     StatusCodes.Status409Conflict);
             }
 
-            Service.Delete(produto.Id);
-            _propostaService.UpdatePropostaDataAlteracao(proposta.Id);
-
-            return Ok();
+            return await base.Delete(id);
         }
     }
 }
