@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PeD.Authorizations;
 using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
@@ -18,23 +19,28 @@ namespace PeD.Controllers.Propostas
     [SwaggerTag("Proposta Fornecedor")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class ArquivosController : FileBaseController<FileUpload>
     {
         private PropostaService _propostaService;
+        private IAuthorizationService authorizationService;
 
         public ArquivosController(GestorDbContext context, IConfiguration configuration,
-            PropostaService propostaService) : base(context, configuration)
+            PropostaService propostaService, IAuthorizationService authorizationService) : base(context, configuration)
         {
             _propostaService = propostaService;
+            this.authorizationService = authorizationService;
         }
 
         [HttpGet]
-        public ActionResult<List<FileUpload>> GetFiles([FromRoute] int captacaoId)
+        public async Task<ActionResult<List<FileUpload>>> GetFiles([FromRoute] Guid propostaId)
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            var proposta = _propostaService.GetProposta(propostaId);
             if (proposta == null)
                 return NotFound();
+            var authResult = await authorizationService.AuthorizeAsync(User, proposta, PropostaAuthorizations.Access);
+            if (!authResult.Succeeded)
+                return Forbid();
 
             return context
                 .Set<PropostaArquivo>()
@@ -44,12 +50,16 @@ namespace PeD.Controllers.Propostas
                 .ToList();
         }
 
-        [HttpGet("{arquivoId}")]
-        public ActionResult GetFile([FromRoute] int captacaoId, [FromRoute] int arquivoId)
+        [AllowAnonymous]
+        [HttpGet("{arquivoId:int}")]
+        public async Task<ActionResult> GetFile([FromRoute] Guid propostaId, [FromRoute] int arquivoId)
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            var proposta = _propostaService.GetProposta(propostaId);
             if (proposta == null)
                 return NotFound();
+            var authResult = await authorizationService.AuthorizeAsync(User, proposta, PropostaAuthorizations.Access);
+            if (!authResult.Succeeded)
+                return Forbid();
 
             var arquivo = context
                 .Set<PropostaArquivo>()
@@ -62,13 +72,18 @@ namespace PeD.Controllers.Propostas
             return PhysicalFile(arquivo.Path, arquivo.ContentType, arquivo.FileName);
         }
 
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
         [RequestSizeLimit(1073741824)]
-        public async Task<ActionResult<List<FileUpload>>> Upload([FromRoute] int captacaoId)
+        public async Task<ActionResult<List<FileUpload>>> Upload([FromRoute] Guid propostaId)
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            var proposta = _propostaService.GetProposta(propostaId);
             if (proposta == null)
                 return NotFound();
+            var authResult = await authorizationService.AuthorizeAsync(User, proposta, PropostaAuthorizations.Access);
+            if (!authResult.Succeeded)
+                return Forbid();
+
             var files = await base.Upload();
             var propostaFiles = files.Select(f => new PropostaArquivo() {ArquivoId = f.Id, PropostaId = proposta.Id});
             context.Set<PropostaArquivo>().AddRange(propostaFiles);
@@ -77,11 +92,14 @@ namespace PeD.Controllers.Propostas
         }
 
         [HttpDelete("{id}")]
-        public IActionResult RemoveFile([FromRoute] int captacaoId, [FromRoute] int id)
+        public async Task<IActionResult> RemoveFile([FromRoute] Guid propostaId, [FromRoute] int id)
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            var proposta = _propostaService.GetProposta(propostaId);
             if (proposta == null)
                 return NotFound();
+            var authResult = await authorizationService.AuthorizeAsync(User, proposta, PropostaAuthorizations.Access);
+            if (!authResult.Succeeded)
+                return Forbid();
 
             var propostaFiles = context.Set<PropostaArquivo>();
             var file = propostaFiles

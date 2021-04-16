@@ -19,7 +19,7 @@ namespace PeD.Controllers.Propostas
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class ContratoController : Controller
     {
         private PropostaService propostaService;
@@ -46,6 +46,7 @@ namespace PeD.Controllers.Propostas
             return Ok(mapper.Map<PropostaContratoDto>(contrato));
         }
 
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost("")]
         public ActionResult Post([FromRoute] int captacaoId, [FromBody] ContratoRequest request)
         {

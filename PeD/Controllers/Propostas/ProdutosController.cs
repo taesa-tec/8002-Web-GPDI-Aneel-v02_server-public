@@ -21,13 +21,14 @@ namespace PeD.Controllers.Propostas
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class ProdutosController : ControllerServiceBase<Produto>
     {
         private PropostaService _propostaService;
         private GestorDbContext _context;
 
-        public ProdutosController(IService<Produto> service, IMapper mapper, PropostaService propostaService, GestorDbContext context) : base(
+        public ProdutosController(IService<Produto> service, IMapper mapper, PropostaService propostaService,
+            GestorDbContext context) : base(
             service, mapper)
         {
             _propostaService = propostaService;
@@ -62,6 +63,7 @@ namespace PeD.Controllers.Propostas
             return Ok(Mapper.Map<PropostaProdutoDto>(produto));
         }
 
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
         public ActionResult Post([FromRoute] int captacaoId, [FromBody] PropostaProdutoRequest request,
             [FromServices] GestorDbContext context)
@@ -82,6 +84,7 @@ namespace PeD.Controllers.Propostas
             return Problem("Somente um produto final por proposta", null, StatusCodes.Status409Conflict);
         }
 
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPut]
         public IActionResult Put([FromRoute] int captacaoId,
             [FromBody] PropostaProdutoRequest request,
@@ -117,12 +120,13 @@ namespace PeD.Controllers.Propostas
             var produto = Service.Filter(q => q.Where(p => p.PropostaId == proposta.Id && p.Id == id)).FirstOrDefault();
             if (produto == null)
                 return NotFound();
-            
+
             if (_context.Set<Etapa>().AsQueryable().Any(a => a.ProdutoId == id))
             {
-                return Problem("Não é possível apagar um produto associado a uma etapa", null, StatusCodes.Status409Conflict);
+                return Problem("Não é possível apagar um produto associado a uma etapa", null,
+                    StatusCodes.Status409Conflict);
             }
-            
+
             Service.Delete(produto.Id);
             _propostaService.UpdatePropostaDataAlteracao(proposta.Id);
 

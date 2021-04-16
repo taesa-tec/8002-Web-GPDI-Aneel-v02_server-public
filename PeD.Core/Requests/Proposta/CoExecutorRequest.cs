@@ -1,10 +1,10 @@
 using PeD.Core.Models.Propostas;
+using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Proposta
 {
-    public class CoExecutorRequest
+    public class CoExecutorRequest : BaseEntity
     {
-        public int Id { get; set; }
         public string CNPJ { get; set; }
         public string RazaoSocial { get; set; }
         public string UF { get; set; }

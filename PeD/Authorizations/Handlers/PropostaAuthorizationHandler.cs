@@ -20,13 +20,9 @@ namespace PeD.Authorizations.Handlers
             {
                 context.Succeed(requirement);
             }
-            else if (!requirement.CanEdit &&
-                     (context.User.IsInRole(Roles.Administrador) || context.User.IsInRole(Roles.User)))
+            else if (!requirement.CaptacaoEncerrada || resource.Captacao?.Status == Captacao.CaptacaoStatus.Encerrada)
             {
-                if (!requirement.CaptacaoEncerrada || resource.Captacao?.Status == Captacao.CaptacaoStatus.Encerrada)
-                {
-                    context.Succeed(requirement);
-                }
+                context.Succeed(requirement);
             }
 
             return Task.CompletedTask;

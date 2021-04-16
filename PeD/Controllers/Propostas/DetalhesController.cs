@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -6,42 +7,45 @@ using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Demandas;
+using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Services.Captacoes;
 using PeD.Services.Demandas;
 using Swashbuckle.AspNetCore.Annotations;
+using TaesaCore.Interfaces;
 
 namespace PeD.Controllers.Propostas
 {
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
-    public class DetalhesController : Controller
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
+    public class DetalhesController : PropostaNodeBaseController<Proposta>
     {
-        private IMapper Mapper;
-        private PropostaService Service;
-
-        public DetalhesController(PropostaService service, IMapper mapper)
+        public DetalhesController(IService<Proposta> service, IMapper mapper,
+            IAuthorizationService authorizationService, PropostaService propostaService) : base(service, mapper,
+            authorizationService, propostaService)
         {
-            Service = service;
-            Mapper = mapper;
         }
 
         [HttpGet("")]
-        public IActionResult Index([FromRoute] int captacaoId)
+        public IActionResult Index([FromRoute] Guid propostaId)
         {
-            var proposta = Service.GetProposta(captacaoId);
-            return Ok(Mapper.Map<PropostaDto>(proposta));
+            if (Proposta != null)
+            {
+                return Ok(Mapper.Map<PropostaDto>(Proposta));
+            }
+
+            return NotFound();
         }
 
         [HttpGet("Pdf/{form}")]
-        public ActionResult GetDemandaPdf([FromRoute] int captacaoId, string form,
+        public ActionResult GetDemandaPdf([FromRoute] Guid propostaId, string form,
             [FromServices] GestorDbContext context,
             [FromServices] DemandaService demandaService)
         {
             var id = context.Set<Captacao>()
-                .Where(c => c.Id == captacaoId)
+                .Where(c => c.Id == Proposta.CaptacaoId)
                 .Select(c => c.DemandaId)
                 .FirstOrDefault();
 

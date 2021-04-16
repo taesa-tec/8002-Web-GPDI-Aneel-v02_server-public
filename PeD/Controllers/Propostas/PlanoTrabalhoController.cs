@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,6 @@ using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
-using PeD.Data;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Interfaces;
@@ -17,48 +17,46 @@ namespace PeD.Controllers.Propostas
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
-    public class PlanoTrabalhoController : Controller
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
+    public class PlanoTrabalhoController : PropostaNodeBaseController<PlanoTrabalho>
     {
-        private GestorDbContext _context;
-        private PropostaService _propostaService;
-        private IService<PlanoTrabalho> Service;
-        private IMapper _mapper;
-
-        public PlanoTrabalhoController(GestorDbContext context, PropostaService propostaService,
-            IService<PlanoTrabalho> service, IMapper mapper)
+        public PlanoTrabalhoController(IService<PlanoTrabalho> service, IMapper mapper,
+            IAuthorizationService authorizationService, PropostaService propostaService) : base(service, mapper,
+            authorizationService, propostaService)
         {
-            _context = context;
-            _propostaService = propostaService;
-            Service = service;
-            _mapper = mapper;
         }
 
         [HttpGet("")]
-        public ActionResult<PlanoTrabalhoDto> Get([FromRoute] int captacaoId)
+        public async Task<ActionResult<PlanoTrabalhoDto>> Get()
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            if (proposta == null)
+            if (Proposta == null)
                 return NotFound();
+
+            if (!await HasAccess())
+                return Forbid();
             var plano = Service.Filter(q => q
                             .Include(p => p.Proposta)
                             .ThenInclude(p => p.Arquivos)
                             .ThenInclude(a => a.Arquivo)
-                            .Where(p => p.PropostaId == proposta.Id)).FirstOrDefault() ??
+                            .Where(p => p.PropostaId == Proposta.Id)).FirstOrDefault() ??
                         new PlanoTrabalho();
-            return _mapper.Map<PlanoTrabalhoDto>(plano);
+            return Mapper.Map<PlanoTrabalhoDto>(plano);
         }
 
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost("")]
-        public ActionResult Post([FromRoute] int captacaoId, [FromBody] PlanoTrabalhoRequest request)
+        public async Task<ActionResult> Post([FromBody] PlanoTrabalhoRequest request)
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            if (proposta == null)
+            if (Proposta == null)
                 return NotFound();
-            var planoPrev = Service.Filter(q => q.AsNoTracking().Where(p => p.PropostaId == proposta.Id))
+            if (!await HasAccess())
+                return Forbid();
+
+
+            var planoPrev = Service.Filter(q => q.AsNoTracking().Where(p => p.PropostaId == Proposta.Id))
                 .FirstOrDefault();
-            var plano = _mapper.Map<PlanoTrabalho>(request);
-            plano.PropostaId = proposta.Id;
+            var plano = Mapper.Map<PlanoTrabalho>(request);
+            plano.PropostaId = Proposta.Id;
 
             if (planoPrev != null)
             {
@@ -70,7 +68,7 @@ namespace PeD.Controllers.Propostas
                 Service.Post(plano);
             }
 
-            _propostaService.UpdatePropostaDataAlteracao(proposta.Id);
+            PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
 
             return Ok();
         }

@@ -14,11 +14,11 @@ namespace PeD.Controllers.Propostas
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class RiscosController : PropostaNodeBaseController<Risco, RiscoRequest, PropostaRiscoDto>
     {
-        public RiscosController(IService<Risco> service, IMapper mapper, PropostaService propostaService,
-            IAuthorizationService authorizationService) : base(service, mapper, propostaService, authorizationService)
+        public RiscosController(IService<Risco> service, IMapper mapper, IAuthorizationService authorizationService,
+            PropostaService propostaService) : base(service, mapper, authorizationService, propostaService)
         {
         }
     }

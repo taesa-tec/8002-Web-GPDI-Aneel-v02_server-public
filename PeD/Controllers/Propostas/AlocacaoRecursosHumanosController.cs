@@ -16,15 +16,15 @@ namespace PeD.Controllers.Propostas
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/RecursosHumanos/Alocacao")]
+    [Route("api/Propostas/{propostaId:guid}/RecursosHumanos/Alocacao")]
     public class
         AlocacaoRecursosHumanosController : PropostaNodeBaseController<RecursoHumano.AlocacaoRh,
             AlocacaoRecursoHumanoRequest,
             AlocacaoRecursoHumanoDto>
     {
         public AlocacaoRecursosHumanosController(IService<RecursoHumano.AlocacaoRh> service, IMapper mapper,
-            PropostaService propostaService, IAuthorizationService authorizationService) : base(service, mapper,
-            propostaService, authorizationService)
+            IAuthorizationService authorizationService, PropostaService propostaService) : base(service, mapper,
+            authorizationService, propostaService)
         {
         }
 

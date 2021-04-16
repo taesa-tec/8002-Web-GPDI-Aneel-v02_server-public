@@ -17,7 +17,7 @@ namespace PeD.Controllers.Propostas
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class EscopoController : ControllerServiceBase<Escopo>
     {
         private PropostaService _propostaService;
@@ -39,7 +39,7 @@ namespace PeD.Controllers.Propostas
             response.Metas = Mapper.Map<List<PropostaEscopoDto.MetaDto>>(metas);
             return Ok(response);
         }
-
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
         public IActionResult Post([FromRoute] int captacaoId, [FromBody] PropostaEscopoDto escopoDto,
             [FromServices] GestorDbContext context)

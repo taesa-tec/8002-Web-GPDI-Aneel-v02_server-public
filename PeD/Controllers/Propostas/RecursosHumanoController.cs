@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,18 +19,16 @@ namespace PeD.Controllers.Propostas
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class
         RecursosHumanoController : PropostaNodeBaseController<RecursoHumano, RecursoHumanoRequest, RecursoHumanoDto>
     {
         private GestorDbContext _context;
 
         public RecursosHumanoController(IService<RecursoHumano> service, IMapper mapper,
-            PropostaService propostaService, IAuthorizationService authorizationService, GestorDbContext context) :
-            base(service, mapper,
-                propostaService, authorizationService)
+            IAuthorizationService authorizationService, PropostaService propostaService) : base(service, mapper,
+            authorizationService, propostaService)
         {
-            _context = context;
         }
 
         protected override IQueryable<RecursoHumano> Includes(IQueryable<RecursoHumano> queryable)
@@ -40,14 +39,14 @@ namespace PeD.Controllers.Propostas
                 ;
         }
 
-        public override IActionResult Delete(int id)
+        public override async Task<IActionResult> Delete(int id)
         {
             if (_context.Set<RecursoHumano.AlocacaoRh>().AsQueryable().Any(a => a.RecursoId == id))
             {
                 return Problem("Não é possível apagar um recurso já alocado", null, StatusCodes.Status409Conflict);
             }
 
-            return base.Delete(id);
+            return await base.Delete(id);
         }
     }
 }

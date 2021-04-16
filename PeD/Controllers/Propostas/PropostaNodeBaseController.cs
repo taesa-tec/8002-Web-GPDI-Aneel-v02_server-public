@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,21 +16,16 @@ using TaesaCore.Models;
 
 namespace PeD.Controllers.Propostas
 {
-    [SwaggerTag("Proposta")]
-    [ApiController]
-    [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
-    public class PropostaNodeBaseController<T, TRequest, TResponse> : ControllerServiceBase<T>
-        where T : PropostaNode where TRequest : BaseEntity
+    public class PropostaNodeBaseController<T> : ControllerServiceBase<T> where T : BaseEntity
     {
         protected PropostaService PropostaService;
         public readonly IAuthorizationService AuthorizationService;
 
-        public PropostaNodeBaseController(IService<T> service, IMapper mapper, PropostaService propostaService, IAuthorizationService authorizationService) :
-            base(service, mapper)
+        public PropostaNodeBaseController(IService<T> service, IMapper mapper,
+            IAuthorizationService authorizationService, PropostaService propostaService) : base(service, mapper)
         {
-            PropostaService = propostaService;
             AuthorizationService = authorizationService;
+            PropostaService = propostaService;
         }
 
         private Proposta _proposta;
@@ -37,15 +34,36 @@ namespace PeD.Controllers.Propostas
         {
             get
             {
-                if (_proposta == null && Request.RouteValues.ContainsKey("captacaoId") &&
-                    int.TryParse(Request.RouteValues["captacaoId"].ToString(), out int captacaoId))
+                if (_proposta == null && Request.RouteValues.ContainsKey("propostaId") &&
+                    Guid.TryParse(Request.RouteValues["propostaId"].ToString(), out Guid guid))
                 {
-                    _proposta = PropostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+                    _proposta = PropostaService.GetProposta(guid);
                 }
 
                 return _proposta;
             }
         }
+
+        protected async Task<bool> HasAccess()
+        {
+            var authorizationResult = await this.Authorize(Proposta);
+            return authorizationResult.Succeeded;
+        }
+    }
+
+    [SwaggerTag("Proposta")]
+    [ApiController]
+    [Authorize("Bearer")]
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
+    public class PropostaNodeBaseController<T, TRequest, TResponse> : PropostaNodeBaseController<T>
+        where T : PropostaNode where TRequest : BaseEntity
+    {
+        public PropostaNodeBaseController(IService<T> service, IMapper mapper,
+            IAuthorizationService authorizationService, PropostaService propostaService) : base(service, mapper,
+            authorizationService, propostaService)
+        {
+        }
+
 
         protected virtual IQueryable<T> Includes(IQueryable<T> queryable)
         {
@@ -53,8 +71,11 @@ namespace PeD.Controllers.Propostas
         }
 
         [HttpGet("")]
-        public virtual IActionResult Get()
+        public virtual async Task<IActionResult> Get()
         {
+            if (!await HasAccess())
+                return Forbid();
+
             var nodes = Service.Filter(q => Includes(q)
                 .OrderBy(e => e.Id)
                 .Where(p => p.PropostaId == Proposta.Id));
@@ -63,8 +84,10 @@ namespace PeD.Controllers.Propostas
         }
 
         [HttpGet("{id}")]
-        public virtual IActionResult Get([FromRoute] int id)
+        public virtual async Task<IActionResult> Get([FromRoute] int id)
         {
+            if (!await HasAccess())
+                return Forbid();
             var node = Service.Filter(q => Includes(q)
                 .Where(p => p.PropostaId == Proposta.Id && p.Id == id)).FirstOrDefault();
             if (node == null)
@@ -73,9 +96,13 @@ namespace PeD.Controllers.Propostas
             return Ok(Mapper.Map<TResponse>(node));
         }
 
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
-        public virtual ActionResult Post([FromBody] TRequest request)
+        public virtual async Task<IActionResult> Post([FromBody] TRequest request)
         {
+            if (!await HasAccess())
+                return Forbid();
+
             var risco = Mapper.Map<T>(request);
             risco.PropostaId = Proposta.Id;
             Service.Post(risco);
@@ -83,9 +110,12 @@ namespace PeD.Controllers.Propostas
             return Ok();
         }
 
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPut]
-        public virtual IActionResult Put([FromBody] TRequest request)
+        public virtual async Task<IActionResult> Put([FromBody] TRequest request)
         {
+            if (!await HasAccess())
+                return Forbid();
             var nodeInitial = Service
                 .Filter(q => q.AsNoTracking().Where(p => p.PropostaId == Proposta.Id && p.Id == request.Id))
                 .FirstOrDefault();
@@ -103,8 +133,10 @@ namespace PeD.Controllers.Propostas
         }
 
         [HttpDelete]
-        public virtual IActionResult Delete([FromQuery] int id)
+        public virtual async Task<IActionResult> Delete([FromQuery] int id)
         {
+            if (!await HasAccess())
+                return Forbid();
             var node = Service.Filter(q => q.Where(p => p.PropostaId == Proposta.Id && p.Id == id)).FirstOrDefault();
             if (node == null)
                 return NotFound();
