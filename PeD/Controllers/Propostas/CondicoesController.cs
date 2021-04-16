@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,16 +17,13 @@ namespace PeD.Controllers.Propostas
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
-    public class CondicoesController : ControllerBase
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
+    public class CondicoesController : PropostaNodeBaseController<Clausula>
     {
-        private IService<Clausula> Service;
-        private IMapper Mapper;
-
-        public CondicoesController(IService<Clausula> service, IMapper mapper)
+        public CondicoesController(IService<Clausula> service, IMapper mapper,
+            IAuthorizationService authorizationService, PropostaService propostaService) : base(service, mapper,
+            authorizationService, propostaService)
         {
-            Service = service;
-            Mapper = mapper;
         }
 
         [SwaggerOperation("Lista das clausulas")]
@@ -37,28 +35,32 @@ namespace PeD.Controllers.Propostas
         }
 
         [SwaggerOperation("Aceitação dos termos das clausulas")]
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
-        public ActionResult AceitarClausula([FromServices] PropostaService propostaService, [FromRoute] int captacaoId,
+        public async Task<ActionResult> AceitarClausula([FromServices] PropostaService propostaService,
+            [FromRoute] int captacaoId,
             CondicoesRequest request)
         {
-            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            if (proposta != null)
+            if (!await HasAccess())
+                return Forbid();
+
+            if (Proposta != null)
             {
                 if (request.ClausulasAceita)
                 {
-                    proposta.DataClausulasAceitas = DateTime.Now;
-                    propostaService.Put(proposta);
+                    Proposta.DataClausulasAceitas = DateTime.Now;
+                    propostaService.Put(Proposta);
                 }
                 else
                 {
-                    proposta.Participacao = StatusParticipacao.Rejeitado;
-                    proposta.DataResposta = DateTime.Now;
-                    propostaService.Put(proposta);
-                    propostaService.SendEmailFinalizado(proposta).Wait();
+                    Proposta.Participacao = StatusParticipacao.Rejeitado;
+                    Proposta.DataResposta = DateTime.Now;
+                    propostaService.Put(Proposta);
+                    propostaService.SendEmailFinalizado(Proposta).Wait();
                 }
 
 
-                return Ok(Mapper.Map<PropostaDto>(proposta));
+                return Ok(Mapper.Map<PropostaDto>(Proposta));
             }
 
             return NotFound();

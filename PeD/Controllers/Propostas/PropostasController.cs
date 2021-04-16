@@ -19,7 +19,7 @@ using TaesaCore.Interfaces;
 
 namespace PeD.Controllers.Propostas
 {
-    [SwaggerTag("Proposta Fornecedor")]
+    [SwaggerTag("Propostas 2.4")]
     [ApiController]
     [Authorize("Bearer")]
     [Route("api/Propostas")]
@@ -35,28 +35,8 @@ namespace PeD.Controllers.Propostas
             AuthorizationService = authorizationService;
         }
 
-        [HttpGet("")]
-        public ActionResult<List<PropostaDto>> GetPropostas()
-        {
-            IEnumerable<Proposta> propostas;
-            if (User.IsInRole(Roles.Administrador) || User.IsInRole(Roles.User))
-            {
-                propostas = Service.Get();
-            }
-            else
-            {
-                propostas = Service.GetPropostasPorResponsavel(this.UserId());
-            }
 
-            return Ok(Mapper.Map<List<PropostaDto>>(propostas));
-        }
-
-        [HttpGet("Encerradas")]
-        public ActionResult<List<PropostaDto>> GetPropostasEncerradas()
-        {
-            var propostas = Service.GetPropostasEncerradarFornecedor(this.UserEmpresaId());
-            return Ok(Mapper.Map<List<PropostaDto>>(propostas));
-        }
+        #region Get Proposta
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<PropostaDto>> GetProposta(Guid id)
@@ -68,9 +48,13 @@ namespace PeD.Controllers.Propostas
             {
                 return Mapper.Map<PropostaDto>(proposta);
             }
-            return Unauthorized();
+
+            return Forbid();
         }
 
+        #endregion
+
+        #region Empresas Relacionadas a proposta
 
         [HttpGet("{id:guid}/Empresas")]
         public async Task<ActionResult> GetPropostaEmpresas(Guid id,
@@ -101,73 +85,21 @@ namespace PeD.Controllers.Propostas
             return Forbid();
         }
 
-        [Authorize(Roles = Roles.Fornecedor)]
-        [HttpPut("{id:guid}/Rejeitar")]
-        public async Task<ActionResult> RejeitarCaptacao(Guid id)
-        {
-            var proposta = Service.GetProposta(id);
-            var result = await this.Authorize(proposta);
-            if (result.Succeeded)
-            {
-                if (proposta.Participacao == StatusParticipacao.Pendente)
-                {
-                    proposta.Participacao = StatusParticipacao.Rejeitado;
-                    proposta.DataResposta = DateTime.Now;
-                    Service.Put(proposta);
-                    Service.SendEmailFinalizado(proposta).Wait();
-                    return Ok();
-                }
+        #endregion
 
-                return StatusCode(428);
-            }
-
-            return Forbid();
-        }
-
-        [HttpPut("{id:guid}/Participar")]
-        public ActionResult ParticiparCaptacao(Guid id)
-        {
-            var proposta = Service.GetProposta(id);
-            if (proposta.Participacao == StatusParticipacao.Pendente)
-            {
-                proposta.Participacao = StatusParticipacao.Aceito;
-                proposta.DataParticipacao = DateTime.Now;
-                Service.Put(proposta);
-                return Ok();
-            }
-
-            return StatusCode(428);
-        }
-
-
-        [HttpPut("{id:guid}/Duracao")]
-        public ActionResult PropostaDuracao(int id, [FromServices] IService<Etapa> etapaService, [FromBody] short meses)
-        {
-            var proposta = Service.GetProposta(id);
-            if (proposta.Participacao == StatusParticipacao.Aceito)
-            {
-                var etapas = etapaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id));
-                var max = etapas.Any() ? etapas.Select(e => e.Meses.Max()).Max() : 0;
-                if (meses < max)
-                    return Problem("Há etapas em meses superiores à duração desejada",
-                        title: "Alteração não permitida", statusCode: StatusCodes.Status428PreconditionRequired);
-                proposta.Duracao = meses;
-                proposta.DataAlteracao = DateTime.Now;
-                Service.Put(proposta);
-                return Ok();
-            }
-
-            return StatusCode(428);
-        }
 
         [HttpGet("{id:guid}/Documento")]
-        public ActionResult PropostaDoc(Guid id)
+        public async Task<ActionResult> PropostaDoc(Guid id)
         {
             var tempproposta = Service.GetProposta(id);
             if (tempproposta == null)
             {
                 return NotFound();
             }
+
+            var authorizationResult = await this.Authorize(tempproposta);
+            if (!authorizationResult.Succeeded)
+                return Forbid();
 
             var relatorio = Service.GetRelatorio(tempproposta.Id);
             if (relatorio != null)
@@ -182,16 +114,21 @@ namespace PeD.Controllers.Propostas
             return NotFound();
         }
 
+        #region Downloads
+
         [HttpGet("{id:guid}/Download/PlanoTrabalho")]
-        public ActionResult PropostaDocDownload(int id)
+        public async Task<ActionResult> PropostaDocDownload(Guid id)
         {
-            var tempproposta = Service.GetPropostaPorResponsavel(id, this.UserId(), Captacao.CaptacaoStatus.Fornecedor,
-                Captacao.CaptacaoStatus.Encerrada);
-            if (tempproposta == null)
+            var tempproposta = Service.GetProposta(id);
+            if (tempproposta == null || (tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Encerrada ||
+                                         tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Fornecedor))
             {
                 return NotFound();
             }
 
+            var authorizationResult = await this.Authorize(tempproposta);
+            if (!authorizationResult.Succeeded)
+                return Forbid();
             var relatorio = Service.GetRelatorioPdf(tempproposta.Id);
             if (relatorio != null)
             {
@@ -206,10 +143,14 @@ namespace PeD.Controllers.Propostas
         {
             var tempproposta = Service.GetProposta(id);
             if (tempproposta == null || (tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Encerrada &&
-                                         tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Encerrada))
+                                         tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Fornecedor))
             {
                 return NotFound();
             }
+
+            var authorizationResult = await this.Authorize(tempproposta);
+            if (!authorizationResult.Succeeded)
+                return Forbid();
 
             var result = await this.Authorize(tempproposta);
             if (result.Succeeded)
@@ -226,23 +167,112 @@ namespace PeD.Controllers.Propostas
             return Forbid();
         }
 
+        #endregion
+
+        #region Fornecedor
+
+        [Authorize(Roles = Roles.Fornecedor)]
+        [HttpGet("EmAberto")]
+        public ActionResult<List<PropostaDto>> GetPropostas()
+        {
+            var propostas = Service.GetPropostasPorResponsavel(this.UserId());
+            return Ok(Mapper.Map<List<PropostaDto>>(propostas));
+        }
+
+        [Authorize(Roles = Roles.Fornecedor)]
+        [HttpGet("Encerradas")]
+        public ActionResult<List<PropostaDto>> GetPropostasEncerradas()
+        {
+            var propostas = Service.GetPropostasEncerradas(this.UserId());
+            return Ok(Mapper.Map<List<PropostaDto>>(propostas));
+        }
+
+        [Authorize(Roles = Roles.Fornecedor)]
+        [HttpPut("{id:guid}/Rejeitar")]
+        public async Task<ActionResult> RejeitarCaptacao(Guid id)
+        {
+            var proposta = Service.GetProposta(id);
+            var result = await this.Authorize(proposta);
+            if (!result.Succeeded)
+                return Forbid();
+
+            if (proposta.Participacao == StatusParticipacao.Pendente)
+            {
+                proposta.Participacao = StatusParticipacao.Rejeitado;
+                proposta.DataResposta = DateTime.Now;
+                Service.Put(proposta);
+                Service.SendEmailFinalizado(proposta).Wait();
+                return Ok();
+            }
+
+            return StatusCode(428);
+        }
+
+        [Authorize(Roles = Roles.Fornecedor)]
+        [HttpPut("{id:guid}/Participar")]
+        public async Task<ActionResult> ParticiparCaptacao(Guid id)
+        {
+            var proposta = Service.GetProposta(id);
+            var result = await this.Authorize(proposta);
+            if (!result.Succeeded)
+                return Forbid();
+
+            if (proposta.Participacao == StatusParticipacao.Pendente)
+            {
+                proposta.Participacao = StatusParticipacao.Aceito;
+                proposta.DataParticipacao = DateTime.Now;
+                Service.Put(proposta);
+                return Ok();
+            }
+
+            return StatusCode(428);
+        }
+
+        [Authorize(Roles = Roles.Fornecedor)]
+        [HttpPut("{id:guid}/Duracao")]
+        public async Task<ActionResult> PropostaDuracao(Guid id, [FromServices] IService<Etapa> etapaService,
+            [FromBody] short meses)
+        {
+            var proposta = Service.GetProposta(id);
+            var authorizationResult = await this.Authorize(proposta);
+            if (!authorizationResult.Succeeded)
+                return Forbid();
+
+            if (proposta.Participacao == StatusParticipacao.Aceito)
+            {
+                var etapas = etapaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id));
+                var max = etapas.Any() ? etapas.Select(e => e.Meses.Max()).Max() : 0;
+                if (meses < max)
+                    return Problem("Há etapas em meses superiores à duração desejada",
+                        title: "Alteração não permitida", statusCode: StatusCodes.Status428PreconditionRequired);
+                proposta.Duracao = meses;
+                proposta.DataAlteracao = DateTime.Now;
+                Service.Put(proposta);
+                return Ok();
+            }
+
+            return Problem("Participação não aceita", title: "Alteração não permitida",
+                statusCode: StatusCodes.Status409Conflict);
+        }
+
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPut("{id:guid}/Finalizar")]
         public async Task<ActionResult> Finalizar(Guid id)
         {
             var proposta = Service.GetProposta(id);
-            var result = await this.Authorize(proposta);
-            if (result.Succeeded)
-            {
-                if (proposta.Participacao == StatusParticipacao.Aceito)
-                {
-                    await Service.FinalizarProposta(proposta);
-                    return Ok();
-                }
+            var authorizationResult = await this.Authorize(proposta);
+            if (!authorizationResult.Succeeded)
+                return Forbid();
 
-                return Problem("A participação nesse projeto foi recusada!");
+            if (proposta.Participacao == StatusParticipacao.Aceito)
+            {
+                await Service.FinalizarProposta(proposta);
+                return Ok();
             }
 
-            return Forbid();
+            return Problem("A participação nesse projeto foi recusada!");
         }
+
+        #endregion
     }
 }

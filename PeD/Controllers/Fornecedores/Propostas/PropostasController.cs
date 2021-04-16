@@ -60,7 +60,7 @@ namespace PeD.Controllers.Fornecedores.Propostas
         [HttpGet("Encerradas")]
         public ActionResult<List<PropostaDto>> GetPropostasEncerradas()
         {
-            var propostas = Service.GetPropostasEncerradarFornecedor(this.UserEmpresaId());
+            var propostas = Service.GetPropostasEncerradas(this.UserId());
             return Ok(Mapper.Map<List<PropostaDto>>(propostas));
         }
 

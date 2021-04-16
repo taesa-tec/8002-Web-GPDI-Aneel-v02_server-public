@@ -64,12 +64,12 @@ namespace PeD.Services.Captacoes
         }
 
 
-        public List<Proposta> GetPropostasEncerradarFornecedor(int fornecedorId) =>
+        public List<Proposta> GetPropostasEncerradas(string responsavelId) =>
             _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p =>
                     p.Captacao)
-                .Where(cp => cp.Fornecedor.Id == fornecedorId &&
+                .Where(cp => cp.ResponsavelId == responsavelId &&
                              (cp.Captacao.Status == Captacao.CaptacaoStatus.Encerrada ||
                               cp.Participacao == StatusParticipacao.Rejeitado)).ToList();
 

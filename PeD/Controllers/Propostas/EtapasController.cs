@@ -20,7 +20,7 @@ namespace PeD.Controllers.Propostas
     [SwaggerTag("Proposta ")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class EtapasController : ControllerServiceBase<Etapa>
     {
         private PropostaService _propostaService;
@@ -71,7 +71,7 @@ namespace PeD.Controllers.Propostas
 
             return Ok(Mapper.Map<EtapaDto>(etapa));
         }
-
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
         public ActionResult Post([FromRoute] int captacaoId, [FromBody] EtapaRequest request)
         {
@@ -82,7 +82,7 @@ namespace PeD.Controllers.Propostas
             UpdateOrder(captacaoId);
             return Ok();
         }
-
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPut]
         public IActionResult Put([FromRoute] int captacaoId,
             [FromBody] EtapaRequest request)

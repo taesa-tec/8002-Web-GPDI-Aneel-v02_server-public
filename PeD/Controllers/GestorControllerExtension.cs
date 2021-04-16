@@ -12,12 +12,6 @@ namespace PeD.Controllers
             return controller.User.FindFirst(JwtRegisteredClaimNames.Jti).Value;
         }
 
-        public static int UserEmpresaId(this ControllerBase controller)
-        {
-            var id = controller.User.FindFirst(ClaimTypes.GroupSid)?.Value ?? "0";
-            return int.Parse(id);
-        }
-
         public static bool IsAdmin(this ControllerBase controller)
         {
             return controller.User.FindFirst(ClaimTypes.Role).Value == Roles.Administrador;

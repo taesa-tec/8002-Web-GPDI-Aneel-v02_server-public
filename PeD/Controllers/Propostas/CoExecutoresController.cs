@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,44 +13,39 @@ using PeD.Core.Requests.Proposta;
 using PeD.Data;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
+using TaesaCore.Interfaces;
 
 namespace PeD.Controllers.Propostas
 {
     [SwaggerTag("Proposta")]
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Propostas/{captacaoId:int}/[controller]")]
-    public class CoExecutoresController : ControllerBase
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
+    //PropostaNodeBaseController<Risco, RiscoRequest, PropostaRiscoDto>
+    public class CoExecutoresController : PropostaNodeBaseController<CoExecutor, CoExecutorRequest, CoExecutorDto>
     {
-        private PropostaService propostaService;
-        private CoExecutorService Service;
-        private IMapper mapper;
+        new private CoExecutorService Service;
         private GestorDbContext _context;
 
-        public CoExecutoresController(CoExecutorService service, IMapper mapper, PropostaService propostaService, GestorDbContext context)
+        public CoExecutoresController(CoExecutorService service, IMapper mapper,
+            IAuthorizationService authorizationService, PropostaService propostaService, GestorDbContext context) :
+            base(service, mapper, authorizationService, propostaService)
         {
             Service = service;
-            this.mapper = mapper;
-            this.propostaService = propostaService;
             _context = context;
         }
 
-        [HttpGet]
-        public ActionResult<List<CoExecutorDto>> Get([FromRoute] int captacaoId)
-        {
-            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var ces = Service.GetPorProposta(proposta.Id);
-            return mapper.Map<List<CoExecutorDto>>(ces);
-        }
 
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
-        public ActionResult Post([FromRoute] int captacaoId, [FromBody] CoExecutorRequest request)
+        public override async Task<IActionResult> Post([FromBody] CoExecutorRequest request)
         {
-            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            if (!await HasAccess())
+                return Forbid();
 
             var coExecutor = new CoExecutor()
             {
-                PropostaId = proposta.Id,
+                PropostaId = Proposta.Id,
                 RazaoSocial = request.RazaoSocial,
                 UF = request.UF,
                 CNPJ = request.CNPJ,
@@ -58,47 +55,54 @@ namespace PeD.Controllers.Propostas
             return Ok();
         }
 
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpPut]
-        public ActionResult Put([FromRoute] int captacaoId, [FromBody] CoExecutorRequest request)
+        public override async Task<IActionResult> Put([FromBody] CoExecutorRequest request)
         {
-            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            if (!await HasAccess())
+                return Forbid();
+
             var coExecutor = Service.Get(request.Id);
-            if (coExecutor.PropostaId == proposta.Id)
+            if (coExecutor.PropostaId == Proposta.Id)
             {
                 coExecutor.Id = request.Id;
-                coExecutor.PropostaId = proposta.Id;
+                coExecutor.PropostaId = Proposta.Id;
                 coExecutor.RazaoSocial = request.RazaoSocial;
                 coExecutor.UF = request.UF;
                 coExecutor.CNPJ = request.CNPJ;
                 coExecutor.Funcao = request.Funcao;
                 Service.Save(coExecutor);
-                propostaService.UpdatePropostaDataAlteracao(proposta.Id);
+                PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
                 return Ok();
             }
 
             return Forbid();
         }
 
+        [Authorize(Roles = Roles.Fornecedor)]
         [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] int captacaoId, [FromRoute] int id)
+        public async Task<ActionResult> Delete([FromRoute] int id)
         {
-            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            if (!await HasAccess())
+                return Forbid();
             var coExecutor = Service.Get(id);
             if (coExecutor == null)
             {
                 return NotFound();
             }
 
-            if (coExecutor.PropostaId == proposta.Id)
+            if (coExecutor.PropostaId == Proposta.Id)
             {
-                
-                if (_context.Set<RecursoMaterial.AlocacaoRm>().AsQueryable().Any(a => a.CoExecutorRecebedorId == id || a.CoExecutorFinanciadorId == id) ||
+                if (_context.Set<RecursoMaterial.AlocacaoRm>().AsQueryable().Any(a =>
+                        a.CoExecutorRecebedorId == id || a.CoExecutorFinanciadorId == id) ||
                     _context.Set<RecursoHumano.AlocacaoRh>().AsQueryable().Any(a => a.CoExecutorFinanciadorId == id))
                 {
-                    return Problem("Não é possível apagar uma entidade relacionada com alocações de recursos", null, StatusCodes.Status409Conflict);
+                    return Problem("Não é possível apagar uma entidade relacionada com alocações de recursos", null,
+                        StatusCodes.Status409Conflict);
                 }
+
                 Service.Delete(id);
-                propostaService.UpdatePropostaDataAlteracao(proposta.Id);
+                PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
                 return Ok();
             }
 
