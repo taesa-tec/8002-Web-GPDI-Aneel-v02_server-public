@@ -25,12 +25,16 @@ namespace PeD.Mapping
                             : s.CoExecutorFinanciador.RazaoSocial
                     )
                 ).ForMember(c => c.EmpresaRecebedoraCodigo, opt => opt
-                    .MapFrom(s => s.Recurso.Empresa.Categoria.ToString() + "-" + s.Recurso.Empresa.Id
-                    )
+                    .MapFrom(s =>
+                        s.Recurso.EmpresaId != null
+                            ? s.Recurso.Empresa.Categoria.ToString() + "-" + s.Recurso.Empresa.Id
+                            : "CoExecutor-" + s.Recurso.CoExecutorId)
                 ).ForMember(c => c.EmpresaRecebedora, opt => opt
-                    .MapFrom(s => s.Recurso.Empresa.Nome)
+                    .MapFrom(s =>
+                        s.Recurso.EmpresaId != null ? s.Recurso.Empresa.Nome : s.Recurso.CoExecutor.RazaoSocial
+                    )
                 );
-                
+
 
             CreateMap<RecursoMaterial.AlocacaoRm, AlocacaoRecurso>()
                 .ForMember(c => c.CategoriaContabil, opt => opt
