@@ -26,9 +26,11 @@ namespace PeD.Controllers.Propostas
         private GestorDbContext _context;
 
         public RecursosMateriaisController(IService<RecursoMaterial> service, IMapper mapper,
-            IAuthorizationService authorizationService, PropostaService propostaService) : base(service, mapper,
-            authorizationService, propostaService)
+            IAuthorizationService authorizationService, PropostaService propostaService, GestorDbContext context) :
+            base(service, mapper,
+                authorizationService, propostaService)
         {
+            _context = context;
         }
 
         protected override IQueryable<RecursoMaterial> Includes(IQueryable<RecursoMaterial> queryable)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -20,37 +21,35 @@ namespace PeD.Controllers.Propostas
     [ApiController]
     [Authorize("Bearer")]
     [Route("api/Propostas/{propostaId:guid}/[controller]")]
-    public class ContratoController : Controller
+    public class ContratoController : PropostaNodeBaseController<PropostaContrato>
     {
-        private PropostaService propostaService;
-        private CaptacaoService captacaoService;
-        private IService<PropostaContrato> Service;
         private GestorDbContext _context;
-        private IMapper mapper;
 
-        public ContratoController(PropostaService propostaService, IMapper mapper, CaptacaoService captacaoService,
-            IService<PropostaContrato> service, GestorDbContext context)
+        public ContratoController(IService<PropostaContrato> service, IMapper mapper,
+            IAuthorizationService authorizationService, PropostaService propostaService, GestorDbContext context) :
+            base(service, mapper,
+                authorizationService, propostaService)
         {
-            this.propostaService = propostaService;
-            this.mapper = mapper;
-            this.captacaoService = captacaoService;
-            Service = service;
             _context = context;
         }
 
         [HttpGet("")]
-        public ActionResult<PropostaContratoDto> Get([FromRoute] int captacaoId)
+        public async Task<ActionResult<PropostaContratoDto>> Get([FromRoute] Guid propostaId)
         {
-            var contrato = propostaService.GetContrato(captacaoId, this.UserId());
-            contrato = propostaService.GetContratoFull(contrato.PropostaId);
-            return Ok(mapper.Map<PropostaContratoDto>(contrato));
+            if (!await HasAccess())
+                return Forbid();
+            var contrato = PropostaService.GetContrato(propostaId);
+            contrato = PropostaService.GetContratoFull(contrato.PropostaId);
+            return Ok(Mapper.Map<PropostaContratoDto>(contrato));
         }
 
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost("")]
-        public ActionResult Post([FromRoute] int captacaoId, [FromBody] ContratoRequest request)
+        public async Task<ActionResult> Post([FromRoute] Guid propostaId, [FromBody] ContratoRequest request)
         {
-            var contratoProposta = propostaService.GetContrato(captacaoId, this.UserId());
+            if (!await HasAccess())
+                return Forbid();
+            var contratoProposta = PropostaService.GetContrato(propostaId);
             var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
             var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
             contratoProposta.Finalizado = !request.Draft;
@@ -78,45 +77,51 @@ namespace PeD.Controllers.Propostas
 
             if (hasChanges || contratoProposta.FileId == null)
             {
-                var file = propostaService.SaveContratoPdf(contratoProposta);
+                var file = PropostaService.SaveContratoPdf(contratoProposta);
                 contratoProposta.File = file;
                 contratoProposta.FileId = file.Id;
                 Service.Put(contratoProposta);
             }
 
-            propostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);
+            PropostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);
 
             return Ok(contratoProposta.Id);
         }
 
         [HttpGet("Revisoes")]
-        public ActionResult<List<ContratoRevisaoListItemDto>> GetRevisoes([FromRoute] int captacaoId)
+        public async Task<ActionResult<List<ContratoRevisaoListItemDto>>> GetRevisoes()
         {
-            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var revisoes = propostaService.GetContratoRevisoes(proposta.Id);
-            return mapper.Map<List<ContratoRevisaoListItemDto>>(revisoes);
+            if (!await HasAccess())
+                return Forbid();
+            var revisoes = PropostaService.GetContratoRevisoes(Proposta.Id);
+            return Mapper.Map<List<ContratoRevisaoListItemDto>>(revisoes);
         }
 
         [HttpGet("Revisoes/{id}")]
-        public ActionResult<ContratoRevisaoDto> GetRevisao([FromRoute] int captacaoId, [FromRoute] int id)
+        public async Task<ActionResult<ContratoRevisaoDto>> GetRevisao([FromRoute] int id)
         {
-            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var revisao = propostaService.GetContratoRevisao(proposta.Id, id);
-            return mapper.Map<ContratoRevisaoDto>(revisao);
+            if (!await HasAccess())
+                return Forbid();
+            var revisao = PropostaService.GetContratoRevisao(Proposta.Id, id);
+            return Mapper.Map<ContratoRevisaoDto>(revisao);
         }
 
         [HttpGet("Revisoes/{id}/Diff")]
-        public async Task<ActionResult<string>> GetRevisaoDiff([FromRoute] int captacaoId, [FromRoute] int id,
+        public async Task<ActionResult<string>> GetRevisaoDiff([FromRoute] Guid propostaId, [FromRoute] int id,
             [FromServices] IViewRenderService viewRenderService)
         {
-            var proposta = propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var contrato = propostaService.GetContrato(captacaoId, this.UserId());
-            var revisao = propostaService.GetContratoRevisao(proposta.Id, id);
+            if (!await HasAccess())
+                return Forbid();
+            var contrato = PropostaService.GetContrato(propostaId);
+            if (contrato is null)
+                return NotFound();
+            var revisao = PropostaService.GetContratoRevisao(contrato.PropostaId, id);
 
             var diff = DiffService.Html(contrato.Conteudo,
                 revisao.Conteudo);
             var render = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
             return render;
         }
+        
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,40 +19,41 @@ namespace PeD.Controllers.Propostas
     [ApiController]
     [Authorize("Bearer")]
     [Route("api/Propostas/{propostaId:guid}/[controller]")]
-    public class EscopoController : ControllerServiceBase<Escopo>
+    public class EscopoController : PropostaNodeBaseController<Escopo>
     {
-        private PropostaService _propostaService;
-
-        public EscopoController(IService<Escopo> service, IMapper mapper, PropostaService propostaService) : base(
-            service, mapper)
+        public EscopoController(IService<Escopo> service, IMapper mapper, IAuthorizationService authorizationService,
+            PropostaService propostaService) : base(service, mapper, authorizationService, propostaService)
         {
-            _propostaService = propostaService;
         }
 
         [HttpGet]
-        public IActionResult Get([FromRoute] int captacaoId, [FromServices] IService<Meta> serviceMeta)
+        public async Task<IActionResult> Get([FromServices] IService<Meta> serviceMeta)
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
-            var escopo = Service.Filter(q => q.Where(e => e.PropostaId == proposta.Id)).FirstOrDefault() ??
+            if (!await HasAccess())
+                return Forbid();
+            var escopo = Service.Filter(q => q.Where(e => e.PropostaId == Proposta.Id)).FirstOrDefault() ??
                          new Escopo();
-            var metas = serviceMeta.Filter(q => q.Where(e => e.PropostaId == proposta.Id)).ToList();
+            var metas = serviceMeta.Filter(q => q.Where(e => e.PropostaId == Proposta.Id)).ToList();
             var response = Mapper.Map<PropostaEscopoDto>(escopo);
             response.Metas = Mapper.Map<List<PropostaEscopoDto.MetaDto>>(metas);
             return Ok(response);
         }
+
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
-        public IActionResult Post([FromRoute] int captacaoId, [FromBody] PropostaEscopoDto escopoDto,
+        public async Task<IActionResult> Post([FromBody] PropostaEscopoDto escopoDto,
             [FromServices] GestorDbContext context)
         {
-            var proposta = _propostaService.GetPropostaPorResponsavel(captacaoId, this.UserId());
+            if (!await HasAccess())
+                return Forbid();
+
             var metaContext = context.Set<Meta>();
 
-            var escopoPrev = Service.Filter(q => q.Where(e => e.PropostaId == proposta.Id)).FirstOrDefault();
+            var escopoPrev = Service.Filter(q => q.Where(e => e.PropostaId == Proposta.Id)).FirstOrDefault();
             if (escopoPrev == null)
             {
                 var escopo = Mapper.Map<Escopo>(escopoDto);
-                escopo.PropostaId = proposta.Id;
+                escopo.PropostaId = Proposta.Id;
                 Service.Post(escopo);
             }
             else
@@ -60,19 +62,19 @@ namespace PeD.Controllers.Propostas
                 Service.Put(escopo);
             }
 
-            var metasId = metaContext.Where(m => m.PropostaId == proposta.Id).Select(m => m.Id).ToList();
+            var metasId = metaContext.Where(m => m.PropostaId == Proposta.Id).Select(m => m.Id).ToList();
             var metas = Mapper.Map<List<Meta>>(escopoDto.Metas);
             var metasIdsRequest = metas
                 .Where(m => metasId.Contains(m.Id))
                 .Select(m => m.Id)
                 .ToList();
 
-            var excluidos = metaContext.Where(m => m.PropostaId == proposta.Id && !metasIdsRequest.Contains(m.Id))
+            var excluidos = metaContext.Where(m => m.PropostaId == Proposta.Id && !metasIdsRequest.Contains(m.Id))
                 .ToList();
             metaContext.RemoveRange(excluidos);
             metas.ForEach(m =>
             {
-                m.PropostaId = proposta.Id;
+                m.PropostaId = Proposta.Id;
                 if (m.Id > 0 && metasId.Contains(m.Id))
                 {
                     metaContext.Update(m);

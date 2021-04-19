@@ -29,7 +29,7 @@ namespace PeD.Controllers.Propostas
         }
 
         [HttpGet("")]
-        public IActionResult Index([FromRoute] Guid propostaId)
+        public IActionResult Index()
         {
             if (Proposta != null)
             {
