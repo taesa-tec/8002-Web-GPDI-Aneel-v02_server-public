@@ -25,13 +25,9 @@ namespace PeD.Controllers.Propostas
     [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class EtapasController : PropostaNodeBaseController<Etapa, EtapaRequest, EtapaDto>
     {
-        private GestorDbContext _context;
-
         public EtapasController(IService<Etapa> service, IMapper mapper, IAuthorizationService authorizationService,
-            PropostaService propostaService, GestorDbContext context) : base(service, mapper, authorizationService,
-            propostaService)
+            PropostaService propostaService) : base(service, mapper, authorizationService, propostaService)
         {
-            _context = context;
         }
 
         protected override IQueryable<Etapa> Includes(IQueryable<Etapa> queryable)

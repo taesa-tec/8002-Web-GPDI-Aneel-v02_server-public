@@ -210,6 +210,29 @@ namespace PeD.Services.Captacoes
             return null;
         }
 
+        public PropostaContrato GetContrato(Guid guid)
+        {
+            var proposta = _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Captacao)
+                .ThenInclude(c => c.Contrato)
+                .Include(p => p.Contrato).ThenInclude(c => c.File)
+                .Include(p => p.Contrato)
+                .ThenInclude(c => c.Parent)
+                .FirstOrDefault(c => c.Guid == guid);
+
+
+            if (proposta?.Captacao?.ContratoId != null)
+                return proposta.Contrato ?? new PropostaContrato()
+                {
+                    PropostaId = proposta.Id,
+                    Parent = proposta.Captacao.Contrato,
+                    ParentId = (int) proposta.Captacao?.ContratoId,
+                };
+
+            return null;
+        }
+
         public PropostaContrato GetContratoFull(int propostaId)
         {
             var proposta = _captacaoPropostas

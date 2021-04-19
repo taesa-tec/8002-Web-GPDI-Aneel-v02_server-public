@@ -80,11 +80,12 @@ namespace PeD.Controllers.Propostas
         }
 
         [Authorize(Roles = Roles.Fornecedor)]
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete([FromRoute] int id)
+        [HttpDelete]
+        public override async Task<IActionResult> Delete([FromQuery] int id)
         {
             if (!await HasAccess())
                 return Forbid();
+
             var coExecutor = Service.Get(id);
             if (coExecutor == null)
             {

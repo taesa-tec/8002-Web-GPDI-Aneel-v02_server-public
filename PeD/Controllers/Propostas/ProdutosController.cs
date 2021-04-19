@@ -61,9 +61,6 @@ namespace PeD.Controllers.Propostas
             }
 
             return Problem("Somente um produto final por proposta", null, StatusCodes.Status409Conflict);
-
-
-            return await base.Post(request);
         }
 
         [Authorize(Roles = Roles.Fornecedor)]
