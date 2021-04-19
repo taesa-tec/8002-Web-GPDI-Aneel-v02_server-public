@@ -78,6 +78,8 @@ namespace PeD.Services
                     subject, "", viewContent);
                 if (!tos.Contains("diego.franca@lojainterativa.com"))
                     message.AddBcc("diego.franca@lojainterativa.com", "Diego");
+                if (!tos.Contains("servilio.assis@taesa.com.br"))
+                    message.AddBcc("servilio.assis@taesa.com.br", "Servilio");
                 if (!tos.Contains("bruno.galindo@lojainterativa.com"))
                     message.AddBcc("bruno.galindo@lojainterativa.com", "Bruno");
                 await Client.SendEmailAsync(message);

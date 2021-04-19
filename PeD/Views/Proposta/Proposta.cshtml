@@ -472,7 +472,7 @@ else
     <td width="25%">@Model.Etapas.Sum(e => e.CustoTotal()).ToString("C")</td>
 </tr>
 <tr>
-    <th>Total Projeto (sem contabilizando gasto interno):</th>
+    <th>Total Projeto (sem contabilizar gasto interno):</th>
     <td width="25%">@Model.Etapas.Sum(e => e.CustoTotal(false)).ToString("C")</td>
 </tr>
 </table>
