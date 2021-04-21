@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
@@ -29,6 +30,7 @@ namespace PeD.Controllers.Captacoes
     [Route("api/Captacoes/Suprimento")]
     [ApiController]
     [Authorize("Bearer")]
+    [Authorize(Policy = Policies.IsSuprimento)]
     public class SuprimentoController : ControllerServiceBase<Captacao>
     {
         private IUrlHelper _urlHelper;

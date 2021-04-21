@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
@@ -50,6 +51,7 @@ namespace PeD.Controllers.Captacoes
 
         #region 2.2
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("")]
         public ActionResult GetCaptacoes()
         {
@@ -60,6 +62,7 @@ namespace PeD.Controllers.Captacoes
             return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("Pendentes")]
         public ActionResult<List<CaptacaoPendenteDto>> GetPendentes()
         {
@@ -69,6 +72,7 @@ namespace PeD.Controllers.Captacoes
             return Ok(mapped);
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("Elaboracao")]
         public ActionResult<List<CaptacaoElaboracaoDto>> GetEmElaboracao()
         {
@@ -78,6 +82,7 @@ namespace PeD.Controllers.Captacoes
             return Ok(mapped);
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("Canceladas")]
         public ActionResult<List<CaptacaoElaboracaoDto>> GetCanceladas()
         {
@@ -87,6 +92,7 @@ namespace PeD.Controllers.Captacoes
             return Ok(mapped);
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("Abertas")]
         public ActionResult<List<CaptacaoInfo>> GetAbertas()
         {
@@ -100,6 +106,7 @@ namespace PeD.Controllers.Captacoes
             return Ok(captacoes);
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("Encerradas")]
         public ActionResult<List<CaptacaoDto>> GetEncerradas()
         {
@@ -111,7 +118,7 @@ namespace PeD.Controllers.Captacoes
         }
 
 
-        // @todo Authorization GetCaptacao
+        [Authorize(Policy = Policies.IsUserTaesa)]
         [HttpGet("{id}")]
         public ActionResult<CaptacaoDetalhesDto> GetCaptacao(int id)
         {
@@ -210,6 +217,7 @@ namespace PeD.Controllers.Captacoes
 
         #region 2.3
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("SelecaoPendente")]
         public ActionResult<List<CaptacaoDto>> GetSelecaoPendente()
         {
@@ -220,6 +228,7 @@ namespace PeD.Controllers.Captacoes
             return Ok(mapped);
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("Finalizada")]
         public ActionResult<List<CaptacaoDto>> GetFinalizada()
         {
@@ -230,6 +239,7 @@ namespace PeD.Controllers.Captacoes
             return Ok(mapped);
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("{id}/Propostas")]
         public ActionResult<List<PropostaSelecaoDto>> GetCaptacaoPropostas(int id,
             [FromServices] PropostaService propostaService)
@@ -252,6 +262,7 @@ namespace PeD.Controllers.Captacoes
             return Mapper.Map<List<PropostaSelecaoDto>>(propostas);
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("{id}/Propostas/{propostaId}/PlanoTrabalho")]
         public ActionResult DownloadPlanoTrabalho(int id, int propostaId,
             [FromServices] PropostaService propostaService)
@@ -277,7 +288,7 @@ namespace PeD.Controllers.Captacoes
                 $"{captacao.Titulo}-plano-de-trabalho({proposta.Fornecedor.Nome}).pdf");
         }
 
-
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("{id}/Propostas/{propostaId}/Contrato")]
         public ActionResult DownloadContrato(int id, int propostaId,
             [FromServices] PropostaService propostaService)
@@ -304,6 +315,7 @@ namespace PeD.Controllers.Captacoes
         }
 
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("{id}/PropostaSelecionada/PlanoTrabalho")]
         public ActionResult DownloadPlanoTrabalhoPropostaSelecionada(int id,
             [FromServices] PropostaService propostaService)
@@ -317,6 +329,7 @@ namespace PeD.Controllers.Captacoes
             return DownloadPlanoTrabalho(id, captacao.PropostaSelecionadaId.Value, propostaService);
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("{id}/PropostaSelecionada/Contrato")]
         public ActionResult DownloadContratoPropostaSelecionada(int id,
             [FromServices] PropostaService propostaService)
@@ -330,6 +343,7 @@ namespace PeD.Controllers.Captacoes
             return DownloadContrato(id, captacao.PropostaSelecionadaId.Value, propostaService);
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPost("{id}/SelecionarProposta")]
         public ActionResult SelecionarProposta(int id, [FromBody] CaptacaoSelecaoRequest request)
         {
@@ -356,6 +370,7 @@ namespace PeD.Controllers.Captacoes
             return Ok();
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPost("{id}/SelecionarProposta/Arquivo")]
         public async Task<ActionResult> ArquivoProbatorio(int id, [FromServices] ArquivoService arquivoService)
         {
@@ -381,6 +396,18 @@ namespace PeD.Controllers.Captacoes
             captacao.ArquivoComprobatorioId = file.Id;
             Service.Put(captacao);
             return Ok();
+        }
+
+        #endregion
+
+        #region 2.4
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpGet("Refinamento")]
+        public ActionResult GetPropostasRefinamento()
+        {
+            var propostas = Service.GetPropostasRefinamento(this.IsAdmin() ? "" : this.UserId());
+            return Ok(Mapper.Map<List<PropostaDto>>(propostas));
         }
 
         #endregion

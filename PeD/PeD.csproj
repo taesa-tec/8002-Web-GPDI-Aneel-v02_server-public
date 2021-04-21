@@ -74,10 +74,6 @@
         <_ContentIncludedByDefault Remove="wwwroot\MailTemplates\pdf.html" />
         <_ContentIncludedByDefault Remove="wwwroot\MailTemplates\redefinir-senha.html" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Controllers\Fornecedores" />
-    </ItemGroup>
     <ItemGroup>
         <Content Remove="logs\**" />
         <Content Update="appsettings.example.json">
