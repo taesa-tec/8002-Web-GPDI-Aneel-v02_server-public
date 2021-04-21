@@ -1,10 +1,10 @@
 using System;
+using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Proposta
 {
-    public class PropostaProdutoRequest
+    public class PropostaProdutoRequest : BaseEntity
     {
-        public int Id { get; set; }
         public string Classificacao { get; set; }
         public string Titulo { get; set; }
         public string Descricao { get; set; }

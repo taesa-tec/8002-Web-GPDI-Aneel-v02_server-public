@@ -64,12 +64,12 @@ namespace PeD.Services.Captacoes
         }
 
 
-        public List<Proposta> GetPropostasEncerradarFornecedor(int fornecedorId) =>
+        public List<Proposta> GetPropostasEncerradas(string responsavelId) =>
             _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p =>
                     p.Captacao)
-                .Where(cp => cp.Fornecedor.Id == fornecedorId &&
+                .Where(cp => cp.ResponsavelId == responsavelId &&
                              (cp.Captacao.Status == Captacao.CaptacaoStatus.Encerrada ||
                               cp.Participacao == StatusParticipacao.Rejeitado)).ToList();
 
@@ -81,7 +81,7 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Captacao)
                 .Include(p => p.Contrato)
                 .Where(cp =>
-                    cp.Fornecedor.ResponsavelId == userId &&
+                    cp.ResponsavelId == userId &&
                     cp.Captacao.Status == status &&
                     cp.Participacao != StatusParticipacao.Rejeitado)
                 .ToList();
@@ -95,6 +95,15 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
                 .FirstOrDefault(p => p.Id == id);
+        }
+
+        public Proposta GetProposta(Guid guid)
+        {
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Captacao)
+                .ThenInclude(c => c.Arquivos)
+                .FirstOrDefault(p => p.Guid == guid);
         }
 
         public Proposta GetPropostaFull(int id)
@@ -136,17 +145,6 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Riscos)
                 .FirstOrDefault(p => p.Id == id);
         }
-
-        public Proposta GetPropostaFornecedor(int captacaoId, int fornecedorId) =>
-            _captacaoPropostas
-                .Include(p => p.Fornecedor)
-                .Include(p =>
-                    p.Captacao)
-                .FirstOrDefault(cp => cp.CaptacaoId == captacaoId &&
-                                      cp.Fornecedor.Id == fornecedorId &&
-                                      cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
-                                      cp.Participacao != StatusParticipacao.Rejeitado);
-
 
         public Proposta GetPropostaPorResponsavel(int captacaoId, string userId)
         {
@@ -199,6 +197,29 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Contrato)
                 .ThenInclude(c => c.Parent)
                 .FirstOrDefault(c => c.Id == propostaId);
+
+
+            if (proposta?.Captacao?.ContratoId != null)
+                return proposta.Contrato ?? new PropostaContrato()
+                {
+                    PropostaId = proposta.Id,
+                    Parent = proposta.Captacao.Contrato,
+                    ParentId = (int) proposta.Captacao?.ContratoId,
+                };
+
+            return null;
+        }
+
+        public PropostaContrato GetContrato(Guid guid)
+        {
+            var proposta = _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Captacao)
+                .ThenInclude(c => c.Contrato)
+                .Include(p => p.Contrato).ThenInclude(c => c.File)
+                .Include(p => p.Contrato)
+                .ThenInclude(c => c.Parent)
+                .FirstOrDefault(c => c.Guid == guid);
 
 
             if (proposta?.Captacao?.ContratoId != null)

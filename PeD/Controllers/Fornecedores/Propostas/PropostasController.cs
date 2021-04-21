@@ -27,39 +27,49 @@ namespace PeD.Controllers.Fornecedores.Propostas
 {
     [SwaggerTag("Proposta Fornecedor")]
     [ApiController]
-    [Authorize("Bearer", Roles = Roles.Fornecedor)]
+    [Authorize("Bearer")]
     [Route("api/Fornecedor/Propostas")]
     public class PropostasController : ControllerServiceBase<Proposta>
     {
-        private IUrlHelper _urlHelper;
         private new PropostaService Service;
+        private readonly IAuthorizationService _authorizationService;
 
-        public PropostasController(PropostaService service,
-            IMapper mapper, IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor) : base(service, mapper)
+        public PropostasController(PropostaService service, IMapper mapper, IAuthorizationService authorizationService)
+            : base(service, mapper)
         {
             Service = service;
-            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _authorizationService = authorizationService;
         }
 
         [HttpGet("")]
         public ActionResult<List<PropostaDto>> GetPropostas()
         {
-            var propostas = Service.GetPropostasPorResponsavel(this.UserId());
+            IEnumerable<Proposta> propostas;
+            if (User.IsInRole(Roles.Administrador) || User.IsInRole(Roles.User))
+            {
+                propostas = Service.Get();
+            }
+            else
+            {
+                propostas = Service.GetPropostasPorResponsavel(this.UserId());
+            }
+
             return Ok(Mapper.Map<List<PropostaDto>>(propostas));
         }
 
         [HttpGet("Encerradas")]
         public ActionResult<List<PropostaDto>> GetPropostasEncerradas()
         {
-            var propostas = Service.GetPropostasEncerradarFornecedor(this.UserEmpresaId());
+            var propostas = Service.GetPropostasEncerradas(this.UserId());
             return Ok(Mapper.Map<List<PropostaDto>>(propostas));
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<PropostaDto> GetProposta(int id)
+        [HttpGet("{id:guid}")]
+        public ActionResult<PropostaDto> GetProposta(Guid id)
         {
-            var proposta = Service.GetPropostaPorResponsavel(id, this.UserId());
+            var proposta = Service.GetProposta(id);
+
+
             return Mapper.Map<PropostaDto>(proposta);
         }
 

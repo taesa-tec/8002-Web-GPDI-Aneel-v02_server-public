@@ -14,6 +14,7 @@ using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.Models;
 using PeD.Core.Requests.Sistema.Fornecedores;
 using PeD.Services;
+using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
@@ -30,15 +31,18 @@ namespace PeD.Controllers.Sistema
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private UserService _userService;
+        private PropostaService _propostaService;
         protected AccessManager AccessManager;
 
         public FornecedoresController(IService<Core.Models.Fornecedores.Fornecedor> service, IMapper mapper,
-            UserManager<ApplicationUser> userManager, AccessManager accessManager, UserService userService) : base(
+            UserManager<ApplicationUser> userManager, AccessManager accessManager, UserService userService,
+            PropostaService propostaService) : base(
             service, mapper)
         {
             _userManager = userManager;
             AccessManager = accessManager;
             _userService = userService;
+            _propostaService = propostaService;
         }
 
 
@@ -94,6 +98,23 @@ namespace PeD.Controllers.Sistema
 
             fornecedor.ResponsavelId = responsavel.Id;
         }
+
+        protected void UpdateResponsavelPropostaFornecedor(Core.Models.Fornecedores.Fornecedor fornecedor)
+        {
+            var propostas = _propostaService.Filter(q =>
+                q.Where(p => p.FornecedorId == fornecedor.Id && p.ResponsavelId != fornecedor.ResponsavelId));
+
+            if (propostas.Count == 0)
+                return;
+
+            foreach (var proposta in propostas)
+            {
+                proposta.ResponsavelId = fornecedor.ResponsavelId;
+            }
+
+            _propostaService.Put(propostas);
+        }
+
 
         protected async Task DesativarFonecedor(Core.Models.Fornecedores.Fornecedor fornecedor)
         {
@@ -173,7 +194,7 @@ namespace PeD.Controllers.Sistema
             }
 
             Service.Put(fornecedor);
-
+            UpdateResponsavelPropostaFornecedor(fornecedor);
             return Ok(fornecedor);
         }
     }

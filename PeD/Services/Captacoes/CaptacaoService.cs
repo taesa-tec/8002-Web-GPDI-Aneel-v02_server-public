@@ -181,6 +181,7 @@ namespace PeD.Services.Captacoes
             var propostas = fornecedores.Select(f => new Proposta()
             {
                 FornecedorId = f.Id,
+                ResponsavelId = f.ResponsavelId,
                 CaptacaoId = id,
                 Contrato = new PropostaContrato()
                 {
@@ -308,6 +309,7 @@ namespace PeD.Services.Captacoes
             {
                 expirada.Status = Captacao.CaptacaoStatus.Encerrada;
             }
+
             Put(expiradas);
             _logger.LogInformation($"Captações expiradas: {expiradas.Count}");
         }
