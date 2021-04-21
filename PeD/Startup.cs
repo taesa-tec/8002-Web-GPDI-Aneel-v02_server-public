@@ -208,6 +208,7 @@ namespace PeD
             });
 
             services.AddPropostaAuthorizations();
+            services.AddRoleAuthorizations();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

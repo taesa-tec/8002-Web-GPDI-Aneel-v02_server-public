@@ -194,6 +194,8 @@ namespace PeD.Data
                 b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<Risco>();
+            builder.Entity<ContratoComentario>(b => { b.ToTable("ContratoComentarios"); });
+            builder.Entity<PlanoComentario>(b => { b.ToTable("PlanoComentarios"); });
 
             #endregion
 

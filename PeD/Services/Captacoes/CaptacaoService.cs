@@ -314,6 +314,22 @@ namespace PeD.Services.Captacoes
             _logger.LogInformation($"Captações expiradas: {expiradas.Count}");
         }
 
+        public IEnumerable<Proposta> GetPropostasRefinamento(string responsavelId)
+        {
+            return _captacaoPropostas
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Captacao)
+                .Include(p => p.Captacao)
+                .Where(cp =>
+                    cp.Id == cp.Captacao.PropostaSelecionadaId &&
+                    (cp.Captacao.UsuarioRefinamentoId == responsavelId || string.IsNullOrEmpty(responsavelId)) &&
+                    cp.Captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
+                    (cp.ContratoAprovacao != StatusAprovacao.Aprovado ||
+                     cp.PlanoTrabalhoAprovacao != StatusAprovacao.Aprovado)
+                )
+                .ToList();
+        }
+
         #region Emails
 
         public async Task SendEmailSuprimento(Captacao captacao, string autor)
