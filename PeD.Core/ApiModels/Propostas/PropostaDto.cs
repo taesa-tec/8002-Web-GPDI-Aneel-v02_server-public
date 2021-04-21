@@ -28,6 +28,8 @@ namespace PeD.Core.ApiModels.Propostas
         public StatusParticipacao Participacao { get; set; }
 
         public string Consideracoes { get; set; }
+        public string PlanoTrabalhoAprovacao { get; set; }
+        public string ContratoAprovacao { get; set; }
 
         public List<CaptacaoArquivoDto> Arquivos { get; set; }
         // public List<SugestaoClausula> SugestaoClausulas { get; set; }
