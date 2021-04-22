@@ -120,8 +120,7 @@ namespace PeD.Controllers.Propostas
         public async Task<ActionResult> PropostaDocDownload(Guid id)
         {
             var tempproposta = Service.GetProposta(id);
-            if (tempproposta == null || (tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Encerrada ||
-                                         tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Fornecedor))
+            if (tempproposta == null || tempproposta.Captacao?.Status < Captacao.CaptacaoStatus.Fornecedor)
             {
                 return NotFound();
             }
@@ -142,8 +141,7 @@ namespace PeD.Controllers.Propostas
         public async Task<ActionResult> PropostaContratoDownload(Guid id)
         {
             var tempproposta = Service.GetProposta(id);
-            if (tempproposta == null || (tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Encerrada &&
-                                         tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Fornecedor))
+            if (tempproposta == null || tempproposta.Captacao?.Status < Captacao.CaptacaoStatus.Fornecedor)
             {
                 return NotFound();
             }

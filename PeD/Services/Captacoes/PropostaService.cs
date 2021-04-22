@@ -70,7 +70,7 @@ namespace PeD.Services.Captacoes
                 .Include(p =>
                     p.Captacao)
                 .Where(cp => cp.ResponsavelId == responsavelId &&
-                             (cp.Captacao.Status == Captacao.CaptacaoStatus.Encerrada ||
+                             (cp.Captacao.Status >= Captacao.CaptacaoStatus.Encerrada ||
                               cp.Participacao == StatusParticipacao.Rejeitado)).ToList();
 
         public IEnumerable<Proposta> GetPropostasPorResponsavel(string userId,
@@ -101,6 +101,7 @@ namespace PeD.Services.Captacoes
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
+                .Include(p => p.Contrato)
                 .Include(p => p.Captacao)
                 .ThenInclude(c => c.Arquivos)
                 .FirstOrDefault(p => p.Guid == guid);
@@ -162,29 +163,6 @@ namespace PeD.Services.Captacoes
                                       cp.CaptacaoId == captacaoId &&
                                       status.Contains(cp.Captacao.Status) &&
                                       cp.Participacao != StatusParticipacao.Rejeitado);
-        }
-
-        public PropostaContrato GetContrato(int captacaoId, string userId)
-        {
-            var proposta = _captacaoPropostas
-                .Include(p => p.Fornecedor)
-                .Include(p => p.Captacao)
-                .ThenInclude(c => c.Contrato)
-                .Include(p => p.Contrato)
-                .ThenInclude(c => c.Parent)
-                .FirstOrDefault(cp => cp.Fornecedor.ResponsavelId == userId &&
-                                      cp.CaptacaoId == captacaoId &&
-                                      cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
-                                      cp.Participacao != StatusParticipacao.Rejeitado);
-            if (proposta?.Captacao?.ContratoId != null)
-                return proposta.Contrato ?? new PropostaContrato()
-                {
-                    PropostaId = proposta.Id,
-                    Parent = proposta.Captacao.Contrato,
-                    ParentId = (int) proposta.Captacao?.ContratoId,
-                };
-
-            return null;
         }
 
         public PropostaContrato GetContrato(int propostaId)

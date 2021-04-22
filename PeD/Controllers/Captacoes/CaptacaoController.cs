@@ -245,7 +245,7 @@ namespace PeD.Controllers.Captacoes
             [FromServices] PropostaService propostaService)
         {
             var captacao = Service.Filter(q => q
-                .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada &&
                             //c.UsuarioSuprimentoId == this.UserId() &&
                             c.Id == id
                 )).FirstOrDefault();
@@ -268,7 +268,7 @@ namespace PeD.Controllers.Captacoes
             [FromServices] PropostaService propostaService)
         {
             var captacao = Service.Filter(q => q
-                .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada &&
                             //c.UsuarioSuprimentoId == this.UserId() &&
                             c.Id == id
                 )).FirstOrDefault();
@@ -294,7 +294,7 @@ namespace PeD.Controllers.Captacoes
             [FromServices] PropostaService propostaService)
         {
             var captacao = Service.Filter(q => q
-                .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada &&
                             //c.UsuarioSuprimentoId == this.UserId() &&
                             c.Id == id
                 )).FirstOrDefault();
@@ -348,7 +348,7 @@ namespace PeD.Controllers.Captacoes
         public ActionResult SelecionarProposta(int id, [FromBody] CaptacaoSelecaoRequest request)
         {
             var captacao = Service.Filter(q => q
-                .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada &&
                             //c.UsuarioSuprimentoId == this.UserId() &&
                             c.Id == id
                 )).FirstOrDefault();
@@ -366,6 +366,7 @@ namespace PeD.Controllers.Captacoes
             captacao.DataAlvo = request.DataAlvo;
             captacao.UsuarioRefinamentoId = request.ResponsavelId;
             captacao.PropostaSelecionadaId = request.PropostaId;
+            captacao.Status = Captacao.CaptacaoStatus.Refinamento;
             Service.Put(captacao);
             return Ok();
         }
@@ -382,7 +383,7 @@ namespace PeD.Controllers.Captacoes
             }
 
             var captacao = Service.Filter(q => q
-                .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada &&
                             //c.UsuarioSuprimentoId == this.UserId() &&
                             c.Id == id
                 )).FirstOrDefault();
