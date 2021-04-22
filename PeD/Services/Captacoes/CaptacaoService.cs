@@ -64,7 +64,8 @@ namespace PeD.Services.Captacoes
                     .Include(c => c.UsuarioSuprimento)
                     .Include(c => c.Propostas)
                     .Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada ||
-                                c.Status == Captacao.CaptacaoStatus.Encerrada && c.Propostas.Count == 0))
+                                c.Status >= Captacao.CaptacaoStatus.Encerrada &&
+                                c.Propostas.Count == 0)) //@todo Verificar se funciona propostas zeradas
                 .ToList();
         }
 
@@ -75,7 +76,7 @@ namespace PeD.Services.Captacoes
                     .Include(c => c.UsuarioSuprimento)
                     .Include(c => c.Propostas)
                     .ThenInclude(p => p.Fornecedor)
-                    .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada || c.Termino < DateTime.Today))
+                    .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada || c.Termino < DateTime.Today))
                 .ToList();
         }
 
@@ -93,7 +94,7 @@ namespace PeD.Services.Captacoes
                     .Include(c => c.Propostas)
                     .ThenInclude(p => p.Fornecedor)
                     .Include(c => c.UsuarioRefinamento)
-                    .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada && c.PropostaSelecionadaId != null))
+                    .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada && c.PropostaSelecionadaId != null))
                 .ToList();
         }
 
@@ -294,7 +295,7 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Captacao)
                 .Include(p => p.Captacao)
                 .Where(cp =>
-                    cp.Fornecedor.ResponsavelId == userId &&
+                    cp.ResponsavelId == userId &&
                     cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
                     cp.Participacao != StatusParticipacao.Rejeitado)
                 .ToList();
@@ -323,7 +324,7 @@ namespace PeD.Services.Captacoes
                 .Where(cp =>
                     cp.Id == cp.Captacao.PropostaSelecionadaId &&
                     (cp.Captacao.UsuarioRefinamentoId == responsavelId || string.IsNullOrEmpty(responsavelId)) &&
-                    cp.Captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
+                    cp.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
                     (cp.ContratoAprovacao != StatusAprovacao.Aprovado ||
                      cp.PlanoTrabalhoAprovacao != StatusAprovacao.Aprovado)
                 )
