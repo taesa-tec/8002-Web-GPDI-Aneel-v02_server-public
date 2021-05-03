@@ -133,6 +133,11 @@ namespace PeD.Mapping
                     src.Fornecedor.Nome))
                 .ForMember(dest => dest.Cancelada, opt => opt.MapFrom(src => src
                     .Participacao == StatusParticipacao.Rejeitado));
+
+            CreateMap<Comentario, ComentarioDto>()
+                .ForMember(c => c.Author, opt => opt.MapFrom(src => src.Author.NomeCompleto));
+            CreateMap<ContratoComentario, ComentarioDto>().IncludeBase<Comentario, ComentarioDto>();
+            CreateMap<PlanoComentario, ComentarioDto>().IncludeBase<Comentario, ComentarioDto>();
         }
     }
 }
