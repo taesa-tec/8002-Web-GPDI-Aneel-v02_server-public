@@ -235,6 +235,7 @@ namespace PeD
             }
             else
             {
+                // app.UseHttpsRedirection();
                 app.UseHsts();
             }
 
@@ -301,7 +302,7 @@ namespace PeD
                 endpoints.MapControllers();
                 // endpoints.MapControllerRoute("Areas", "api/{controller=Home}/{action=Index}/{id?}");
             });
-            // app.UseHttpsRedirection();
+            
 
 
             app.UseStaticFiles();

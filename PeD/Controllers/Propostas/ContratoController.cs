@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
@@ -122,6 +125,53 @@ namespace PeD.Controllers.Propostas
             var render = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
             return render;
         }
-        
+
+
+        [HttpGet("Comentarios")]
+        public async Task<ActionResult> Comentarios([FromServices] IService<ContratoComentario> service)
+        {
+            if (!await HasAccess())
+                return Forbid();
+
+            var comentarios = service.Filter(q => q
+                .Include(c => c.Author)
+                .Where(c => c.PropostaId == Proposta.Id)
+                .OrderByDescending(c => c.CreatedAt));
+            return Ok(Mapper.Map<List<ComentarioDto>>(comentarios));
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("SolicitarAlteracao")]
+        public async Task<ActionResult> SolicitarAlteracao(ComentarioRequest request,
+            [FromServices] IService<ContratoComentario> service)
+        {
+            if (!await HasAccess())
+                return Forbid();
+            Proposta.ContratoAprovacao = StatusAprovacao.Alteracao;
+            var comentario = new ContratoComentario()
+            {
+                AuthorId = this.UserId(),
+                PropostaId = Proposta.Id,
+                Mensagem = request.Mensagem,
+                CreatedAt = DateTime.Now
+            };
+            service.Post(comentario);
+            PropostaService.Put(Proposta);
+            return Ok(Mapper.Map<ComentarioDto>(comentario));
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("Aprovar")]
+        public async Task<ActionResult> Aprovar()
+        {
+            if (!await HasAccess())
+                return Forbid();
+
+            Proposta.ContratoAprovacao = StatusAprovacao.Aprovado;
+            PropostaService.Put(Proposta);
+
+
+            return Ok();
+        }
     }
 }

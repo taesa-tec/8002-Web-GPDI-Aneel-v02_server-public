@@ -6,7 +6,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PeD.Authorizations;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
