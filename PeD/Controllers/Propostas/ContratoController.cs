@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
+using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
 using PeD.Data;
@@ -48,10 +49,19 @@ namespace PeD.Controllers.Propostas
 
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost("")]
-        public async Task<ActionResult> Post([FromRoute] Guid propostaId, [FromBody] ContratoRequest request)
+        public async Task<ActionResult> Post([FromRoute] Guid propostaId,
+            [FromBody] ContratoRequest request,
+            [FromServices] IService<ContratoComentario> service)
         {
             if (!await HasAccess())
                 return Forbid();
+
+            if (Proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
+                string.IsNullOrWhiteSpace(request.Alteracao))
+            {
+                return BadRequest();
+            }
+
             var contratoProposta = PropostaService.GetContrato(propostaId);
             var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
             var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
@@ -84,6 +94,20 @@ namespace PeD.Controllers.Propostas
                 contratoProposta.File = file;
                 contratoProposta.FileId = file.Id;
                 Service.Put(contratoProposta);
+            }
+
+            if (Proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento && !request.Draft)
+            {
+                Proposta.ContratoAprovacao = StatusAprovacao.Pendente;
+                var comentario = new ContratoComentario()
+                {
+                    AuthorId = this.UserId(),
+                    PropostaId = Proposta.Id,
+                    Mensagem = request.Alteracao,
+                    CreatedAt = DateTime.Now
+                };
+                service.Post(comentario);
+                PropostaService.Put(Proposta);
             }
 
             PropostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);

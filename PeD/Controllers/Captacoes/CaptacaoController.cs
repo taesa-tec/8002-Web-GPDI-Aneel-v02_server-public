@@ -403,11 +403,12 @@ namespace PeD.Controllers.Captacoes
 
         #region 2.4
 
-        [Authorize(Policy = Policies.IsUserPeD)]
+        //[Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("Refinamento")]
         public ActionResult GetPropostasRefinamento()
         {
-            var propostas = Service.GetPropostasRefinamento(this.IsAdmin() ? "" : this.UserId());
+            var propostas =
+                Service.GetPropostasRefinamento(this.IsAdmin() ? "" : this.UserId(), User.IsInRole(Roles.Fornecedor));
             return Ok(Mapper.Map<List<PropostaDto>>(propostas));
         }
 

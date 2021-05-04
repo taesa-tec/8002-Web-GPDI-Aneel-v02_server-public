@@ -4,5 +4,6 @@ namespace PeD.Core.Requests.Proposta
     {
         public bool Draft { get; set; }
         public string Conteudo { get; set; }
+        public string Alteracao { get; set; }
     }
 }
