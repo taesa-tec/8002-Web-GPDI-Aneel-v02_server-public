@@ -315,7 +315,7 @@ namespace PeD.Services.Captacoes
             _logger.LogInformation($"Captações expiradas: {expiradas.Count}");
         }
 
-        public IEnumerable<Proposta> GetPropostasRefinamento(string responsavelId)
+        public IEnumerable<Proposta> GetPropostasRefinamento(string userId, bool asFornecedor = false)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
@@ -323,8 +323,11 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Captacao)
                 .Where(cp =>
                     cp.Id == cp.Captacao.PropostaSelecionadaId &&
-                    (cp.Captacao.UsuarioRefinamentoId == responsavelId || string.IsNullOrEmpty(responsavelId)) &&
-                    cp.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
+                    (
+                        asFornecedor && cp.ResponsavelId == userId ||
+                        (!asFornecedor && cp.Captacao.UsuarioRefinamentoId == userId || string.IsNullOrEmpty(userId))
+                    )
+                    && cp.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
                     (cp.ContratoAprovacao != StatusAprovacao.Aprovado ||
                      cp.PlanoTrabalhoAprovacao != StatusAprovacao.Aprovado)
                 )
