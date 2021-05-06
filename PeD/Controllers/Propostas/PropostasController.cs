@@ -6,11 +6,14 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
+using PeD.Core.Requests.Proposta;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -271,5 +274,61 @@ namespace PeD.Controllers.Propostas
         }
 
         #endregion
+
+        protected async Task<bool> HasAccess(Proposta proposta)
+        {
+            var authorizationResult = await this.Authorize(proposta);
+            return authorizationResult.Succeeded;
+        }
+
+        [HttpGet("{guid:guid}/Comentarios")]
+        public async Task<ActionResult> Comentarios(Guid guid, [FromServices] IService<PlanoComentario> service)
+        {
+            var proposta = Service.GetProposta(guid);
+            if (!await HasAccess(proposta))
+                return Forbid();
+
+            var comentarios = service.Filter(q => q
+                .Include(c => c.Author)
+                .Where(c => c.PropostaId == proposta.Id)
+                .OrderByDescending(c => c.CreatedAt));
+            return Ok(Mapper.Map<List<ComentarioDto>>(comentarios));
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("{guid:guid}/SolicitarAlteracao")]
+        public async Task<ActionResult> SolicitarAlteracao(Guid guid, ComentarioRequest request,
+            [FromServices] IService<PlanoComentario> service)
+        {
+            var proposta = Service.GetProposta(guid);
+            if (!await HasAccess(proposta) || proposta.Captacao.Status != Captacao.CaptacaoStatus.Refinamento)
+                return Forbid();
+            proposta.PlanoTrabalhoAprovacao = StatusAprovacao.Alteracao;
+            var comentario = new PlanoComentario()
+            {
+                AuthorId = this.UserId(),
+                PropostaId = proposta.Id,
+                Mensagem = request.Mensagem,
+                CreatedAt = DateTime.Now
+            };
+            service.Post(comentario);
+            Service.Put(proposta);
+            return Ok(Mapper.Map<ComentarioDto>(comentario));
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("{guid:guid}/Aprovar")]
+        public async Task<ActionResult> Aprovar(Guid guid)
+        {
+            var proposta = Service.GetProposta(guid);
+            if (!await HasAccess(proposta) || proposta.Captacao.Status != Captacao.CaptacaoStatus.Refinamento)
+                return Forbid();
+
+            proposta.PlanoTrabalhoAprovacao = StatusAprovacao.Aprovado;
+            Service.Put(proposta);
+
+
+            return Ok();
+        }
     }
 }
