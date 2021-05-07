@@ -375,7 +375,7 @@ namespace PeD.Services.Captacoes
                 var stream = new FileStream(file, FileMode.Create);
                 HtmlConverter.ConvertToPdf(relatorio.Content, stream);
                 stream.Close();
-
+                PdfHelper.AddPagesToPdf(file, 500, 820);
                 var arquivo = _arquivoService.FromPath(file, "application/pdf",
                     $"relatorio-{relatorio.PropostaId}-{relatorio.DataAlteracao}.pdf");
 
@@ -409,6 +409,7 @@ namespace PeD.Services.Captacoes
                 HtmlConverter.ConvertToPdf(contratoContent, stream);
                 stream.Close();
                 PdfHelper.AddPagesToPdf(file, 475, 90);
+                
                 var arquivo = _arquivoService.FromPath(file, "application/pdf",
                     $"contrato-{contrato.PropostaId}.pdf");
                 return arquivo;

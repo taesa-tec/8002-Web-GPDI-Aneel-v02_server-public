@@ -28,11 +28,10 @@ namespace PeD.Services
                 float x = pdfDoc.GetPage(i).GetPageSize().GetWidth() / 2;
                 float y = pdfDoc.GetPage(i).GetPageSize().GetBottom() + 20;
                  */
-
                 Paragraph pages = new Paragraph(string.Format("Folha {0} de {1}", i, numPages))
                     .SetFontSize(12)
                     .SetFontColor(ColorConstants.BLACK);
-                doc.ShowTextAligned(pages, x, height - y, i, TextAlignment.CENTER, VerticalAlignment.BOTTOM,
+                doc.ShowTextAligned(pages, x, height - y, i, TextAlignment.CENTER, VerticalAlignment.MIDDLE,
                     0);
                 //doc.ShowTextAligned(pages, width, top + 40, i, TextAlignment.RIGHT, VerticalAlignment.BOTTOM, 0);
             }
