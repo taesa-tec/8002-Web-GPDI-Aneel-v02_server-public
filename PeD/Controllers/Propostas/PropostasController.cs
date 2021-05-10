@@ -257,16 +257,34 @@ namespace PeD.Controllers.Propostas
 
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPut("{id:guid}/Finalizar")]
-        public async Task<ActionResult> Finalizar(Guid id)
+        public async Task<ActionResult> Finalizar(Guid id, [FromBody] ComentarioRequest request,
+            [FromServices] IService<PlanoComentario> service)
         {
             var proposta = Service.GetProposta(id);
             var authorizationResult = await this.Authorize(proposta);
             if (!authorizationResult.Succeeded)
                 return Forbid();
 
-            if (proposta.Participacao == StatusParticipacao.Aceito)
+            if (proposta.Participacao == StatusParticipacao.Aceito ||
+                proposta.Participacao == StatusParticipacao.Concluido)
             {
                 await Service.FinalizarProposta(proposta);
+                if (proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento && request?.Mensagem != null &&
+                    proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Alteracao)
+                {
+                    proposta.PlanoTrabalhoAprovacao = StatusAprovacao.Pendente;
+                    var comentario = new PlanoComentario()
+                    {
+                        AuthorId = this.UserId(),
+                        PropostaId = proposta.Id,
+                        Mensagem = request.Mensagem,
+                        CreatedAt = DateTime.Now
+                    };
+                    service.Post(comentario);
+                    Service.Put(proposta);
+                }
+
+                
                 return Ok();
             }
 
