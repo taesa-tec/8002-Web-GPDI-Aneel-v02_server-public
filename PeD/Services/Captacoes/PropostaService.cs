@@ -316,7 +316,7 @@ namespace PeD.Services.Captacoes
             var proposta = GetPropostaFull(propostaId);
             var modelView = _mapper.Map<Core.Models.Relatorios.Fornecedores.Proposta>(proposta);
             var validacao = (new PropostaValidator()).Validate(modelView);
-            var content = renderService.RenderToStringAsync("Proposta/Proposta", modelView).Result;
+            var content = renderService.RenderToStringAsync("Proposta/PropostaTemp", modelView).Result;
             var relatorio = context.Set<Relatorio>().Where(r => r.Id == propostaId).FirstOrDefault() ?? new Relatorio()
             {
                 Content = content,

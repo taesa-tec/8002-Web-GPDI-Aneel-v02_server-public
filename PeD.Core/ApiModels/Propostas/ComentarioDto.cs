@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using PeD.Core.Models;
 
 namespace PeD.Core.ApiModels.Propostas
 {
@@ -9,5 +11,6 @@ namespace PeD.Core.ApiModels.Propostas
 
         public string Mensagem { get; set; }
         public DateTime CreatedAt { get; set; }
+        public List<FileUpload> Files { get; set; }
     }
 }

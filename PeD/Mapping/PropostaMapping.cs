@@ -136,8 +136,10 @@ namespace PeD.Mapping
 
             CreateMap<Comentario, ComentarioDto>()
                 .ForMember(c => c.Author, opt => opt.MapFrom(src => src.Author.NomeCompleto));
-            CreateMap<ContratoComentario, ComentarioDto>().IncludeBase<Comentario, ComentarioDto>();
-            CreateMap<PlanoComentario, ComentarioDto>().IncludeBase<Comentario, ComentarioDto>();
+            CreateMap<ContratoComentario, ComentarioDto>().IncludeBase<Comentario, ComentarioDto>()
+                .ForMember(c => c.Files, opt => opt.MapFrom(src => src.Files.Select(f => f.File)));
+            CreateMap<PlanoComentario, ComentarioDto>().IncludeBase<Comentario, ComentarioDto>()
+                .ForMember(c => c.Files, opt => opt.MapFrom(src => src.Files.Select(f => f.File)));
         }
     }
 }
