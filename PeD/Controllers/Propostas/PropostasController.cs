@@ -14,6 +14,8 @@ using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
+using PeD.Data;
+using PeD.Services;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -28,13 +30,16 @@ namespace PeD.Controllers.Propostas
     public class PropostasController : ControllerServiceBase<Proposta>
     {
         private new PropostaService Service;
+        private GestorDbContext _context;
         public readonly IAuthorizationService AuthorizationService;
 
-        public PropostasController(PropostaService service, IMapper mapper, IAuthorizationService authorizationService)
+        public PropostasController(PropostaService service, IMapper mapper, IAuthorizationService authorizationService,
+            GestorDbContext context)
             : base(service, mapper)
         {
             Service = service;
             AuthorizationService = authorizationService;
+            _context = context;
         }
 
 
@@ -268,12 +273,13 @@ namespace PeD.Controllers.Propostas
             if (proposta.Participacao == StatusParticipacao.Aceito ||
                 proposta.Participacao == StatusParticipacao.Concluido)
             {
+                PlanoComentario comentario = null;
                 await Service.FinalizarProposta(proposta);
                 if (proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento && request?.Mensagem != null &&
                     proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Alteracao)
                 {
                     proposta.PlanoTrabalhoAprovacao = StatusAprovacao.Pendente;
-                    var comentario = new PlanoComentario()
+                    comentario = new PlanoComentario()
                     {
                         AuthorId = this.UserId(),
                         PropostaId = proposta.Id,
@@ -284,8 +290,8 @@ namespace PeD.Controllers.Propostas
                     Service.Put(proposta);
                 }
 
-                
-                return Ok();
+
+                return Ok(Mapper.Map<ComentarioDto>(comentario));
             }
 
             return Problem("A participação nesse projeto foi recusada!");
@@ -308,6 +314,8 @@ namespace PeD.Controllers.Propostas
 
             var comentarios = service.Filter(q => q
                 .Include(c => c.Author)
+                .Include(c => c.Files)
+                .ThenInclude(f => f.File)
                 .Where(c => c.PropostaId == proposta.Id)
                 .OrderByDescending(c => c.CreatedAt));
             return Ok(Mapper.Map<List<ComentarioDto>>(comentarios));
@@ -332,6 +340,35 @@ namespace PeD.Controllers.Propostas
             service.Post(comentario);
             Service.Put(proposta);
             return Ok(Mapper.Map<ComentarioDto>(comentario));
+        }
+
+        [HttpPost("Comentario/{id}/Arquivo")]
+        public async Task<ActionResult> AnexoComentario(int id, List<IFormFile> file,
+            [FromServices] ArquivoService arquivoService)
+        {
+            var arquivos = await arquivoService.SaveFiles(file);
+            var entities = arquivos.ToList().Select(a => new PlanoComentarioFile()
+            {
+                ComentarioId = id,
+                FileId = a.Id
+            });
+            _context.AddRange(entities);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpGet("Comentario/{id}/Arquivo/{fileId}")]
+        public ActionResult DownloadFile(int id, int fileId)
+        {
+            var file = _context.Set<PlanoComentarioFile>()
+                .Include(c => c.File)
+                .Include(c => c.Comentario)
+                .FirstOrDefault(c =>
+                    c.ComentarioId == id && c.FileId == fileId);
+            if (file is null)
+                return NotFound();
+
+            return PhysicalFile(file.File.Path, file.File.ContentType, file.File.FileName);
         }
 
         [Authorize(Policy = Policies.IsUserPeD)]

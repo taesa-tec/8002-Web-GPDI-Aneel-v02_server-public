@@ -324,8 +324,9 @@ namespace PeD.Services.Captacoes
                 .Where(cp =>
                     cp.Id == cp.Captacao.PropostaSelecionadaId &&
                     (
+                        string.IsNullOrEmpty(userId) ||
                         asFornecedor && cp.ResponsavelId == userId ||
-                        (!asFornecedor && cp.Captacao.UsuarioRefinamentoId == userId || string.IsNullOrEmpty(userId))
+                        cp.Captacao.UsuarioRefinamentoId == userId
                     )
                     && cp.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
                     (cp.ContratoAprovacao != StatusAprovacao.Aprovado ||

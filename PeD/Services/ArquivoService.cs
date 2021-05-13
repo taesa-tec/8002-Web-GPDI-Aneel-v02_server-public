@@ -92,7 +92,9 @@ namespace PeD.Services
                 if (file.Length == 0) continue;
                 var arquivo = new FileUpload()
                 {
-                    ContentType = file.ContentType
+                    ContentType = file.ContentType,
+                    Name = file.FileName, FileName = file.Name,
+                    Size = file.Length,
                 };
 
 

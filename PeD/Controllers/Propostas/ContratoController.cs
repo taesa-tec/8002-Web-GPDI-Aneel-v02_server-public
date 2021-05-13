@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeD.Authorizations;
@@ -62,9 +63,12 @@ namespace PeD.Controllers.Propostas
                 return BadRequest();
             }
 
+            ContratoComentario comentario = null;
+            
             var contratoProposta = PropostaService.GetContrato(propostaId);
             var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
             var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
+            
             contratoProposta.Finalizado = !request.Draft;
             contratoProposta.Conteudo = request.Conteudo;
             if (contratoProposta.Id != 0)
@@ -99,7 +103,7 @@ namespace PeD.Controllers.Propostas
             if (Proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento && !request.Draft)
             {
                 Proposta.ContratoAprovacao = StatusAprovacao.Pendente;
-                var comentario = new ContratoComentario()
+                comentario = new ContratoComentario()
                 {
                     AuthorId = this.UserId(),
                     PropostaId = Proposta.Id,
@@ -112,7 +116,7 @@ namespace PeD.Controllers.Propostas
 
             PropostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);
 
-            return Ok(contratoProposta.Id);
+            return Ok(new {Id = contratoProposta.Id, Comentario = Mapper.Map<ComentarioDto>(comentario)});
         }
 
         [HttpGet("Revisoes")]
@@ -159,6 +163,8 @@ namespace PeD.Controllers.Propostas
 
             var comentarios = service.Filter(q => q
                 .Include(c => c.Author)
+                .Include(c => c.Files)
+                .ThenInclude(f => f.File)
                 .Where(c => c.PropostaId == Proposta.Id)
                 .OrderByDescending(c => c.CreatedAt));
             return Ok(Mapper.Map<List<ComentarioDto>>(comentarios));
@@ -182,6 +188,35 @@ namespace PeD.Controllers.Propostas
             service.Post(comentario);
             PropostaService.Put(Proposta);
             return Ok(Mapper.Map<ComentarioDto>(comentario));
+        }
+
+        [HttpPost("Comentario/{id}/Arquivo")]
+        public async Task<ActionResult> AnexoComentario(int id, List<IFormFile> file,
+            [FromServices] ArquivoService arquivoService)
+        {
+            var arquivos = await arquivoService.SaveFiles(file);
+            var entities = arquivos.ToList().Select(a => new ContratoComentarioFile()
+            {
+                ComentarioId = id,
+                FileId = a.Id
+            });
+            _context.AddRange(entities);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpGet("Comentario/{id}/Arquivo/{fileId}")]
+        public ActionResult DownloadFile(int id, int fileId)
+        {
+            var file = _context.Set<ContratoComentarioFile>()
+                .Include(c => c.File)
+                .Include(c => c.Comentario)
+                .FirstOrDefault(c =>
+                    c.ComentarioId == id && c.FileId == fileId && c.Comentario.PropostaId == Proposta.Id);
+            if (file is null)
+                return NotFound();
+
+            return PhysicalFile(file.File.Path, file.File.ContentType, file.File.FileName);
         }
 
         [Authorize(Policy = Policies.IsUserPeD)]
