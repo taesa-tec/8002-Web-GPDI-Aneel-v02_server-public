@@ -1,0 +1,20 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.Propostas.RefinamentoConcluido
+
+@{
+    Layout = "_EmailBase";
+}
+@{
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+    Parabéns, a revisão do projeto "@Model.Captacao.Titulo" foi concluída com sucesso.
+}
+
+<p>
+    O Plano de Trabalho e o Contrato Base foram aprovados
+    pelo revisor e o processo de revisão foi concluído.
+</p>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel.CalcEngine.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PeD.Core.Exceptions.Captacoes;
@@ -10,6 +11,7 @@ using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Views.Email.Captacao;
+using PeD.Views.Email.Captacao.Propostas;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 
@@ -410,6 +412,42 @@ namespace PeD.Services.Captacoes
                 $"A equipe de Suprimentos cancelou o processo de captação de propostas do projeto \"{captacao.Titulo}\".",
                 "Email/Captacao/CancelamentoCaptacao",
                 cancelamento);
+        }
+
+        public async Task SendEmailSelecao(Captacao captacao)
+        {
+            var emailRevisor = _context.Users.AsQueryable()
+                .Where(u => u.Id == captacao.UsuarioRefinamentoId)
+                .Select(u => u.Email)
+                .FirstOrDefault();
+            var proposta = _context.Set<Proposta>()
+                .Include(p => p.Fornecedor)
+                .Include(f => f.Responsavel)
+                .FirstOrDefault(p => p.Id == captacao.PropostaSelecionadaId) ?? throw new NullReferenceException();
+            var fornecedor = proposta.Fornecedor.Nome;
+
+
+            var convite = new RevisorConvite()
+            {
+                Captacao = captacao,
+                Fornecedor = fornecedor,
+                PropostaGuid = proposta.Guid,
+                DataAlvo = captacao.DataAlvo ?? throw new NullReferenceException()
+            };
+            var propostaSelecionada = new PropostaSelecionada()
+            {
+                Captacao = captacao,
+                DataAlvo = convite.DataAlvo,
+                PropostaGuid = proposta.Guid
+            };
+
+            await _sendGridService.Send(emailRevisor,
+                "Você foi convidado a participar da Etapa de Refinamento da Proposta",
+                "Email/Captacao/Propostas/RevisorConvite", convite);
+
+            await _sendGridService.Send(proposta.Responsavel.Email,
+                "Parabéns, sua proposta foi aprovada na Etapa de Priorização e Seleção",
+                "Email/Captacao/Propostas/PropostaSelecionada", propostaSelecionada);
         }
 
         #endregion

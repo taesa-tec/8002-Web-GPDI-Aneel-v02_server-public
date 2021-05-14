@@ -1,0 +1,27 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.Propostas.ContratoRevisor
+
+@{
+    Layout = "_EmailBase";
+}
+@{
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+    O revisor do projeto "@Model.Captacao.Titulo" enviou
+    um novo comentário a respeito do Contrato.
+}
+
+<p>
+    Por favor clique no link abaixo para mais detalhes:
+</p>
+
+@section Action
+{
+    <a ref="@url/gestor/refinamento/proposta/@Model.PropostaGuid/envio" style="display: inline-block; background: #042769; font-weight: bold; color:#FFF; border-radius: 4px; padding: 8px 16px; text-decoration: none; text-transform: uppercase;">
+        Ver Comentário
+    </a>
+}
