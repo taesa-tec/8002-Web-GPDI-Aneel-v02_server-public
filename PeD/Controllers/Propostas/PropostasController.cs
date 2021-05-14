@@ -243,7 +243,7 @@ namespace PeD.Controllers.Propostas
             if (!authorizationResult.Succeeded)
                 return Forbid();
 
-            if (proposta.Participacao == StatusParticipacao.Aceito)
+            if (proposta.Participacao == StatusParticipacao.Aceito || proposta.Participacao == StatusParticipacao.Concluido)
             {
                 var etapas = etapaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id));
                 var max = etapas.Any() ? etapas.Select(e => e.Meses.Max()).Max() : 0;

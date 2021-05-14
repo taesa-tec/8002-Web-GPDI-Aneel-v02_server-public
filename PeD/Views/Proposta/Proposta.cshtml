@@ -68,362 +68,458 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<div>
-<h2 id="secao-1">
-    1. Título do Projeto:
-    <span class="underline">@Model.Titulo</span>
+    <td>
+        <h2 id="secao-1">
+            1. Título do Projeto:
+            <span class="underline">@Model.Titulo</span>
 
-</h2>
+        </h2>
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-2">
+            2. Meses de duração do projeto:
+            <span class="underline">@Model.Duracao</span>
+        </h2>
 
-<h2 id="secao-2">
-    2. Meses de duração do projeto:
-    <span class="underline">@Model.Duracao</span>
-</h2>
 
-<h2 id="secao-3">
-    3. Fases da Cadeia de Inovação:
-    <span class="underline">@Model.FaseCadeia?.Nome</span>
-</h2>
-<h2 id="secao-4">
-    4. Tema ANEEL:
-    @if (Model.Tema != null)
-    {
-        <span class="underline">@Model.Tema.Nome</span>
-    }
-    else
-    {
-        <span class="underline">@Model.TemaOutro</span>
-    }
-</h2>
-
-<h2 id="secao-5">5. Demanda Aneel:</h2>
-@foreach (var d in Model.Demandas)
-{
-    <p>
-        @if (d.SubTema != null)
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-3">
+            3. Fases da Cadeia de Inovação:
+            <span class="underline">@Model.FaseCadeia?.Nome</span>
+        </h2>
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-4">
+            4. Tema ANEEL:
+            @if (Model.Tema != null)
+            {
+                <span class="underline">@Model.Tema.Nome</span>
+            }
+            else
+            {
+                <span class="underline">@Model.TemaOutro</span>
+            }
+        </h2>
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-5">5. Demanda Aneel:</h2>
+        @foreach (var d in Model.Demandas)
         {
-            @d.SubTema.Nome
+            <p>
+                @if (d.SubTema != null)
+                {
+                    @d.SubTema.Nome
+                }
+                else
+                {
+                    @d.Outro
+                }
+            </p>
         }
-        else
-        {
-            @d.Outro
-        }
-    </p>
-}
-
-<h2 id="secao-6">6. Entidades</h2>
-<table border="1">
-    <thead>
-    <tr>
-        <th>Nome</th>
-        <th>Tipo</th>
-        <th>Função</th>
-    </tr>
-    </thead>
-    <tbody>
-
-    @foreach (var e in Model.CoExecutores)
-    {
-        <tr>
-            <td>@e.Proposta.Fornecedor.Nome</td>
-            <td>@e.RazaoSocial</td>
-            <td>@e.Funcao</td>
-        </tr>
-    }
-    </tbody>
-</table>
-
-<h2 id="secao-7">7. Justificativa e Motivação</h2>
-@Model.Motivacao
-
-<h2 id="secao-8">8. Busca de Anterioridade Detalhada</h2>
-@Model.BuscaAnterioridade
-
-<h2 id="secao-9">9. Bibliografia</h2>
-@Model.Bibliografia
-
-<h2 id="secao-10">10. Metodologia de Trabalho</h2>
-@Model.MetodologiaTrabalho
-
-<h2 id="secao-11">11. Escopo</h2>
-<div class="inner">
-    <h3>a. Objetivos do Projeto</h3>
-    @Model.Objetivo
-
-    <h3>b. Metas do Projeto</h3>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>Objeto que será Desenvolvido</th>
-            <th width="20%">Nº de meses</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var meta in Model.Metas)
-        {
-            <tr>
-                <td>@meta.Objetivo</td>
-                <td>@meta.Meses</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-
-    <h3>c. Resultados Esperados</h3>
-    @Model.ResultadoEsperado
-
-    <h3>d. Benefícios</h3>
-    <div class="inner">
-
-        <h4>i. A Taesa</h4>
-        <div>@Model.BeneficioTaesa</div>
-
-        <h4>ii. A Instituição de Ensino/Pesquisa ou Empresa parceira:</h4>
-        <div>@Model.BeneficioInstitucional</div>
-
-        <h4>iii. A Indústria</h4>
-        <div>@Model.BeneficioIndustria</div>
-
-        <h4>iv. Ao Setor Elétrico</h4>
-        <div>@Model.BeneficioSetorEletrico</div>
-
-        <h4>v. Sociedade</h4>
-        <div>@Model.BeneficioSociedade</div>
-    </div>
-</div>
-
-<h2 id="secao-12">12. Especificação do Produtos do Projeto</h2>
-
-@foreach (var produto in Model.Produtos)
-{
-    <table border="1" style="margin-bottom: 1rem">
-        <tr>
-            <th width="30%">Classificação:</th>
-            <td>@produto.Classificacao</td>
-        </tr>
-        <tr>
-            <th width="30%">Tipo de Produto:</th>
-            <td>@produto.ProdutoTipo?.Nome</td>
-        </tr>
-        <tr>
-            <th width="30%">Fase da Cadeia de Inovação:</th>
-            <td>@produto.FaseCadeia?.Nome</td>
-        </tr>
-        <tr>
-            <th>Tipo de Produto Detalhado:</th>
-            <td>@produto.TipoDetalhado?.Nome</td>
-        </tr>
-        <tr>
-            <th colspan="2">Titulo do Produto:</th>
-        </tr>
-        <tr>
-            <td colspan="2">@produto.Titulo</td>
-        </tr>
-        <tr>
-            <th colspan="2">Descrição Detalhada do Produto:</th>
-        </tr>
-        <tr>
-            <td colspan="2">@produto.Descricao</td>
-        </tr>
-    </table>
-}
-
-<h2 id="secao-13">13. Originalidade</h2>
-@Model.Originalidade
-
-<h2 id="secao-14">14. Aplicabilidade</h2>
-@Model.Aplicabilidade
-
-<h2 id="secao-15">15. Relevância</h2>
-@Model.Relevancia
-
-
-<h2 id="secao-16">16. Estudo de Viabilidade Econômica do Projeto (EVE) e Razoabilidade dos Custos</h2>
-@Model.RazoabilidadeCustos
-
-
-<h2 id="secao-17">17. Pesquisas Correlatas</h2>
-
-<div class="inner">
-    <h3>a. Pesquisas Correlatas desenvolvidas no Programa P&D ANEEL.</h3>
-    <div>@Model.PesquisasCorrelatasPeDAneel</div>
-
-    <h3>b. Pesquisas Correlatas desenvolvidas fora do Programa P&D ANEEL.</h3>
-    <div>@Model.PesquisasCorrelatasPeD</div>
-
-    <h3>c. Pesquisas Correlatas desenvolvidas pela Empresa Executora</h3>
-    <div>@Model.PesquisasCorrelatasExecutora</div>
-</div>
-
-<h2 id="secao-18">18. Tabela de Riscos</h2>
-@foreach (var risco in Model.Riscos)
-{
-    <table border="1" style="margin-bottom: 1rem">
-        <tr>
-            <th width="30%">Classificação</th>
-            <td>@risco.Classificacao</td>
-        </tr>
-        <tr>
-            <th>Probabilidade</th>
-            <td>@risco.Probabilidade</td>
-        </tr>
-        <tr>
-            <th colspan="2">Titulo:</th>
-        </tr>
-        <tr>
-            <td colspan="2">@risco.Item</td>
-        </tr>
-        <tr>
-            <th colspan="2">Justificativa:</th>
-        </tr>
-        <tr>
-            <td colspan="2">@risco.Justificativa</td>
-        </tr>
-    </table>
-}
-
-<h2 id="secao-19">19. Experiência Prévia das Empresas Parceiras no Tema</h2>
-<p>@Model.ExperienciaPrevia</p>
-
-<h2 id="secao-20">20. Contrapartidas</h2>
-<p>@Model.Contrapartidas</p>
-
-
-<h2 id="secao-21">21. Direitos Sobre a Propriedade Intelectual/Industrial(a)</h2>
-<div class="inner">
-
-    <p>a. Proporção de direitos sobre a Propriedade Intelectual serão partilhados entre a PROPONENTE, COOPERADA e a EXECUTORA proporcionalmente ao aporte financeiro no PROJETO objeto deste CONVÊNIO conforme exigido pelo Manual do Programa de Pesquisa e Desenvolvimento Tecnológico do Setor de Energia Elétrica – ANEEL e descritos no art.9º, parágrafo 3º, da Lei no 10.973 de 2004.</p>
-
-    <p>b. O(s) Softwares, protótipo(s), cabeça de série ou lote pioneiro, será(ão) de propriedade da Empresa Taesa.</p>
-
-</div>
-
-<h2 id="secao-22">22. Recursos Financeiros – Etapas</h2>
-
-@foreach (var etapa in Model.Etapas)
-{
-    <table border="1">
-
-        <tr>
-            <th rowspan="11" style="writing-mode: vertical-lr">Nº Etapa @etapa.Ordem</th>
-            <th colspan="2">Mês Início</th>
-            <td>@etapa.MesInicio</td>
-            <th colspan="2">Mês Final</th>
-            <td colspan="2">@etapa.MesFim</td>
-        </tr>
-        <tr>
-            <th colspan="7">Descrição desta Etapa</th>
-        </tr>
-        <tr>
-            <td colspan="7">@etapa.DescricaoAtividades</td>
-        </tr>
-        <tr>
-            <th colspan="7">Produtos esperados ao fim da Etapa:</th>
-        </tr>
-        <tr>
-            <td colspan="7"> @etapa.Produto?.Titulo</td>
-        </tr>
-        <!-- Custo Interno -->
-        <tr>
-            <th colspan="7">Valor do custo interno TAESA nesta etapa: @etapa.AlocacoesInternas.Sum(a => a.Valor).ToString("C")</th>
-        </tr>
-        <tr>
-            <th width="14%">RH</th>
-            <th width="14%">MP</th>
-            <th width="14%">MC</th>
-            <th width="14%">VD</th>
-            <th width="14%">ST</th>
-            <th width="14%">OU</th>
-            <th >Taxa Adm.</th>
-        </tr>
-        <tr>
-            <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "RH").ToString("C")</td>
-            <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "MP").ToString("C")</td>
-            <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "MC").ToString("C")</td>
-            <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "VD").ToString("C")</td>
-            <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "ST").ToString("C")</td>
-            <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "OU").ToString("C")</td>
-            <td>0%</td>
-        </tr>
-        <!-- Custo Externo -->
-        @foreach (var custos in EtapaRelatorio.AgruparPorEmpresa(etapa.AlocacoesExternas))
-        {
-            <tr>
-                <th colspan="7">Valor do custo que a TAESA pagará a @custos.Value.FirstOrDefault()?.EmpresaRecebedora nesta etapa: @custos.Value.Sum(i => i.Valor).ToString("C")</th>
-            </tr>
-            <tr>
-                <th width="14%">RH</th>
-                <th width="14%">MP</th>
-                <th width="14%">MC</th>
-                <th width="14%">VD</th>
-                <th width="14%">ST</th>
-                <th width="14%">OU</th>
-                <th >Taxa Adm.</th>
-            </tr>
-            <tr>
-                <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "RH").ToString("C")</td>
-                <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "MP").ToString("C")</td>
-                <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "MC").ToString("C")</td>
-                <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "VD").ToString("C")</td>
-                <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "ST").ToString("C")</td>
-                <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "OU").ToString("C")</td>
-                <td>0%</td>
-            </tr>
-        }
-    </table>
-}
-
-@foreach (var financiador in Model.EmpresasFinanciadoras)
-{
-    @foreach (var recebedor in Model.EmpresasRecebedoras)
-    {
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-6">6. Entidades</h2>
         <table border="1">
+            <thead>
             <tr>
-                <th width="25%">Empresa Pagadora:</th>
-                <th width="25%">Empresa Recebedora:</th>
-                <th width="25%">Etapa:</th>
-                <th width="25%">Valor Total:</th>
+                <th>Nome</th>
+                <th>Tipo</th>
+                <th>Função</th>
             </tr>
-            @foreach (var etapa in Model.Etapas)
+            </thead>
+            <tbody>
+
+            @foreach (var e in Model.CoExecutores)
             {
                 <tr>
-                    <td>@financiador.Value</td>
-                    <td>@recebedor.Value</td>
-                    <td>@etapa.Ordem</td>
-                    <td>@EtapaRelatorio.CustoEntreEmpresas(etapa.Alocacoes, financiador.Key, recebedor.Key).ToString("C")</td>
+                    <td>@e.Proposta.Fornecedor.Nome</td>
+                    <td>@e.RazaoSocial</td>
+                    <td>@e.Funcao</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-7">7. Justificativa e Motivação</h2>
+        <div>
+            @Model.Motivacao
+        </div>
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-8">8. Busca de Anterioridade Detalhada</h2>
+        <div>
+            @Model.BuscaAnterioridade
+        </div>
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-9">9. Bibliografia</h2>
+        <div>
+            @Model.Bibliografia
+        </div>
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-10">10. Metodologia de Trabalho</h2>
+        <div>
+            @Model.MetodologiaTrabalho
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>
+        <h2 id="secao-11">11. Escopo</h2>
+        <div class="inner">
+            <h3>a. Objetivos do Projeto</h3>
+            <div>
+                @Model.Objetivo
+            </div>
+
+            <h3>b. Metas do Projeto</h3>
+            <table border="1">
+                <tr>
+                    <th>Objeto que será Desenvolvido</th>
+                    <th width="20%">Nº de meses</th>
+                </tr>
+                @foreach (var meta in Model.Metas)
+                {
+                    <tr>
+                        <td>@meta.Objetivo</td>
+                        <td>@meta.Meses</td>
+                    </tr>
+                }
+            </table>
+
+            <h3>c. Resultados Esperados</h3>
+            @Model.ResultadoEsperado
+
+            <h3>d. Benefícios</h3>
+            <div class="inner">
+
+                <h4>i. A Taesa</h4>
+                <div>@Model.BeneficioTaesa</div>
+
+                <h4>ii. A Instituição de Ensino/Pesquisa ou Empresa parceira:</h4>
+                <div>@Model.BeneficioInstitucional</div>
+
+                <h4>iii. A Indústria</h4>
+                <div>@Model.BeneficioIndustria</div>
+
+                <h4>iv. Ao Setor Elétrico</h4>
+                <div>@Model.BeneficioSetorEletrico</div>
+
+                <h4>v. Sociedade</h4>
+                <div>@Model.BeneficioSociedade</div>
+            </div>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>
+        <h2 id="secao-12">12. Especificação do Produtos do Projeto</h2>
+
+        @foreach (var produto in Model.Produtos)
+        {
+            <table border="1" style="margin-bottom: 1rem">
+                <tr>
+                    <th width="30%">Classificação:</th>
+                    <td>@produto.Classificacao</td>
+                </tr>
+                <tr>
+                    <th width="30%">Tipo de Produto:</th>
+                    <td>@produto.ProdutoTipo?.Nome</td>
+                </tr>
+                <tr>
+                    <th width="30%">Fase da Cadeia de Inovação:</th>
+                    <td>@produto.FaseCadeia?.Nome</td>
+                </tr>
+                <tr>
+                    <th>Tipo de Produto Detalhado:</th>
+                    <td>@produto.TipoDetalhado?.Nome</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Titulo do Produto:</th>
+                </tr>
+                <tr>
+                    <td colspan="2">@produto.Titulo</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Descrição Detalhada do Produto:</th>
+                </tr>
+                <tr>
+                    <td colspan="2">@produto.Descricao</td>
+                </tr>
+            </table>
+        }
+    </td>
+</tr>
+
+<tr>
+    <td>
+        <h2 id="secao-13">13. Originalidade</h2>
+        <div>
+            @Model.Originalidade
+        </div>
+
+
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-14">14. Aplicabilidade</h2>
+        <div>
+            @Model.Aplicabilidade
+        </div>
+
+
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-15">15. Relevância</h2>
+        <div>
+            @Model.Relevancia
+        </div>
+
+
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-16">16. Estudo de Viabilidade Econômica do Projeto (EVE) e Razoabilidade dos Custos</h2>
+        <div>
+            @Model.RazoabilidadeCustos
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>
+        <h2 id="secao-17">17. Pesquisas Correlatas</h2>
+
+        <div class="inner">
+            <h3>a. Pesquisas Correlatas desenvolvidas no Programa P&D ANEEL.</h3>
+            <div>@Model.PesquisasCorrelatasPeDAneel</div>
+
+            <h3>b. Pesquisas Correlatas desenvolvidas fora do Programa P&D ANEEL.</h3>
+            <div>@Model.PesquisasCorrelatasPeD</div>
+
+            <h3>c. Pesquisas Correlatas desenvolvidas pela Empresa Executora</h3>
+            <div>@Model.PesquisasCorrelatasExecutora</div>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>
+        <h2 id="secao-18">18. Tabela de Riscos</h2>
+        @foreach (var risco in Model.Riscos)
+        {
+            <table border="1" style="margin-bottom: 1rem">
+                <tr>
+                    <th width="30%">Classificação</th>
+                    <td>@risco.Classificacao</td>
+                </tr>
+                <tr>
+                    <th>Probabilidade</th>
+                    <td>@risco.Probabilidade</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Titulo:</th>
+                </tr>
+                <tr>
+                    <td colspan="2">@risco.Item</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Justificativa:</th>
+                </tr>
+                <tr>
+                    <td colspan="2">@risco.Justificativa</td>
+                </tr>
+            </table>
+        }
+    </td>
+</tr>
+
+<tr>
+    <td>
+        <h2 id="secao-19">19. Experiência Prévia das Empresas Parceiras no Tema</h2>
+        <p>@Model.ExperienciaPrevia</p>
+
+
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-20">20. Contrapartidas</h2>
+        <p>@Model.Contrapartidas</p>
+
+
+    </td>
+</tr>
+<tr>
+    <td>
+        <h2 id="secao-21">21. Direitos Sobre a Propriedade Intelectual/Industrial(a)</h2>
+        <div class="inner">
+
+            <p>a. Proporção de direitos sobre a Propriedade Intelectual serão partilhados entre a PROPONENTE, COOPERADA e a EXECUTORA proporcionalmente ao aporte financeiro no PROJETO objeto deste CONVÊNIO conforme exigido pelo Manual do Programa de Pesquisa e Desenvolvimento Tecnológico do Setor de Energia Elétrica – ANEEL e descritos no art.9º, parágrafo 3º, da Lei no 10.973 de 2004.</p>
+
+            <p>b. O(s) Softwares, protótipo(s), cabeça de série ou lote pioneiro, será(ão) de propriedade da Empresa Taesa.</p>
+
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td>
+        <h2 id="secao-22">22. Recursos Financeiros – Etapas</h2>
+
+        @foreach (var etapa in Model.Etapas)
+        {
+            <table border="1">
+                <tr>
+                    <th rowspan="11" style="writing-mode: vertical-lr">Nº Etapa @etapa.Ordem</th>
+                    <th colspan="2">Mês Início</th>
+                    <td>@etapa.MesInicio</td>
+                    <th colspan="2">Mês Final</th>
+                    <td colspan="2">@etapa.MesFim</td>
+                </tr>
+                <tr>
+                    <th colspan="7">Descrição desta Etapa</th>
+                </tr>
+                <tr>
+                    <td colspan="7">@etapa.DescricaoAtividades</td>
+                </tr>
+                <tr>
+                    <th colspan="7">Produtos esperados ao fim da Etapa:</th>
+                </tr>
+                <tr>
+                    <td colspan="7"> @etapa.Produto?.Titulo</td>
+                </tr>
+                <!-- Custo Interno -->
+                <tr>
+                    <th colspan="7">Valor do custo interno TAESA nesta etapa: @etapa.AlocacoesInternas.Sum(a => a.Valor).ToString("C")</th>
+                </tr>
+                <tr>
+                    <th width="14%">RH</th>
+                    <th width="14%">MP</th>
+                    <th width="14%">MC</th>
+                    <th width="14%">VD</th>
+                    <th width="14%">ST</th>
+                    <th width="14%">OU</th>
+                    <th >Taxa Adm.</th>
+                </tr>
+                <tr>
+                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "RH").ToString("C")</td>
+                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "MP").ToString("C")</td>
+                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "MC").ToString("C")</td>
+                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "VD").ToString("C")</td>
+                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "ST").ToString("C")</td>
+                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "OU").ToString("C")</td>
+                    <td>0%</td>
+                </tr>
+                <!-- Custo Externo -->
+                @foreach (var custos in EtapaRelatorio.AgruparPorEmpresa(etapa.AlocacoesExternas))
+                {
+                    <tr>
+                        <th colspan="7">Valor do custo que a TAESA pagará a @custos.Value.FirstOrDefault()?.EmpresaRecebedora nesta etapa: @custos.Value.Sum(i => i.Valor).ToString("C")</th>
+                    </tr>
+                    <tr>
+                        <th width="14%">RH</th>
+                        <th width="14%">MP</th>
+                        <th width="14%">MC</th>
+                        <th width="14%">VD</th>
+                        <th width="14%">ST</th>
+                        <th width="14%">OU</th>
+                        <th >Taxa Adm.</th>
+                    </tr>
+                    <tr>
+                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "RH").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "MP").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "MC").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "VD").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "ST").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "OU").ToString("C")</td>
+                        <td>0%</td>
+                    </tr>
+                }
+            </table>
+        }
+
+        @foreach (var financiador in Model.EmpresasFinanciadoras)
+        {
+            @foreach (var recebedor in Model.EmpresasRecebedoras)
+            {
+                <table border="1">
+                    <tr>
+                        <th width="25%">Empresa Pagadora:</th>
+                        <th width="25%">Empresa Recebedora:</th>
+                        <th width="25%">Etapa:</th>
+                        <th width="25%">Valor Total:</th>
+                    </tr>
+                    @foreach (var etapa in Model.Etapas)
+                    {
+                        <tr>
+                            <td>@financiador.Value</td>
+                            <td>@recebedor.Value</td>
+                            <td>@etapa.Ordem</td>
+                            <td>@EtapaRelatorio.CustoEntreEmpresas(etapa.Alocacoes, financiador.Key, recebedor.Key).ToString("C")</td>
+                        </tr>
+                    }
+                    <tr>
+                        <th colspan="3">Total @financiador.Value pagando a @recebedor.Value:</th>
+                        <td>@Model.Etapas.Sum(etapa => EtapaRelatorio.CustoEntreEmpresas(etapa.Alocacoes, financiador.Key, recebedor.Key)).ToString("C")</td>
+                    </tr>
+                </table>
+            }
+        }
+    </td>
+</tr>
+
+<tr>
+    <td>
+        <table border="1">
+            @foreach (var financiador in Model.EmpresasFinanciadoras)
+            {
+                <tr>
+                    <th>Total Pago pela @financiador.Value (contabilizando gasto interno):</th>
+                    <td width="25%">@EtapaRelatorio.CustoFinanciadora(Model.Etapas, financiador.Key).ToString("C")</td>
+                </tr>
+                <tr>
+                    <th>Total Pago pela @financiador.Value (sem contabilizar gasto interno):</th>
+                    <td width="25%">@EtapaRelatorio.CustoFinanciadora(Model.Etapas, financiador.Key, false).ToString("C")</td>
                 </tr>
             }
             <tr>
-                <th colspan="3">Total @financiador.Value pagando a @recebedor.Value:</th>
-                <td>@Model.Etapas.Sum(etapa => EtapaRelatorio.CustoEntreEmpresas(etapa.Alocacoes, financiador.Key, recebedor.Key)).ToString("C")</td>
+                <th>Total Projeto (contabilizando gasto interno):</th>
+                <td width="25%">@Model.Etapas.Sum(e => e.CustoTotal()).ToString("C")</td>
+            </tr>
+            <tr>
+                <th>Total Projeto (sem contabilizar gasto interno):</th>
+                <td width="25%">@Model.Etapas.Sum(e => e.CustoTotal(false)).ToString("C")</td>
             </tr>
         </table>
-    }
-}
-<table border="1">
-    @foreach (var financiador in Model.EmpresasFinanciadoras)
-    {
-        <tr>
-            <th>Total Pago pela @financiador.Value (contabilizando gasto interno):</th>
-            <td width="25%">@EtapaRelatorio.CustoFinanciadora(Model.Etapas, financiador.Key).ToString("C")</td>
-        </tr>
-        <tr>
-            <th>Total Pago pela @financiador.Value (sem contabilizar gasto interno):</th>
-            <td width="25%">@EtapaRelatorio.CustoFinanciadora(Model.Etapas, financiador.Key, false).ToString("C")</td>
-        </tr>
-    }
-    <tr>
-        <th>Total Projeto (contabilizando gasto interno):</th>
-        <td width="25%">@Model.Etapas.Sum(e => e.CustoTotal()).ToString("C")</td>
-    </tr>
-    <tr>
-        <th>Total Projeto (sem contabilizar gasto interno):</th>
-        <td width="25%">@Model.Etapas.Sum(e => e.CustoTotal(false)).ToString("C")</td>
-    </tr>
-</table>
-</div>
-</td>
+    </td>
 </tr>
 </tbody>
 <tfoot id="foot">
