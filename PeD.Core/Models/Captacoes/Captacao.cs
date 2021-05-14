@@ -10,7 +10,6 @@ namespace PeD.Core.Models.Captacoes
 {
     public class Captacao : BaseEntity
     {
-        
         public enum CaptacaoStatus
         {
             Cancelada = 0,
@@ -31,6 +30,7 @@ namespace PeD.Core.Models.Captacoes
         public ApplicationUser Criador { get; set; }
         public string UsuarioSuprimentoId { get; set; }
         public ApplicationUser UsuarioSuprimento { get; set; }
+
         public int? ContratoSugeridoId { get; set; }
         public Contrato ContratoSugerido { get; set; }
 
@@ -49,7 +49,6 @@ namespace PeD.Core.Models.Captacoes
             Status == CaptacaoStatus.Cancelada || Status >= CaptacaoStatus.Encerrada &&
             Termino < DateTime.Now;
 
-        // Para equipe suprimento
         /// <summary>
         /// Observações para equipe de suprimentos
         /// </summary>
