@@ -288,6 +288,7 @@ namespace PeD.Controllers.Propostas
                     };
                     service.Post(comentario);
                     Service.Put(proposta);
+                    Service.SendEmailNovoPlano(proposta).Wait();
                 }
 
 
@@ -339,6 +340,7 @@ namespace PeD.Controllers.Propostas
             };
             service.Post(comentario);
             Service.Put(proposta);
+            await Service.SendEmailPlanoTrabalhoAlteracao(proposta);
             return Ok(Mapper.Map<ComentarioDto>(comentario));
         }
 
@@ -376,13 +378,34 @@ namespace PeD.Controllers.Propostas
         public async Task<ActionResult> Aprovar(Guid guid)
         {
             var proposta = Service.GetProposta(guid);
-            if (!await HasAccess(proposta) || proposta.Captacao.Status != Captacao.CaptacaoStatus.Refinamento)
+            if (!await HasAccess(proposta) || proposta.Captacao.Status != Captacao.CaptacaoStatus.Refinamento ||
+                proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Aprovado)
                 return Forbid();
 
             proposta.PlanoTrabalhoAprovacao = StatusAprovacao.Aprovado;
             Service.Put(proposta);
 
+            if (proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Aprovado &&
+                proposta.ContratoAprovacao == StatusAprovacao.Aprovado)
+            {
+                await Service.SendEmailRefinamentoConcluido(proposta);
+            }
 
+
+            return Ok();
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("{guid:guid}/CancelarRefinamento")]
+        public async Task<ActionResult> CancelarRefinamento(Guid guid)
+        {
+            var proposta = Service.GetProposta(guid);
+            if (!await HasAccess(proposta) || proposta.Captacao.Status != Captacao.CaptacaoStatus.Refinamento)
+                return Forbid();
+            proposta.Participacao = StatusParticipacao.Cancelado;
+            proposta.Captacao.Status = Captacao.CaptacaoStatus.Cancelada;
+            Service.Put(proposta);
+            await Service.SendEmailRefinamentoCancelado(proposta);
             return Ok();
         }
     }

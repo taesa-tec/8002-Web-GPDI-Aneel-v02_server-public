@@ -1,0 +1,21 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.Propostas.RefinamentoCancelado
+
+@{
+    Layout = "_EmailBase";
+}
+@{
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+    O revisor do projeto "@Model.Captacao.Titulo" cancelou
+    o processo de refinamento.
+}
+
+<p>
+    O processo de refinamento da proposta do projeto
+    "@Model.Captacao.Titulo" foi cancelado pelo revisor.
+</p>

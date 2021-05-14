@@ -368,6 +368,7 @@ namespace PeD.Controllers.Captacoes
             captacao.PropostaSelecionadaId = request.PropostaId;
             captacao.Status = Captacao.CaptacaoStatus.Refinamento;
             Service.Put(captacao);
+            Service.SendEmailSelecao(captacao).Wait();
             return Ok();
         }
 

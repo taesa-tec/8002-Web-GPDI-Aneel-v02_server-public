@@ -1,0 +1,31 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.Propostas.PropostaSelecionada
+
+@{
+    Layout = "_EmailBase";
+}
+@{
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+    Parabéns, sua proposta foi aprovada na Etapa
+    de Priorização e Seleção. Agora ela irá para a
+    etapa de Refinamento
+}
+
+<p>
+    A Equipe de P&D aprovou sua proposta referente ao
+    "@Model.Captacao.Titulo" na etapa de Priorização e Seleção.
+    Agora a etapa de Refinamento terá início e, até o dia
+    @Model.DataAlvo.ToString("d"), esta etapa terá que ser concluída.
+</p>
+
+@section Action
+{
+    <a ref="@url/fornecedor/refinamento/proposta/@Model.PropostaGuid" style="display: inline-block; background: #042769; font-weight: bold; color:#FFF; border-radius: 4px; padding: 8px 16px; text-decoration: none; text-transform: uppercase;">
+        Ver Proposta
+    </a>
+}

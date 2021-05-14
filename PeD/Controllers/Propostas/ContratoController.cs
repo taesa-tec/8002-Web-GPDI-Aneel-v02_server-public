@@ -64,11 +64,11 @@ namespace PeD.Controllers.Propostas
             }
 
             ContratoComentario comentario = null;
-            
+
             var contratoProposta = PropostaService.GetContrato(propostaId);
             var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
             var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
-            
+
             contratoProposta.Finalizado = !request.Draft;
             contratoProposta.Conteudo = request.Conteudo;
             if (contratoProposta.Id != 0)
@@ -112,6 +112,7 @@ namespace PeD.Controllers.Propostas
                 };
                 service.Post(comentario);
                 PropostaService.Put(Proposta);
+                PropostaService.SendEmailNovoContrato(Proposta).Wait();
             }
 
             PropostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);
@@ -187,6 +188,7 @@ namespace PeD.Controllers.Propostas
             };
             service.Post(comentario);
             PropostaService.Put(Proposta);
+            await PropostaService.SendEmailContratoAlteracao(Proposta);
             return Ok(Mapper.Map<ComentarioDto>(comentario));
         }
 
@@ -223,12 +225,16 @@ namespace PeD.Controllers.Propostas
         [HttpPost("Aprovar")]
         public async Task<ActionResult> Aprovar()
         {
-            if (!await HasAccess())
+            if (!await HasAccess() || Proposta.ContratoAprovacao == StatusAprovacao.Aprovado)
                 return Forbid();
 
             Proposta.ContratoAprovacao = StatusAprovacao.Aprovado;
             PropostaService.Put(Proposta);
-
+            if (Proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Aprovado &&
+                Proposta.ContratoAprovacao == StatusAprovacao.Aprovado)
+            {
+                await PropostaService.SendEmailRefinamentoConcluido(Proposta);
+            }
 
             return Ok();
         }
