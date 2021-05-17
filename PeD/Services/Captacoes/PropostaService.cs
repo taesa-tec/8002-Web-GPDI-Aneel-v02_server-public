@@ -510,7 +510,7 @@ namespace PeD.Services.Captacoes
                 .Include(c => c.PropostaSelecionada)
                 .ThenInclude(p => p.Fornecedor)
                 .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
-            var contrato = new ContratoRevisor()
+            var plano = new PlanoTrabalhoRevisor()
             {
                 Captacao = captacao,
                 Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
@@ -518,7 +518,7 @@ namespace PeD.Services.Captacoes
             };
             await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
                 $"Novo comentário sobre o Plano de Trabalho do projeto \"{captacao.Titulo}\"",
-                "Email/Captacao/Propostas/PlanoTrabalhoRevisor", contrato);
+                "Email/Captacao/Propostas/PlanoTrabalhoRevisor", plano);
         }
 
         public async Task SendEmailRefinamentoConcluido(Proposta proposta)
