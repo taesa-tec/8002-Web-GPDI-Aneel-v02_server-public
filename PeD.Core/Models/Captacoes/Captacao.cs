@@ -12,11 +12,13 @@ namespace PeD.Core.Models.Captacoes
     {
         public enum CaptacaoStatus
         {
-            Cancelada,
-            Pendente,
-            Elaboracao,
-            Fornecedor,
-            Encerrada
+            Cancelada = 0,
+            Pendente = 1,
+            Elaboracao = 2,
+            Fornecedor = 3,
+            Encerrada = 4,
+            Refinamento = 5,
+            AnaliseRisco = 6
         }
 
         public string Titulo { get; set; }
@@ -28,6 +30,7 @@ namespace PeD.Core.Models.Captacoes
         public ApplicationUser Criador { get; set; }
         public string UsuarioSuprimentoId { get; set; }
         public ApplicationUser UsuarioSuprimento { get; set; }
+
         public int? ContratoSugeridoId { get; set; }
         public Contrato ContratoSugerido { get; set; }
 
@@ -43,7 +46,7 @@ namespace PeD.Core.Models.Captacoes
 
         [NotMapped]
         public bool IsPropostasOpen =>
-            Status == CaptacaoStatus.Cancelada || Status == CaptacaoStatus.Encerrada &&
+            Status == CaptacaoStatus.Cancelada || Status >= CaptacaoStatus.Encerrada &&
             Termino < DateTime.Now;
 
         /// <summary>
@@ -86,7 +89,8 @@ namespace PeD.Core.Models.Captacoes
         public FileUpload ArquivoComprobatorio { get; set; }
 
         public int? PropostaSelecionadaId { get; set; }
-        [ForeignKey("PropostaSelecionadaId")] public Proposta PropostaSelecionada { get; set; }
+        [ForeignKey("PropostaSelecionadaId")]
+        public Proposta PropostaSelecionada { get; set; }
 
         #endregion
     }

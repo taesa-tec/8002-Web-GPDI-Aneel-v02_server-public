@@ -300,7 +300,7 @@ namespace PeD.Controllers.Captacoes
             }
 
             var captacao = service.Get(id);
-            if (captacao != null && captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
+            if (captacao != null && captacao.Status >= Captacao.CaptacaoStatus.Encerrada &&
                 captacao.Termino < DateTime.Now)
             {
                 var contrato = serviceProposta.GetContratoPdf(propostaId);

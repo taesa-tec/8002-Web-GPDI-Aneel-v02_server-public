@@ -196,6 +196,8 @@ namespace PeD.Data
             builder.Entity<Risco>();
             builder.Entity<ContratoComentario>(b => { b.ToTable("ContratoComentarios"); });
             builder.Entity<PlanoComentario>(b => { b.ToTable("PlanoComentarios"); });
+            builder.Entity<PlanoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
+            builder.Entity<ContratoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
 
             #endregion
 

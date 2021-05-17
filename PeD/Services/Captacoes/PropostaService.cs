@@ -70,7 +70,7 @@ namespace PeD.Services.Captacoes
                 .Include(p =>
                     p.Captacao)
                 .Where(cp => cp.ResponsavelId == responsavelId &&
-                             (cp.Captacao.Status == Captacao.CaptacaoStatus.Encerrada ||
+                             (cp.Captacao.Status >= Captacao.CaptacaoStatus.Encerrada ||
                               cp.Participacao == StatusParticipacao.Rejeitado)).ToList();
 
         public IEnumerable<Proposta> GetPropostasPorResponsavel(string userId,
@@ -101,6 +101,7 @@ namespace PeD.Services.Captacoes
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
+                .Include(p => p.Contrato)
                 .Include(p => p.Captacao)
                 .ThenInclude(c => c.Arquivos)
                 .FirstOrDefault(p => p.Guid == guid);
@@ -162,29 +163,6 @@ namespace PeD.Services.Captacoes
                                       cp.CaptacaoId == captacaoId &&
                                       status.Contains(cp.Captacao.Status) &&
                                       cp.Participacao != StatusParticipacao.Rejeitado);
-        }
-
-        public PropostaContrato GetContrato(int captacaoId, string userId)
-        {
-            var proposta = _captacaoPropostas
-                .Include(p => p.Fornecedor)
-                .Include(p => p.Captacao)
-                .ThenInclude(c => c.Contrato)
-                .Include(p => p.Contrato)
-                .ThenInclude(c => c.Parent)
-                .FirstOrDefault(cp => cp.Fornecedor.ResponsavelId == userId &&
-                                      cp.CaptacaoId == captacaoId &&
-                                      cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
-                                      cp.Participacao != StatusParticipacao.Rejeitado);
-            if (proposta?.Captacao?.ContratoId != null)
-                return proposta.Contrato ?? new PropostaContrato()
-                {
-                    PropostaId = proposta.Id,
-                    Parent = proposta.Captacao.Contrato,
-                    ParentId = (int) proposta.Captacao?.ContratoId,
-                };
-
-            return null;
         }
 
         public PropostaContrato GetContrato(int propostaId)
@@ -396,7 +374,7 @@ namespace PeD.Services.Captacoes
                 var stream = new FileStream(file, FileMode.Create);
                 HtmlConverter.ConvertToPdf(relatorio.Content, stream);
                 stream.Close();
-
+                PdfHelper.AddPagesToPdf(file, 500, 820);
                 var arquivo = _arquivoService.FromPath(file, "application/pdf",
                     $"relatorio-{relatorio.PropostaId}-{relatorio.DataAlteracao}.pdf");
 
@@ -430,6 +408,7 @@ namespace PeD.Services.Captacoes
                 HtmlConverter.ConvertToPdf(contratoContent, stream);
                 stream.Close();
                 PdfHelper.AddPagesToPdf(file, 475, 90);
+
                 var arquivo = _arquivoService.FromPath(file, "application/pdf",
                     $"contrato-{contrato.PropostaId}.pdf");
                 return arquivo;
@@ -468,6 +447,114 @@ namespace PeD.Services.Captacoes
             await _sendGridService.Send(proposta.Fornecedor.Responsavel.Email,
                 subject,
                 "Email/Captacao/Propostas/PropostaEncerrada", pf);
+        }
+
+        public async Task SendEmailNovoPlano(Proposta proposta)
+        {
+            var captacao = context.Set<Captacao>().AsNoTracking()
+                .Include(c => c.UsuarioRefinamento)
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(p => p.Fornecedor)
+                .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
+            var plano = new NovoPlanoTrabalho()
+            {
+                Captacao = captacao,
+                Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
+                PropostaGuid = captacao.PropostaSelecionada.Guid
+            };
+            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                $"Uma nova versão do Plano de trabalho do projeto {captacao.Titulo} foi enviada",
+                "Email/Captacao/Propostas/NovoPlanoTrabalho", plano);
+        }
+
+        public async Task SendEmailNovoContrato(Proposta proposta)
+        {
+            var captacao = context.Set<Captacao>().AsNoTracking()
+                .Include(c => c.UsuarioRefinamento)
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(p => p.Fornecedor)
+                .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
+            var contrato = new NovoContrato()
+            {
+                Captacao = captacao,
+                Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
+                PropostaGuid = captacao.PropostaSelecionada.Guid
+            };
+            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                $"Uma nova versão do Contrato do projeto {captacao.Titulo} foi enviada",
+                "Email/Captacao/Propostas/NovoContrato", contrato);
+        }
+
+        public async Task SendEmailContratoAlteracao(Proposta proposta)
+        {
+            var captacao = context.Set<Captacao>().AsNoTracking()
+                .Include(c => c.UsuarioRefinamento)
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(p => p.Fornecedor)
+                .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
+            var contrato = new ContratoRevisor()
+            {
+                Captacao = captacao,
+                Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
+                PropostaGuid = captacao.PropostaSelecionada.Guid
+            };
+            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                $"Novo comentário sobre o contrato do projeto \"{captacao.Titulo}\"",
+                "Email/Captacao/Propostas/ContratoRevisor", contrato);
+        }
+
+        public async Task SendEmailPlanoTrabalhoAlteracao(Proposta proposta)
+        {
+            var captacao = context.Set<Captacao>().AsNoTracking()
+                .Include(c => c.UsuarioRefinamento)
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(p => p.Fornecedor)
+                .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
+            var contrato = new ContratoRevisor()
+            {
+                Captacao = captacao,
+                Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
+                PropostaGuid = captacao.PropostaSelecionada.Guid
+            };
+            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                $"Novo comentário sobre o Plano de Trabalho do projeto \"{captacao.Titulo}\"",
+                "Email/Captacao/Propostas/PlanoTrabalhoRevisor", contrato);
+        }
+
+        public async Task SendEmailRefinamentoConcluido(Proposta proposta)
+        {
+            var captacao = context.Set<Captacao>().AsNoTracking()
+                .Include(c => c.UsuarioRefinamento)
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(p => p.Fornecedor)
+                .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
+            var message = new RefinamentoConcluido()
+            {
+                Captacao = captacao,
+                Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
+                PropostaGuid = captacao.PropostaSelecionada.Guid
+            };
+            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                $"Parabéns! A revisão do projeto \"{captacao.Titulo}\" foi concluída",
+                "Email/Captacao/Propostas/RefinamentoConcluido", message);
+        }
+
+        public async Task SendEmailRefinamentoCancelado(Proposta proposta)
+        {
+            var captacao = context.Set<Captacao>().AsNoTracking()
+                .Include(c => c.UsuarioRefinamento)
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(p => p.Fornecedor)
+                .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
+            var message = new RefinamentoCancelado()
+            {
+                Captacao = captacao,
+                Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
+                PropostaGuid = captacao.PropostaSelecionada.Guid
+            };
+            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                $"A revisão do projeto \"{captacao.Titulo}\" foi cancelada",
+                "Email/Captacao/Propostas/RefinamentoCancelado", message);
         }
 
         #endregion

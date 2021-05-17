@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel.CalcEngine.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PeD.Core.Exceptions.Captacoes;
@@ -10,6 +11,7 @@ using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Views.Email.Captacao;
+using PeD.Views.Email.Captacao.Propostas;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 
@@ -64,7 +66,8 @@ namespace PeD.Services.Captacoes
                     .Include(c => c.UsuarioSuprimento)
                     .Include(c => c.Propostas)
                     .Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada ||
-                                c.Status == Captacao.CaptacaoStatus.Encerrada && c.Propostas.Count == 0))
+                                c.Status >= Captacao.CaptacaoStatus.Encerrada &&
+                                c.Propostas.Count == 0)) //@todo Verificar se funciona propostas zeradas
                 .ToList();
         }
 
@@ -75,7 +78,7 @@ namespace PeD.Services.Captacoes
                     .Include(c => c.UsuarioSuprimento)
                     .Include(c => c.Propostas)
                     .ThenInclude(p => p.Fornecedor)
-                    .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada || c.Termino < DateTime.Today))
+                    .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada || c.Termino < DateTime.Today))
                 .ToList();
         }
 
@@ -93,7 +96,7 @@ namespace PeD.Services.Captacoes
                     .Include(c => c.Propostas)
                     .ThenInclude(p => p.Fornecedor)
                     .Include(c => c.UsuarioRefinamento)
-                    .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada && c.PropostaSelecionadaId != null))
+                    .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada && c.PropostaSelecionadaId != null))
                 .ToList();
         }
 
@@ -294,7 +297,7 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Captacao)
                 .Include(p => p.Captacao)
                 .Where(cp =>
-                    cp.Fornecedor.ResponsavelId == userId &&
+                    cp.ResponsavelId == userId &&
                     cp.Captacao.Status == Captacao.CaptacaoStatus.Fornecedor &&
                     cp.Participacao != StatusParticipacao.Rejeitado)
                 .ToList();
@@ -314,7 +317,7 @@ namespace PeD.Services.Captacoes
             _logger.LogInformation($"Captações expiradas: {expiradas.Count}");
         }
 
-        public IEnumerable<Proposta> GetPropostasRefinamento(string responsavelId)
+        public IEnumerable<Proposta> GetPropostasRefinamento(string userId, bool asFornecedor = false)
         {
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
@@ -322,8 +325,12 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Captacao)
                 .Where(cp =>
                     cp.Id == cp.Captacao.PropostaSelecionadaId &&
-                    (cp.Captacao.UsuarioRefinamentoId == responsavelId || string.IsNullOrEmpty(responsavelId)) &&
-                    cp.Captacao.Status == Captacao.CaptacaoStatus.Encerrada &&
+                    (
+                        string.IsNullOrEmpty(userId) ||
+                        asFornecedor && cp.ResponsavelId == userId ||
+                        cp.Captacao.UsuarioRefinamentoId == userId
+                    )
+                    && cp.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
                     (cp.ContratoAprovacao != StatusAprovacao.Aprovado ||
                      cp.PlanoTrabalhoAprovacao != StatusAprovacao.Aprovado)
                 )
@@ -405,6 +412,42 @@ namespace PeD.Services.Captacoes
                 $"A equipe de Suprimentos cancelou o processo de captação de propostas do projeto \"{captacao.Titulo}\".",
                 "Email/Captacao/CancelamentoCaptacao",
                 cancelamento);
+        }
+
+        public async Task SendEmailSelecao(Captacao captacao)
+        {
+            var emailRevisor = _context.Users.AsQueryable()
+                .Where(u => u.Id == captacao.UsuarioRefinamentoId)
+                .Select(u => u.Email)
+                .FirstOrDefault();
+            var proposta = _context.Set<Proposta>()
+                .Include(p => p.Fornecedor)
+                .Include(f => f.Responsavel)
+                .FirstOrDefault(p => p.Id == captacao.PropostaSelecionadaId) ?? throw new NullReferenceException();
+            var fornecedor = proposta.Fornecedor.Nome;
+
+
+            var convite = new RevisorConvite()
+            {
+                Captacao = captacao,
+                Fornecedor = fornecedor,
+                PropostaGuid = proposta.Guid,
+                DataAlvo = captacao.DataAlvo ?? throw new NullReferenceException()
+            };
+            var propostaSelecionada = new PropostaSelecionada()
+            {
+                Captacao = captacao,
+                DataAlvo = convite.DataAlvo,
+                PropostaGuid = proposta.Guid
+            };
+
+            await _sendGridService.Send(emailRevisor,
+                "Você foi convidado a participar da Etapa de Refinamento da Proposta",
+                "Email/Captacao/Propostas/RevisorConvite", convite);
+
+            await _sendGridService.Send(proposta.Responsavel.Email,
+                "Parabéns, sua proposta foi aprovada na Etapa de Priorização e Seleção",
+                "Email/Captacao/Propostas/PropostaSelecionada", propostaSelecionada);
         }
 
         #endregion

@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
+using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
 using PeD.Data;
@@ -45,13 +50,25 @@ namespace PeD.Controllers.Propostas
 
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost("")]
-        public async Task<ActionResult> Post([FromRoute] Guid propostaId, [FromBody] ContratoRequest request)
+        public async Task<ActionResult> Post([FromRoute] Guid propostaId,
+            [FromBody] ContratoRequest request,
+            [FromServices] IService<ContratoComentario> service)
         {
             if (!await HasAccess())
                 return Forbid();
+
+            if (Proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
+                string.IsNullOrWhiteSpace(request.Alteracao))
+            {
+                return BadRequest();
+            }
+
+            ContratoComentario comentario = null;
+
             var contratoProposta = PropostaService.GetContrato(propostaId);
             var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
             var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
+
             contratoProposta.Finalizado = !request.Draft;
             contratoProposta.Conteudo = request.Conteudo;
             if (contratoProposta.Id != 0)
@@ -83,9 +100,24 @@ namespace PeD.Controllers.Propostas
                 Service.Put(contratoProposta);
             }
 
+            if (Proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento && !request.Draft)
+            {
+                Proposta.ContratoAprovacao = StatusAprovacao.Pendente;
+                comentario = new ContratoComentario()
+                {
+                    AuthorId = this.UserId(),
+                    PropostaId = Proposta.Id,
+                    Mensagem = request.Alteracao,
+                    CreatedAt = DateTime.Now
+                };
+                service.Post(comentario);
+                PropostaService.Put(Proposta);
+                PropostaService.SendEmailNovoContrato(Proposta).Wait();
+            }
+
             PropostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);
 
-            return Ok(contratoProposta.Id);
+            return Ok(new {Id = contratoProposta.Id, Comentario = Mapper.Map<ComentarioDto>(comentario)});
         }
 
         [HttpGet("Revisoes")]
@@ -122,6 +154,89 @@ namespace PeD.Controllers.Propostas
             var render = await viewRenderService.RenderToStringAsync("Pdf/Diff", diff);
             return render;
         }
-        
+
+
+        [HttpGet("Comentarios")]
+        public async Task<ActionResult> Comentarios([FromServices] IService<ContratoComentario> service)
+        {
+            if (!await HasAccess())
+                return Forbid();
+
+            var comentarios = service.Filter(q => q
+                .Include(c => c.Author)
+                .Include(c => c.Files)
+                .ThenInclude(f => f.File)
+                .Where(c => c.PropostaId == Proposta.Id)
+                .OrderByDescending(c => c.CreatedAt));
+            return Ok(Mapper.Map<List<ComentarioDto>>(comentarios));
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("SolicitarAlteracao")]
+        public async Task<ActionResult> SolicitarAlteracao(ComentarioRequest request,
+            [FromServices] IService<ContratoComentario> service)
+        {
+            if (!await HasAccess())
+                return Forbid();
+            Proposta.ContratoAprovacao = StatusAprovacao.Alteracao;
+            var comentario = new ContratoComentario()
+            {
+                AuthorId = this.UserId(),
+                PropostaId = Proposta.Id,
+                Mensagem = request.Mensagem,
+                CreatedAt = DateTime.Now
+            };
+            service.Post(comentario);
+            PropostaService.Put(Proposta);
+            await PropostaService.SendEmailContratoAlteracao(Proposta);
+            return Ok(Mapper.Map<ComentarioDto>(comentario));
+        }
+
+        [HttpPost("Comentario/{id}/Arquivo")]
+        public async Task<ActionResult> AnexoComentario(int id, List<IFormFile> file,
+            [FromServices] ArquivoService arquivoService)
+        {
+            var arquivos = await arquivoService.SaveFiles(file);
+            var entities = arquivos.ToList().Select(a => new ContratoComentarioFile()
+            {
+                ComentarioId = id,
+                FileId = a.Id
+            });
+            _context.AddRange(entities);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpGet("Comentario/{id}/Arquivo/{fileId}")]
+        public ActionResult DownloadFile(int id, int fileId)
+        {
+            var file = _context.Set<ContratoComentarioFile>()
+                .Include(c => c.File)
+                .Include(c => c.Comentario)
+                .FirstOrDefault(c =>
+                    c.ComentarioId == id && c.FileId == fileId && c.Comentario.PropostaId == Proposta.Id);
+            if (file is null)
+                return NotFound();
+
+            return PhysicalFile(file.File.Path, file.File.ContentType, file.File.FileName);
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("Aprovar")]
+        public async Task<ActionResult> Aprovar()
+        {
+            if (!await HasAccess() || Proposta.ContratoAprovacao == StatusAprovacao.Aprovado)
+                return Forbid();
+
+            Proposta.ContratoAprovacao = StatusAprovacao.Aprovado;
+            PropostaService.Put(Proposta);
+            if (Proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Aprovado &&
+                Proposta.ContratoAprovacao == StatusAprovacao.Aprovado)
+            {
+                await PropostaService.SendEmailRefinamentoConcluido(Proposta);
+            }
+
+            return Ok();
+        }
     }
 }

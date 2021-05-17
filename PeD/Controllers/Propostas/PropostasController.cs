@@ -6,12 +6,16 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
+using PeD.Core.Requests.Proposta;
+using PeD.Data;
+using PeD.Services;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -26,13 +30,16 @@ namespace PeD.Controllers.Propostas
     public class PropostasController : ControllerServiceBase<Proposta>
     {
         private new PropostaService Service;
+        private GestorDbContext _context;
         public readonly IAuthorizationService AuthorizationService;
 
-        public PropostasController(PropostaService service, IMapper mapper, IAuthorizationService authorizationService)
+        public PropostasController(PropostaService service, IMapper mapper, IAuthorizationService authorizationService,
+            GestorDbContext context)
             : base(service, mapper)
         {
             Service = service;
             AuthorizationService = authorizationService;
+            _context = context;
         }
 
 
@@ -120,8 +127,7 @@ namespace PeD.Controllers.Propostas
         public async Task<ActionResult> PropostaDocDownload(Guid id)
         {
             var tempproposta = Service.GetProposta(id);
-            if (tempproposta == null || (tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Encerrada ||
-                                         tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Fornecedor))
+            if (tempproposta == null || tempproposta.Captacao?.Status < Captacao.CaptacaoStatus.Fornecedor)
             {
                 return NotFound();
             }
@@ -142,8 +148,7 @@ namespace PeD.Controllers.Propostas
         public async Task<ActionResult> PropostaContratoDownload(Guid id)
         {
             var tempproposta = Service.GetProposta(id);
-            if (tempproposta == null || (tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Encerrada &&
-                                         tempproposta.Captacao?.Status != Captacao.CaptacaoStatus.Fornecedor))
+            if (tempproposta == null || tempproposta.Captacao?.Status < Captacao.CaptacaoStatus.Fornecedor)
             {
                 return NotFound();
             }
@@ -238,7 +243,7 @@ namespace PeD.Controllers.Propostas
             if (!authorizationResult.Succeeded)
                 return Forbid();
 
-            if (proposta.Participacao == StatusParticipacao.Aceito)
+            if (proposta.Participacao == StatusParticipacao.Aceito || proposta.Participacao == StatusParticipacao.Concluido)
             {
                 var etapas = etapaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id));
                 var max = etapas.Any() ? etapas.Select(e => e.Meses.Max()).Max() : 0;
@@ -257,22 +262,151 @@ namespace PeD.Controllers.Propostas
 
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPut("{id:guid}/Finalizar")]
-        public async Task<ActionResult> Finalizar(Guid id)
+        public async Task<ActionResult> Finalizar(Guid id, [FromBody] ComentarioRequest request,
+            [FromServices] IService<PlanoComentario> service)
         {
             var proposta = Service.GetProposta(id);
             var authorizationResult = await this.Authorize(proposta);
             if (!authorizationResult.Succeeded)
                 return Forbid();
 
-            if (proposta.Participacao == StatusParticipacao.Aceito)
+            if (proposta.Participacao == StatusParticipacao.Aceito ||
+                proposta.Participacao == StatusParticipacao.Concluido)
             {
+                PlanoComentario comentario = null;
                 await Service.FinalizarProposta(proposta);
-                return Ok();
+                if (proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento && request?.Mensagem != null &&
+                    proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Alteracao)
+                {
+                    proposta.PlanoTrabalhoAprovacao = StatusAprovacao.Pendente;
+                    comentario = new PlanoComentario()
+                    {
+                        AuthorId = this.UserId(),
+                        PropostaId = proposta.Id,
+                        Mensagem = request.Mensagem,
+                        CreatedAt = DateTime.Now
+                    };
+                    service.Post(comentario);
+                    Service.Put(proposta);
+                    Service.SendEmailNovoPlano(proposta).Wait();
+                }
+
+
+                return Ok(Mapper.Map<ComentarioDto>(comentario));
             }
 
             return Problem("A participação nesse projeto foi recusada!");
         }
 
         #endregion
+
+        protected async Task<bool> HasAccess(Proposta proposta)
+        {
+            var authorizationResult = await this.Authorize(proposta);
+            return authorizationResult.Succeeded;
+        }
+
+        [HttpGet("{guid:guid}/Comentarios")]
+        public async Task<ActionResult> Comentarios(Guid guid, [FromServices] IService<PlanoComentario> service)
+        {
+            var proposta = Service.GetProposta(guid);
+            if (!await HasAccess(proposta))
+                return Forbid();
+
+            var comentarios = service.Filter(q => q
+                .Include(c => c.Author)
+                .Include(c => c.Files)
+                .ThenInclude(f => f.File)
+                .Where(c => c.PropostaId == proposta.Id)
+                .OrderByDescending(c => c.CreatedAt));
+            return Ok(Mapper.Map<List<ComentarioDto>>(comentarios));
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("{guid:guid}/SolicitarAlteracao")]
+        public async Task<ActionResult> SolicitarAlteracao(Guid guid, ComentarioRequest request,
+            [FromServices] IService<PlanoComentario> service)
+        {
+            var proposta = Service.GetProposta(guid);
+            if (!await HasAccess(proposta) || proposta.Captacao.Status != Captacao.CaptacaoStatus.Refinamento)
+                return Forbid();
+            proposta.PlanoTrabalhoAprovacao = StatusAprovacao.Alteracao;
+            var comentario = new PlanoComentario()
+            {
+                AuthorId = this.UserId(),
+                PropostaId = proposta.Id,
+                Mensagem = request.Mensagem,
+                CreatedAt = DateTime.Now
+            };
+            service.Post(comentario);
+            Service.Put(proposta);
+            await Service.SendEmailPlanoTrabalhoAlteracao(proposta);
+            return Ok(Mapper.Map<ComentarioDto>(comentario));
+        }
+
+        [HttpPost("Comentario/{id}/Arquivo")]
+        public async Task<ActionResult> AnexoComentario(int id, List<IFormFile> file,
+            [FromServices] ArquivoService arquivoService)
+        {
+            var arquivos = await arquivoService.SaveFiles(file);
+            var entities = arquivos.ToList().Select(a => new PlanoComentarioFile()
+            {
+                ComentarioId = id,
+                FileId = a.Id
+            });
+            _context.AddRange(entities);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpGet("Comentario/{id}/Arquivo/{fileId}")]
+        public ActionResult DownloadFile(int id, int fileId)
+        {
+            var file = _context.Set<PlanoComentarioFile>()
+                .Include(c => c.File)
+                .Include(c => c.Comentario)
+                .FirstOrDefault(c =>
+                    c.ComentarioId == id && c.FileId == fileId);
+            if (file is null)
+                return NotFound();
+
+            return PhysicalFile(file.File.Path, file.File.ContentType, file.File.FileName);
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("{guid:guid}/Aprovar")]
+        public async Task<ActionResult> Aprovar(Guid guid)
+        {
+            var proposta = Service.GetProposta(guid);
+            if (!await HasAccess(proposta) || proposta.Captacao.Status != Captacao.CaptacaoStatus.Refinamento ||
+                proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Aprovado)
+                return Forbid();
+
+            proposta.PlanoTrabalhoAprovacao = StatusAprovacao.Aprovado;
+            Service.Put(proposta);
+
+            if (proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Aprovado &&
+                proposta.ContratoAprovacao == StatusAprovacao.Aprovado)
+            {
+                await Service.SendEmailRefinamentoConcluido(proposta);
+            }
+
+
+            return Ok();
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("{guid:guid}/CancelarRefinamento")]
+        public async Task<ActionResult> CancelarRefinamento(Guid guid)
+        {
+            var proposta = Service.GetProposta(guid);
+            if (!await HasAccess(proposta) || proposta.Captacao.Status != Captacao.CaptacaoStatus.Refinamento)
+                return Forbid();
+            proposta.Participacao = StatusParticipacao.Cancelado;
+            proposta.Captacao.Status = Captacao.CaptacaoStatus.Cancelada;
+            Service.Put(proposta);
+            await Service.SendEmailRefinamentoCancelado(proposta);
+            return Ok();
+        }
     }
 }

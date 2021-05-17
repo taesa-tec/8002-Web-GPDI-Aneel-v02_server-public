@@ -20,7 +20,7 @@ namespace PeD.Authorizations.Handlers
             {
                 context.Succeed(requirement);
             }
-            else if (!requirement.CaptacaoEncerrada || resource.Captacao?.Status == Captacao.CaptacaoStatus.Encerrada)
+            else if (!requirement.CaptacaoEncerrada || resource.Captacao?.Status >= Captacao.CaptacaoStatus.Encerrada)
             {
                 context.Succeed(requirement);
             }
