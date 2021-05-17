@@ -98,6 +98,7 @@ namespace PeD.Services.Captacoes
                       && contrato.Finalizado
                 select captacao;
             return pendentes.Include(c => c.Propostas)
+                .ThenInclude(p => p.Contrato)
                 .ToList();
         }
 
