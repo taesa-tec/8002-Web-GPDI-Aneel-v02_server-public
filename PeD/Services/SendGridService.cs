@@ -31,6 +31,7 @@ namespace PeD.Services
             else
             {
                 // @todo Log erro
+                Logger.LogError("Sendgrid não configurado!");
             }
         }
 
@@ -70,7 +71,7 @@ namespace PeD.Services
                 {
                     throw new NullReferenceException();
                 }
-
+             
                 var viewContent = await ViewRender.RenderToStringAsync(viewName, model);
                 //var message = MailHelper.CreateSingleEmail(from, new EmailAddress(to), subject, "", viewContent);
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(From,
@@ -88,7 +89,8 @@ namespace PeD.Services
             }
             catch (Exception e)
             {
-                Logger.LogError("Erro no disparo de email:{Error}", e.Message);
+                Logger.LogError("Erro no disparo de email: {Error}", e.Message);
+                Logger.LogError("StackError: {Error}", e.StackTrace);
             }
         }
 

@@ -6,6 +6,7 @@ using ClosedXML.Excel.CalcEngine.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PeD.Core.Exceptions.Captacoes;
+using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Propostas;
@@ -84,9 +85,19 @@ namespace PeD.Services.Captacoes
 
         public List<Captacao> GetCaptacoesSelecaoPendente()
         {
-            return Filter(q => q
-                    .Include(c => c.Propostas)
-                    .Where(c => c.Status == Captacao.CaptacaoStatus.Encerrada && c.PropostaSelecionadaId == null))
+            var captacoes = _context.Set<Captacao>().AsQueryable();
+            var propostas = _context.Set<Proposta>().AsQueryable();
+            var contratos = _context.Set<PropostaContrato>().AsQueryable();
+            var pendentes =
+                from captacao in captacoes
+                join proposta in propostas on captacao.Id equals proposta.CaptacaoId
+                join contrato in contratos on proposta.Id equals contrato.PropostaId
+                where captacao.Status == Captacao.CaptacaoStatus.Encerrada
+                      && captacao.PropostaSelecionadaId == null
+                      && proposta.Finalizado
+                      && contrato.Finalizado
+                select captacao;
+            return pendentes.Include(c => c.Propostas)
                 .ToList();
         }
 
@@ -323,16 +334,16 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
                 .Include(p => p.Captacao)
-                .Where(cp =>
-                    cp.Id == cp.Captacao.PropostaSelecionadaId &&
+                .Where(proposta =>
+                    proposta.Id == proposta.Captacao.PropostaSelecionadaId &&
                     (
                         string.IsNullOrEmpty(userId) ||
-                        asFornecedor && cp.ResponsavelId == userId ||
-                        cp.Captacao.UsuarioRefinamentoId == userId
+                        asFornecedor && proposta.ResponsavelId == userId ||
+                        proposta.Captacao.UsuarioRefinamentoId == userId
                     )
-                    && cp.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
-                    (cp.ContratoAprovacao != StatusAprovacao.Aprovado ||
-                     cp.PlanoTrabalhoAprovacao != StatusAprovacao.Aprovado)
+                    && proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
+                    (proposta.ContratoAprovacao != StatusAprovacao.Aprovado ||
+                     proposta.PlanoTrabalhoAprovacao != StatusAprovacao.Aprovado)
                 )
                 .ToList();
         }
