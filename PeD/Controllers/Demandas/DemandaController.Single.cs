@@ -159,12 +159,12 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id:int}/Reiniciar")]
-        public ActionResult<Demanda> Reiniciar(int id, [FromBody] JObject data)
+        public ActionResult<Demanda> Reiniciar(int id, [FromBody] DemandaReprovacao request)
         {
             if (!DemandaService.DemandaExist(id))
                 return NotFound();
 
-            var motivo = data.Value<string>("motivo");
+            var motivo = request.Motivo;
 
             if (string.IsNullOrWhiteSpace(motivo))
             {
@@ -179,18 +179,18 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id:int}/ReprovarPermanente")]
-        public ActionResult<Demanda> Finalizar(int id, [FromBody] JObject data)
+        public ActionResult<Demanda> Finalizar(int id, [FromBody] DemandaReprovacao request)
         {
             if (!DemandaService.DemandaExist(id))
                 return NotFound();
 
-            var motivo = data.Value<string>("motivo");
+            var motivo = request.Motivo;
 
 
             DemandaService.ReprovarPermanente(id, this.UserId());
             DemandaService.AddComentario(id, motivo, this.UserId());
 
-            return CreatedAtAction(nameof(GetById), new {id});
+            return GetById(id);
         }
 
         [HttpGet("{id:int}/File/")]
