@@ -311,6 +311,21 @@ namespace PeD.Services.Captacoes
             }
         }
 
+        public async Task ConcluirRefinamento(Proposta proposta)
+        {
+            if (proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Aprovado &&
+                proposta.ContratoAprovacao == StatusAprovacao.Aprovado)
+            {
+                var captacao = context.Set<Captacao>().AsQueryable().First(c => c.Id == proposta.CaptacaoId);
+                captacao.Status = Captacao.CaptacaoStatus.AnaliseRisco;
+                context.Update(captacao);
+                context.SaveChanges();
+                await SendEmailRefinamentoConcluido(proposta);
+            }
+        }
+
+        #region Relatórios
+
         public Relatorio UpdateRelatorio(int propostaId)
         {
             var proposta = GetPropostaFull(propostaId);
@@ -365,7 +380,6 @@ namespace PeD.Services.Captacoes
             return null;
         }
 
-
         public FileUpload SaveRelatorioPdf(Relatorio relatorio)
         {
             if (relatorio != null)
@@ -397,7 +411,6 @@ namespace PeD.Services.Captacoes
             return null;
         }
 
-
         public FileUpload SaveContratoPdf(PropostaContrato contrato)
         {
             var contratoContent = PrintContrato(contrato.PropostaId);
@@ -422,6 +435,8 @@ namespace PeD.Services.Captacoes
             var contrato = GetContrato(propostaId);
             return contrato?.File;
         }
+
+        #endregion
 
         #region Emails
 

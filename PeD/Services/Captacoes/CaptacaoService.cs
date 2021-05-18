@@ -366,6 +366,45 @@ namespace PeD.Services.Captacoes
                 .ToList();
         }
 
+        #region 2.5
+
+        public List<Captacao> GetIdentificaoRiscoPendente()
+        {
+            var captacoes = _context.Set<Captacao>().AsQueryable();
+            var pendentes =
+                from captacao in captacoes
+                where captacao.Status == Captacao.CaptacaoStatus.AnaliseRisco
+                      && captacao.PropostaSelecionadaId != null
+                      && (captacao.UsuarioAprovacaoId == null || captacao.ArquivoRiscosId == null)
+                select captacao;
+
+            return pendentes
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(p => p.Fornecedor)
+                
+                .Include(c => c.UsuarioRefinamento)
+                .ToList();
+        }
+
+        public List<Captacao> GetIdentificaoRiscoFinalizada()
+        {
+            var captacoes = _context.Set<Captacao>().AsQueryable();
+            var finalizados =
+                from captacao in captacoes
+                where captacao.Status == Captacao.CaptacaoStatus.AnaliseRisco
+                      && captacao.PropostaSelecionadaId != null
+                      && (captacao.UsuarioAprovacaoId != null || captacao.ArquivoRiscosId != null)
+                select captacao;
+
+            return finalizados
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(p => p.Fornecedor)
+                .Include(c => c.UsuarioAprovacao)
+                .ToList();
+        }
+
+        #endregion
+
         #region Emails
 
         public async Task SendEmailSuprimento(Captacao captacao, string autor)

@@ -230,11 +230,7 @@ namespace PeD.Controllers.Propostas
 
             Proposta.ContratoAprovacao = StatusAprovacao.Aprovado;
             PropostaService.Put(Proposta);
-            if (Proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Aprovado &&
-                Proposta.ContratoAprovacao == StatusAprovacao.Aprovado)
-            {
-                await PropostaService.SendEmailRefinamentoConcluido(Proposta);
-            }
+            await PropostaService.ConcluirRefinamento(Proposta);
 
             return Ok();
         }

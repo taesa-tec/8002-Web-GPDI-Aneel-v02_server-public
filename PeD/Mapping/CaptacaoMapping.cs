@@ -39,9 +39,15 @@ namespace PeD.Mapping
             CreateMap<Captacao, CaptacaoSelecaoPendenteDto>()
                 .ForMember(c => c.PropostasRecebidas, opt => opt.MapFrom(src => src.Propostas
                     .Count(p => p.Finalizado && p.Contrato.Finalizado)));
-            CreateMap<Captacao, CaptacaoFinalizadaDto>()
+            CreateMap<Captacao, CaptacaoSelecaoFinalizadaDto>()
                 .ForMember(c => c.Proposta, opt => opt.MapFrom(src => src.PropostaSelecionada.Fornecedor.Nome))
                 .ForMember(c => c.Responsavel, opt => opt.MapFrom(src => src.UsuarioRefinamento.NomeCompleto));
+            CreateMap<Captacao, CaptacaoIdentificaoRiscosDto>()
+                .ForMember(c => c.Fornecedor, opt => opt.MapFrom(src => src.PropostaSelecionada.Fornecedor.Nome))
+                .ForMember(c => c.IdentificacaoRiscoResponsavel,
+                    opt => opt.MapFrom(src => src.UsuarioRefinamento.NomeCompleto))
+                .ForMember(c => c.AprovacaoResponsavel, opt => opt.MapFrom(src => src.UsuarioAprovacao.NomeCompleto))
+                ;
 
             CreateMap<CaptacaoArquivo, CaptacaoArquivoDto>()
                 .ForMember(dest => dest.Uri,

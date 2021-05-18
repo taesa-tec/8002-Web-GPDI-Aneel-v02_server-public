@@ -243,7 +243,8 @@ namespace PeD.Controllers.Propostas
             if (!authorizationResult.Succeeded)
                 return Forbid();
 
-            if (proposta.Participacao == StatusParticipacao.Aceito || proposta.Participacao == StatusParticipacao.Concluido)
+            if (proposta.Participacao == StatusParticipacao.Aceito ||
+                proposta.Participacao == StatusParticipacao.Concluido)
             {
                 var etapas = etapaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id));
                 var max = etapas.Any() ? etapas.Select(e => e.Meses.Max()).Max() : 0;
@@ -385,13 +386,7 @@ namespace PeD.Controllers.Propostas
             proposta.PlanoTrabalhoAprovacao = StatusAprovacao.Aprovado;
             Service.Put(proposta);
 
-            if (proposta.PlanoTrabalhoAprovacao == StatusAprovacao.Aprovado &&
-                proposta.ContratoAprovacao == StatusAprovacao.Aprovado)
-            {
-                await Service.SendEmailRefinamentoConcluido(proposta);
-            }
-
-
+            await Service.ConcluirRefinamento(proposta);
             return Ok();
         }
 

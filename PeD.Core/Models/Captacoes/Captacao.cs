@@ -17,8 +17,9 @@ namespace PeD.Core.Models.Captacoes
             Elaboracao = 2,
             Fornecedor = 3,
             Encerrada = 4,
-            Refinamento = 5,
-            AnaliseRisco = 6
+            Refinamento = 5, // 2.4
+            AnaliseRisco = 6, // 2.5
+            Formalizacao = 7 //2.6
         }
 
         public string Titulo { get; set; }
@@ -89,8 +90,37 @@ namespace PeD.Core.Models.Captacoes
         public FileUpload ArquivoComprobatorio { get; set; }
 
         public int? PropostaSelecionadaId { get; set; }
-        [ForeignKey("PropostaSelecionadaId")]
-        public Proposta PropostaSelecionada { get; set; }
+        [ForeignKey("PropostaSelecionadaId")] public Proposta PropostaSelecionada { get; set; }
+
+        #endregion
+
+        #region Identificação de riscos
+
+        /// <summary>
+        /// Id do Usuário responsável pela aprovação da proposta
+        /// </summary>
+        public string UsuarioAprovacaoId { get; set; }
+
+        /// <summary>
+        /// Usuário responsável pela aprovação da proposta v2.6
+        /// </summary>
+        public ApplicationUser UsuarioAprovacao { get; set; }
+
+        /// <summary>
+        /// Id do Arquivo comprobatório de identificação de riscos
+        /// </summary>
+        public int? ArquivoRiscosId { get; set; }
+
+        /// <summary>
+        /// Arquivo comprobatório de identificação de riscos
+        /// </summary>
+        public FileUpload ArquivoRiscos { get; set; }
+
+        #endregion
+
+        #region Formalização
+
+        
 
         #endregion
     }

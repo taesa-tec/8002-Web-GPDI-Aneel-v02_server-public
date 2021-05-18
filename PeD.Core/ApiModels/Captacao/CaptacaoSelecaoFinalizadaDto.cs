@@ -3,7 +3,7 @@ using TaesaCore.Models;
 
 namespace PeD.Core.ApiModels.Captacao
 {
-    public class CaptacaoFinalizadaDto : BaseEntity
+    public class CaptacaoSelecaoFinalizadaDto : BaseEntity
     {
         public string Titulo { get; set; }
         public string Proposta { get; set; }
