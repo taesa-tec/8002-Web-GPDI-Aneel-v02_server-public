@@ -1,0 +1,29 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.Formalizacao
+@{
+    Layout = "_EmailBase";
+}
+@{
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+    Existe um novo projeto preparado para
+    Aprovação e Formalização
+}
+
+
+<p>
+    O projeto "@Model.Captacao.Titulo" está pronto para a etapa de
+    Aprovação e Formalização, clique no link abaixo para dar
+    sequência.
+</p>
+
+@section Action
+{
+    <a href="@url/formalizacao/pendente#@Model.Captacao.Id" style="display: inline-block; background: #042769; font-weight: bold; color:#FFF; border-radius: 4px; padding: 8px 16px; text-decoration: none; text-transform: uppercase;">
+        Ver Demanda
+    </a>
+}

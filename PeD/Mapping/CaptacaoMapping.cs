@@ -48,6 +48,12 @@ namespace PeD.Mapping
                     opt => opt.MapFrom(src => src.UsuarioRefinamento.NomeCompleto))
                 .ForMember(c => c.AprovacaoResponsavel, opt => opt.MapFrom(src => src.UsuarioAprovacao.NomeCompleto))
                 ;
+            CreateMap<Captacao, CaptacaoFormalizacaoDto>()
+                .ForMember(c => c.Fornecedor, opt => opt.MapFrom(src => src.PropostaSelecionada.Fornecedor.Nome))
+                .ForMember(c => c.ExecucaoResponsavel,
+                    opt => opt.MapFrom(src => src.UsuarioExecucao.NomeCompleto))
+                .ForMember(c => c.AprovacaoResponsavel, opt => opt.MapFrom(src => src.UsuarioAprovacao.NomeCompleto))
+                ;
 
             CreateMap<CaptacaoArquivo, CaptacaoArquivoDto>()
                 .ForMember(dest => dest.Uri,

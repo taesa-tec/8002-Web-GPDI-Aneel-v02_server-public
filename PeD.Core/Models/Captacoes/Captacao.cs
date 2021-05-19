@@ -120,7 +120,12 @@ namespace PeD.Core.Models.Captacoes
 
         #region Formalização
 
-        
+        public bool? IsProjetoAprovado { get; set; }
+        public int? ArquivoFormalizacaoId { get; set; }
+        public FileUpload ArquivoFormalizacao { get; set; }
+
+        public string UsuarioExecucaoId { get; set; }
+        public ApplicationUser UsuarioExecucao { get; set; }
 
         #endregion
     }

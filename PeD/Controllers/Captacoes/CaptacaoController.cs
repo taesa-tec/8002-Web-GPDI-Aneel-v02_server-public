@@ -460,7 +460,9 @@ namespace PeD.Controllers.Captacoes
             }
 
             captacao.UsuarioAprovacaoId = request.ResponsavelId;
+            captacao.Status = Captacao.CaptacaoStatus.Formalizacao;
             Service.Put(captacao);
+            Service.SendEmailFormalizacaoPendente(captacao).Wait();
             return Ok();
         }
 
@@ -495,6 +497,113 @@ namespace PeD.Controllers.Captacoes
         [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("{id}/IdentificaoRisco/Arquivo")]
         public ActionResult DownloadIdentificaoRisco(int id)
+        {
+            var captacao = Service.Filter(q => q
+                .Include(c => c.ArquivoRiscos)
+                .Where(c => c.Status >= Captacao.CaptacaoStatus.AnaliseRisco &&
+                            c.Id == id
+                )).FirstOrDefault();
+            if (captacao is null)
+                return NotFound();
+            var file = captacao.ArquivoRiscos;
+            return PhysicalFile(file.Path, file.ContentType,
+                $"{captacao.Titulo}-riscos.pdf");
+        }
+
+        #endregion
+
+        #region 2.6
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpGet("FormalizacaoPendente")]
+        public ActionResult<List<CaptacaoFormalizacaoDto>> GetFormalizacaoPendente()
+        {
+            //Service.Paged()
+            var captacoes = Service.GetFormalizacao(null);
+
+            var mapped = Mapper.Map<List<CaptacaoFormalizacaoDto>>(captacoes);
+            return Ok(mapped);
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpGet("Formalizados")]
+        public ActionResult<List<CaptacaoFormalizacaoDto>> Formalizados()
+        {
+            //Service.Paged()
+            var captacoes = Service.GetFormalizacao(true);
+
+            var mapped = Mapper.Map<List<CaptacaoFormalizacaoDto>>(captacoes);
+            return Ok(mapped);
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpGet("NoDeal")]
+        public ActionResult<List<CaptacaoFormalizacaoDto>> NoDeal()
+        {
+            //Service.Paged()
+            var captacoes = Service.GetFormalizacao(false);
+
+            var mapped = Mapper.Map<List<CaptacaoFormalizacaoDto>>(captacoes);
+            return Ok(mapped);
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("{id}/Formalizacao")]
+        public ActionResult Formalizar(int id, [FromBody] CaptacaoFormalizacaoRequest request)
+        {
+            var captacao = Service.Filter(q => q
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Formalizacao &&
+                            (c.UsuarioAprovacaoId == this.UserId() || this.IsAdmin()) &&
+                            c.Id == id
+                )).FirstOrDefault();
+
+            if (captacao == null)
+            {
+                return NotFound();
+            }
+
+            if (string.IsNullOrWhiteSpace(request.ResponsavelId))
+            {
+                return BadRequest();
+            }
+
+            captacao.UsuarioExecucaoId = request.ResponsavelId;
+            captacao.IsProjetoAprovado = request.Aprovado;
+            Service.Put(captacao);
+            return Ok();
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpPost("{id}/Formalizacao/Arquivo")]
+        public async Task<ActionResult> ArquivoFormalizacao(int id, [FromServices] ArquivoService arquivoService)
+        {
+            var upload = Request.Form.Files.FirstOrDefault();
+            if (upload is null)
+            {
+                return Problem("O arquivo comprobatório não foi enviado", null,
+                    StatusCodes.Status422UnprocessableEntity);
+            }
+
+            var captacao = Service.Filter(q => q
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Formalizacao &&
+                            (c.UsuarioAprovacaoId == this.UserId() || this.IsAdmin()) &&
+                            c.Id == id
+                )).FirstOrDefault();
+
+            if (captacao == null)
+            {
+                return NotFound();
+            }
+
+            var file = await arquivoService.SaveFile(upload);
+            captacao.ArquivoFormalizacaoId = file.Id;
+            Service.Put(captacao);
+            return Ok();
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpGet("{id}/Formalizacao/Arquivo")]
+        public ActionResult DownloadFormalizacao(int id)
         {
             var captacao = Service.Filter(q => q
                 .Include(c => c.ArquivoRiscos)

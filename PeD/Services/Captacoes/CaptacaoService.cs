@@ -381,7 +381,6 @@ namespace PeD.Services.Captacoes
             return pendentes
                 .Include(c => c.PropostaSelecionada)
                 .ThenInclude(p => p.Fornecedor)
-                
                 .Include(c => c.UsuarioRefinamento)
                 .ToList();
         }
@@ -391,7 +390,8 @@ namespace PeD.Services.Captacoes
             var captacoes = _context.Set<Captacao>().AsQueryable();
             var finalizados =
                 from captacao in captacoes
-                where captacao.Status == Captacao.CaptacaoStatus.AnaliseRisco
+                where (captacao.Status == Captacao.CaptacaoStatus.AnaliseRisco ||
+                       captacao.Status == Captacao.CaptacaoStatus.Formalizacao)
                       && captacao.PropostaSelecionadaId != null
                       && (captacao.UsuarioAprovacaoId != null || captacao.ArquivoRiscosId != null)
                 select captacao;
@@ -400,6 +400,28 @@ namespace PeD.Services.Captacoes
                 .Include(c => c.PropostaSelecionada)
                 .ThenInclude(p => p.Fornecedor)
                 .Include(c => c.UsuarioAprovacao)
+                .ToList();
+        }
+
+        #endregion
+
+        #region 2.6
+
+        public List<Captacao> GetFormalizacao(bool? formalizacao)
+        {
+            var captacoes = _context.Set<Captacao>().AsQueryable();
+            var captacoesQuery =
+                from captacao in captacoes
+                where captacao.Status == Captacao.CaptacaoStatus.Formalizacao
+                      && captacao.PropostaSelecionadaId != null
+                      && captacao.IsProjetoAprovado == formalizacao
+                select captacao;
+
+            return captacoesQuery
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(p => p.Fornecedor)
+                .Include(c => c.UsuarioAprovacao)
+                .Include(c => c.UsuarioExecucao)
                 .ToList();
         }
 
@@ -530,6 +552,22 @@ namespace PeD.Services.Captacoes
             await _sendGridService.Send(proposta.Responsavel.Email,
                 "Parabéns, sua proposta foi aprovada na Etapa de Priorização e Seleção",
                 "Email/Captacao/Propostas/PropostaSelecionada", propostaSelecionada);
+        }
+
+        public async Task SendEmailFormalizacaoPendente(Captacao captacao)
+        {
+            var email = _context.Users.AsQueryable()
+                .Where(u => u.Id == captacao.UsuarioAprovacaoId)
+                .Select(u => u.Email)
+                .FirstOrDefault() ?? throw new NullReferenceException();
+
+            var formalizacao = new Formalizacao()
+            {
+                Captacao = captacao
+            };
+            await _sendGridService.Send(email,
+                "Existe um novo projeto preparado para Aprovação e Formalização",
+                "Email/Captacao/Formalizacao", formalizacao);
         }
 
         #endregion

@@ -321,7 +321,7 @@ namespace PeD.Services.Captacoes
                 context.Update(captacao);
                 context.SaveChanges();
                 await SendEmailRefinamentoConcluido(proposta);
-                await SendEmailNovaIdentificaoRisco(proposta);
+                await SendEmailNovaIdentificacaoRisco(proposta);
             }
         }
 
@@ -581,7 +581,7 @@ namespace PeD.Services.Captacoes
             }
         }
 
-        public async Task SendEmailNovaIdentificaoRisco(Proposta proposta)
+        public async Task SendEmailNovaIdentificacaoRisco(Proposta proposta)
         {
             var captacao = context.Set<Captacao>().AsNoTracking()
                 .Include(c => c.UsuarioRefinamento)
