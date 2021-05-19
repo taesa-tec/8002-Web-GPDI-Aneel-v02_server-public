@@ -527,6 +527,8 @@ namespace PeD.Services.Captacoes
                 .Include(c => c.UsuarioRefinamento)
                 .Include(c => c.PropostaSelecionada)
                 .ThenInclude(p => p.Fornecedor)
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(f => f.Responsavel)
                 .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
             var message = new RefinamentoConcluido()
             {
@@ -534,7 +536,7 @@ namespace PeD.Services.Captacoes
                 Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
                 PropostaGuid = captacao.PropostaSelecionada.Guid
             };
-            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+            await _sendGridService.Send(captacao.PropostaSelecionada.Responsavel.Email,
                 $"Parabéns! A revisão do projeto \"{captacao.Titulo}\" foi concluída",
                 "Email/Captacao/Propostas/RefinamentoConcluido", message);
         }
