@@ -321,6 +321,7 @@ namespace PeD.Services.Captacoes
                 context.Update(captacao);
                 context.SaveChanges();
                 await SendEmailRefinamentoConcluido(proposta);
+                await SendEmailNovaIdentificaoRisco(proposta);
             }
         }
 
@@ -578,6 +579,20 @@ namespace PeD.Services.Captacoes
             {
                 // ignored
             }
+        }
+
+        public async Task SendEmailNovaIdentificaoRisco(Proposta proposta)
+        {
+            var captacao = context.Set<Captacao>().AsNoTracking()
+                .Include(c => c.UsuarioRefinamento)
+                .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
+            var message = new IdentificacaoRiscos()
+            {
+                Captacao = captacao,
+            };
+            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                "Existe um novo projeto preparado para Identificação de Riscos",
+                "Email/Captacao/Propostas/IdentificacaoRiscos", message);
         }
 
         public async Task SendEmailRefinamentoCancelado(Proposta proposta)

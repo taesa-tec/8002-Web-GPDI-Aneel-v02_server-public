@@ -1,0 +1,28 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model PeD.Views.Email.Captacao.Propostas.IdentificacaoRiscos
+
+@{
+    Layout = "_EmailBase";
+}
+@{
+    var url = Configuration.GetValue<string>("Url");
+}
+
+@section Header
+{
+    Existe um novo projeto preparado para Identificação de Riscos
+}
+
+<p>
+    O projeto "@Model.Captacao.Titulo" está pronto para a etapa de
+    Identificação de Riscos, clique no link abaixo para dar
+    sequência.
+</p>
+
+@section Action
+{
+    <a href="@url/gestor/identificacao-riscos/pendente#@Model.Captacao.Id" style="display: inline-block; background: #042769; font-weight: bold; color:#FFF; border-radius: 4px; padding: 8px 16px; text-decoration: none; text-transform: uppercase;">
+        Ver Proposta
+    </a>
+}
