@@ -196,6 +196,7 @@ namespace PeD.Services.Captacoes
             var propostas = fornecedores.Select(f => new Proposta()
             {
                 FornecedorId = f.Id,
+                Fornecedor = f,
                 ResponsavelId = f.ResponsavelId,
                 CaptacaoId = id,
                 Contrato = new PropostaContrato()
@@ -210,7 +211,7 @@ namespace PeD.Services.Captacoes
             _context.Update(captacao);
             await _context.SaveChangesAsync();
 
-            await SendEmailConvite(captacao, fornecedores.ToList());
+            await SendEmailConvite(captacao);
         }
 
         public async Task EstenderCaptacao(int id, DateTime termino)
@@ -225,13 +226,7 @@ namespace PeD.Services.Captacoes
             captacao.Termino = termino;
             Put(captacao);
 
-            var fornecedores = _captacaoFornecedors
-                .Include(cf => cf.Fornecedor)
-                .ThenInclude(f => f.Responsavel)
-                .Where(cf => cf.CaptacaoId == id)
-                .Select(cf => cf.Fornecedor);
-
-            await SendEmailAtualizacao(captacao, fornecedores.ToList());
+            await SendEmailAtualizacao(captacao);
         }
 
         public async Task CancelarCaptacao(int id)
@@ -367,25 +362,28 @@ namespace PeD.Services.Captacoes
                 "Email/Captacao/NovaCaptacao", nova);
         }
 
-        public async Task SendEmailConvite(Captacao captacao, List<Fornecedor> fornecedores)
+        public async Task SendEmailConvite(Captacao captacao)
         {
-            foreach (var fornecedor in fornecedores)
+            var propostas = _context.Set<Proposta>().AsQueryable().AsNoTracking()
+                .Include(p => p.Fornecedor)
+                .Include(p => p.Responsavel);
+            foreach (var proposta in propostas)
             {
                 var convite = new ConviteFornecedor()
                 {
-                    Fornecedor = fornecedor.Nome,
+                    Fornecedor = proposta.Fornecedor.Nome,
                     Projeto = captacao.Titulo,
-                    CaptacaoId = captacao.Id
+                    PropostaGuid = proposta.Guid
                 };
-                if (fornecedor.Responsavel == null || string.IsNullOrWhiteSpace(fornecedor.Responsavel.Email))
+                if (proposta.Responsavel == null ||
+                    string.IsNullOrWhiteSpace(proposta.Responsavel.Email))
                 {
                     _logger.LogWarning("Fornecedor como responsável|email vazio, não será possível enviar o convite");
                 }
                 else
                 {
-                    _logger.LogInformation($"Enviando convite para {fornecedor.Responsavel.Email}");
                     await _sendGridService
-                        .Send(fornecedor.Responsavel.Email,
+                        .Send(proposta.Responsavel.Email,
                             "Você foi convidado para participar de um novo projeto para a área de P&D da Taesa",
                             "Email/Captacao/ConviteFornecedor",
                             convite);
@@ -393,23 +391,30 @@ namespace PeD.Services.Captacoes
             }
         }
 
-        public async Task SendEmailAtualizacao(Captacao captacao, List<Fornecedor> fornecedores)
+        public async Task SendEmailAtualizacao(Captacao captacao)
         {
-            var emails = fornecedores.Select(f => f.Responsavel.Email);
+            var propostas = _context.Set<Captacao>().AsQueryable()
+                .Include(c => c.Propostas)
+                .ThenInclude(p => p.Responsavel)
+                .First(c => c.Id == captacao.Id).Propostas;
+
 
             if (captacao.Termino != null)
             {
-                var cancelamento = new AlteracaoPrazo()
+                foreach (var proposta in propostas)
                 {
-                    Projeto = captacao.Titulo,
-                    Prazo = captacao.Termino.Value,
-                    CaptacaoId = captacao.Id
-                };
-                await _sendGridService
-                    .Send(emails,
-                        $"A equipe de Suprimentos alterou a data máxima de envio de propostas para o projeto \"{captacao.Titulo}\".",
-                        "Email/Captacao/AlteracaoPrazo",
-                        cancelamento);
+                    var cancelamento = new AlteracaoPrazo()
+                    {
+                        Projeto = captacao.Titulo,
+                        Prazo = captacao.Termino.Value,
+                        PropostaGuid = proposta.Guid
+                    };
+                    await _sendGridService
+                        .Send(proposta.Responsavel.Email,
+                            $"A equipe de Suprimentos alterou a data máxima de envio de propostas para o projeto \"{captacao.Titulo}\".",
+                            "Email/Captacao/AlteracaoPrazo",
+                            cancelamento);
+                }
             }
         }
 
