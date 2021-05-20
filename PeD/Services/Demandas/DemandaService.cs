@@ -101,6 +101,7 @@ namespace PeD.Services.Demandas
         {
             return _context.Demandas
                 .Include("Criador")
+                .Include("Revisor")
                 .Include("SuperiorDireto")
                 .Include("Comentarios.User")
                 .FirstOrDefault(d => d.Id == id);
@@ -419,6 +420,7 @@ namespace PeD.Services.Demandas
                             return null;
                         }
                     }
+
                     return null;
                 }).Where(s => s != null);
 
@@ -837,7 +839,7 @@ namespace PeD.Services.Demandas
             var body =
                 $"O usuário {coordenador.NomeCompleto} enviou a demanda \"{demanda.Titulo}\" para Revisão. Clique abaixo para mais detalhes.";
 
-            _sendGridService.Send(coordenador.Email, titulo, body,
+            _sendGridService.Send(demanda.Revisor.Email, titulo, body,
                 actionLabel: "Ver Demanda",
                 actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
         }
