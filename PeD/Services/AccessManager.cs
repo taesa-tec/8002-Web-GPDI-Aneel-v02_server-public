@@ -139,7 +139,7 @@ namespace PeD.Services
                 return false;
             }
 
-            return false;
+            return true;
         }
 
         public bool NovaSenha(User user)

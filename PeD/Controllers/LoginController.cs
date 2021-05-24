@@ -33,7 +33,12 @@ namespace PeD.Controllers
             [FromBody] Login user,
             [FromServices] AccessManager accessManager)
         {
-            return accessManager.RecuperarSenha(user);
+            if (accessManager.RecuperarSenha(user))
+            {
+                return Ok();
+            }
+
+            return NotFound();
         }
 
         [HttpPost("nova-senha")]
