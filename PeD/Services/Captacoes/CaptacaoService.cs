@@ -226,7 +226,14 @@ namespace PeD.Services.Captacoes
             captacao.Termino = termino;
             Put(captacao);
 
-            await SendEmailAtualizacao(captacao);
+            try
+            {
+                await SendEmailAtualizacao(captacao);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
         }
 
         public async Task CancelarCaptacao(int id)
@@ -403,6 +410,8 @@ namespace PeD.Services.Captacoes
             {
                 foreach (var proposta in propostas)
                 {
+                    if (proposta.Responsavel == null)
+                        continue;
                     var cancelamento = new AlteracaoPrazo()
                     {
                         Projeto = captacao.Titulo,
