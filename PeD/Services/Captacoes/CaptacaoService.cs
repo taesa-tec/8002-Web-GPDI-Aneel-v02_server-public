@@ -68,7 +68,10 @@ namespace PeD.Services.Captacoes
                     .Include(c => c.Propostas)
                     .Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada ||
                                 c.Status >= Captacao.CaptacaoStatus.Encerrada &&
-                                c.Propostas.Count == 0)) //@todo Verificar se funciona propostas zeradas
+                                (c.Propostas.Count == 0 ||
+                                 c.Propostas.Any(p => !p.Finalizado || !p.Contrato.Finalizado))
+                    ))
+                //@todo Verificar se funciona propostas zeradas
                 .ToList();
         }
 
@@ -79,7 +82,11 @@ namespace PeD.Services.Captacoes
                     .Include(c => c.UsuarioSuprimento)
                     .Include(c => c.Propostas)
                     .ThenInclude(p => p.Fornecedor)
-                    .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada || c.Termino < DateTime.Today))
+                    .Include(c => c.Propostas)
+                    .ThenInclude(p => p.Contrato)
+                    .Where(c => (c.Status >= Captacao.CaptacaoStatus.Encerrada || c.Termino < DateTime.Today)
+                                && c.Propostas.Any(p => p.Finalizado && p.Contrato.Finalizado)
+                    ))
                 .ToList();
         }
 
@@ -320,15 +327,23 @@ namespace PeD.Services.Captacoes
         public void EncerrarCaptacoesExpiradas()
         {
             var expiradas = Filter(q =>
-                    q.Where(c => c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino < DateTime.Today))
+                    q.Include(c => c.Propostas)
+                        .ThenInclude(p => p.Contrato)
+                        .Where(c => c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino < DateTime.Today))
                 .ToList();
             foreach (var expirada in expiradas)
             {
-                expirada.Status = Captacao.CaptacaoStatus.Encerrada;
+                var isOk = expirada.Propostas.Count > 0 &&
+                           expirada.Propostas.Any(p => p.Finalizado && p.Contrato.Finalizado);
+                expirada.Status = isOk ? Captacao.CaptacaoStatus.Encerrada : Captacao.CaptacaoStatus.Cancelada;
+                if (expirada.Status == Captacao.CaptacaoStatus.Cancelada)
+                {
+                    expirada.Cancelamento = DateTime.Now;
+                }
             }
 
             Put(expiradas);
-            _logger.LogInformation($"Captações expiradas: {expiradas.Count}");
+            _logger.LogInformation("Captações expiradas: {Count}", expiradas.Count);
         }
 
         public IEnumerable<Proposta> GetPropostasRefinamento(string userId, bool asFornecedor = false)
