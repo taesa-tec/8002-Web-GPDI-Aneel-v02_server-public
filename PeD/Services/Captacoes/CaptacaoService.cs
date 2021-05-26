@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using ClosedXML.Excel.CalcEngine.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ using PeD.Core.Exceptions.Captacoes;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
+using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Views.Email.Captacao;
@@ -20,19 +22,24 @@ namespace PeD.Services.Captacoes
 {
     public class CaptacaoService : BaseService<Captacao>
     {
+        private ILogger<CaptacaoService> _logger;
         private SendGridService _sendGridService;
         private GestorDbContext _context;
         private DbSet<CaptacaoArquivo> _captacaoArquivos;
         private DbSet<CaptacaoFornecedor> _captacaoFornecedors;
         private DbSet<Proposta> _captacaoPropostas;
-        private ILogger<CaptacaoService> _logger;
+        private PropostaService _propostaService;
+        private IMapper _mapper;
 
         public CaptacaoService(IRepository<Captacao> repository, GestorDbContext context,
-            SendGridService sendGridService, ILogger<CaptacaoService> logger) : base(repository)
+            SendGridService sendGridService, ILogger<CaptacaoService> logger, PropostaService propostaService,
+            IMapper mapper) : base(repository)
         {
             _context = context;
             _sendGridService = sendGridService;
             _logger = logger;
+            _propostaService = propostaService;
+            _mapper = mapper;
             _captacaoArquivos = context.Set<CaptacaoArquivo>();
             _captacaoFornecedors = context.Set<CaptacaoFornecedor>();
             _captacaoPropostas = context.Set<Proposta>();
@@ -425,7 +432,21 @@ namespace PeD.Services.Captacoes
                 .ToList();
         }
 
+        public Projeto CriarProjeto(Captacao captacao)
+        {
+            if (captacao == null || captacao.PropostaSelecionadaId == null)
+                throw new NullReferenceException();
+            if (captacao.IsProjetoAprovado == null || !captacao.IsProjetoAprovado.Value)
+                throw new CaptacaoException("Projeto não foi aprovado");
+            var proposta = _propostaService.GetPropostaFull(captacao.PropostaSelecionadaId.Value);
+            var projeto = _mapper.Map<Projeto>(proposta);
+            _context.Add(projeto);
+            _context.SaveChanges();
+            return projeto;
+        }
+
         #endregion
+
 
         #region Emails
 

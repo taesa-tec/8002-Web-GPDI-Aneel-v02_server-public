@@ -12,6 +12,7 @@ namespace PeD.Core.Models.Projetos
         #region Novo
 
         public string Titulo { get; set; }
+        public string TituloCompleto { get; set; }
 
         public Status Status { get; set; }
 
@@ -71,8 +72,6 @@ namespace PeD.Core.Models.Projetos
 
         public PlanoTrabalho PlanoTrabalho { get; set; }
         public Escopo Escopo { get; set; }
-        public int? RelatorioId { get; set; }
-        [ForeignKey("RelatorioId")] public Relatorio Relatorio { get; set; }
         public List<Meta> Metas { get; set; }
 
         #endregion

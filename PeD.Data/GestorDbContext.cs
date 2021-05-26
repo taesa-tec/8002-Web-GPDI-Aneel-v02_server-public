@@ -216,13 +216,14 @@ namespace PeD.Data
             builder.Entity<ContratoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
 
             #endregion
-            
+
             #region Projeto
 
-            builder.Entity<Projeto>(_builder =>
+            builder.Entity<Projeto>(b =>
             {
-                _builder.HasOne(p => p.Relatorio);
-                _builder.ToTable("Projetos");
+                b.HasIndex(p => p.CaptacaoId).IsUnique();
+                b.HasOne(p => p.Proposta).WithOne().OnDelete(DeleteBehavior.NoAction);
+                b.ToTable("Projetos");
             });
             builder.Entity<ProjetoArquivo>(b =>
             {

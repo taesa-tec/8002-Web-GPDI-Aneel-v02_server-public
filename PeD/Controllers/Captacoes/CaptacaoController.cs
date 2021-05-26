@@ -570,6 +570,17 @@ namespace PeD.Controllers.Captacoes
             captacao.UsuarioExecucaoId = request.ResponsavelId;
             captacao.IsProjetoAprovado = request.Aprovado;
             Service.Put(captacao);
+
+            if (request.Aprovado)
+            {
+                var projeto = Service.CriarProjeto(captacao);
+                projeto.ProponenteId = request.EmpresaProponenteId;
+                projeto.Numero = request.NumeroProjeto;
+                projeto.ResponsavelId = request.ResponsavelId;
+                projeto.TituloCompleto = request.TituloCompleto;
+            }
+
+
             return Ok();
         }
 
