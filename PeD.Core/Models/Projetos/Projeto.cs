@@ -35,14 +35,17 @@ namespace PeD.Core.Models.Projetos
         /// Data de entrada do proposta no sitema
         /// </summary>
         public DateTime DataCriacao { get; set; }
+
         /// <summary>
         /// Data de alteraçõa dos dados do projeto
         /// </summary>
         public DateTime DataAlteracao { get; set; }
+
         /// <summary>
         /// Data Real do início do projeto
         /// </summary>
         public DateTime DataInicioProjeto { get; set; }
+
         /// <summary>
         /// Data prevista para o encerramento do projeto
         /// </summary>
@@ -76,6 +79,7 @@ namespace PeD.Core.Models.Projetos
 
         #endregion
     }
+
 
     public class ProjetoNode : BaseEntity
     {

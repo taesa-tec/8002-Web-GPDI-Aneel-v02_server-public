@@ -578,6 +578,7 @@ namespace PeD.Controllers.Captacoes
                 projeto.Numero = request.NumeroProjeto;
                 projeto.ResponsavelId = request.ResponsavelId;
                 projeto.TituloCompleto = request.TituloCompleto;
+                projeto.DataInicioProjeto = request.InicioProjeto;
             }
 
 
