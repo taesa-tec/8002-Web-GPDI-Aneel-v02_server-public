@@ -1,4 +1,5 @@
 @using Microsoft.Extensions.Configuration
+@using PeD.Core.Extensions
 @inject IConfiguration Configuration
 @model PeD.Views.Email.RecoverAccount;
 @{
@@ -18,7 +19,7 @@
 
 @section Action
 {
-    <a href="@url/login/nova-senha/?email=@Model.Email&token=@Model.Token">
+    <a href="@url/login/nova-senha/?email=@Model.Email&token=@Model.Token.ToBase64()">
         <img src="@url/Assets/gerar-senha.png" alt="Gerar Senha">
     </a>
 }
