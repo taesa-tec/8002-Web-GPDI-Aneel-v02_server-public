@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
@@ -162,7 +163,8 @@ namespace PeD.Services
                 throw new Exception("usuário não localizado");
             }
 
-            var result = _userManager.ResetPasswordAsync(User, user.ResetToken, user.NewPassword).Result;
+            var token = Encoding.ASCII.GetString(Convert.FromBase64String(user.ResetToken));
+            var result = _userManager.ResetPasswordAsync(User, token, user.NewPassword).Result;
             if (result.Errors.Count() > 0)
             {
                 foreach (var error in result.Errors)
