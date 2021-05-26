@@ -9,13 +9,29 @@ using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Catalogos;
 using PeD.Core.Models.Demandas;
 using PeD.Core.Models.Fornecedores;
+using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Models.Sistema;
 using PeD.Data.Builders;
 using CategoriaContabil = PeD.Core.Models.Catalogos.CategoriaContabil;
+using CoExecutor = PeD.Core.Models.Propostas.CoExecutor;
 using Contrato = PeD.Core.Models.Contrato;
+using ContratoComentario = PeD.Core.Models.Propostas.ContratoComentario;
+using ContratoComentarioFile = PeD.Core.Models.Propostas.ContratoComentarioFile;
+using Escopo = PeD.Core.Models.Propostas.Escopo;
+using Etapa = PeD.Core.Models.Propostas.Etapa;
+using EtapaProdutos = PeD.Core.Models.Propostas.EtapaProdutos;
 using ItemAjuda = PeD.Core.Models.Sistema.ItemAjuda;
+using Meta = PeD.Core.Models.Propostas.Meta;
+using PlanoComentario = PeD.Core.Models.Propostas.PlanoComentario;
+using PlanoComentarioFile = PeD.Core.Models.Propostas.PlanoComentarioFile;
+using PlanoTrabalho = PeD.Core.Models.Propostas.PlanoTrabalho;
+using Produto = PeD.Core.Models.Propostas.Produto;
 using ProdutoTipo = PeD.Core.Models.Catalogos.ProdutoTipo;
+using RecursoHumano = PeD.Core.Models.Propostas.RecursoHumano;
+using RecursoMaterial = PeD.Core.Models.Propostas.RecursoMaterial;
+using Relatorio = PeD.Core.Models.Propostas.Relatorio;
+using Risco = PeD.Core.Models.Propostas.Risco;
 
 namespace PeD.Data
 {
@@ -198,6 +214,66 @@ namespace PeD.Data
             builder.Entity<PlanoComentario>(b => { b.ToTable("PlanoComentarios"); });
             builder.Entity<PlanoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
             builder.Entity<ContratoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
+
+            #endregion
+            
+            #region Projeto
+
+            builder.Entity<Projeto>(_builder =>
+            {
+                _builder.HasOne(p => p.Relatorio);
+                _builder.ToTable("Projetos");
+            });
+            builder.Entity<ProjetoArquivo>(b =>
+            {
+                b.HasKey(pa => new {pa.ProjetoId, pa.ArquivoId});
+                b.ToTable("ProjetoArquivos");
+            });
+
+            builder.Entity<PeD.Core.Models.Projetos.CoExecutor>();
+            builder.Entity<PeD.Core.Models.Projetos.Escopo>();
+            builder.Entity<PeD.Core.Models.Projetos.Meta>();
+            builder.Entity<PeD.Core.Models.Projetos.Etapa>(b =>
+            {
+                b.Property(e => e.Meses).HasConversion(
+                    meses => JsonConvert.SerializeObject(meses),
+                    meses => JsonConvert.DeserializeObject<List<int>>(meses));
+                b.HasOne(e => e.Produto).WithMany().HasForeignKey(e => e.ProdutoId).OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PeD.Core.Models.Projetos.EtapaProdutos>(b =>
+            {
+                b.HasOne(ep => ep.Produto).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(ep => ep.Etapa).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PeD.Core.Models.Projetos.PlanoTrabalho>();
+            builder.Entity<PeD.Core.Models.Projetos.Produto>();
+            builder.Entity<PeD.Core.Models.Projetos.RecursoHumano>();
+            builder.Entity<PeD.Core.Models.Projetos.RecursoMaterial>();
+            builder.Entity<PeD.Core.Models.Projetos.RecursoHumano.AlocacaoRh>(b =>
+            {
+                b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Etapa).WithMany(e => e.RecursosHumanosAlocacoes).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Projeto)
+                    .WithMany(e => e.RecursosHumanosAlocacoes)
+                    .HasForeignKey(a => a.ProjetoId)
+                    .OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.Property(e => e.HoraMeses).HasConversion(
+                    meses => JsonConvert.SerializeObject(meses),
+                    meses => JsonConvert.DeserializeObject<Dictionary<short, short>>(meses));
+            });
+            builder.Entity<PeD.Core.Models.Projetos.RecursoMaterial.AlocacaoRm>(b =>
+            {
+                b.HasOne(a => a.Etapa).WithMany(e => e.RecursosMateriaisAlocacoes).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.EmpresaRecebedora).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Projeto)
+                    .WithMany(e => e.RecursosMateriaisAlocacoes)
+                    .HasForeignKey(a => a.ProjetoId)
+                    .OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<PeD.Core.Models.Projetos.Risco>();
 
             #endregion
 

@@ -71,7 +71,6 @@ namespace PeD.Core.Models.Projetos
 
         public PlanoTrabalho PlanoTrabalho { get; set; }
         public Escopo Escopo { get; set; }
-        public ProjetoContrato Contrato { get; set; }
         public int? RelatorioId { get; set; }
         [ForeignKey("RelatorioId")] public Relatorio Relatorio { get; set; }
         public List<Meta> Metas { get; set; }
