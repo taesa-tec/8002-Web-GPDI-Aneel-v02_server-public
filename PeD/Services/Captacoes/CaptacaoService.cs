@@ -237,7 +237,7 @@ namespace PeD.Services.Captacoes
             {
                 await SendEmailAtualizacao(captacao);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // ignored
             }
@@ -388,7 +388,8 @@ namespace PeD.Services.Captacoes
         {
             var propostas = _context.Set<Proposta>().AsQueryable().AsNoTracking()
                 .Include(p => p.Fornecedor)
-                .Include(p => p.Responsavel);
+                .Include(p => p.Responsavel)
+                .Where(p => p.CaptacaoId == captacao.Id);
             foreach (var proposta in propostas)
             {
                 var convite = new ConviteFornecedor()
@@ -397,6 +398,7 @@ namespace PeD.Services.Captacoes
                     Projeto = captacao.Titulo,
                     PropostaGuid = proposta.Guid
                 };
+                
                 if (proposta.Responsavel == null ||
                     string.IsNullOrWhiteSpace(proposta.Responsavel.Email))
                 {

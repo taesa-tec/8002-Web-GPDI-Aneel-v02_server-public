@@ -132,8 +132,8 @@ namespace PeD.Controllers.Propostas
             return Ok(Mapper.Map<TResponse>(node));
         }
 
-        [HttpDelete]
-        public virtual async Task<IActionResult> Delete([FromQuery] int id)
+        [HttpDelete("{id:int}")]
+        public virtual async Task<IActionResult> Delete(int id)
         {
             if (!await HasAccess())
                 return Forbid();

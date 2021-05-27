@@ -462,9 +462,16 @@ namespace PeD.Services.Captacoes
                 Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
                 PropostaGuid = captacao.PropostaSelecionada.Guid
             };
-            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
-                $"Uma nova versão do Plano de trabalho do projeto {captacao.Titulo} foi enviada",
-                "Email/Captacao/Propostas/NovoPlanoTrabalho", plano);
+            try
+            {
+                await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                    $"Uma nova versão do Plano de trabalho do projeto {captacao.Titulo} foi enviada",
+                    "Email/Captacao/Propostas/NovoPlanoTrabalho", plano);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         public async Task SendEmailNovoContrato(Proposta proposta)
@@ -480,9 +487,16 @@ namespace PeD.Services.Captacoes
                 Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
                 PropostaGuid = captacao.PropostaSelecionada.Guid
             };
-            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
-                $"Uma nova versão do Contrato do projeto {captacao.Titulo} foi enviada",
-                "Email/Captacao/Propostas/NovoContrato", contrato);
+            try
+            {
+                await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                    $"Uma nova versão do Contrato do projeto {captacao.Titulo} foi enviada",
+                    "Email/Captacao/Propostas/NovoContrato", contrato);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         public async Task SendEmailContratoAlteracao(Proposta proposta)
@@ -498,9 +512,16 @@ namespace PeD.Services.Captacoes
                 Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
                 PropostaGuid = captacao.PropostaSelecionada.Guid
             };
-            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
-                $"Novo comentário sobre o contrato do projeto \"{captacao.Titulo}\"",
-                "Email/Captacao/Propostas/ContratoRevisor", contrato);
+            try
+            {
+                await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                    $"Novo comentário sobre o contrato do projeto \"{captacao.Titulo}\"",
+                    "Email/Captacao/Propostas/ContratoRevisor", contrato);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         public async Task SendEmailPlanoTrabalhoAlteracao(Proposta proposta)
@@ -508,15 +529,14 @@ namespace PeD.Services.Captacoes
             var captacao = context.Set<Captacao>().AsNoTracking()
                 .Include(c => c.UsuarioRefinamento)
                 .Include(c => c.PropostaSelecionada)
-                .ThenInclude(p => p.Fornecedor)
+                .ThenInclude(p => p.Responsavel)
                 .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
             var plano = new PlanoTrabalhoRevisor()
             {
                 Captacao = captacao,
-                Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
                 PropostaGuid = captacao.PropostaSelecionada.Guid
             };
-            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+            await _sendGridService.Send(captacao.PropostaSelecionada.Responsavel.Email,
                 $"Novo comentário sobre o Plano de Trabalho do projeto \"{captacao.Titulo}\"",
                 "Email/Captacao/Propostas/PlanoTrabalhoRevisor", plano);
         }
@@ -526,19 +546,23 @@ namespace PeD.Services.Captacoes
             var captacao = context.Set<Captacao>().AsNoTracking()
                 .Include(c => c.UsuarioRefinamento)
                 .Include(c => c.PropostaSelecionada)
-                .ThenInclude(p => p.Fornecedor)
-                .Include(c => c.PropostaSelecionada)
                 .ThenInclude(f => f.Responsavel)
                 .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
             var message = new RefinamentoConcluido()
             {
                 Captacao = captacao,
-                Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
                 PropostaGuid = captacao.PropostaSelecionada.Guid
             };
-            await _sendGridService.Send(captacao.PropostaSelecionada.Responsavel.Email,
-                $"Parabéns! A revisão do projeto \"{captacao.Titulo}\" foi concluída",
-                "Email/Captacao/Propostas/RefinamentoConcluido", message);
+            try
+            {
+                await _sendGridService.Send(captacao.PropostaSelecionada.Responsavel.Email,
+                    $"Parabéns! A revisão do projeto \"{captacao.Titulo}\" foi concluída",
+                    "Email/Captacao/Propostas/RefinamentoConcluido", message);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         public async Task SendEmailRefinamentoCancelado(Proposta proposta)
@@ -546,17 +570,23 @@ namespace PeD.Services.Captacoes
             var captacao = context.Set<Captacao>().AsNoTracking()
                 .Include(c => c.UsuarioRefinamento)
                 .Include(c => c.PropostaSelecionada)
-                .ThenInclude(p => p.Fornecedor)
+                .ThenInclude(p => p.Responsavel)
                 .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
             var message = new RefinamentoCancelado()
             {
                 Captacao = captacao,
-                Fornecedor = captacao.PropostaSelecionada.Fornecedor.Nome,
                 PropostaGuid = captacao.PropostaSelecionada.Guid
             };
-            await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
-                $"A revisão do projeto \"{captacao.Titulo}\" foi cancelada",
-                "Email/Captacao/Propostas/RefinamentoCancelado", message);
+            try
+            {
+                await _sendGridService.Send(captacao.PropostaSelecionada.Responsavel.Email,
+                    $"A revisão do projeto \"{captacao.Titulo}\" foi cancelada",
+                    "Email/Captacao/Propostas/RefinamentoCancelado", message);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         #endregion
