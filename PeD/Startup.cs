@@ -30,6 +30,7 @@ using PeD.HostedServices;
 using PeD.Services;
 using PeD.Services.Captacoes;
 using PeD.Services.Demandas;
+using PeD.Services.Projetos;
 using PeD.Services.Sistema;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using TaesaCore.Data;
@@ -146,6 +147,7 @@ namespace PeD
             services.AddScoped<CaptacaoService>();
             services.AddScoped<PropostaService>();
             services.AddScoped<CoExecutorService>();
+            services.AddScoped<ProjetoService>();
 
             #endregion
 

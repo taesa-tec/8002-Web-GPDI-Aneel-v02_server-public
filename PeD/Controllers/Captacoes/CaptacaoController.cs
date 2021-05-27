@@ -19,6 +19,7 @@ using PeD.Core.Requests.Captacao;
 using PeD.Data;
 using PeD.Services;
 using PeD.Services.Captacoes;
+using PeD.Services.Projetos;
 using PeD.Views.Email.Captacao;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -549,7 +550,8 @@ namespace PeD.Controllers.Captacoes
 
         [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPost("{id}/Formalizacao")]
-        public ActionResult Formalizar(int id, [FromBody] CaptacaoFormalizacaoRequest request)
+        public ActionResult Formalizar(int id, [FromBody] CaptacaoFormalizacaoRequest request,
+            [FromServices] ProjetoService projetoService)
         {
             var captacao = Service.Filter(q => q
                 .Where(c => c.Status == Captacao.CaptacaoStatus.Formalizacao &&
@@ -567,18 +569,17 @@ namespace PeD.Controllers.Captacoes
                 return BadRequest();
             }
 
+            if (captacao.PropostaSelecionadaId == null)
+                return Problem("Sem proposta selecionada");
+
             captacao.UsuarioExecucaoId = request.ResponsavelId;
             captacao.IsProjetoAprovado = request.Aprovado;
             Service.Put(captacao);
 
             if (request.Aprovado)
             {
-                var projeto = Service.CriarProjeto(captacao);
-                projeto.ProponenteId = request.EmpresaProponenteId;
-                projeto.Numero = request.NumeroProjeto;
-                projeto.ResponsavelId = request.ResponsavelId;
-                projeto.TituloCompleto = request.TituloCompleto;
-                projeto.DataInicioProjeto = request.InicioProjeto;
+                var projeto = projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value, request.NumeroProjeto,
+                    request.TituloCompleto, request.ResponsavelId, request.InicioProjeto);
             }
 
 

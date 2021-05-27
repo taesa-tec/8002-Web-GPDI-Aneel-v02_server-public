@@ -446,10 +446,10 @@ namespace PeD.Services.Captacoes
             var projeto = _mapper.Map<Projeto>(proposta);
             projeto.Produtos.ForEach(e => { e.Id = 0; e.ProjetoId = 0; });
             projeto.CoExecutores.ForEach(e => { e.Id = 0; e.ProjetoId = 0; });
-            projeto.Etapas.ForEach(e => { e.Id = 0; e.ProjetoId = 0; });
             projeto.Riscos.ForEach(e => { e.Id = 0; e.ProjetoId = 0; });
             projeto.RecursosHumanos.ForEach(e => { e.Id = 0; e.ProjetoId = 0; });
             projeto.RecursosMateriais.ForEach(e => { e.Id = 0; e.ProjetoId = 0; });
+            projeto.Etapas.ForEach(e => { e.Id = 0; e.ProjetoId = 0; });
             projeto.RecursosHumanosAlocacoes.ForEach(e => { e.Id = 0; e.ProjetoId = 0; e.RecursoId = 0; });
             projeto.RecursosMateriaisAlocacoes.ForEach(e => { e.Id = 0; e.ProjetoId = 0;e.RecursoId = 0; });
 

@@ -13,6 +13,7 @@ using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
+using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Validators;
 using PeD.Data;
