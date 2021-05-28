@@ -70,6 +70,10 @@ namespace PeD.Data
 
         #endregion
 
+        //public DbSet<RegistroFinanceiro> RegistroFinanceiros { get; set; }
+        //public DbSet<RegistroFinanceiroRh> RegistroFinanceirosRh { get; set; }
+        //public DbSet<RegistroFinanceiroRm> RegistroFinanceirosRm { get; set; }
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -275,6 +279,30 @@ namespace PeD.Data
                 b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<PeD.Core.Models.Projetos.Risco>();
+
+            builder.Entity<RegistroFinanceiro>(b =>
+            {
+                b.HasOne(r => r.Projeto).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(r => r.Etapa).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(r => r.Financiadora).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(r => r.CoExecutorFinanciador).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.Property(r => r.Tipo).HasMaxLength(200);
+                b.Property(r => r.Status).HasConversion<string>();
+                b.Property(r => r.TipoDocumento).HasConversion<string>();
+
+                b.ToTable("ProjetosRegistrosFinanceiros");
+                b.HasDiscriminator(r => r.Tipo);
+            });
+            builder.Entity<RegistroFinanceiroRh>(b =>
+            {
+                b.HasOne(r => r.RecursoHumano).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<RegistroFinanceiroRm>(b =>
+            {
+                b.HasOne(r => r.RecursoMaterial).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(r => r.Recebedora).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(r => r.CoExecutorRecebedor).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
 
             #endregion
 

@@ -1,4 +1,5 @@
 using AutoMapper;
+using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
 
@@ -7,6 +8,12 @@ namespace PeD.Mapping
     public class ProjetoMapping : Profile
     {
         public ProjetoMapping()
+        {
+            PropostaMapping();
+            ProjetoResponses();
+        }
+
+        public void PropostaMapping()
         {
             CreateMap<Proposta, Projeto>()
                 .ForMember(dest => dest.Titulo, opt => opt.MapFrom(src => src.Captacao.Titulo))
@@ -35,6 +42,16 @@ namespace PeD.Mapping
             CreateMap<Core.Models.Propostas.PlanoTrabalho, Core.Models.Projetos.PlanoTrabalho>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
             CreateMap<Core.Models.Propostas.Meta, Core.Models.Projetos.Meta>().IncludeBase<PropostaNode, ProjetoNode>();
+        }
+
+        public void ProjetoResponses()
+        {
+            CreateMap<Projeto, ProjetoDto>()
+                .ForMember(dest => dest.Proponente, opt =>
+                    opt.MapFrom(src => src.Proponente.Nome))
+                .ForMember(dest => dest.Fornecedor, opt =>
+                    opt.MapFrom(src => src.Fornecedor.Nome))
+                ;
         }
     }
 }

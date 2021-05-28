@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PeD.Core.Models.Projetos
 {
-    class RegistroFinanceiroRm : RegistroFinanceiro
+    public class RegistroFinanceiroRm : RegistroFinanceiro
     {
         public string NomeItem { get; set; }
 
