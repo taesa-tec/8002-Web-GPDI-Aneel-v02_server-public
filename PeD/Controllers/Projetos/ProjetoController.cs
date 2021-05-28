@@ -13,7 +13,7 @@ using TaesaCore.Interfaces;
 namespace PeD.Controllers.Projetos
 {
     [SwaggerTag("Projeto")]
-    [Route("api/[controller]")]
+    [Route("api/Projetos")]
     [ApiController]
     [Authorize("Bearer")]
     public class ProjetoController : ControllerServiceBase<Projeto>
