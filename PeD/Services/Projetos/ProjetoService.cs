@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
@@ -33,6 +34,8 @@ namespace PeD.Services.Projetos
             Mapper = mapper;
         }
 
+        #region Proposta para Projeto
+
         protected Dictionary<int, int> CopyPropostaNodes<TOut>(int projetoId, IEnumerable<PropostaNode> list,
             Action<TOut> actionNode = null)
             where TOut : ProjetoNode
@@ -56,14 +59,15 @@ namespace PeD.Services.Projetos
             return map;
         }
 
-        public Projeto ParseProposta(int propostaId, string numero, string tituloCompleto, string responsavelId,
+        public Projeto ParseProposta(int propostaId, int proponentId, string numero, string tituloCompleto,
+            string responsavelId,
             DateTime inicio)
         {
             var proposta = _propostaService.GetPropostaFull(propostaId) ?? throw new NullReferenceException();
 
             var planoTrabalho = Mapper.Map<PlanoTrabalho>(proposta.PlanoTrabalho);
             var escopo = Mapper.Map<Escopo>(proposta.Escopo);
-            
+
 
             var projeto = new Projeto()
             {
@@ -74,6 +78,7 @@ namespace PeD.Services.Projetos
                 PropostaId = propostaId,
                 TituloCompleto = tituloCompleto,
                 ResponsavelId = responsavelId,
+                ProponenteId = proponentId,
                 Titulo = proposta.Captacao.Titulo,
                 CaptacaoId = proposta.CaptacaoId,
                 FornecedorId = proposta.FornecedorId,
@@ -105,7 +110,8 @@ namespace PeD.Services.Projetos
             CopyPropostaNodes<Risco>(projeto.Id, proposta.Riscos);
             CopyPropostaNodes<Meta>(projeto.Id, proposta.Metas);
             CopyPropostaNodes<RecursoHumano.AlocacaoRh>(projeto.Id, proposta.RecursosHumanosAlocacoes,
-                a => {
+                a =>
+                {
                     a.Recurso = null;
                     a.RecursoId = rhCopy[a.RecursoId];
                     a.Etapa = null;
@@ -138,6 +144,13 @@ namespace PeD.Services.Projetos
                 });
 
             return projeto;
+        }
+
+        #endregion
+
+        public List<T> NodeList<T>(int projetoId) where T : ProjetoNode
+        {
+            return _context.Set<T>().Where(r => r.ProjetoId == projetoId).ToList();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace PeD.Core.Models.Projetos
         Nota,
         Recibo,
         Reserva,
-        ReciboSemCNPJ
+        ReciboSemCnpj
     }
 
     public enum StatusRegistro

@@ -578,7 +578,8 @@ namespace PeD.Controllers.Captacoes
 
             if (request.Aprovado)
             {
-                var projeto = projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value, request.NumeroProjeto,
+                var projeto = projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
+                    request.EmpresaProponenteId, request.NumeroProjeto,
                     request.TituloCompleto, request.ResponsavelId, request.InicioProjeto);
             }
 

@@ -3,6 +3,7 @@ using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
@@ -38,5 +39,20 @@ namespace PeD.Controllers.Projetos
             var projetos = Service.Filter(q => q.Where(p => p.Status == Status.Finalizado));
             return Ok(Mapper.Map<List<ProjetoDto>>(projetos));
         }
+
+        [HttpGet("{id:int}")]
+        public ActionResult Get(int id)
+        {
+            var projeto = Service.Filter(q =>
+                q.Include(p => p.Proponente)
+                    .Include(p => p.Fornecedor)
+                    .Where(p => p.Id == id)).FirstOrDefault();
+            if (projeto == null)
+                return NotFound();
+
+            return Ok(Mapper.Map<ProjetoDto>(projeto));
+        }
+        
+        
     }
 }
