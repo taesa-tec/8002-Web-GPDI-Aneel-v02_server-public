@@ -36,7 +36,7 @@ namespace PeD.Core.Models.Projetos
 
         #endregion
 
-        public int MesReferencia { get; set; }
+        public DateTime MesReferencia { get; set; }
 
         public Etapa Etapa { get; set; }
         public int EtapaId { get; set; }

@@ -10,7 +10,7 @@ using PeD.Data;
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20210528194617_RegistrosFinanceiros")]
+    [Migration("20210601195156_RegistrosFinanceiros")]
     partial class RegistrosFinanceiros
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2949,8 +2949,8 @@ namespace PeD.Data.Migrations
                     b.Property<int?>("FinanciadoraId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MesReferencia")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("MesReferencia")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("NumeroDocumento")
                         .HasColumnType("nvarchar(max)");
@@ -4190,6 +4190,9 @@ namespace PeD.Data.Migrations
 
                     b.Property<string>("AtividadeRealizada")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Horas")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("RecursoHumanoId")
                         .HasColumnType("int");

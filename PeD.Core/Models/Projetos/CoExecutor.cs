@@ -16,6 +16,7 @@ namespace PeD.Core.Models.Projetos
         public string CNPJ { get; set; }
         public string UF { get; set; }
         public string RazaoSocial { get; set; }
+        public string Nome => RazaoSocial;
 
         public CoExecutorFuncao Funcao { get; set; }
     }
