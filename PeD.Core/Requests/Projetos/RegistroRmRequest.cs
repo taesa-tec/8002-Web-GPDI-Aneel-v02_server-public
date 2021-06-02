@@ -9,10 +9,10 @@ namespace PeD.Core.Requests.Projetos
         public int RecursoMaterialId { get; set; }
         public int Quantidade { get; set; }
         public decimal Valor { get; set; }
-        public int RecebedoraId { get; set; }
-        public int FinanciadoraId { get; set; }
-        public int CoExecutorFinanciadorId { get; set; }
-        public int CoExecutorRecebedorId { get; set; }
+        public int? RecebedoraId { get; set; }
+        public int? FinanciadoraId { get; set; }
+        public int? CoExecutorFinanciadorId { get; set; }
+        public int? CoExecutorRecebedorId { get; set; }
         public DateTime MesReferencia { get; set; }
         public string TipoDocumento { get; set; }
         public string NumeroDocumento { get; set; }

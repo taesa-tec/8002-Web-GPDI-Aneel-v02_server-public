@@ -19,6 +19,7 @@ namespace PeD.Core.ApiModels.Projetos
 
     public class RegistroFinanceiroDto
     {
+        public int Id { get; set; }
         public string Tipo { get; set; }
         public string Status { get; set; }
 

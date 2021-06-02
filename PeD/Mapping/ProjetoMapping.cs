@@ -16,6 +16,7 @@ namespace PeD.Mapping
         {
             PropostaMapping();
             ProjetoResponses();
+            ProjetoRequest();
         }
 
         public void PropostaMapping()

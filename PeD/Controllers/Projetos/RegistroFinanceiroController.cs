@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Requests.Projetos;
 using PeD.Data;
+using PeD.Services;
 using PeD.Services.Projetos;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -48,9 +52,10 @@ namespace PeD.Controllers.Projetos
                 .Where(e => e.Categoria == Empresa.CategoriaEmpresa.Taesa || e.Id == projeto.FornecedorId));
             var mesesN = etapas.SelectMany(etapa => etapa.Meses).Distinct();
             var meses = mesesN.Select(m => projeto.DataInicioProjeto.AddMonths(m - 1));
+            var categorias = _context.CategoriasContabeis.ToList();
             return Ok(new
             {
-                recursos, colaboradores, etapas, meses, coexecutores, empresas
+                recursos, colaboradores, etapas, meses, coexecutores, empresas, categorias
             });
         }
 
@@ -63,7 +68,8 @@ namespace PeD.Controllers.Projetos
                 registro.ProjetoId = id;
                 _context.Add(registro);
                 _context.SaveChanges();
-                return Ok();
+
+                return Ok(Mapper.Map<RegistroFinanceiroDto>(registro));
             }
             catch (Exception e)
             {
@@ -81,13 +87,44 @@ namespace PeD.Controllers.Projetos
                 registro.ProjetoId = id;
                 _context.Add(registro);
                 _context.SaveChanges();
-                return Ok();
+                return Ok(Mapper.Map<RegistroFinanceiroDto>(registro));
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 return Problem(e.Message);
             }
+        }
+
+        [HttpPost("{registroId:int}/Comprovante")]
+        public async Task<ActionResult> UploadComprovante(int registroId, [FromServices] ArquivoService arquivoService)
+        {
+            var upload = Request.Form.Files.FirstOrDefault();
+            if (upload is null)
+            {
+                return Problem("O arquivo comprobatório não foi enviado", null,
+                    StatusCodes.Status422UnprocessableEntity);
+            }
+
+            try
+            {
+                var file = await arquivoService.SaveFile(upload);
+                _context.Database.ExecuteSqlRaw(
+                    "UPDATE ProjetosRegistrosFinanceiros SET ComprovanteId = {0} WHERE Id = {1} AND ComprovanteId IS NULL",
+                    file.Id, registroId);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
+        }
+
+        [HttpGet("Pendentes")]
+        public ActionResult GetPendentes()
+        {
+            
+            return Ok();
         }
     }
 }

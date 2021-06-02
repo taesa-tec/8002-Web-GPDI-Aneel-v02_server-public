@@ -307,6 +307,7 @@ namespace PeD.Data
             #endregion
 
             builder.Entity<CaptacaoInfo>().ToView("CaptacoesView");
+            builder.Entity<RegistroFinanceiroInfo>().ToView("RegistrosFinanceirosView");
         }
     }
 }

@@ -9,8 +9,6 @@ namespace PeD.Core.Models.Projetos
 {
     public class Projeto : BaseEntity
     {
-        #region Novo
-
         public string Titulo { get; set; }
         public string TituloCompleto { get; set; }
 
@@ -28,8 +26,6 @@ namespace PeD.Core.Models.Projetos
 
         public int? ProponenteId { get; set; }
         public Empresa Proponente { get; set; }
-
-        #endregion
 
         /// <summary>
         /// Data de entrada do proposta no sitema
