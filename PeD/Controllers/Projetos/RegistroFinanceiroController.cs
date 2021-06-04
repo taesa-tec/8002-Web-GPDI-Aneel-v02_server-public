@@ -64,7 +64,11 @@ namespace PeD.Controllers.Projetos
         {
             try
             {
+                var valorhora = _context.Set<RecursoHumano>()
+                    .Where(r => r.Id == request.RecursoHumanoId)
+                    .Select(r => r.ValorHora).First();
                 var registro = Mapper.Map<RegistroFinanceiroRh>(request);
+                registro.Valor = valorhora;
                 registro.ProjetoId = id;
                 _context.Add(registro);
                 _context.SaveChanges();
@@ -121,10 +125,30 @@ namespace PeD.Controllers.Projetos
         }
 
         [HttpGet("Pendentes")]
-        public ActionResult GetPendentes()
+        public ActionResult GetPendentes([FromRoute] int id)
         {
-            
-            return Ok();
+            var registros = _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Pendente)
+                .ToList();
+            return Ok(registros);
+        }
+
+        [HttpGet("Reprovados")]
+        public ActionResult GetReprovados([FromRoute] int id)
+        {
+            var registros = _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Reprovado)
+                .ToList();
+            return Ok(registros);
+        }
+
+        [HttpGet("Aprovados")]
+        public ActionResult GetAprovados([FromRoute] int id)
+        {
+            var registros = _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Aprovado)
+                .ToList();
+            return Ok(Mapper.Map<List<RegistroFinanceiroInfoDto>>(registros));
         }
     }
 }

@@ -65,6 +65,7 @@ namespace PeD.Mapping
 
             CreateMap<RegistroFinanceiroRh, RegistroFinanceiroDto>();
             CreateMap<RegistroFinanceiroRm, RegistroFinanceiroDto>();
+            CreateMap<RegistroFinanceiroInfo, RegistroFinanceiroInfoDto>();
         }
 
         public void ProjetoRequest()

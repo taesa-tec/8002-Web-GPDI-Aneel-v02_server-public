@@ -1,7 +1,9 @@
 namespace PeD.Data.Views
 {
-    public class Captacoes
+    public class Captacoes : IView
     {
+        public string CreateView => Up;
+
         public static string Up = @"CREATE OR ALTER VIEW CaptacoesView as
 SELECT
        C.Id,

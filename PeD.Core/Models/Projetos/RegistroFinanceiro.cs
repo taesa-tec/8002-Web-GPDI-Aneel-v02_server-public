@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PeD.Core.Models.Projetos
 {
@@ -25,6 +26,7 @@ namespace PeD.Core.Models.Projetos
     {
         public string Tipo { get; set; }
         public StatusRegistro Status { get; set; }
+        [Column(TypeName = "decimal(18, 2)")] public decimal Valor { get; set; }
 
         #region Empresa Financiadora
 
@@ -61,15 +63,19 @@ namespace PeD.Core.Models.Projetos
         public int ProjetoId { get; set; }
         public StatusRegistro Status { get; set; }
         public TipoDocumento TipoDocumento { get; set; }
-        public int FinanciadoraId { get; set; }
-        public int CoExecutorFinanciadorId { get; set; }
-        public int RecebedoraId { get; set; }
-        public int CoExecutorRecebedorId { get; set; }
-        public int CategoriaContabilId { get; set; }
+        public string Recurso { get; set; }
+        public int? RecursoHumanoId { get; set; }
+        public int? RecursoMaterialId { get; set; }
+        public int? FinanciadoraId { get; set; }
+        public int? CoExecutorFinanciadorId { get; set; }
+        public int? RecebedoraId { get; set; }
+        public int? CoExecutorRecebedorId { get; set; }
+        public int? CategoriaContabilId { get; set; }
         public string CategoriaContabil { get; set; }
         public string Financiador { get; set; }
         public string Recebedor { get; set; }
-        public decimal Custo { get; set; }
-        public decimal QuantidadeHoras { get; set; }
+        [Column(TypeName = "decimal(18, 2)")] public decimal Valor { get; set; }
+        [Column(TypeName = "decimal(18, 2)")] public decimal QuantidadeHoras { get; set; }
+        [Column(TypeName = "decimal(18, 2)")] public decimal Custo { get; set; }
     }
 }

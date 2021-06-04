@@ -9,7 +9,6 @@ using PeD.Core.Models.Projetos;
 using PeD.Services.Projetos;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
-using TaesaCore.Interfaces;
 
 namespace PeD.Controllers.Projetos
 {

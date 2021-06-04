@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PeD.Data;
+using PeD.Data.Views;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using BindingFlags = System.Reflection.BindingFlags;
 
 namespace PeD
 {
@@ -25,13 +29,44 @@ namespace PeD
                         var db = scope.ServiceProvider.GetRequiredService<GestorDbContext>();
                         try
                         {
-                            Log.Information("Rodando migrations pendentes");
-                            db.Database.Migrate();
-                            Log.Information("Migrations concluídas");
+                            var pendingMigrations = db.Database.GetPendingMigrations();
+                            if (pendingMigrations.Count() > 0)
+                            {
+                                Log.Information("Rodando migrations pendentes");
+                                db.Database.Migrate();
+                                Log.Information("Migrations concluídas");
+                            }
                         }
                         catch (Exception e)
                         {
                             Log.Error(e, "Erro na migração");
+                            throw;
+                        }
+
+                        try
+                        {
+                            Log.Information("Atualizando Views");
+                            var viewType = typeof(IView);
+                            var views = AppDomain.CurrentDomain.GetAssemblies()
+                                .SelectMany(a => a.GetTypes())
+                                .Where(t => viewType.IsAssignableFrom(t) && !t.IsInterface);
+                            foreach (var view in views)
+                            {
+                                var viewObj = Activator.CreateInstance(view) as IView;
+                                var sql = viewObj?.CreateView ?? "";
+                                if (!string.IsNullOrWhiteSpace(sql))
+                                {
+                                    db.Database.ExecuteSqlRaw(sql);
+                                }
+                                else
+                                {
+                                    Log.Warning("View {View} sql não executado", view.ToString());
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e, "Erro no update das views: {Erro}", e.Message);
                             throw;
                         }
                     }

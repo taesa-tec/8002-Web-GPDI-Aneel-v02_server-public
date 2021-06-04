@@ -1,16 +1,22 @@
 namespace PeD.Data.Views
 {
-    public static class RegistrosFinanceiros
+    public class RegistrosFinanceiros : IView
     {
+        public string CreateView => Up;
+
         public static string Up = @"
 CREATE OR ALTER VIEW RegistrosFinanceirosView as
 SELECT prf.Id,
        prf.Tipo,
        prf.ProjetoId,
+       prf.RecursoHumanoId,
+       prf.RecursoMaterialId,
+       IIF(prf.Tipo = 'RegistroFinanceiroRm', PRM.Nome, PRH.NomeCompleto)                  AS Recurso,
        prf.Status,
        prf.TipoDocumento,
        prf.FinanciadoraId,
        prf.CoExecutorFinanciadorId,
+
 
        IIF(prf.Tipo = 'RegistroFinanceiroRm', prf.RecebedoraId, PRH.EmpresaId)             AS RecebedoraId,
 
@@ -36,13 +42,12 @@ SELECT prf.Id,
                                                                                            as Recebedor,
        prf.CategoriaContabilId,
        IIF(prf.Tipo = 'RegistroFinanceiroRh', 'Recursos Humanos', CC.Nome)                 as CategoriaContabil,
-
+       COALESCE(prf.Valor, 0)                                                              as Valor,
+       IIF(prf.Tipo = 'RegistroFinanceiroRm', prf.Quantidade, prf.Horas)                   as QuantidadeHoras,
        CASE
-           WHEN prf.Tipo = 'RegistroFinanceiroRm' THEN PRM.ValorUnitario * prf.Quantidade
-           ELSE prf.Horas * PRH.ValorHora
-           END                                                                             AS Custo,
-       IIF(prf.Tipo = 'RegistroFinanceiroRm', prf.Quantidade, prf.Horas)                   as QuantidadeHoras
-
+           WHEN prf.Tipo = 'RegistroFinanceiroRm' THEN COALESCE(prf.Valor * prf.Quantidade, 0)
+           ELSE COALESCE(prf.Valor * prf.Horas, 0)
+           END                                                                             AS Custo
 
 FROM ProjetosRegistrosFinanceiros prf
 
