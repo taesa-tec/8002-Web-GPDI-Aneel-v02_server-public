@@ -150,5 +150,25 @@ namespace PeD.Controllers.Projetos
                 .ToList();
             return Ok(Mapper.Map<List<RegistroFinanceiroInfoDto>>(registros));
         }
+
+        [HttpGet("{registroId:int}")]
+        public ActionResult Get(int registroId)
+        {
+            var registro = _context.Set<RegistroFinanceiroInfo>().FirstOrDefault(r => r.Id == registroId);
+
+            if (registro == null)
+                return NotFound();
+            return Ok(Mapper.Map<RegistroFinanceiroInfoDto>(registro));
+        }
+
+        protected RegistroFinanceiroRh GetRegistroRh(int id)
+        {
+            return _context.Set<RegistroFinanceiroRh>().FirstOrDefault(r => r.Id == id);
+        }
+
+        protected RegistroFinanceiroRm GetRegistroRm(int id)
+        {
+            return _context.Set<RegistroFinanceiroRm>().FirstOrDefault(r => r.Id == id);
+        }
     }
 }

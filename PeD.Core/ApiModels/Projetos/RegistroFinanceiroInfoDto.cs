@@ -5,6 +5,14 @@ namespace PeD.Core.ApiModels.Projetos
         public int Id { get; set; }
         public string Tipo { get; set; }
         public int ProjetoId { get; set; }
+        public string AtividadeRealizada { get; set; }
+        public string ObservacaoInterna { get; set; }
+        public string NomeItem { get; set; }
+        public string Beneficiado { get; set; }
+        public string CnpjBeneficiado { get; set; }
+        public bool? EquipaLaboratorioExistente { get; set; }
+        public bool? EquipaLaboratorioNovo { get; set; }
+        public bool? IsNacional { get; set; }
         public string Status { get; set; }
         public string TipoDocumento { get; set; }
         public string Recurso { get; set; }

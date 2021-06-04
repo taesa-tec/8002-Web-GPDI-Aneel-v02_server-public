@@ -60,6 +60,14 @@ namespace PeD.Core.Models.Projetos
     {
         public int Id { get; set; }
         public string Tipo { get; set; }
+        public string AtividadeRealizada { get; set; }
+        public string ObservacaoInterna { get; set; }
+        public string NomeItem { get; set; }
+        public string Beneficiado { get; set; }
+        public string CnpjBeneficiado { get; set; }
+        public bool? EquipaLaboratorioExistente { get; set; }
+        public bool? EquipaLaboratorioNovo { get; set; }
+        public bool? IsNacional { get; set; }
         public int ProjetoId { get; set; }
         public StatusRegistro Status { get; set; }
         public TipoDocumento TipoDocumento { get; set; }

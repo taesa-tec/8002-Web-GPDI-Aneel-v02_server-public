@@ -9,6 +9,13 @@ CREATE OR ALTER VIEW RegistrosFinanceirosView as
 SELECT prf.Id,
        prf.Tipo,
        prf.ProjetoId,
+       prf.NomeItem,
+       prf.Beneficiado,
+       prf.CnpjBeneficiado,
+       prf.EquipaLaboratorioExistente,
+       prf.EquipaLaboratorioNovo,
+       prf.IsNacional,
+
        prf.RecursoHumanoId,
        prf.RecursoMaterialId,
        IIF(prf.Tipo = 'RegistroFinanceiroRm', PRM.Nome, PRH.NomeCompleto)                  AS Recurso,
@@ -43,11 +50,15 @@ SELECT prf.Id,
        prf.CategoriaContabilId,
        IIF(prf.Tipo = 'RegistroFinanceiroRh', 'Recursos Humanos', CC.Nome)                 as CategoriaContabil,
        COALESCE(prf.Valor, 0)                                                              as Valor,
-       IIF(prf.Tipo = 'RegistroFinanceiroRm', prf.Quantidade, prf.Horas)                   as QuantidadeHoras,
        CASE
            WHEN prf.Tipo = 'RegistroFinanceiroRm' THEN COALESCE(prf.Valor * prf.Quantidade, 0)
            ELSE COALESCE(prf.Valor * prf.Horas, 0)
-           END                                                                             AS Custo
+           END                                                                             AS Custo,
+       IIF(prf.Tipo = 'RegistroFinanceiroRm', prf.Quantidade, prf.Horas)                   as QuantidadeHoras,
+
+       prf.AtividadeRealizada,
+       prf.ObservacaoInterna
+
 
 FROM ProjetosRegistrosFinanceiros prf
 
