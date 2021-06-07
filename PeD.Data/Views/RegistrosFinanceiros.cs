@@ -15,12 +15,17 @@ SELECT prf.Id,
        prf.EquipaLaboratorioExistente,
        prf.EquipaLaboratorioNovo,
        prf.IsNacional,
+       prf.MesReferencia,
+
+
 
        prf.RecursoHumanoId,
        prf.RecursoMaterialId,
        IIF(prf.Tipo = 'RegistroFinanceiroRm', PRM.Nome, PRH.NomeCompleto)                  AS Recurso,
        prf.Status,
        prf.TipoDocumento,
+       prf.NumeroDocumento,
+       prf.DataDocumento,
        prf.FinanciadoraId,
        prf.CoExecutorFinanciadorId,
 
@@ -57,7 +62,8 @@ SELECT prf.Id,
        IIF(prf.Tipo = 'RegistroFinanceiroRm', prf.Quantidade, prf.Horas)                   as QuantidadeHoras,
 
        prf.AtividadeRealizada,
-       prf.ObservacaoInterna
+       prf.EspecificaoTecnica,
+       prf.FuncaoEtapa
 
 
 FROM ProjetosRegistrosFinanceiros prf

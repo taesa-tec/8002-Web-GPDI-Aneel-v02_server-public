@@ -19,7 +19,7 @@ namespace PeD.Core.Models.Projetos
         public bool EquipaLaboratorioNovo { get; set; }
         public bool IsNacional { get; set; }
         public int Quantidade { get; set; }
-        
+
         public string EspecificaoTecnica { get; set; }
         public string FuncaoEtapa { get; set; }
 

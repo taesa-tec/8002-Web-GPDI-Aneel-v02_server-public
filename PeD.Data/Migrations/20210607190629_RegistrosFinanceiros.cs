@@ -16,6 +16,7 @@ namespace PeD.Data.Migrations
                     ProjetoId = table.Column<int>(nullable: false),
                     Tipo = table.Column<string>(maxLength: 200, nullable: false),
                     Status = table.Column<string>(nullable: false),
+                    Valor = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
                     FinanciadoraId = table.Column<int>(nullable: true),
                     CoExecutorFinanciadorId = table.Column<int>(nullable: true),
                     MesReferencia = table.Column<DateTime>(nullable: false),
@@ -23,7 +24,6 @@ namespace PeD.Data.Migrations
                     TipoDocumento = table.Column<string>(nullable: false),
                     NumeroDocumento = table.Column<string>(nullable: true),
                     DataDocumento = table.Column<DateTime>(nullable: false),
-                    ObservacaoInterna = table.Column<string>(nullable: true),
                     ComprovanteId = table.Column<int>(nullable: true),
                     AtividadeRealizada = table.Column<string>(nullable: true),
                     RecursoHumanoId = table.Column<int>(nullable: true),
@@ -37,7 +37,6 @@ namespace PeD.Data.Migrations
                     EquipaLaboratorioNovo = table.Column<bool>(nullable: true),
                     IsNacional = table.Column<bool>(nullable: true),
                     Quantidade = table.Column<int>(nullable: true),
-                    Valor = table.Column<decimal>(type: "decimal(18, 2)", nullable: true),
                     EspecificaoTecnica = table.Column<string>(nullable: true),
                     FuncaoEtapa = table.Column<string>(nullable: true),
                     RecebedoraId = table.Column<int>(nullable: true),
@@ -100,6 +99,33 @@ namespace PeD.Data.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ProjetosRegistrosFinanceirosObservacoes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    RegistroId = table.Column<int>(nullable: false),
+                    AuthorId = table.Column<string>(nullable: true),
+                    Content = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjetosRegistrosFinanceirosObservacoes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceirosObservacoes_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceirosObservacoes_ProjetosRegistrosFinanceiros_RegistroId",
+                        column: x => x.RegistroId,
+                        principalTable: "ProjetosRegistrosFinanceiros",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ProjetosRegistrosFinanceiros_CoExecutorFinanciadorId",
                 table: "ProjetosRegistrosFinanceiros",
@@ -149,10 +175,23 @@ namespace PeD.Data.Migrations
                 name: "IX_ProjetosRegistrosFinanceiros_RecursoMaterialId",
                 table: "ProjetosRegistrosFinanceiros",
                 column: "RecursoMaterialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceirosObservacoes_AuthorId",
+                table: "ProjetosRegistrosFinanceirosObservacoes",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceirosObservacoes_RegistroId",
+                table: "ProjetosRegistrosFinanceirosObservacoes",
+                column: "RegistroId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ProjetosRegistrosFinanceirosObservacoes");
+
             migrationBuilder.DropTable(
                 name: "ProjetosRegistrosFinanceiros");
         }

@@ -73,6 +73,20 @@ namespace PeD.Controllers.Projetos
                 _context.Add(registro);
                 _context.SaveChanges();
 
+                if (!string.IsNullOrWhiteSpace(request.ObservacaoInterna))
+                {
+                    var obs = new RegistroObservacao()
+                    {
+                        Content = request.ObservacaoInterna,
+                        AuthorId = this.UserId(),
+                        CreatedAt = DateTime.Now,
+                        RegistroId = registro.Id
+                    };
+                    _context.Add(obs);
+                    _context.SaveChanges();
+                }
+
+
                 return Ok(Mapper.Map<RegistroFinanceiroDto>(registro));
             }
             catch (Exception e)
@@ -91,6 +105,20 @@ namespace PeD.Controllers.Projetos
                 registro.ProjetoId = id;
                 _context.Add(registro);
                 _context.SaveChanges();
+
+                if (!string.IsNullOrWhiteSpace(request.ObservacaoInterna))
+                {
+                    var obs = new RegistroObservacao()
+                    {
+                        Content = request.ObservacaoInterna,
+                        AuthorId = this.UserId(),
+                        CreatedAt = DateTime.Now,
+                        RegistroId = registro.Id
+                    };
+                    _context.Add(obs);
+                    _context.SaveChanges();
+                }
+
                 return Ok(Mapper.Map<RegistroFinanceiroDto>(registro));
             }
             catch (Exception e)
@@ -122,6 +150,19 @@ namespace PeD.Controllers.Projetos
             {
                 return Problem(e.Message);
             }
+        }
+
+        [HttpGet("{registroId:int}/Comprovante")]
+        public ActionResult DownloadComprovante(int registroId,
+            [FromServices] ArquivoService arquivoService)
+        {
+            var registro = _context.Set<RegistroFinanceiro>().Include(r => r.Comprovante)
+                .FirstOrDefault(r => r.Id == registroId);
+            if (registro is null)
+                return NotFound();
+
+            var file = registro.Comprovante;
+            return PhysicalFile(file.Path, file.ContentType, file.Name);
         }
 
         [HttpGet("Pendentes")]
@@ -161,14 +202,13 @@ namespace PeD.Controllers.Projetos
             return Ok(Mapper.Map<RegistroFinanceiroInfoDto>(registro));
         }
 
-        protected RegistroFinanceiroRh GetRegistroRh(int id)
+        [HttpGet("{registroId:int}/Observacoes")]
+        public ActionResult GetObservacoes(int registroId)
         {
-            return _context.Set<RegistroFinanceiroRh>().FirstOrDefault(r => r.Id == id);
-        }
+            var registro = _context.Set<RegistroObservacao>().Include(ro => ro.Author)
+                .Where(ro => ro.RegistroId == registroId);
 
-        protected RegistroFinanceiroRm GetRegistroRm(int id)
-        {
-            return _context.Set<RegistroFinanceiroRm>().FirstOrDefault(r => r.Id == id);
+            return Ok(Mapper.Map<List<RegistroObservacaoDto>>(registro));
         }
     }
 }

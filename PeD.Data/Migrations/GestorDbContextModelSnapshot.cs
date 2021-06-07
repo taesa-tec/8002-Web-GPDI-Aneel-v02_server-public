@@ -2953,9 +2953,6 @@ namespace PeD.Data.Migrations
                     b.Property<string>("NumeroDocumento")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ObservacaoInterna")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ProjetoId")
                         .HasColumnType("int");
 
@@ -2972,6 +2969,9 @@ namespace PeD.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Valor")
+                        .HasColumnType("decimal(18, 2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CoExecutorFinanciadorId");
@@ -2987,6 +2987,34 @@ namespace PeD.Data.Migrations
                     b.ToTable("ProjetosRegistrosFinanceiros");
 
                     b.HasDiscriminator<string>("Tipo").HasValue("RegistroFinanceiro");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.RegistroObservacao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RegistroId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("RegistroId");
+
+                    b.ToTable("ProjetosRegistrosFinanceirosObservacoes");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.Risco", b =>
@@ -4243,9 +4271,6 @@ namespace PeD.Data.Migrations
                     b.Property<int>("RecursoMaterialId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("decimal(18, 2)");
-
                     b.HasIndex("CategoriaContabilId");
 
                     b.HasIndex("CoExecutorRecebedorId");
@@ -4788,6 +4813,19 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
                         .WithMany()
                         .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.RegistroObservacao", b =>
+                {
+                    b.HasOne("PeD.Core.Models.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("PeD.Core.Models.Projetos.RegistroFinanceiro", null)
+                        .WithMany("Observacoes")
+                        .HasForeignKey("RegistroId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

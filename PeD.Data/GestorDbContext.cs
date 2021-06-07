@@ -286,6 +286,8 @@ namespace PeD.Data
                 b.HasOne(r => r.Etapa).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(r => r.Financiadora).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(r => r.CoExecutorFinanciador).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasMany(r => r.Observacoes).WithOne().HasForeignKey(o => o.RegistroId)
+                    .OnDelete(DeleteBehavior.NoAction);
                 b.Property(r => r.Tipo).HasMaxLength(200);
                 b.Property(r => r.Status).HasConversion<string>();
                 b.Property(r => r.TipoDocumento).HasConversion<string>();
@@ -303,6 +305,7 @@ namespace PeD.Data
                 b.HasOne(r => r.Recebedora).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(r => r.CoExecutorRecebedor).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
+            builder.Entity<RegistroObservacao>(b => { b.ToTable("ProjetosRegistrosFinanceirosObservacoes"); });
 
             #endregion
 

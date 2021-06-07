@@ -72,6 +72,8 @@ namespace PeD.Mapping
         {
             CreateMap<RegistroRhRequest, RegistroFinanceiroRh>();
             CreateMap<RegistroRmRequest, RegistroFinanceiroRm>();
+            CreateMap<RegistroObservacao, RegistroObservacaoDto>()
+                .ForMember(r => r.Author, opt => opt.MapFrom(src => src.Author.NomeCompleto));
         }
     }
 }
