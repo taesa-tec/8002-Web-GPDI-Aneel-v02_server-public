@@ -63,7 +63,8 @@ namespace PeD.Mapping
             CreateMap<RecursoMaterial, RecursoMaterialDto>();
             CreateMap<CoExecutor, CoExecutorDto>();
 
-            CreateMap<RegistroFinanceiroRh, RegistroFinanceiroDto>();
+            CreateMap<RegistroFinanceiroRh, RegistroFinanceiroDto>()
+                .ForMember(r => r.RecursoHumano, opt => opt.MapFrom(src => src.RecursoHumano.NomeCompleto));
             CreateMap<RegistroFinanceiroRm, RegistroFinanceiroDto>();
             CreateMap<RegistroFinanceiroInfo, RegistroFinanceiroInfoDto>();
         }

@@ -195,6 +195,29 @@ namespace PeD.Controllers.Projetos
         [HttpGet("{registroId:int}")]
         public ActionResult Get(int registroId)
         {
+            var registro = _context.Set<RegistroFinanceiro>().FirstOrDefault(r => r.Id == registroId);
+            if (registro == null)
+                return NotFound();
+            if (registro.Tipo == "RegistroFinanceiroRh")
+            {
+                var rh = _context.Set<RegistroFinanceiroRh>()
+                    .Include(r => r.RecursoHumano)
+                    .ThenInclude(r => r.Empresa)
+                    .Include(r => r.Etapa)
+                    .Include(r => r.CoExecutorFinanciador)
+                    .FirstOrDefault(r => r.Id == registroId);
+                return Ok(Mapper.Map<RegistroFinanceiroDto>(rh));
+            }
+            else
+            {
+                var rm = _context.Set<RegistroFinanceiroRm>().FirstOrDefault(r => r.Id == registroId);
+                return Ok(Mapper.Map<RegistroFinanceiroDto>(rm));
+            }
+        }
+
+        [HttpGet("{registroId:int}/Info")]
+        public ActionResult GetInfo(int registroId)
+        {
             var registro = _context.Set<RegistroFinanceiroInfo>().FirstOrDefault(r => r.Id == registroId);
 
             if (registro == null)
@@ -209,6 +232,54 @@ namespace PeD.Controllers.Projetos
                 .Where(ro => ro.RegistroId == registroId);
 
             return Ok(Mapper.Map<List<RegistroObservacaoDto>>(registro));
+        }
+
+        [HttpPost("{registroId:int}/Aprovar")]
+        public ActionResult AprovarRegistroFinanceiro(int registroId)
+        {
+            var registro = _context.Set<RegistroFinanceiro>().FirstOrDefault(r => r.Id == registroId);
+            if (registro is null)
+            {
+                return NotFound();
+            }
+
+            registro.Status = StatusRegistro.Aprovado;
+            _context.Update(registro);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPost("{registroId:int}/Reprovar")]
+        public ActionResult ReprovarRegistroFinanceiro(int registroId, [FromBody] RegistroAprovacaoRequest request)
+        {
+            var registro = _context.Set<RegistroFinanceiro>().FirstOrDefault(r => r.Id == registroId);
+            if (registro is null)
+            {
+                return NotFound();
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Observacao))
+            {
+                return BadRequest("Observação não pode ser vazia");
+            }
+
+            if (registro.Status == StatusRegistro.Pendente)
+            {
+                registro.Status = StatusRegistro.Reprovado;
+                var obs = new RegistroObservacao()
+                {
+                    Content = request.Observacao,
+                    RegistroId = registro.Id,
+                    AuthorId = this.UserId(),
+                    CreatedAt = DateTime.Now
+                };
+                _context.Add(obs);
+                _context.Update(registro);
+                _context.SaveChanges();
+                return Ok();
+            }
+
+            return Conflict();
         }
     }
 }

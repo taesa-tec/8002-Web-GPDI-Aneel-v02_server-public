@@ -1,4 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using PeD.Core.Models;
+using PeD.Core.Models.Projetos;
 using TaesaCore.Models;
 
 namespace PeD.Core.ApiModels.Projetos
@@ -9,11 +13,11 @@ namespace PeD.Core.ApiModels.Projetos
         public string Tipo { get; set; }
         public int ProjetoId { get; set; }
         public DateTime MesReferencia { get; set; }
-        
+
         public string AtividadeRealizada { get; set; }
         public string EspecificaoTecnica { get; set; }
         public string FuncaoEtapa { get; set; }
-        
+
         public string NomeItem { get; set; }
         public string Beneficiado { get; set; }
         public string CnpjBeneficiado { get; set; }
