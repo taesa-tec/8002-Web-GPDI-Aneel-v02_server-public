@@ -85,10 +85,12 @@ namespace PeD.Core.Models.Projetos
         public int? RecursoMaterialId { get; set; }
         public int? FinanciadoraId { get; set; }
         public int? CoExecutorFinanciadorId { get; set; }
+        public string FinanciadorCode { get; set; }
         public int? RecebedoraId { get; set; }
         public int? CoExecutorRecebedorId { get; set; }
         public int? CategoriaContabilId { get; set; }
         public string CategoriaContabil { get; set; }
+        public string CategoriaContabilCodigo { get; set; }
         public string Financiador { get; set; }
         public string Recebedor { get; set; }
         [Column(TypeName = "decimal(18, 2)")] public decimal Valor { get; set; }

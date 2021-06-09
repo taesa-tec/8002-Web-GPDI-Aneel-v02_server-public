@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoMapper;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models.Projetos;
@@ -40,9 +41,15 @@ namespace PeD.Mapping
             CreateMap<Core.Models.Propostas.RecursoMaterial, Core.Models.Projetos.RecursoMaterial>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
             CreateMap<Core.Models.Propostas.RecursoHumano.AlocacaoRh,
-                Core.Models.Projetos.RecursoHumano.AlocacaoRh>().IncludeBase<PropostaNode, ProjetoNode>();
+                    Core.Models.Projetos.RecursoHumano.AlocacaoRh>().IncludeBase<PropostaNode, ProjetoNode>()
+                .ForMember(dest => dest.HorasMeses, opt => opt.MapFrom(
+                    src => src.HoraMeses.Select(kv => new RecursoHumano.AlocacaoRhHorasMes()
+                        {Mes = kv.Key, Horas = kv.Value})))
+                .ForMember(dest => dest.RecursoHumanoId, opt => opt.MapFrom(src => src.RecursoId));
             CreateMap<Core.Models.Propostas.RecursoMaterial.AlocacaoRm,
-                Core.Models.Projetos.RecursoMaterial.AlocacaoRm>().IncludeBase<PropostaNode, ProjetoNode>();
+                    Core.Models.Projetos.RecursoMaterial.AlocacaoRm>().IncludeBase<PropostaNode, ProjetoNode>()
+                .ForMember(dest => dest.RecursoMaterialId, opt => opt.MapFrom(src => src.RecursoId));
+            ;
             CreateMap<Core.Models.Propostas.Escopo, Core.Models.Projetos.Escopo>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
             CreateMap<Core.Models.Propostas.PlanoTrabalho, Core.Models.Projetos.PlanoTrabalho>()

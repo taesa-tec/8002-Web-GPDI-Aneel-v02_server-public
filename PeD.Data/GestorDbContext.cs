@@ -218,6 +218,7 @@ namespace PeD.Data
             builder.Entity<PlanoComentario>(b => { b.ToTable("PlanoComentarios"); });
             builder.Entity<PlanoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
             builder.Entity<ContratoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
+            builder.Entity<Orcamento>(b => { b.ToView("ProjetoOrcamentoView"); });
 
             #endregion
 
@@ -254,29 +255,34 @@ namespace PeD.Data
             builder.Entity<PeD.Core.Models.Projetos.Produto>();
             builder.Entity<PeD.Core.Models.Projetos.RecursoHumano>();
             builder.Entity<PeD.Core.Models.Projetos.RecursoMaterial>();
+
+
+            builder.Entity<PeD.Core.Models.Projetos.Alocacao>(b =>
+            {
+                b.HasDiscriminator(a => a.Tipo);
+                b.HasOne(a => a.CoExecutorFinanciador).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Etapa).WithMany(e => e.Alocacoes).HasForeignKey(a => a.EtapaId)
+                    .OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.Projeto).WithMany(p => p.Alocacoes).HasForeignKey(a => a.ProjetoId)
+                    .OnDelete(DeleteBehavior.NoAction);
+                b.ToTable("ProjetosRecursosAlocacoes");
+            });
             builder.Entity<PeD.Core.Models.Projetos.RecursoHumano.AlocacaoRh>(b =>
             {
-                b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(a => a.Etapa).WithMany(e => e.RecursosHumanosAlocacoes).OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(a => a.Projeto)
-                    .WithMany(e => e.RecursosHumanosAlocacoes)
-                    .HasForeignKey(a => a.ProjetoId)
-                    .OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.Property(e => e.HoraMeses).HasConversion(
-                    meses => JsonConvert.SerializeObject(meses),
-                    meses => JsonConvert.DeserializeObject<Dictionary<short, short>>(meses));
+                b.HasMany(b => b.HorasMeses).WithOne().HasForeignKey(a => a.AlocacaoRhId);
+                b.HasOne(a => a.RecursoHumano).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<Core.Models.Projetos.RecursoHumano.AlocacaoRhHorasMes>(b =>
+            {
+                b.HasKey(b => new {b.AlocacaoRhId, b.Mes});
+                b.ToTable("ProjetosAlocacaoRhHorasMeses");
             });
             builder.Entity<PeD.Core.Models.Projetos.RecursoMaterial.AlocacaoRm>(b =>
             {
-                b.HasOne(a => a.Etapa).WithMany(e => e.RecursosMateriaisAlocacoes).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.EmpresaRecebedora).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(a => a.Projeto)
-                    .WithMany(e => e.RecursosMateriaisAlocacoes)
-                    .HasForeignKey(a => a.ProjetoId)
-                    .OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(a => a.RecursoMaterial).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<PeD.Core.Models.Projetos.Risco>();
 

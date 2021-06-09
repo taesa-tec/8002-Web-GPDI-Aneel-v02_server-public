@@ -23,17 +23,26 @@ namespace PeD.Core.Models.Projetos
         public int? CoExecutorId { get; set; }
         public CoExecutor CoExecutor { get; set; }
 
-        [Table("ProjetoRecursosHumanosAlocacao")]
         public class AlocacaoRh : Alocacao
         {
-            public int RecursoId { get; set; }
-            public RecursoHumano Recurso { get; set; }
-            public Dictionary<short, short> HoraMeses { get; set; }
+            public int RecursoHumanoId { get; set; }
+            public RecursoHumano RecursoHumano { get; set; }
+            public List<AlocacaoRhHorasMes> HorasMeses { get; set; }
 
             public override decimal Valor
             {
-                get { return HoraMeses.Sum(i => i.Value) * (Recurso?.ValorHora ?? 0); }
+                get
+                {
+                    return (HorasMeses is null) ? 0 : HorasMeses.Sum(i => i.Horas) * (RecursoHumano?.ValorHora ?? 0);
+                }
             }
+        }
+
+        public class AlocacaoRhHorasMes
+        {
+            public int AlocacaoRhId { get; set; }
+            public int Mes { get; set; }
+            public int Horas { get; set; }
         }
     }
 }

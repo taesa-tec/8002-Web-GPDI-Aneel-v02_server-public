@@ -28,6 +28,7 @@ SELECT prf.Id,
        prf.DataDocumento,
        prf.FinanciadoraId,
        prf.CoExecutorFinanciadorId,
+       IIF(prf.FinanciadoraId IS NULL, CONCAT('c-', prf.CoExecutorFinanciadorId),CONCAT('e-', prf.FinanciadoraId)) as FinanciadorCode,
 
 
        IIF(prf.Tipo = 'RegistroFinanceiroRm', prf.RecebedoraId, PRH.EmpresaId)             AS RecebedoraId,
@@ -54,6 +55,7 @@ SELECT prf.Id,
                                                                                            as Recebedor,
        prf.CategoriaContabilId,
        IIF(prf.Tipo = 'RegistroFinanceiroRh', 'Recursos Humanos', CC.Nome)                 as CategoriaContabil,
+       IIF(prf.Tipo = 'RegistroFinanceiroRh', 'RH', CC.Valor)                 as CategoriaContabilCodigo,
        COALESCE(prf.Valor, 0)                                                              as Valor,
        CASE
            WHEN prf.Tipo = 'RegistroFinanceiroRm' THEN COALESCE(prf.Valor * prf.Quantidade, 0)
