@@ -71,8 +71,10 @@ namespace PeD.Mapping
 
         public void ProjetoRequest()
         {
-            CreateMap<RegistroRhRequest, RegistroFinanceiroRh>();
-            CreateMap<RegistroRmRequest, RegistroFinanceiroRm>();
+            CreateMap<RegistroRhRequest, RegistroFinanceiroRh>()
+                .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => nameof(RegistroFinanceiroRh)));
+            CreateMap<RegistroRmRequest, RegistroFinanceiroRm>()
+                .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => nameof(RegistroFinanceiroRm)));
             CreateMap<RegistroObservacao, RegistroObservacaoDto>()
                 .ForMember(r => r.Author, opt => opt.MapFrom(src => src.Author.NomeCompleto));
         }

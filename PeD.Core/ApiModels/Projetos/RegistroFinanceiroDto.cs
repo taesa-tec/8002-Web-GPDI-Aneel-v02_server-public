@@ -8,6 +8,7 @@ namespace PeD.Core.ApiModels.Projetos
         public string Tipo { get; set; }
         public string Status { get; set; }
 
+        public int? ComprovanteId { get; set; }
 
         public int? FinanciadoraId { get; set; }
         public int? CoExecutorFinanciadorId { get; set; }
