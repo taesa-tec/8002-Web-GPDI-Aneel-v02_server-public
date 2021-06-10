@@ -65,7 +65,8 @@ SELECT prf.Id,
 
        prf.AtividadeRealizada,
        prf.EspecificaoTecnica,
-       prf.FuncaoEtapa
+       prf.FuncaoEtapa,
+       Etapas.Ordem as Etapa
 
 
 FROM ProjetosRegistrosFinanceiros prf
@@ -82,6 +83,7 @@ FROM ProjetosRegistrosFinanceiros prf
 
          LEFT JOIN Empresas EH on EH.Id = PRH.EmpresaId
          LEFT JOIN ProjetoCoExecutores PCEH on PCEH.Id = PRH.CoExecutorId
+         LEFT JOIN ProjetoEtapas Etapas on prf.EtapaId = Etapas.Id
 ";
 
         public static string Down = "";

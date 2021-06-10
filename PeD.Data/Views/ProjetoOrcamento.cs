@@ -41,8 +41,9 @@ SELECT A.Id,
            END                                                                         as Recebedor,
 
        IIF(A.Tipo = 'AlocacaoRm', A.Quantidade, ALOC_HORAS.Horas)                      AS Quantidade,
-       IIF(A.Tipo = 'AlocacaoRm', A.Quantidade * RECURSOMATERIAL.ValorUnitario,
-           ALOC_HORAS.Horas * RECURSOHUMANO.ValorHora)                                 AS Custo
+       IIF(A.Tipo = 'AlocacaoRm', RECURSOMATERIAL.ValorUnitario, RECURSOHUMANO.ValorHora) AS Custo,
+       IIF(A.Tipo = 'AlocacaoRm', CAST(A.Quantidade * RECURSOMATERIAL.ValorUnitario AS DECIMAL(18,2)),
+           CAST(ALOC_HORAS.Horas * RECURSOHUMANO.ValorHora as DECIMAL(18,2)))                                 AS Total
 
 
 FROM ProjetosRecursosAlocacoes A
@@ -62,6 +63,7 @@ FROM ProjetosRecursosAlocacoes A
     -- RECEBEORES RH
          LEFT JOIN ProjetoCoExecutores PCE_RH on PCE_RH.Id = RECURSOHUMANO.CoExecutorId
          LEFT JOIN Empresas E_RH on RECURSOHUMANO.EmpresaId = E_RH.Id
+
 
 ";
     }

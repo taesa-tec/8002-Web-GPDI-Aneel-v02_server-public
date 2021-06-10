@@ -67,6 +67,7 @@ namespace PeD.Core.Models.Projetos
 
 
         public string FuncaoEtapa { get; set; }
+        public short Etapa { get; set; }
         public string EspecificaoTecnica { get; set; }
         public string NomeItem { get; set; }
         public string Beneficiado { get; set; }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
@@ -159,9 +160,51 @@ namespace PeD.Services.Projetos
             return _context.Set<Orcamento>().Where(o => o.ProjetoId == projetoId).ToList();
         }
 
-        public List<RegistroFinanceiroInfo> GetExtratos(int projetoId)
+        public List<RegistroFinanceiroInfo> GetRegistrosFinanceiros(int projetoId, StatusRegistro status)
         {
-            return _context.Set<RegistroFinanceiroInfo>().Where(o => o.ProjetoId == projetoId).ToList();
+            return _context.Set<RegistroFinanceiroInfo>().Where(o => o.ProjetoId == projetoId && o.Status == status)
+                .ToList();
+        }
+
+        public IEnumerable<object> GetExtrato(int projetoId)
+        {
+            //Previsto
+            var orcamentos = GetOrcamentos(projetoId);
+            //Realizado
+            var extratos = GetRegistrosFinanceiros(projetoId, StatusRegistro.Aprovado);
+            // Financiadores
+            var empresas = (new[]
+                {
+                    orcamentos.Select(o => new {o.Financiador, o.FinanciadorCode}),
+                    extratos.Select(o => new {o.Financiador, o.FinanciadorCode})
+                }).SelectMany(i => i)
+                .GroupBy(e => e.FinanciadorCode)
+                .Select(e => e.First());
+            var categorias = (new[]
+                {
+                    orcamentos.Select(o => new {o.CategoriaContabil, o.CategoriaContabilCodigo}),
+                    extratos.Select(o => new {o.CategoriaContabil, o.CategoriaContabilCodigo})
+                }).SelectMany(i => i)
+                .GroupBy(e => e.CategoriaContabilCodigo)
+                .Select(e => e.First());
+
+
+            return empresas.Select(e => new ExtratoFinanceiroEmpresaRefpDto()
+            {
+                Nome = e.Financiador,
+                Codigo = e.FinanciadorCode,
+                Categorias = categorias.Select(c => new ExtratoFinanceiroGroupRefpDto()
+                {
+                    Nome = c.CategoriaContabil,
+                    Codigo = c.CategoriaContabilCodigo,
+                    Orcamento = orcamentos.Where(o =>
+                        o.FinanciadorCode == e.FinanciadorCode &&
+                        o.CategoriaContabilCodigo == c.CategoriaContabilCodigo),
+                    Registros = extratos.Where(o =>
+                        o.FinanciadorCode == e.FinanciadorCode &&
+                        o.CategoriaContabilCodigo == c.CategoriaContabilCodigo)
+                }).Where(ef => ef.Previsto != 0 || ef.Realizado != 0)
+            });
         }
     }
 }

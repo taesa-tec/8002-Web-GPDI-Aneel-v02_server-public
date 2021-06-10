@@ -39,6 +39,14 @@ namespace PeD.Controllers.Projetos
             _context = context;
         }
 
+        [AllowAnonymous]
+        [HttpGet("Extrato")]
+        public ActionResult GetExtrato(int id)
+        {
+            var extrato = Service.GetExtrato(id);
+            return Ok(extrato);
+        }
+
         [ResponseCache(Duration = 3600)]
         [HttpGet("Criar")]
         public ActionResult GetCriar([FromRoute] int id)
@@ -260,7 +268,8 @@ namespace PeD.Controllers.Projetos
             try
             {
                 var file = await arquivoService.SaveFile(upload);
-                _context.Database.ExecuteSqlRaw("UPDATE ProjetosRegistrosFinanceiros SET ComprovanteId = {0} WHERE Id = {1}",
+                _context.Database.ExecuteSqlRaw(
+                    "UPDATE ProjetosRegistrosFinanceiros SET ComprovanteId = {0} WHERE Id = {1}",
                     file.Id, registroId);
                 return Ok();
             }
@@ -284,7 +293,6 @@ namespace PeD.Controllers.Projetos
         }
 
         #endregion
-
 
         #region Obter
 

@@ -218,7 +218,11 @@ namespace PeD.Data
             builder.Entity<PlanoComentario>(b => { b.ToTable("PlanoComentarios"); });
             builder.Entity<PlanoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
             builder.Entity<ContratoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
-            builder.Entity<Orcamento>(b => { b.ToView("ProjetoOrcamentoView"); });
+            builder.Entity<Orcamento>(b =>
+            {
+                b.HasNoKey();
+                b.ToView("ProjetoOrcamentoView");
+            });
 
             #endregion
 
