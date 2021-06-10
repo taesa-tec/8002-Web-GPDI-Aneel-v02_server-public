@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models.Projetos;
+using PeD.Data;
 using PeD.Services.Projetos;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -19,10 +20,13 @@ namespace PeD.Controllers.Projetos
     public class ProjetoController : ControllerServiceBase<Projeto>
     {
         private new ProjetoService Service;
+        protected GestorDbContext Context;
 
-        public ProjetoController(ProjetoService service, IMapper mapper) : base(service, mapper)
+        public ProjetoController(ProjetoService service, IMapper mapper, GestorDbContext context) : base(service,
+            mapper)
         {
             Service = service;
+            Context = context;
         }
 
         [HttpGet("EmExecucao")]
@@ -51,7 +55,21 @@ namespace PeD.Controllers.Projetos
 
             return Ok(Mapper.Map<ProjetoDto>(projeto));
         }
-        
-        
+
+        [HttpGet("{id:int}/Produtos")]
+        public ActionResult Produtos(int id)
+        {
+            var produtos = Context.Set<Produto>()
+                .Where(p => p.ProjetoId == id)
+                .ToList();
+
+            return Ok(Mapper.Map<List<ProjetoProdutoDto>>(produtos));
+        }
+
+        [HttpPost("{id:int}/Prorrogacao")]
+        public ActionResult Prorrogacao(int id)
+        {
+            return Ok();
+        }
     }
 }
