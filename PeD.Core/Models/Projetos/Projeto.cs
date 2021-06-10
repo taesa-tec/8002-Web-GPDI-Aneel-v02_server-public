@@ -64,8 +64,7 @@ namespace PeD.Core.Models.Projetos
         public List<Risco> Riscos { get; set; }
         public List<RecursoHumano> RecursosHumanos { get; set; }
         public List<RecursoMaterial> RecursosMateriais { get; set; }
-        [InverseProperty("Projeto")] public List<RecursoHumano.AlocacaoRh> RecursosHumanosAlocacoes { get; set; }
-        [InverseProperty("Projeto")] public List<RecursoMaterial.AlocacaoRm> RecursosMateriaisAlocacoes { get; set; }
+        [InverseProperty("Projeto")] public List<Alocacao> Alocacoes { get; set; }
 
         #region Remover?
 

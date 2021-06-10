@@ -11,11 +11,10 @@ namespace PeD.Core.Models.Projetos
         [Column(TypeName = "decimal(18, 2)")] public decimal ValorUnitario { get; set; }
         public string EspecificacaoTecnica { get; set; }
 
-        [Table("ProjetoRecursosMateriaisAlocacao")]
         public class AlocacaoRm : Alocacao
         {
-            public int RecursoId { get; set; }
-            public RecursoMaterial Recurso { get; set; }
+            public int RecursoMaterialId { get; set; }
+            public RecursoMaterial RecursoMaterial { get; set; }
             public int? EmpresaRecebedoraId { get; set; }
             public Empresa EmpresaRecebedora { get; set; }
 
@@ -23,7 +22,7 @@ namespace PeD.Core.Models.Projetos
             public CoExecutor CoExecutorRecebedor { get; set; }
             [Column(TypeName = "decimal(18, 2)")] public decimal Quantidade { get; set; }
 
-            public override decimal Valor => Quantidade * (Recurso?.ValorUnitario ?? 0);
+            public override decimal Valor => Quantidade * (RecursoMaterial?.ValorUnitario ?? 0);
         }
     }
 }

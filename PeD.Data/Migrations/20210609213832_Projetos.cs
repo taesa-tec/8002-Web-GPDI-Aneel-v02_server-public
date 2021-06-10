@@ -7,6 +7,7 @@ namespace PeD.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("UPDATE Captacoes SET UsuarioExecucaoId = null, IsProjetoAprovado = null, ArquivoFormalizacaoId = null");
             migrationBuilder.CreateTable(
                 name: "Projetos",
                 columns: table => new
@@ -384,105 +385,204 @@ namespace PeD.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjetoRecursosHumanosAlocacao",
+                name: "ProjetosRecursosAlocacoes",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProjetoId = table.Column<int>(nullable: false),
+                    Tipo = table.Column<string>(nullable: false),
                     EtapaId = table.Column<int>(nullable: false),
                     EmpresaFinanciadoraId = table.Column<int>(nullable: true),
                     CoExecutorFinanciadorId = table.Column<int>(nullable: true),
                     Justificativa = table.Column<string>(nullable: true),
-                    RecursoId = table.Column<int>(nullable: false),
-                    HoraMeses = table.Column<string>(nullable: true)
+                    RecursoHumanoId = table.Column<int>(nullable: true),
+                    RecursoMaterialId = table.Column<int>(nullable: true),
+                    EmpresaRecebedoraId = table.Column<int>(nullable: true),
+                    CoExecutorRecebedorId = table.Column<int>(nullable: true),
+                    Quantidade = table.Column<decimal>(type: "decimal(18, 2)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjetoRecursosHumanosAlocacao", x => x.Id);
+                    table.PrimaryKey("PK_ProjetosRecursosAlocacoes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjetoRecursosHumanosAlocacao_ProjetoCoExecutores_CoExecutorFinanciadorId",
+                        name: "FK_ProjetosRecursosAlocacoes_ProjetoCoExecutores_CoExecutorFinanciadorId",
                         column: x => x.CoExecutorFinanciadorId,
                         principalTable: "ProjetoCoExecutores",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProjetoRecursosHumanosAlocacao_Empresas_EmpresaFinanciadoraId",
+                        name: "FK_ProjetosRecursosAlocacoes_Empresas_EmpresaFinanciadoraId",
                         column: x => x.EmpresaFinanciadoraId,
                         principalTable: "Empresas",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProjetoRecursosHumanosAlocacao_ProjetoEtapas_EtapaId",
+                        name: "FK_ProjetosRecursosAlocacoes_ProjetoEtapas_EtapaId",
                         column: x => x.EtapaId,
                         principalTable: "ProjetoEtapas",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProjetoRecursosHumanosAlocacao_Projetos_ProjetoId",
+                        name: "FK_ProjetosRecursosAlocacoes_Projetos_ProjetoId",
                         column: x => x.ProjetoId,
                         principalTable: "Projetos",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProjetoRecursosHumanosAlocacao_ProjetoRecursosHumanos_RecursoId",
-                        column: x => x.RecursoId,
+                        name: "FK_ProjetosRecursosAlocacoes_ProjetoRecursosHumanos_RecursoHumanoId",
+                        column: x => x.RecursoHumanoId,
                         principalTable: "ProjetoRecursosHumanos",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProjetoRecursosMateriaisAlocacao",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProjetoId = table.Column<int>(nullable: false),
-                    EtapaId = table.Column<int>(nullable: false),
-                    EmpresaFinanciadoraId = table.Column<int>(nullable: true),
-                    CoExecutorFinanciadorId = table.Column<int>(nullable: true),
-                    Justificativa = table.Column<string>(nullable: true),
-                    RecursoId = table.Column<int>(nullable: false),
-                    EmpresaRecebedoraId = table.Column<int>(nullable: true),
-                    CoExecutorRecebedorId = table.Column<int>(nullable: true),
-                    Quantidade = table.Column<decimal>(type: "decimal(18, 2)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProjetoRecursosMateriaisAlocacao", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjetoRecursosMateriaisAlocacao_ProjetoCoExecutores_CoExecutorFinanciadorId",
-                        column: x => x.CoExecutorFinanciadorId,
-                        principalTable: "ProjetoCoExecutores",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProjetoRecursosMateriaisAlocacao_ProjetoCoExecutores_CoExecutorRecebedorId",
+                        name: "FK_ProjetosRecursosAlocacoes_ProjetoCoExecutores_CoExecutorRecebedorId",
                         column: x => x.CoExecutorRecebedorId,
                         principalTable: "ProjetoCoExecutores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProjetoRecursosMateriaisAlocacao_Empresas_EmpresaFinanciadoraId",
-                        column: x => x.EmpresaFinanciadoraId,
-                        principalTable: "Empresas",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ProjetoRecursosMateriaisAlocacao_Empresas_EmpresaRecebedoraId",
+                        name: "FK_ProjetosRecursosAlocacoes_Empresas_EmpresaRecebedoraId",
                         column: x => x.EmpresaRecebedoraId,
                         principalTable: "Empresas",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProjetoRecursosMateriaisAlocacao_ProjetoEtapas_EtapaId",
+                        name: "FK_ProjetosRecursosAlocacoes_ProjetoRecursosMateriais_RecursoMaterialId",
+                        column: x => x.RecursoMaterialId,
+                        principalTable: "ProjetoRecursosMateriais",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjetosRegistrosFinanceiros",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProjetoId = table.Column<int>(nullable: false),
+                    Tipo = table.Column<string>(maxLength: 200, nullable: false),
+                    Status = table.Column<string>(nullable: false),
+                    Valor = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
+                    FinanciadoraId = table.Column<int>(nullable: true),
+                    CoExecutorFinanciadorId = table.Column<int>(nullable: true),
+                    MesReferencia = table.Column<DateTime>(nullable: false),
+                    EtapaId = table.Column<int>(nullable: false),
+                    TipoDocumento = table.Column<string>(nullable: false),
+                    NumeroDocumento = table.Column<string>(nullable: true),
+                    DataDocumento = table.Column<DateTime>(nullable: false),
+                    ComprovanteId = table.Column<int>(nullable: true),
+                    AtividadeRealizada = table.Column<string>(nullable: true),
+                    RecursoHumanoId = table.Column<int>(nullable: true),
+                    Horas = table.Column<decimal>(type: "decimal(18, 2)", nullable: true),
+                    NomeItem = table.Column<string>(nullable: true),
+                    Beneficiado = table.Column<string>(nullable: true),
+                    RecursoMaterialId = table.Column<int>(nullable: true),
+                    CnpjBeneficiado = table.Column<string>(nullable: true),
+                    CategoriaContabilId = table.Column<int>(nullable: true),
+                    EquipaLaboratorioExistente = table.Column<bool>(nullable: true),
+                    EquipaLaboratorioNovo = table.Column<bool>(nullable: true),
+                    IsNacional = table.Column<bool>(nullable: true),
+                    Quantidade = table.Column<int>(nullable: true),
+                    EspecificaoTecnica = table.Column<string>(nullable: true),
+                    FuncaoEtapa = table.Column<string>(nullable: true),
+                    RecebedoraId = table.Column<int>(nullable: true),
+                    CoExecutorRecebedorId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjetosRegistrosFinanceiros", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceiros_ProjetoCoExecutores_CoExecutorFinanciadorId",
+                        column: x => x.CoExecutorFinanciadorId,
+                        principalTable: "ProjetoCoExecutores",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceiros_Files_ComprovanteId",
+                        column: x => x.ComprovanteId,
+                        principalTable: "Files",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceiros_ProjetoEtapas_EtapaId",
                         column: x => x.EtapaId,
                         principalTable: "ProjetoEtapas",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProjetoRecursosMateriaisAlocacao_Projetos_ProjetoId",
+                        name: "FK_ProjetosRegistrosFinanceiros_Empresas_FinanciadoraId",
+                        column: x => x.FinanciadoraId,
+                        principalTable: "Empresas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceiros_Projetos_ProjetoId",
                         column: x => x.ProjetoId,
                         principalTable: "Projetos",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProjetoRecursosMateriaisAlocacao_ProjetoRecursosMateriais_RecursoId",
-                        column: x => x.RecursoId,
+                        name: "FK_ProjetosRegistrosFinanceiros_ProjetoRecursosHumanos_RecursoHumanoId",
+                        column: x => x.RecursoHumanoId,
+                        principalTable: "ProjetoRecursosHumanos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceiros_CategoriasContabeis_CategoriaContabilId",
+                        column: x => x.CategoriaContabilId,
+                        principalTable: "CategoriasContabeis",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceiros_ProjetoCoExecutores_CoExecutorRecebedorId",
+                        column: x => x.CoExecutorRecebedorId,
+                        principalTable: "ProjetoCoExecutores",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceiros_Empresas_RecebedoraId",
+                        column: x => x.RecebedoraId,
+                        principalTable: "Empresas",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceiros_ProjetoRecursosMateriais_RecursoMaterialId",
+                        column: x => x.RecursoMaterialId,
                         principalTable: "ProjetoRecursosMateriais",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjetosAlocacaoRhHorasMeses",
+                columns: table => new
+                {
+                    AlocacaoRhId = table.Column<int>(nullable: false),
+                    Mes = table.Column<int>(nullable: false),
+                    Horas = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjetosAlocacaoRhHorasMeses", x => new { x.AlocacaoRhId, x.Mes });
+                    table.ForeignKey(
+                        name: "FK_ProjetosAlocacaoRhHorasMeses_ProjetosRecursosAlocacoes_AlocacaoRhId",
+                        column: x => x.AlocacaoRhId,
+                        principalTable: "ProjetosRecursosAlocacoes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjetosRegistrosFinanceirosObservacoes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    RegistroId = table.Column<int>(nullable: false),
+                    AuthorId = table.Column<string>(nullable: true),
+                    Content = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjetosRegistrosFinanceirosObservacoes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceirosObservacoes_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceirosObservacoes_ProjetosRegistrosFinanceiros_RegistroId",
+                        column: x => x.RegistroId,
+                        principalTable: "ProjetosRegistrosFinanceiros",
                         principalColumn: "Id");
                 });
 
@@ -574,31 +674,6 @@ namespace PeD.Data.Migrations
                 column: "ProjetoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosHumanosAlocacao_CoExecutorFinanciadorId",
-                table: "ProjetoRecursosHumanosAlocacao",
-                column: "CoExecutorFinanciadorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosHumanosAlocacao_EmpresaFinanciadoraId",
-                table: "ProjetoRecursosHumanosAlocacao",
-                column: "EmpresaFinanciadoraId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosHumanosAlocacao_EtapaId",
-                table: "ProjetoRecursosHumanosAlocacao",
-                column: "EtapaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosHumanosAlocacao_ProjetoId",
-                table: "ProjetoRecursosHumanosAlocacao",
-                column: "ProjetoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosHumanosAlocacao_RecursoId",
-                table: "ProjetoRecursosHumanosAlocacao",
-                column: "RecursoId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProjetoRecursosMateriais_CategoriaContabilId",
                 table: "ProjetoRecursosMateriais",
                 column: "CategoriaContabilId");
@@ -607,41 +682,6 @@ namespace PeD.Data.Migrations
                 name: "IX_ProjetoRecursosMateriais_ProjetoId",
                 table: "ProjetoRecursosMateriais",
                 column: "ProjetoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosMateriaisAlocacao_CoExecutorFinanciadorId",
-                table: "ProjetoRecursosMateriaisAlocacao",
-                column: "CoExecutorFinanciadorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosMateriaisAlocacao_CoExecutorRecebedorId",
-                table: "ProjetoRecursosMateriaisAlocacao",
-                column: "CoExecutorRecebedorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosMateriaisAlocacao_EmpresaFinanciadoraId",
-                table: "ProjetoRecursosMateriaisAlocacao",
-                column: "EmpresaFinanciadoraId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosMateriaisAlocacao_EmpresaRecebedoraId",
-                table: "ProjetoRecursosMateriaisAlocacao",
-                column: "EmpresaRecebedoraId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosMateriaisAlocacao_EtapaId",
-                table: "ProjetoRecursosMateriaisAlocacao",
-                column: "EtapaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosMateriaisAlocacao_ProjetoId",
-                table: "ProjetoRecursosMateriaisAlocacao",
-                column: "ProjetoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjetoRecursosMateriaisAlocacao_RecursoId",
-                table: "ProjetoRecursosMateriaisAlocacao",
-                column: "RecursoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjetoRiscos_ProjetoId",
@@ -674,6 +714,106 @@ namespace PeD.Data.Migrations
                 name: "IX_Projetos_ResponsavelId",
                 table: "Projetos",
                 column: "ResponsavelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRecursosAlocacoes_CoExecutorFinanciadorId",
+                table: "ProjetosRecursosAlocacoes",
+                column: "CoExecutorFinanciadorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRecursosAlocacoes_EmpresaFinanciadoraId",
+                table: "ProjetosRecursosAlocacoes",
+                column: "EmpresaFinanciadoraId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRecursosAlocacoes_EtapaId",
+                table: "ProjetosRecursosAlocacoes",
+                column: "EtapaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRecursosAlocacoes_ProjetoId",
+                table: "ProjetosRecursosAlocacoes",
+                column: "ProjetoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRecursosAlocacoes_RecursoHumanoId",
+                table: "ProjetosRecursosAlocacoes",
+                column: "RecursoHumanoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRecursosAlocacoes_CoExecutorRecebedorId",
+                table: "ProjetosRecursosAlocacoes",
+                column: "CoExecutorRecebedorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRecursosAlocacoes_EmpresaRecebedoraId",
+                table: "ProjetosRecursosAlocacoes",
+                column: "EmpresaRecebedoraId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRecursosAlocacoes_RecursoMaterialId",
+                table: "ProjetosRecursosAlocacoes",
+                column: "RecursoMaterialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_CoExecutorFinanciadorId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "CoExecutorFinanciadorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_ComprovanteId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "ComprovanteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_EtapaId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "EtapaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_FinanciadoraId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "FinanciadoraId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_ProjetoId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "ProjetoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_RecursoHumanoId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "RecursoHumanoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_CategoriaContabilId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "CategoriaContabilId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_CoExecutorRecebedorId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "CoExecutorRecebedorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_RecebedoraId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "RecebedoraId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_RecursoMaterialId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "RecursoMaterialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceirosObservacoes_AuthorId",
+                table: "ProjetosRegistrosFinanceirosObservacoes",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceirosObservacoes_RegistroId",
+                table: "ProjetosRegistrosFinanceirosObservacoes",
+                column: "RegistroId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -694,28 +834,34 @@ namespace PeD.Data.Migrations
                 name: "ProjetoPlanosTrabalhos");
 
             migrationBuilder.DropTable(
-                name: "ProjetoRecursosHumanosAlocacao");
-
-            migrationBuilder.DropTable(
-                name: "ProjetoRecursosMateriaisAlocacao");
-
-            migrationBuilder.DropTable(
                 name: "ProjetoRiscos");
 
             migrationBuilder.DropTable(
-                name: "ProjetoRecursosHumanos");
+                name: "ProjetosAlocacaoRhHorasMeses");
+
+            migrationBuilder.DropTable(
+                name: "ProjetosRegistrosFinanceirosObservacoes");
+
+            migrationBuilder.DropTable(
+                name: "ProjetosRecursosAlocacoes");
+
+            migrationBuilder.DropTable(
+                name: "ProjetosRegistrosFinanceiros");
 
             migrationBuilder.DropTable(
                 name: "ProjetoEtapas");
 
             migrationBuilder.DropTable(
+                name: "ProjetoRecursosHumanos");
+
+            migrationBuilder.DropTable(
                 name: "ProjetoRecursosMateriais");
 
             migrationBuilder.DropTable(
-                name: "ProjetoCoExecutores");
+                name: "ProjetoProdutos");
 
             migrationBuilder.DropTable(
-                name: "ProjetoProdutos");
+                name: "ProjetoCoExecutores");
 
             migrationBuilder.DropTable(
                 name: "Projetos");

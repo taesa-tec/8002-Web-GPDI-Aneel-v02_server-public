@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Services.Captacoes;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
+using Alocacao = PeD.Core.Models.Projetos.Alocacao;
 using CoExecutor = PeD.Core.Models.Projetos.CoExecutor;
 using Escopo = PeD.Core.Models.Projetos.Escopo;
 using Meta = PeD.Core.Models.Projetos.Meta;
@@ -104,18 +106,18 @@ namespace PeD.Services.Projetos
             {
                 etapa.Produto = null;
                 etapa.ProdutoId = produtosCopy[etapa.ProdutoId];
-                etapa.RecursosHumanosAlocacoes = new List<RecursoHumano.AlocacaoRh>();
-                etapa.RecursosMateriaisAlocacoes = new List<RecursoMaterial.AlocacaoRm>();
+                etapa.Alocacoes = new List<Alocacao>();
             });
             CopyPropostaNodes<Risco>(projeto.Id, proposta.Riscos);
             CopyPropostaNodes<Meta>(projeto.Id, proposta.Metas);
             CopyPropostaNodes<RecursoHumano.AlocacaoRh>(projeto.Id, proposta.RecursosHumanosAlocacoes,
                 a =>
                 {
-                    a.Recurso = null;
-                    a.RecursoId = rhCopy[a.RecursoId];
+                    a.RecursoHumano = null;
+                    a.RecursoHumanoId = rhCopy[a.RecursoHumanoId];
                     a.Etapa = null;
                     a.EtapaId = etapaCopy[a.EtapaId];
+
                     if (a.CoExecutorFinanciadorId != null)
                     {
                         a.CoExecutorFinanciadorId = coexecutorCopy[a.CoExecutorFinanciadorId.Value];
@@ -124,8 +126,8 @@ namespace PeD.Services.Projetos
             CopyPropostaNodes<RecursoMaterial.AlocacaoRm>(projeto.Id, proposta.RecursosMateriaisAlocacoes,
                 a =>
                 {
-                    a.Recurso = null;
-                    a.RecursoId = rmCopy[a.RecursoId];
+                    a.RecursoMaterial = null;
+                    a.RecursoMaterialId = rmCopy[a.RecursoMaterialId];
 
                     a.Etapa = null;
                     a.EtapaId = etapaCopy[a.EtapaId];
@@ -151,6 +153,58 @@ namespace PeD.Services.Projetos
         public List<T> NodeList<T>(int projetoId) where T : ProjetoNode
         {
             return _context.Set<T>().Where(r => r.ProjetoId == projetoId).ToList();
+        }
+
+        public List<Orcamento> GetOrcamentos(int projetoId)
+        {
+            return _context.Set<Orcamento>().Where(o => o.ProjetoId == projetoId).ToList();
+        }
+
+        public List<RegistroFinanceiroInfo> GetRegistrosFinanceiros(int projetoId, StatusRegistro status)
+        {
+            return _context.Set<RegistroFinanceiroInfo>().Where(o => o.ProjetoId == projetoId && o.Status == status)
+                .ToList();
+        }
+
+        public IEnumerable<object> GetExtrato(int projetoId)
+        {
+            //Previsto
+            var orcamentos = GetOrcamentos(projetoId);
+            //Realizado
+            var extratos = GetRegistrosFinanceiros(projetoId, StatusRegistro.Aprovado);
+            // Financiadores
+            var empresas = (new[]
+                {
+                    orcamentos.Select(o => new {o.Financiador, o.FinanciadorCode}),
+                    extratos.Select(o => new {o.Financiador, o.FinanciadorCode})
+                }).SelectMany(i => i)
+                .GroupBy(e => e.FinanciadorCode)
+                .Select(e => e.First());
+            var categorias = (new[]
+                {
+                    orcamentos.Select(o => new {o.CategoriaContabil, o.CategoriaContabilCodigo}),
+                    extratos.Select(o => new {o.CategoriaContabil, o.CategoriaContabilCodigo})
+                }).SelectMany(i => i)
+                .GroupBy(e => e.CategoriaContabilCodigo)
+                .Select(e => e.First());
+
+
+            return empresas.Select(e => new ExtratoFinanceiroEmpresaRefpDto()
+            {
+                Nome = e.Financiador,
+                Codigo = e.FinanciadorCode,
+                Categorias = categorias.Select(c => new ExtratoFinanceiroGroupRefpDto()
+                {
+                    Nome = c.CategoriaContabil,
+                    Codigo = c.CategoriaContabilCodigo,
+                    Orcamento = orcamentos.Where(o =>
+                        o.FinanciadorCode == e.FinanciadorCode &&
+                        o.CategoriaContabilCodigo == c.CategoriaContabilCodigo),
+                    Registros = extratos.Where(o =>
+                        o.FinanciadorCode == e.FinanciadorCode &&
+                        o.CategoriaContabilCodigo == c.CategoriaContabilCodigo)
+                }).Where(ef => ef.Previsto != 0 || ef.Realizado != 0)
+            });
         }
     }
 }

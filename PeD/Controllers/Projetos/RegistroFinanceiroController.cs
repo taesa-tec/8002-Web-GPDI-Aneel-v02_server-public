@@ -39,7 +39,15 @@ namespace PeD.Controllers.Projetos
             _context = context;
         }
 
-        //[ResponseCache(Duration = 3600)]
+        [AllowAnonymous]
+        [HttpGet("Extrato")]
+        public ActionResult GetExtrato(int id)
+        {
+            var extrato = Service.GetExtrato(id);
+            return Ok(extrato);
+        }
+
+        [ResponseCache(Duration = 3600)]
         [HttpGet("Criar")]
         public ActionResult GetCriar([FromRoute] int id)
         {
@@ -58,6 +66,40 @@ namespace PeD.Controllers.Projetos
                 recursos, colaboradores, etapas, meses, coexecutores, empresas, categorias
             });
         }
+
+
+        #region Listagem
+
+        [HttpGet("Pendentes")]
+        public ActionResult GetPendentes([FromRoute] int id)
+        {
+            var registros = _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Pendente)
+                .ToList();
+            return Ok(registros);
+        }
+
+        [HttpGet("Reprovados")]
+        public ActionResult GetReprovados([FromRoute] int id)
+        {
+            var registros = _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Reprovado)
+                .ToList();
+            return Ok(registros);
+        }
+
+        [HttpGet("Aprovados")]
+        public ActionResult GetAprovados([FromRoute] int id)
+        {
+            var registros = _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Aprovado)
+                .ToList();
+            return Ok(Mapper.Map<List<RegistroFinanceiroInfoDto>>(registros));
+        }
+
+        #endregion
+
+        #region Criar Registro
 
         [HttpPost("RecursoHumano")]
         public ActionResult CriarRh([FromRoute] int id, RegistroRhRequest request)
@@ -128,6 +170,91 @@ namespace PeD.Controllers.Projetos
             }
         }
 
+        #endregion
+
+        #region Editar Registro
+
+        [HttpPut("RecursoHumano/{registroId:int}")]
+        public ActionResult EditarRh([FromRoute] int id, [FromRoute] int registroId, RegistroRhRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.ObservacaoInterna))
+                return BadRequest();
+            try
+            {
+                // @todo Validar se o registro pertence ao projeto 
+
+                var valorhora = _context.Set<RecursoHumano>()
+                    .Where(r => r.Id == request.RecursoHumanoId)
+                    .Select(r => r.ValorHora).First();
+                var registro = Mapper.Map<RegistroFinanceiroRh>(request);
+                registro.Valor = valorhora;
+                registro.ProjetoId = id;
+                registro.Id = registroId;
+                registro.ComprovanteId = _context.Set<RegistroFinanceiro>().Where(r => r.Id == registroId)
+                    .Select(r => r.ComprovanteId).FirstOrDefault();
+                ;
+                _context.Update(registro);
+                _context.SaveChanges();
+
+                var obs = new RegistroObservacao()
+                {
+                    Content = request.ObservacaoInterna,
+                    AuthorId = this.UserId(),
+                    CreatedAt = DateTime.Now,
+                    RegistroId = registro.Id
+                };
+                _context.Add(obs);
+                _context.SaveChanges();
+
+
+                return Ok(Mapper.Map<RegistroFinanceiroDto>(registro));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Problem(e.Message);
+            }
+        }
+
+        [HttpPut("RecursoMaterial/{registroId:int}")]
+        public ActionResult EditarRm([FromRoute] int id, [FromRoute] int registroId, RegistroRmRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.ObservacaoInterna))
+                return BadRequest();
+            try
+            {
+                // @todo Validar se o registro pertence ao projeto 
+                var registro = Mapper.Map<RegistroFinanceiroRm>(request);
+                registro.ProjetoId = id;
+                registro.Id = registroId;
+                registro.ComprovanteId = _context.Set<RegistroFinanceiro>().Where(r => r.Id == registroId)
+                    .Select(r => r.ComprovanteId).FirstOrDefault();
+                _context.Update(registro);
+                _context.SaveChanges();
+
+                var obs = new RegistroObservacao()
+                {
+                    Content = request.ObservacaoInterna,
+                    AuthorId = this.UserId(),
+                    CreatedAt = DateTime.Now,
+                    RegistroId = registro.Id
+                };
+                _context.Add(obs);
+                _context.SaveChanges();
+
+                return Ok(Mapper.Map<RegistroFinanceiroDto>(registro));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Problem(e.Message);
+            }
+        }
+
+        #endregion
+
+        #region Comprovante
+
         [HttpPost("{registroId:int}/Comprovante")]
         public async Task<ActionResult> UploadComprovante(int registroId, [FromServices] ArquivoService arquivoService)
         {
@@ -142,7 +269,7 @@ namespace PeD.Controllers.Projetos
             {
                 var file = await arquivoService.SaveFile(upload);
                 _context.Database.ExecuteSqlRaw(
-                    "UPDATE ProjetosRegistrosFinanceiros SET ComprovanteId = {0} WHERE Id = {1} AND ComprovanteId IS NULL",
+                    "UPDATE ProjetosRegistrosFinanceiros SET ComprovanteId = {0} WHERE Id = {1}",
                     file.Id, registroId);
                 return Ok();
             }
@@ -165,32 +292,9 @@ namespace PeD.Controllers.Projetos
             return PhysicalFile(file.Path, file.ContentType, file.Name);
         }
 
-        [HttpGet("Pendentes")]
-        public ActionResult GetPendentes([FromRoute] int id)
-        {
-            var registros = _context.Set<RegistroFinanceiroInfo>()
-                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Pendente)
-                .ToList();
-            return Ok(registros);
-        }
+        #endregion
 
-        [HttpGet("Reprovados")]
-        public ActionResult GetReprovados([FromRoute] int id)
-        {
-            var registros = _context.Set<RegistroFinanceiroInfo>()
-                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Reprovado)
-                .ToList();
-            return Ok(registros);
-        }
-
-        [HttpGet("Aprovados")]
-        public ActionResult GetAprovados([FromRoute] int id)
-        {
-            var registros = _context.Set<RegistroFinanceiroInfo>()
-                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Aprovado)
-                .ToList();
-            return Ok(Mapper.Map<List<RegistroFinanceiroInfoDto>>(registros));
-        }
+        #region Obter
 
         [HttpGet("{registroId:int}")]
         public ActionResult Get(int registroId)
@@ -233,6 +337,9 @@ namespace PeD.Controllers.Projetos
 
             return Ok(Mapper.Map<List<RegistroObservacaoDto>>(registro));
         }
+
+        #endregion
+
 
         [HttpPost("{registroId:int}/Aprovar")]
         public ActionResult AprovarRegistroFinanceiro(int registroId)
