@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using PeD.Core.ApiModels.Captacao;
+using PeD.Core.Converters;
 using PeD.Core.Models.Projetos;
 using TaesaCore.Models;
 
@@ -28,8 +30,8 @@ namespace PeD.Core.ApiModels.Projetos
 
         public DateTime DataCriacao { get; set; }
         public DateTime DataAlteracao { get; set; }
-        public DateTime DataInicioProjeto { get; set; }
-        public DateTime DataFinalProjeto { get; set; }
+        [JsonConverter(typeof(DateConverter))] public DateTime DataInicioProjeto { get; set; }
+        [JsonConverter(typeof(DateConverter))] public DateTime DataFinalProjeto { get; set; }
     }
 
     public abstract class ProjetoNodeDto : BaseEntity

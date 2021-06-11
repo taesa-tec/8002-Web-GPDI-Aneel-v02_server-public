@@ -39,7 +39,6 @@ namespace PeD.Controllers.Projetos
             _context = context;
         }
 
-        [AllowAnonymous]
         [HttpGet("Extrato")]
         public ActionResult GetExtrato(int id)
         {

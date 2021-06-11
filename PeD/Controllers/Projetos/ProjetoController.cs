@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models.Projetos;
+using PeD.Core.Requests.Projetos;
 using PeD.Data;
 using PeD.Services.Projetos;
 using Swashbuckle.AspNetCore.Annotations;
@@ -67,8 +69,40 @@ namespace PeD.Controllers.Projetos
         }
 
         [HttpPost("{id:int}/Prorrogacao")]
-        public ActionResult Prorrogacao(int id)
+        public ActionResult Prorrogacao(int id, ProrrogacaoRequest request)
         {
+            var projeto = Service.Get(id);
+            if (request.Data < projeto.DataFinalProjeto)
+            {
+                return BadRequest("Data inválida!");
+            }
+
+            var etapaMeses = new List<int>();
+            var dateInicio = projeto.DataInicioProjeto;
+            var dateFinal = projeto.DataFinalProjeto;
+            var newDateFinal = request.Data;
+            var mesesTotal = 1 + (dateFinal.Year - dateInicio.Year) * 12 + dateFinal.Month - dateInicio.Month;
+            var etapaMesesTotal = (newDateFinal.Year - dateFinal.Year) * 12 + newDateFinal.Month - dateFinal.Month;
+            for (int i = 1; i <= etapaMesesTotal; i++)
+            {
+                etapaMeses.Add(mesesTotal + i);
+            }
+
+            projeto.DataFinalProjeto = request.Data;
+
+            var ordem = Context.Set<Etapa>().Where(e => e.ProjetoId == id).Max(e => e.Ordem) + 1;
+
+            var etapa = new Etapa()
+            {
+                ProjetoId = id,
+                ProdutoId = request.ProdutoId,
+                DescricaoAtividades = request.Descricao,
+                Meses = etapaMeses,
+                Ordem = (short) ordem
+            };
+            Context.Add(etapa);
+            Context.Update(projeto);
+            Context.SaveChanges();
             return Ok();
         }
     }

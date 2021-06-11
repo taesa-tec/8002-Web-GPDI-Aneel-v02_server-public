@@ -6,6 +6,7 @@ using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Projetos;
 using CoExecutor = PeD.Core.Models.Projetos.CoExecutor;
 using Etapa = PeD.Core.Models.Projetos.Etapa;
+using Produto = PeD.Core.Models.Projetos.Produto;
 using RecursoHumano = PeD.Core.Models.Projetos.RecursoHumano;
 using RecursoMaterial = PeD.Core.Models.Projetos.RecursoMaterial;
 
@@ -74,6 +75,7 @@ namespace PeD.Mapping
                 .ForMember(r => r.RecursoHumano, opt => opt.MapFrom(src => src.RecursoHumano.NomeCompleto));
             CreateMap<RegistroFinanceiroRm, RegistroFinanceiroDto>();
             CreateMap<RegistroFinanceiroInfo, RegistroFinanceiroInfoDto>();
+            CreateMap<Produto, ProjetoProdutoDto>();
         }
 
         public void ProjetoRequest()

@@ -70,12 +70,13 @@ namespace PeD.Services.Projetos
             var planoTrabalho = Mapper.Map<PlanoTrabalho>(proposta.PlanoTrabalho);
             var escopo = Mapper.Map<Escopo>(proposta.Escopo);
 
-
+            var dataInicio = new DateTime(inicio.Year, inicio.Month, 1);
             var projeto = new Projeto()
             {
                 DataCriacao = DateTime.Now,
                 DataAlteracao = DateTime.Now,
-                DataInicioProjeto = inicio,
+                DataInicioProjeto = dataInicio,
+                DataFinalProjeto = dataInicio.AddMonths(proposta.Duracao - 1),
                 Numero = numero,
                 PropostaId = propostaId,
                 TituloCompleto = tituloCompleto,
