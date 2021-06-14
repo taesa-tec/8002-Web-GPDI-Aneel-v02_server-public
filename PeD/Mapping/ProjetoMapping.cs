@@ -67,8 +67,13 @@ namespace PeD.Mapping
                     opt.MapFrom(src => src.Fornecedor.Nome))
                 ;
             CreateMap<Etapa, EtapaDto>();
-            CreateMap<RecursoHumano, RecursoHumanoDto>();
-            CreateMap<RecursoMaterial, RecursoMaterialDto>();
+            CreateMap<RecursoHumano, RecursoHumanoDto>()
+                .ForMember(dest => dest.Empresa, opt =>
+                    opt.MapFrom(src => src.Empresa != null ? src.Empresa.Nome : src.CoExecutor.RazaoSocial ?? ""));
+            ;
+            CreateMap<RecursoMaterial, RecursoMaterialDto>()
+                .ForMember(dest => dest.CategoriaContabil, opt =>
+                    opt.MapFrom(src => src.CategoriaContabil.Nome));
             CreateMap<CoExecutor, CoExecutorDto>();
 
             CreateMap<RegistroFinanceiroRh, RegistroFinanceiroDto>()
@@ -86,6 +91,9 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => nameof(RegistroFinanceiroRm)));
             CreateMap<RegistroObservacao, RegistroObservacaoDto>()
                 .ForMember(r => r.Author, opt => opt.MapFrom(src => src.Author.NomeCompleto));
+
+            CreateMap<RecursoHumanoRequest, RecursoHumano>();
+            CreateMap<RecursoMaterialRequest, RecursoMaterial>();
         }
     }
 }

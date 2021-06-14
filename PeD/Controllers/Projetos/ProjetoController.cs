@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos;
+using PeD.Core.Models;
+using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Requests.Projetos;
 using PeD.Data;
 using PeD.Services.Projetos;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
+using TaesaCore.Interfaces;
 
 namespace PeD.Controllers.Projetos
 {
@@ -56,6 +59,24 @@ namespace PeD.Controllers.Projetos
                 return NotFound();
 
             return Ok(Mapper.Map<ProjetoDto>(projeto));
+        }
+
+        [HttpGet("{id:int}/Empresas")]
+        public ActionResult Empresas(int id, [FromServices] IService<Empresa> empresasService)
+        {
+            var projeto = Service.Get(id);
+            var coExecutores = Context.Set<CoExecutor>().AsQueryable().Where(c => c.ProjetoId == id).ToList();
+            var empresas = empresasService.Filter(q =>
+                q.Where(e => e.Categoria == Empresa.CategoriaEmpresa.Taesa).OrderBy(e => e.Id));
+            var fornecedor = Context.Set<Fornecedor>().AsQueryable().FirstOrDefault(c => c.Id == projeto.FornecedorId);
+            empresas.Add(fornecedor);
+
+            var response = new
+            {
+                empresas,
+                coExecutores = Mapper.Map<List<CoExecutorDto>>(coExecutores)
+            };
+            return Ok(response);
         }
 
         [HttpGet("{id:int}/Produtos")]

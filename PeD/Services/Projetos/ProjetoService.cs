@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
@@ -154,6 +156,12 @@ namespace PeD.Services.Projetos
         public List<T> NodeList<T>(int projetoId) where T : ProjetoNode
         {
             return _context.Set<T>().Where(r => r.ProjetoId == projetoId).ToList();
+        }
+
+        public List<T> NodeList<T>(int projetoId, Func<IQueryable<T>, IQueryable<T>> query)
+            where T : ProjetoNode
+        {
+            return query(_context.Set<T>().Where(r => r.ProjetoId == projetoId)).ToList();
         }
 
         public List<Orcamento> GetOrcamentos(int projetoId)
