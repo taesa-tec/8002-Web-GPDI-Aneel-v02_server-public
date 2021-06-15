@@ -292,6 +292,9 @@ namespace PeD.Data.Migrations
                     b.Property<DateTime?>("EnvioCaptacao")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("EspecificacaoTecnicaFileId")
+                        .HasColumnType("int");
+
                     b.Property<bool?>("IsProjetoAprovado")
                         .HasColumnType("bit");
 
@@ -343,6 +346,10 @@ namespace PeD.Data.Migrations
                     b.HasIndex("CriadorId");
 
                     b.HasIndex("DemandaId");
+
+                    b.HasIndex("EspecificacaoTecnicaFileId")
+                        .IsUnique()
+                        .HasFilter("[EspecificacaoTecnicaFileId] IS NOT NULL");
 
                     b.HasIndex("PropostaSelecionadaId");
 
@@ -1980,6 +1987,9 @@ namespace PeD.Data.Migrations
                     b.Property<string>("CriadorId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("EspecificacaoTecnicaFileId")
+                        .HasColumnType("int");
+
                     b.Property<int>("EtapaAtual")
                         .HasColumnType("int");
 
@@ -1998,6 +2008,8 @@ namespace PeD.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CriadorId");
+
+                    b.HasIndex("EspecificacaoTecnicaFileId");
 
                     b.HasIndex("RevisorId");
 
@@ -2723,6 +2735,9 @@ namespace PeD.Data.Migrations
                     b.Property<string>("Codigo")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ContratoId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DataAlteracao")
                         .HasColumnType("datetime2");
 
@@ -2735,11 +2750,17 @@ namespace PeD.Data.Migrations
                     b.Property<DateTime>("DataInicioProjeto")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("EspecificacaoTecnicaFileId")
+                        .HasColumnType("int");
+
                     b.Property<int>("FornecedorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Numero")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PlanoTrabalhoFileId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("ProponenteId")
                         .HasColumnType("int");
@@ -2753,6 +2774,12 @@ namespace PeD.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TemaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TemaOutro")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Titulo")
                         .HasColumnType("nvarchar(max)");
 
@@ -2764,7 +2791,17 @@ namespace PeD.Data.Migrations
                     b.HasIndex("CaptacaoId")
                         .IsUnique();
 
+                    b.HasIndex("ContratoId")
+                        .IsUnique();
+
+                    b.HasIndex("EspecificacaoTecnicaFileId")
+                        .IsUnique()
+                        .HasFilter("[EspecificacaoTecnicaFileId] IS NOT NULL");
+
                     b.HasIndex("FornecedorId");
+
+                    b.HasIndex("PlanoTrabalhoFileId")
+                        .IsUnique();
 
                     b.HasIndex("ProponenteId");
 
@@ -2772,6 +2809,8 @@ namespace PeD.Data.Migrations
                         .IsUnique();
 
                     b.HasIndex("ResponsavelId");
+
+                    b.HasIndex("TemaId");
 
                     b.ToTable("Projetos");
                 });
@@ -4370,6 +4409,11 @@ namespace PeD.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PeD.Core.Models.FileUpload", "EspecificacaoTecnicaFile")
+                        .WithOne()
+                        .HasForeignKey("PeD.Core.Models.Captacoes.Captacao", "EspecificacaoTecnicaFileId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "PropostaSelecionada")
                         .WithMany()
                         .HasForeignKey("PropostaSelecionadaId");
@@ -4481,6 +4525,10 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.ApplicationUser", "Criador")
                         .WithMany()
                         .HasForeignKey("CriadorId");
+
+                    b.HasOne("PeD.Core.Models.FileUpload", "EspecificacaoTecnicaFile")
+                        .WithMany()
+                        .HasForeignKey("EspecificacaoTecnicaFileId");
 
                     b.HasOne("PeD.Core.Models.ApplicationUser", "Revisor")
                         .WithMany()
@@ -4674,10 +4722,27 @@ namespace PeD.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PeD.Core.Models.FileUpload", "Contrato")
+                        .WithOne()
+                        .HasForeignKey("PeD.Core.Models.Projetos.Projeto", "ContratoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.FileUpload", "EspecificacaoTecnicaFile")
+                        .WithOne()
+                        .HasForeignKey("PeD.Core.Models.Projetos.Projeto", "EspecificacaoTecnicaFileId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("PeD.Core.Models.Fornecedores.Fornecedor", "Fornecedor")
                         .WithMany()
                         .HasForeignKey("FornecedorId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.FileUpload", "PlanoTrabalhoFile")
+                        .WithOne()
+                        .HasForeignKey("PeD.Core.Models.Projetos.Projeto", "PlanoTrabalhoFileId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Empresa", "Proponente")
@@ -4693,6 +4758,10 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.ApplicationUser", "Responsavel")
                         .WithMany()
                         .HasForeignKey("ResponsavelId");
+
+                    b.HasOne("PeD.Core.Models.Catalogos.Tema", "Tema")
+                        .WithMany()
+                        .HasForeignKey("TemaId");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.ProjetoArquivo", b =>

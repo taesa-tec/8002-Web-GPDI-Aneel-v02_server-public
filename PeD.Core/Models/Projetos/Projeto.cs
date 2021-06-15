@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using PeD.Core.Models.Captacoes;
+using PeD.Core.Models.Catalogos;
 using PeD.Core.Models.Propostas;
 using TaesaCore.Models;
 
@@ -12,7 +13,19 @@ namespace PeD.Core.Models.Projetos
         public string Titulo { get; set; }
         public string TituloCompleto { get; set; }
 
+        public int PlanoTrabalhoFileId { get; set; }
+        public FileUpload PlanoTrabalhoFile { get; set; }
+
+        public int ContratoId { get; set; }
+        public FileUpload Contrato { get; set; }
+
+        public int? EspecificacaoTecnicaFileId { get; set; }
+        public FileUpload EspecificacaoTecnicaFile { get; set; }
         public Status Status { get; set; }
+
+        public int? TemaId { get; set; }
+        public Tema Tema { get; set; }
+        public string TemaOutro { get; set; }
 
         public int PropostaId { get; set; }
 

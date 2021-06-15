@@ -65,6 +65,8 @@ namespace PeD.Mapping
                     opt.MapFrom(src => src.Proponente.Nome))
                 .ForMember(dest => dest.Fornecedor, opt =>
                     opt.MapFrom(src => src.Fornecedor.Nome))
+                .ForMember(dest => dest.Tema,
+                    opt => opt.MapFrom(src => src.TemaId.HasValue ? (src.Tema.Nome ?? "") : src.TemaOutro))
                 ;
             CreateMap<Etapa, EtapaDto>();
             CreateMap<RecursoHumano, RecursoHumanoDto>()

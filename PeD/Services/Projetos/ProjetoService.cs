@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos;
+using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
@@ -69,12 +70,40 @@ namespace PeD.Services.Projetos
         {
             var proposta = _propostaService.GetPropostaFull(propostaId) ?? throw new NullReferenceException();
 
+            var relatorio = _propostaService.GetRelatorio(propostaId);
+            var contrato = _propostaService.GetContrato(propostaId);
+            var captacao = _context.Set<Captacao>().FirstOrDefault(c => c.Id == proposta.CaptacaoId);
+
+            if (captacao is null)
+            {
+                // @todo disparar um email se isso acontecer, captaçõa não pode mais ser excluida nesse ponto
+                throw new Exception("Captacao não encontrada");
+            }
+
+            if (relatorio is null || !relatorio.FileId.HasValue)
+            {
+                // @todo gerar documento se não houver
+                throw new Exception("Plano de trabalho não encontrado");
+            }
+
+            if (contrato is null || !contrato.FileId.HasValue)
+            {
+                // @todo gerar documento se não houver
+                throw new Exception("Contrato não encontrado");
+            }
+
+
             var planoTrabalho = Mapper.Map<PlanoTrabalho>(proposta.PlanoTrabalho);
             var escopo = Mapper.Map<Escopo>(proposta.Escopo);
 
             var dataInicio = new DateTime(inicio.Year, inicio.Month, 1);
             var projeto = new Projeto()
             {
+                PlanoTrabalhoFileId = relatorio.FileId.Value,
+                ContratoId = contrato.FileId.Value,
+                EspecificacaoTecnicaFileId = captacao.EspecificacaoTecnicaFileId.Value,
+                TemaId = captacao.TemaId,
+                TemaOutro = captacao.TemaOutro,
                 DataCriacao = DateTime.Now,
                 DataAlteracao = DateTime.Now,
                 DataInicioProjeto = dataInicio,

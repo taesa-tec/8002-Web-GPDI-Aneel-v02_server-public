@@ -8,6 +8,16 @@ namespace PeD.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql("UPDATE Captacoes SET UsuarioExecucaoId = null, IsProjetoAprovado = null, ArquivoFormalizacaoId = null");
+            migrationBuilder.AddColumn<int>(
+                name: "EspecificacaoTecnicaFileId",
+                table: "Demandas",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "EspecificacaoTecnicaFileId",
+                table: "Captacoes",
+                nullable: true);
+
             migrationBuilder.CreateTable(
                 name: "Projetos",
                 columns: table => new
@@ -16,7 +26,12 @@ namespace PeD.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Titulo = table.Column<string>(nullable: true),
                     TituloCompleto = table.Column<string>(nullable: true),
+                    PlanoTrabalhoFileId = table.Column<int>(nullable: false),
+                    ContratoId = table.Column<int>(nullable: false),
+                    EspecificacaoTecnicaFileId = table.Column<int>(nullable: true),
                     Status = table.Column<int>(nullable: false),
+                    TemaId = table.Column<int>(nullable: true),
+                    TemaOutro = table.Column<string>(nullable: true),
                     PropostaId = table.Column<int>(nullable: false),
                     Codigo = table.Column<string>(nullable: true),
                     Numero = table.Column<string>(nullable: true),
@@ -39,11 +54,26 @@ namespace PeD.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Projetos_Files_ContratoId",
+                        column: x => x.ContratoId,
+                        principalTable: "Files",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Projetos_Files_EspecificacaoTecnicaFileId",
+                        column: x => x.EspecificacaoTecnicaFileId,
+                        principalTable: "Files",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Projetos_Empresas_FornecedorId",
                         column: x => x.FornecedorId,
                         principalTable: "Empresas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Projetos_Files_PlanoTrabalhoFileId",
+                        column: x => x.PlanoTrabalhoFileId,
+                        principalTable: "Files",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Projetos_Empresas_ProponenteId",
                         column: x => x.ProponenteId,
@@ -59,6 +89,12 @@ namespace PeD.Data.Migrations
                         name: "FK_Projetos_AspNetUsers_ResponsavelId",
                         column: x => x.ResponsavelId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Projetos_Temas_TemaId",
+                        column: x => x.TemaId,
+                        principalTable: "Temas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -587,6 +623,18 @@ namespace PeD.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Demandas_EspecificacaoTecnicaFileId",
+                table: "Demandas",
+                column: "EspecificacaoTecnicaFileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Captacoes_EspecificacaoTecnicaFileId",
+                table: "Captacoes",
+                column: "EspecificacaoTecnicaFileId",
+                unique: true,
+                filter: "[EspecificacaoTecnicaFileId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjetoArquivos_ArquivoId",
                 table: "ProjetoArquivos",
                 column: "ArquivoId");
@@ -695,9 +743,28 @@ namespace PeD.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Projetos_ContratoId",
+                table: "Projetos",
+                column: "ContratoId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projetos_EspecificacaoTecnicaFileId",
+                table: "Projetos",
+                column: "EspecificacaoTecnicaFileId",
+                unique: true,
+                filter: "[EspecificacaoTecnicaFileId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Projetos_FornecedorId",
                 table: "Projetos",
                 column: "FornecedorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projetos_PlanoTrabalhoFileId",
+                table: "Projetos",
+                column: "PlanoTrabalhoFileId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projetos_ProponenteId",
@@ -714,6 +781,11 @@ namespace PeD.Data.Migrations
                 name: "IX_Projetos_ResponsavelId",
                 table: "Projetos",
                 column: "ResponsavelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projetos_TemaId",
+                table: "Projetos",
+                column: "TemaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjetosRecursosAlocacoes_CoExecutorFinanciadorId",
@@ -814,10 +886,33 @@ namespace PeD.Data.Migrations
                 name: "IX_ProjetosRegistrosFinanceirosObservacoes_RegistroId",
                 table: "ProjetosRegistrosFinanceirosObservacoes",
                 column: "RegistroId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Captacoes_Files_EspecificacaoTecnicaFileId",
+                table: "Captacoes",
+                column: "EspecificacaoTecnicaFileId",
+                principalTable: "Files",
+                principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Demandas_Files_EspecificacaoTecnicaFileId",
+                table: "Demandas",
+                column: "EspecificacaoTecnicaFileId",
+                principalTable: "Files",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Captacoes_Files_EspecificacaoTecnicaFileId",
+                table: "Captacoes");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Demandas_Files_EspecificacaoTecnicaFileId",
+                table: "Demandas");
+
             migrationBuilder.DropTable(
                 name: "ProjetoArquivos");
 
@@ -865,6 +960,22 @@ namespace PeD.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Projetos");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Demandas_EspecificacaoTecnicaFileId",
+                table: "Demandas");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Captacoes_EspecificacaoTecnicaFileId",
+                table: "Captacoes");
+
+            migrationBuilder.DropColumn(
+                name: "EspecificacaoTecnicaFileId",
+                table: "Demandas");
+
+            migrationBuilder.DropColumn(
+                name: "EspecificacaoTecnicaFileId",
+                table: "Captacoes");
         }
     }
 }

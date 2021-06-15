@@ -56,6 +56,7 @@ namespace PeD.Services.Demandas
         SistemaService sistemaService;
         GestorDbContext _context;
         private SendGridService _sendGridService;
+        private ArquivoService _arquivoService;
 
         #endregion
 
@@ -67,7 +68,7 @@ namespace PeD.Services.Demandas
             DemandaLogService logService,
             IWebHostEnvironment hostingEnvironment,
             SistemaService sistemaService, IViewRenderService viewRender, IService<Captacao> serviceCaptacao,
-            IConfiguration configuration, SendGridService sendGridService)
+            IConfiguration configuration, SendGridService sendGridService, ArquivoService arquivoService)
             : base(repository)
         {
             _context = context;
@@ -78,6 +79,7 @@ namespace PeD.Services.Demandas
             _serviceCaptacao = serviceCaptacao;
             Configuration = configuration;
             _sendGridService = sendGridService;
+            _arquivoService = arquivoService;
             LogService = logService;
 
 
@@ -396,6 +398,12 @@ namespace PeD.Services.Demandas
                 var temaAneel =
                     especificacaoTecnicaForm.Object.SelectToken(EspecificacaoTecnicaForm.TemaPath) as JObject;
 
+                if (!demanda.EspecificacaoTecnicaFileId.HasValue)
+                {
+                    throw new DemandaException("Especificação Técnica ausente");
+                }
+
+                // @todo TEMA ANEEL
                 if (temaAneel == null)
                     throw new DemandaException("Tema Aneel ausente");
 
@@ -436,6 +444,7 @@ namespace PeD.Services.Demandas
                     Status = Captacao.CaptacaoStatus.Pendente,
                     SubTemas = captacaoSubTema?.ToList() ?? new List<CaptacaoSubTema>()
                 };
+                captacao.EspecificacaoTecnicaFileId = demanda.EspecificacaoTecnicaFileId.Value;
                 demanda.EtapaAtual = DemandaEtapa.Captacao;
                 demanda.Status = DemandaStatus.Concluido;
                 demanda.CaptacaoDate = DateTime.Now;
@@ -443,6 +452,10 @@ namespace PeD.Services.Demandas
 
                 if (captacao.Id == 0)
                     _serviceCaptacao.Post(captacao);
+                else
+                {
+                    _serviceCaptacao.Put(captacao);
+                }
 
                 var user = _context.Users.Find(userId);
 
@@ -590,7 +603,8 @@ namespace PeD.Services.Demandas
             var versao = await SaveDemandaFormHistorico(demandaFormView);
             dfData.Html = versao.Content;
 
-            SaveDemandaFormPdf(id, form, versao.Content, dfData.Revisao.ToString());
+            var file = SaveDemandaFormPdf(id, form, versao.Content, dfData.Revisao.ToString());
+            demanda.EspecificacaoTecnicaFileId = file.Id;
         }
 
         public DemandaFormView GetDemandaFormView(int id, string form)
@@ -628,15 +642,14 @@ namespace PeD.Services.Demandas
             return new FieldRendered("Error", "No data or Form found");
         }
 
-        public string SaveDemandaFormPdf(int id, string form, string html, string revisao)
+        public FileUpload SaveDemandaFormPdf(int id, string form, string html, string revisao)
         {
-            var fullname = GetDemandaFormPdfFilename(id, form, revisao, true);
+            var fullname = Path.GetTempFileName(); //GetDemandaFormPdfFilename(id, form, revisao, true);
             var stream = new FileStream(fullname, FileMode.Create);
             HtmlConverter.ConvertToPdf(html, stream);
             stream.Close();
             UpdatePdf(fullname);
-
-            return fullname;
+            return _arquivoService.FromPath(fullname, "application/pdf");
         }
 
         public async Task<DemandaFormHistorico> SaveDemandaFormHistorico(DemandaFormView demandaFormView)

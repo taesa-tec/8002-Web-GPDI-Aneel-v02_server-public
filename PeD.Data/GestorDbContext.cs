@@ -124,6 +124,9 @@ namespace PeD.Data
                 eb.HasOne(c => c.ContratoSugerido).WithMany()
                     .HasForeignKey("ContratoSugeridoId")
                     .IsRequired(false);
+                
+                eb.HasOne(c => c.EspecificacaoTecnicaFile).WithOne().OnDelete(DeleteBehavior.NoAction);
+                
                 eb.HasMany(c => c.Propostas).WithOne(p => p.Captacao);
                 eb.ToTable("Captacoes");
             });
@@ -232,6 +235,9 @@ namespace PeD.Data
             {
                 b.HasIndex(p => p.CaptacaoId).IsUnique();
                 b.HasOne(p => p.Proposta).WithOne().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.PlanoTrabalhoFile).WithOne().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.Contrato).WithOne().OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.EspecificacaoTecnicaFile).WithOne().OnDelete(DeleteBehavior.NoAction);
                 b.ToTable("Projetos");
             });
             builder.Entity<ProjetoArquivo>(b =>

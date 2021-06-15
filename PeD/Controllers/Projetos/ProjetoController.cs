@@ -61,6 +61,45 @@ namespace PeD.Controllers.Projetos
             return Ok(Mapper.Map<ProjetoDto>(projeto));
         }
 
+        [HttpGet("{id:int}/PlanoTrabalho")]
+        public ActionResult GetPlanoTrabalho(int id)
+        {
+            var projeto = Service.Filter(q =>
+                q.Include(p => p.PlanoTrabalhoFile)
+                    .Where(p => p.Id == id)).FirstOrDefault();
+            if (projeto == null)
+                return NotFound();
+
+            return PhysicalFile(projeto.PlanoTrabalhoFile.Path, projeto.PlanoTrabalhoFile.ContentType,
+                projeto.PlanoTrabalhoFile.Name);
+        }
+
+        [HttpGet("{id:int}/Contrato")]
+        public ActionResult GetContrato(int id)
+        {
+            var projeto = Service.Filter(q =>
+                q.Include(p => p.Contrato)
+                    .Where(p => p.Id == id)).FirstOrDefault();
+            if (projeto == null)
+                return NotFound();
+
+            return PhysicalFile(projeto.Contrato.Path, projeto.Contrato.ContentType,
+                projeto.Contrato.Name);
+        }
+
+        [HttpGet("{id:int}/EspecificacaoTecnica")]
+        public ActionResult GetEspecificacaoTecnica(int id)
+        {
+            var projeto = Service.Filter(q =>
+                q.Include(p => p.EspecificacaoTecnicaFile)
+                    .Where(p => p.Id == id)).FirstOrDefault();
+            if (projeto == null)
+                return NotFound();
+
+            return PhysicalFile(projeto.EspecificacaoTecnicaFile.Path, projeto.EspecificacaoTecnicaFile.ContentType,
+                projeto.EspecificacaoTecnicaFile.Name);
+        }
+
         [HttpGet("{id:int}/Empresas")]
         public ActionResult Empresas(int id, [FromServices] IService<Empresa> empresasService)
         {

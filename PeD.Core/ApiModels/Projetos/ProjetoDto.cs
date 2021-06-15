@@ -19,6 +19,14 @@ namespace PeD.Core.ApiModels.Projetos
         public int? ProponenteId { get; set; }
         public string Proponente { get; set; }
 
+        public int PlanoTrabalhoFileId { get; set; }
+
+        public int ContratoId { get; set; }
+
+        public int EspecificacaoTecnicaFileId { get; set; }
+
+        public int? TemaId { get; set; }
+        public string Tema { get; set; }
 
         public string Captacao { get; set; }
         public int FornecedorId { get; set; }

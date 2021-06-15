@@ -55,6 +55,9 @@ namespace PeD.Core.Models.Demandas
         public DateTime? CaptacaoDate { get; set; }
         public List<DemandaComentario> Comentarios { get; set; }
 
+        public int? EspecificacaoTecnicaFileId { get; set; }
+        public FileUpload EspecificacaoTecnicaFile { get; set; }
+
         public void ProximaEtapa()
         {
             if (this.EtapaAtual > DemandaEtapa.Elaboracao && String.IsNullOrWhiteSpace(SuperiorDiretoId))

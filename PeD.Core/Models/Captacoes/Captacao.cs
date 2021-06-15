@@ -27,6 +27,9 @@ namespace PeD.Core.Models.Captacoes
         public int DemandaId { get; set; }
         public Demanda Demanda { get; set; }
 
+        public int? EspecificacaoTecnicaFileId { get; set; }
+        public FileUpload EspecificacaoTecnicaFile { get; set; }
+
         public string CriadorId { get; set; }
         public ApplicationUser Criador { get; set; }
         public string UsuarioSuprimentoId { get; set; }

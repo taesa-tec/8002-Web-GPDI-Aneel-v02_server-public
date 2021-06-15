@@ -238,32 +238,18 @@ namespace PeD.Controllers.Demandas
             return NotFound();
         }
 
-        [HttpGet("{id:int}/Form/{form}/Pdf", Name = "DemandaPdf")]
-        public ActionResult<object> GetDemandaPdf(int id, string form, [FromServices] GestorDbContext context)
+        [HttpGet("{id:int}/EspecificacaoTecnica/Pdf", Name = "DemandaPdf")]
+        [HttpGet("{id:int}/Form/especificacao-tecnica/Pdf")]
+        public ActionResult GetDemandaPdf(int id, [FromServices] GestorDbContext context)
         {
-            var info = context.Set<DemandaFormValues>()
-                .FirstOrDefault(values => values.DemandaId == id && values.FormKey == form);
-
-            if (info != null)
-            {
-                var filename = DemandaService.GetDemandaFormPdfFilename(id, form, info.Revisao.ToString());
-
-                if (System.IO.File.Exists(filename))
-                {
-                    var name = String.Format("demanda-{0}-{1}-rev-{2}.pdf", id, form, info.Revisao);
-                    var response = PhysicalFile(filename, "application/pdf", name);
-                    if (Request.Query["dl"] == "1")
-                    {
-                        response.FileDownloadName = name;
-                    }
-
-                    return response;
-                }
-
+            var demanda = DemandaService.Get(id);
+            if (demanda.EspecificacaoTecnicaFileId is null)
                 return NotFound();
-            }
 
-            return BadRequest();
+            var file = context.Files.FirstOrDefault(f => f.Id == demanda.EspecificacaoTecnicaFileId.Value);
+            if (file is null)
+                return NotFound();
+            return PhysicalFile(file.Path, "application/pdf", file.Name);
         }
 
         [AllowAnonymous]
