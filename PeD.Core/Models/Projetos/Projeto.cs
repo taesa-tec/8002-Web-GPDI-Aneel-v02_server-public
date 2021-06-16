@@ -94,4 +94,20 @@ namespace PeD.Core.Models.Projetos
         public int ProjetoId { get; set; }
         public Projeto Projeto { get; set; }
     }
+
+    public class ProjetoXml : ProjetoNode
+    {
+        public enum TipoXml
+        {
+            None,
+            Prorrogacao,
+            Duto,
+            RelatorioFinal,
+            Auditoria
+        }
+        public int FileId { get; set; }
+        public FileUpload File { get; set; }
+        public string Versao { get; set; }
+        public TipoXml Tipo { get; set; }
+    }
 }

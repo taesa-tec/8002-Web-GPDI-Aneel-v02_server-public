@@ -83,6 +83,9 @@ namespace PeD.Mapping
             CreateMap<RegistroFinanceiroRm, RegistroFinanceiroDto>();
             CreateMap<RegistroFinanceiroInfo, RegistroFinanceiroInfoDto>();
             CreateMap<Produto, ProjetoProdutoDto>();
+            CreateMap<ProjetoXml, ProjetoXmlDto>()
+                .ForMember(dest => dest.File, opt => opt.MapFrom(src => src.File.Name))
+                .ForMember(dest => dest.Data, opt => opt.MapFrom(src => src.File.CreatedAt));
         }
 
         public void ProjetoRequest()

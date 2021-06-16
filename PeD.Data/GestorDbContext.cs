@@ -124,9 +124,9 @@ namespace PeD.Data
                 eb.HasOne(c => c.ContratoSugerido).WithMany()
                     .HasForeignKey("ContratoSugeridoId")
                     .IsRequired(false);
-                
+
                 eb.HasOne(c => c.EspecificacaoTecnicaFile).WithOne().OnDelete(DeleteBehavior.NoAction);
-                
+
                 eb.HasMany(c => c.Propostas).WithOne(p => p.Captacao);
                 eb.ToTable("Captacoes");
             });
@@ -249,6 +249,7 @@ namespace PeD.Data
             builder.Entity<PeD.Core.Models.Projetos.CoExecutor>();
             builder.Entity<PeD.Core.Models.Projetos.Escopo>();
             builder.Entity<PeD.Core.Models.Projetos.Meta>();
+
             builder.Entity<PeD.Core.Models.Projetos.Etapa>(b =>
             {
                 b.Property(e => e.Meses).HasConversion(
@@ -322,6 +323,11 @@ namespace PeD.Data
                 b.HasOne(r => r.CoExecutorRecebedor).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<RegistroObservacao>(b => { b.ToTable("ProjetosRegistrosFinanceirosObservacoes"); });
+
+            builder.Entity<PeD.Core.Models.Projetos.ProjetoXml>(b =>
+            {
+                b.Property(l => l.Tipo).HasConversion<string>();
+            });
 
             #endregion
 

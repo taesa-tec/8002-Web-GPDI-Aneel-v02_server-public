@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos;
@@ -11,6 +13,7 @@ using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Requests.Projetos;
 using PeD.Data;
+using PeD.Services;
 using PeD.Services.Projetos;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -165,5 +168,66 @@ namespace PeD.Controllers.Projetos
             Context.SaveChanges();
             return Ok();
         }
+
+        #region Logs DUTO
+
+        [HttpGet("{id:int}/LogsDuto")]
+        public ActionResult GetLogsDuto(int id, [FromServices] IService<ProjetoXml> service)
+        {
+            var logs = service.Filter(q => q
+                .Include(l => l.File)
+                .Where(l => l.ProjetoId == id && l.Tipo == ProjetoXml.TipoXml.Duto));
+            return Ok(Mapper.Map<List<ProjetoXmlDto>>(logs));
+        }
+
+        [HttpGet("{id:int}/LogsDuto/{logId:int}")]
+        public ActionResult GetLogDuto(int id, int logId, [FromServices] IService<ProjetoXml> service)
+        {
+            var log = service.Filter(q => q
+                .Include(l => l.File)
+                .Where(l => l.ProjetoId == id && l.Tipo == ProjetoXml.TipoXml.Duto && l.Id == logId)).FirstOrDefault();
+            if (log is null)
+                return NotFound();
+
+            return PhysicalFile(log.File.Path, log.File.ContentType, log.File.Name);
+        }
+
+        [HttpPost("{id:int}/LogsDuto")]
+        public async Task<ActionResult> UploadComprovante([FromRoute] int id,
+            [FromServices] ArquivoService arquivoService,
+            [FromServices] IService<ProjetoXml> serviceXml)
+        {
+            var upload = Request.Form.Files.FirstOrDefault();
+            if (upload is null)
+            {
+                return Problem("O arquivo não foi enviado", null,
+                    StatusCodes.Status422UnprocessableEntity);
+            }
+
+            if (!upload.FileName.EndsWith(".xml"))
+            {
+                return BadRequest("É necessário enviar um arquivo xml");
+            }
+
+            try
+            {
+                var file = await arquivoService.SaveFile(upload);
+                var xml = new ProjetoXml()
+                {
+                    FileId = file.Id,
+                    ProjetoId = id,
+                    Tipo = ProjetoXml.TipoXml.Duto,
+                    Versao = "1"
+                };
+                serviceXml.Post(xml);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
+        }
+
+        #endregion
     }
 }

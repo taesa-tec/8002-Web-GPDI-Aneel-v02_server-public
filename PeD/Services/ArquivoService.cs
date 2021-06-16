@@ -95,6 +95,7 @@ namespace PeD.Services
                     ContentType = file.ContentType,
                     Name = file.FileName, FileName = file.Name,
                     Size = file.Length,
+                    CreatedAt = DateTime.Now
                 };
 
 
@@ -132,7 +133,8 @@ namespace PeD.Services
             var arquivo = new FileUpload()
             {
                 ContentType = mimetype,
-                Path = fullFileName
+                Path = fullFileName,
+                CreatedAt = DateTime.Now
             };
 
 
