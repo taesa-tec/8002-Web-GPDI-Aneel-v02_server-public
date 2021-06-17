@@ -65,6 +65,19 @@ namespace PeD.Controllers.Projetos
             return Ok(Mapper.Map<ProjetoDto>(projeto));
         }
 
+        [HttpPut("{id:int}/Status")]
+        public ActionResult UpdateStatus(int id, [FromBody] ProjetoStatusRequest request)
+        {
+            var projeto = Service.Get(id);
+            if (projeto == null)
+                return NotFound();
+            projeto.Status = request.Status;
+            Context.Update(projeto);
+            Context.SaveChanges();
+
+            return Ok(Mapper.Map<ProjetoDto>(projeto));
+        }
+
         [HttpGet("{id:int}/PlanoTrabalho")]
         public ActionResult GetPlanoTrabalho(int id)
         {
@@ -181,12 +194,12 @@ namespace PeD.Controllers.Projetos
             return Ok(Mapper.Map<List<ProjetoXmlDto>>(logs));
         }
 
-        [HttpGet("{id:int}/LogsDuto/{logId:int}")]
-        public ActionResult GetLogDuto(int id, int logId, [FromServices] IService<ProjetoXml> service)
+        [HttpGet("{id:int}/Xml/{xmlId:int}")]
+        public ActionResult GetLogDuto(int id, int xmlId, [FromServices] IService<ProjetoXml> service)
         {
             var log = service.Filter(q => q
                 .Include(l => l.File)
-                .Where(l => l.ProjetoId == id && l.Tipo == BaseXml.XmlTipo.DUTO && l.Id == logId)).FirstOrDefault();
+                .Where(l => l.ProjetoId == id && l.Id == xmlId)).FirstOrDefault();
             if (log is null)
                 return NotFound();
 
