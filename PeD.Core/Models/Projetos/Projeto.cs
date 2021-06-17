@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Catalogos;
+using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Models.Propostas;
 using TaesaCore.Models;
 
@@ -79,6 +80,16 @@ namespace PeD.Core.Models.Projetos
         public List<RecursoMaterial> RecursosMateriais { get; set; }
         [InverseProperty("Projeto")] public List<Alocacao> Alocacoes { get; set; }
 
+        [NotMapped]
+        public int Duracao
+        {
+            get
+            {
+                return 1 + (DataFinalProjeto.Year - DataInicioProjeto.Year) * 12 + DataFinalProjeto.Month -
+                       DataInicioProjeto.Month;
+            }
+        }
+
         #region Remover?
 
         public PlanoTrabalho PlanoTrabalho { get; set; }
@@ -97,17 +108,9 @@ namespace PeD.Core.Models.Projetos
 
     public class ProjetoXml : ProjetoNode
     {
-        public enum TipoXml
-        {
-            None,
-            Prorrogacao,
-            Duto,
-            RelatorioFinal,
-            Auditoria
-        }
         public int FileId { get; set; }
         public FileUpload File { get; set; }
         public string Versao { get; set; }
-        public TipoXml Tipo { get; set; }
+        public BaseXml.XmlTipo Tipo { get; set; }
     }
 }

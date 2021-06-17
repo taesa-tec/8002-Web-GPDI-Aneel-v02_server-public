@@ -11,6 +11,7 @@ using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Projetos;
+using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Requests.Projetos;
 using PeD.Data;
 using PeD.Services;
@@ -176,7 +177,7 @@ namespace PeD.Controllers.Projetos
         {
             var logs = service.Filter(q => q
                 .Include(l => l.File)
-                .Where(l => l.ProjetoId == id && l.Tipo == ProjetoXml.TipoXml.Duto));
+                .Where(l => l.ProjetoId == id && l.Tipo == BaseXml.XmlTipo.DUTO));
             return Ok(Mapper.Map<List<ProjetoXmlDto>>(logs));
         }
 
@@ -185,7 +186,7 @@ namespace PeD.Controllers.Projetos
         {
             var log = service.Filter(q => q
                 .Include(l => l.File)
-                .Where(l => l.ProjetoId == id && l.Tipo == ProjetoXml.TipoXml.Duto && l.Id == logId)).FirstOrDefault();
+                .Where(l => l.ProjetoId == id && l.Tipo == BaseXml.XmlTipo.DUTO && l.Id == logId)).FirstOrDefault();
             if (log is null)
                 return NotFound();
 
@@ -216,11 +217,48 @@ namespace PeD.Controllers.Projetos
                 {
                     FileId = file.Id,
                     ProjetoId = id,
-                    Tipo = ProjetoXml.TipoXml.Duto,
+                    Tipo = BaseXml.XmlTipo.DUTO,
                     Versao = "1"
                 };
                 serviceXml.Post(xml);
                 return Ok();
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
+        }
+
+        #endregion
+
+        #region XMLS
+
+        [HttpGet("{id:int}/Xmls")]
+        public ActionResult GetXmls(int id, [FromServices] IService<ProjetoXml> service)
+        {
+            var logs = service.Filter(q => q
+                .Include(l => l.File)
+                .Where(l => l.ProjetoId == id && l.Tipo != BaseXml.XmlTipo.DUTO));
+            return Ok(Mapper.Map<List<ProjetoXmlDto>>(logs));
+        }
+
+        #endregion
+
+        #region XML PRORROGACAO
+
+        [HttpPost("{id:int}/GerarXML/Prorrogacao")]
+        public ActionResult GerarXmlProrrogacao(int id, [FromBody] XmlRequest request)
+        {
+            var projeto = Service.Get(id);
+            if (projeto is null)
+                return NotFound();
+
+
+            try
+            {
+                var doc = Service.SaveXml(id, request.Versao, new Prorrogacao(projeto.Codigo, projeto.Duracao));
+                Console.WriteLine(projeto.Codigo);
+                return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.Name);
             }
             catch (Exception e)
             {

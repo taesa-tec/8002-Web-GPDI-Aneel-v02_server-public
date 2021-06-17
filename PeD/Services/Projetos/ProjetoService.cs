@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos;
+using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Projetos;
+using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Services.Captacoes;
@@ -28,15 +32,17 @@ namespace PeD.Services.Projetos
     {
         private PropostaService _propostaService;
         private GestorDbContext _context;
+        private ArquivoService _arquivoService;
         private IMapper Mapper;
 
         public ProjetoService(IRepository<Projeto> repository, PropostaService propostaService, GestorDbContext context,
-            IMapper mapper)
+            IMapper mapper, ArquivoService arquivoService)
             : base(repository)
         {
             _propostaService = propostaService;
             _context = context;
             Mapper = mapper;
+            _arquivoService = arquivoService;
         }
 
         #region Proposta para Projeto
@@ -73,11 +79,17 @@ namespace PeD.Services.Projetos
             var relatorio = _propostaService.GetRelatorio(propostaId);
             var contrato = _propostaService.GetContrato(propostaId);
             var captacao = _context.Set<Captacao>().FirstOrDefault(c => c.Id == proposta.CaptacaoId);
+            var proponente = _context.Set<Empresa>().FirstOrDefault(e => e.Id == proponentId);
 
             if (captacao is null)
             {
                 // @todo disparar um email se isso acontecer, captaçõa não pode mais ser excluida nesse ponto
                 throw new Exception("Captacao não encontrada");
+            }
+
+            if (proponente is null)
+            {
+                throw new Exception("Proponente não encontrado");
             }
 
             if (relatorio is null || !relatorio.FileId.HasValue)
@@ -97,11 +109,15 @@ namespace PeD.Services.Projetos
             var escopo = Mapper.Map<Escopo>(proposta.Escopo);
 
             var dataInicio = new DateTime(inicio.Year, inicio.Month, 1);
+            var codigo = $"PD-{proponente.Valor}-{numero}/{inicio.Year}";
             var projeto = new Projeto()
             {
                 PlanoTrabalhoFileId = relatorio.FileId.Value,
+                Codigo = codigo,
                 ContratoId = contrato.FileId.Value,
-                EspecificacaoTecnicaFileId = captacao.EspecificacaoTecnicaFileId.Value,
+                EspecificacaoTecnicaFileId = captacao.EspecificacaoTecnicaFileId.HasValue
+                    ? captacao.EspecificacaoTecnicaFileId.Value
+                    : (int?) null,
                 TemaId = captacao.TemaId,
                 TemaOutro = captacao.TemaOutro,
                 DataCriacao = DateTime.Now,
@@ -243,6 +259,42 @@ namespace PeD.Services.Projetos
                         o.CategoriaContabilCodigo == c.CategoriaContabilCodigo)
                 }).Where(ef => ef.Previsto != 0 || ef.Realizado != 0)
             });
+        }
+
+        public ProjetoXml SaveXml(int projetoId, string versao, BaseXml xml)
+        {
+            var projeto = _context.Set<Projeto>().Include(p => p.Proponente).FirstOrDefault(p => p.Id == projetoId);
+            if (projeto is null)
+                return null;
+            xml.Attributes.Add("CodigoEmpresa", projeto.Proponente.Valor);
+
+            var document = xml.ToXml();
+            //filename =  APLPED + Codigo Empresa _ Tipo _ Numero _ Versao
+            var filename = $"APLPED{projeto.Proponente.Valor}_{xml.Tipo.ToString()}_{projeto.Numero}_{versao}.XML";
+            var tempFileName = Path.GetTempFileName();
+            document.Save(tempFileName);
+
+            string[] lines = File.ReadAllLines(tempFileName, System.Text.Encoding.GetEncoding("iso-8859-1"));
+
+            lines[0] = Regex.Replace(lines[0], "encoding=\"iso-8859-1\"", "encoding=\"ISO8859-1\"");
+
+            File.WriteAllLines(tempFileName, lines, System.Text.Encoding.GetEncoding("iso-8859-1"));
+
+            var file = _arquivoService.FromPath(tempFileName, "application/xml", filename);
+
+            var projetoFile = new ProjetoXml()
+            {
+                ProjetoId = projetoId,
+                FileId = file.Id,
+                Tipo = xml.Tipo,
+                Versao = versao
+            };
+            _context.Add(projetoFile);
+            _context.SaveChanges();
+            projetoFile.File = file;
+            return projetoFile;
+
+            
         }
     }
 }

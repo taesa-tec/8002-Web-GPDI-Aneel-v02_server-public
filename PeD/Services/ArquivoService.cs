@@ -126,12 +126,14 @@ namespace PeD.Services
         {
             if (!File.Exists(path)) throw new FileNotFoundException("Arquivo não encontrado", path);
 
-            var fullFileName = filename != null ? NewFileName(filename) : NewFileName();
+            var fullFileName = NewFileName();
 
             File.Copy(path, fullFileName, true);
 
             var arquivo = new FileUpload()
             {
+                FileName = filename,
+                Name = filename,
                 ContentType = mimetype,
                 Path = fullFileName,
                 CreatedAt = DateTime.Now
