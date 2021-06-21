@@ -115,9 +115,7 @@ namespace PeD.Services.Projetos
                 PlanoTrabalhoFileId = relatorio.FileId.Value,
                 Codigo = codigo,
                 ContratoId = contrato.FileId.Value,
-                EspecificacaoTecnicaFileId = captacao.EspecificacaoTecnicaFileId.HasValue
-                    ? captacao.EspecificacaoTecnicaFileId.Value
-                    : (int?) null,
+                EspecificacaoTecnicaFileId = captacao.EspecificacaoTecnicaFileId,
                 TemaId = captacao.TemaId,
                 TemaOutro = captacao.TemaOutro,
                 DataCriacao = DateTime.Now,
@@ -293,8 +291,6 @@ namespace PeD.Services.Projetos
             _context.SaveChanges();
             projetoFile.File = file;
             return projetoFile;
-
-            
         }
     }
 }

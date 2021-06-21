@@ -26,6 +26,8 @@ namespace PeD.Core.Models.Projetos
 
     public class RegistroFinanceiro : ProjetoNode
     {
+        public string AuthorId { get; set; }
+        public ApplicationUser Author { get; set; }
         public string Tipo { get; set; }
         public StatusRegistro Status { get; set; }
         [Column(TypeName = "decimal(18, 2)")] public decimal Valor { get; set; }

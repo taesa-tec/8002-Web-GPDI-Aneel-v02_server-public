@@ -20,7 +20,7 @@ namespace PeD.Core.Models.Projetos
         public int ContratoId { get; set; }
         public FileUpload Contrato { get; set; }
 
-        public int? EspecificacaoTecnicaFileId { get; set; }
+        public int EspecificacaoTecnicaFileId { get; set; }
         public FileUpload EspecificacaoTecnicaFile { get; set; }
         public Status Status { get; set; }
 

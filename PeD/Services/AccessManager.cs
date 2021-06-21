@@ -17,6 +17,7 @@ using PeD.Core.Models.Fornecedores;
 using PeD.Core.Requests;
 using PeD.Data;
 using PeD.Views.Email;
+using TokenConfigurations = PeD.Auth.TokenConfigurations;
 
 namespace PeD.Services
 {

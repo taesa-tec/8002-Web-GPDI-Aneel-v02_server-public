@@ -7,7 +7,6 @@ namespace PeD.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("UPDATE Captacoes SET UsuarioExecucaoId = null, IsProjetoAprovado = null, ArquivoFormalizacaoId = null");
             migrationBuilder.AddColumn<int>(
                 name: "EspecificacaoTecnicaFileId",
                 table: "Demandas",
@@ -16,7 +15,8 @@ namespace PeD.Data.Migrations
             migrationBuilder.AddColumn<int>(
                 name: "EspecificacaoTecnicaFileId",
                 table: "Captacoes",
-                nullable: true);
+                nullable: false,
+                defaultValue: 0);
 
             migrationBuilder.CreateTable(
                 name: "Projetos",
@@ -28,7 +28,7 @@ namespace PeD.Data.Migrations
                     TituloCompleto = table.Column<string>(nullable: true),
                     PlanoTrabalhoFileId = table.Column<int>(nullable: false),
                     ContratoId = table.Column<int>(nullable: false),
-                    EspecificacaoTecnicaFileId = table.Column<int>(nullable: true),
+                    EspecificacaoTecnicaFileId = table.Column<int>(nullable: false),
                     Status = table.Column<int>(nullable: false),
                     TemaId = table.Column<int>(nullable: true),
                     TemaOutro = table.Column<string>(nullable: true),
@@ -322,6 +322,34 @@ namespace PeD.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProjetoXml",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProjetoId = table.Column<int>(nullable: false),
+                    FileId = table.Column<int>(nullable: false),
+                    Versao = table.Column<string>(nullable: true),
+                    Tipo = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjetoXml", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjetoXml_Files_FileId",
+                        column: x => x.FileId,
+                        principalTable: "Files",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjetoXml_Projetos_ProjetoId",
+                        column: x => x.ProjetoId,
+                        principalTable: "Projetos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProjetoRecursosHumanos",
                 columns: table => new
                 {
@@ -491,6 +519,7 @@ namespace PeD.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProjetoId = table.Column<int>(nullable: false),
+                    AuthorId = table.Column<string>(nullable: true),
                     Tipo = table.Column<string>(maxLength: 200, nullable: false),
                     Status = table.Column<string>(nullable: false),
                     Valor = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
@@ -522,6 +551,12 @@ namespace PeD.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjetosRegistrosFinanceiros", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjetosRegistrosFinanceiros_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProjetosRegistrosFinanceiros_ProjetoCoExecutores_CoExecutorFinanciadorId",
                         column: x => x.CoExecutorFinanciadorId,
@@ -631,8 +666,7 @@ namespace PeD.Data.Migrations
                 name: "IX_Captacoes_EspecificacaoTecnicaFileId",
                 table: "Captacoes",
                 column: "EspecificacaoTecnicaFileId",
-                unique: true,
-                filter: "[EspecificacaoTecnicaFileId] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjetoArquivos_ArquivoId",
@@ -752,8 +786,7 @@ namespace PeD.Data.Migrations
                 name: "IX_Projetos_EspecificacaoTecnicaFileId",
                 table: "Projetos",
                 column: "EspecificacaoTecnicaFileId",
-                unique: true,
-                filter: "[EspecificacaoTecnicaFileId] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projetos_FornecedorId",
@@ -828,6 +861,11 @@ namespace PeD.Data.Migrations
                 column: "RecursoMaterialId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProjetosRegistrosFinanceiros_AuthorId",
+                table: "ProjetosRegistrosFinanceiros",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjetosRegistrosFinanceiros_CoExecutorFinanciadorId",
                 table: "ProjetosRegistrosFinanceiros",
                 column: "CoExecutorFinanciadorId");
@@ -887,6 +925,16 @@ namespace PeD.Data.Migrations
                 table: "ProjetosRegistrosFinanceirosObservacoes",
                 column: "RegistroId");
 
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetoXml_FileId",
+                table: "ProjetoXml",
+                column: "FileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjetoXml_ProjetoId",
+                table: "ProjetoXml",
+                column: "ProjetoId");
+
             migrationBuilder.AddForeignKey(
                 name: "FK_Captacoes_Files_EspecificacaoTecnicaFileId",
                 table: "Captacoes",
@@ -936,6 +984,9 @@ namespace PeD.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProjetosRegistrosFinanceirosObservacoes");
+
+            migrationBuilder.DropTable(
+                name: "ProjetoXml");
 
             migrationBuilder.DropTable(
                 name: "ProjetosRecursosAlocacoes");

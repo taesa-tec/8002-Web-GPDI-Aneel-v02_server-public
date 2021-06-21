@@ -10,8 +10,8 @@ using PeD.Data;
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20210616153322_ProjetosLogsDuto")]
-    partial class ProjetosLogsDuto
+    [Migration("20210621173934_Projetos")]
+    partial class Projetos
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -294,7 +294,7 @@ namespace PeD.Data.Migrations
                     b.Property<DateTime?>("EnvioCaptacao")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("EspecificacaoTecnicaFileId")
+                    b.Property<int>("EspecificacaoTecnicaFileId")
                         .HasColumnType("int");
 
                     b.Property<bool?>("IsProjetoAprovado")
@@ -350,8 +350,7 @@ namespace PeD.Data.Migrations
                     b.HasIndex("DemandaId");
 
                     b.HasIndex("EspecificacaoTecnicaFileId")
-                        .IsUnique()
-                        .HasFilter("[EspecificacaoTecnicaFileId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("PropostaSelecionadaId");
 
@@ -2752,7 +2751,7 @@ namespace PeD.Data.Migrations
                     b.Property<DateTime>("DataInicioProjeto")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("EspecificacaoTecnicaFileId")
+                    b.Property<int>("EspecificacaoTecnicaFileId")
                         .HasColumnType("int");
 
                     b.Property<int>("FornecedorId")
@@ -2797,8 +2796,7 @@ namespace PeD.Data.Migrations
                         .IsUnique();
 
                     b.HasIndex("EspecificacaoTecnicaFileId")
-                        .IsUnique()
-                        .HasFilter("[EspecificacaoTecnicaFileId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("FornecedorId");
 
@@ -2963,6 +2961,9 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int?>("CoExecutorFinanciadorId")
                         .HasColumnType("int");
 
@@ -3004,6 +3005,8 @@ namespace PeD.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("CoExecutorFinanciadorId");
 
@@ -4443,7 +4446,8 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.FileUpload", "EspecificacaoTecnicaFile")
                         .WithOne()
                         .HasForeignKey("PeD.Core.Models.Captacoes.Captacao", "EspecificacaoTecnicaFileId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "PropostaSelecionada")
                         .WithMany()
@@ -4762,7 +4766,8 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.FileUpload", "EspecificacaoTecnicaFile")
                         .WithOne()
                         .HasForeignKey("PeD.Core.Models.Projetos.Projeto", "EspecificacaoTecnicaFileId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Fornecedores.Fornecedor", "Fornecedor")
                         .WithMany()
@@ -4868,6 +4873,10 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.RegistroFinanceiro", b =>
                 {
+                    b.HasOne("PeD.Core.Models.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
                     b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutorFinanciador")
                         .WithMany()
                         .HasForeignKey("CoExecutorFinanciadorId")

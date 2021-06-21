@@ -9,6 +9,7 @@ CREATE OR ALTER VIEW RegistrosFinanceirosView as
 SELECT prf.Id,
        prf.Tipo,
        prf.ProjetoId,
+       prf.AuthorId,
        prf.NomeItem,
        prf.Beneficiado,
        prf.CnpjBeneficiado,

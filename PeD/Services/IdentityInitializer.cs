@@ -44,6 +44,8 @@ namespace PeD.Services
 
         public void Initialize()
         {
+            if (_context is null)
+                return;
             if (!_context.Database.EnsureCreated())
             {
                 CreateRoles().Wait();
@@ -76,6 +78,8 @@ namespace PeD.Services
 
         protected void CreateAdminUser()
         {
+            if (_context is null)
+                return;
             // Verifica se já termos um administrador cadastrado
             if (_context.Users.Any(User => User.Role == Roles.Administrador))
                 return;

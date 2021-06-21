@@ -10,6 +10,7 @@ namespace PeD.Core.ApiModels.Projetos
 {
     public class ProjetoDto : BaseEntity
     {
+        public string ResponsavelId { get; set; }
         public string Titulo { get; set; }
         public string TituloCompleto { get; set; }
         public string Status { get; set; }

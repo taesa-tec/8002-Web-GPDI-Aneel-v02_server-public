@@ -111,6 +111,7 @@ namespace PeD.Controllers.Projetos
                 var registro = Mapper.Map<RegistroFinanceiroRh>(request);
                 registro.Valor = valorhora;
                 registro.ProjetoId = id;
+                registro.AuthorId = this.UserId();
                 _context.Add(registro);
                 _context.SaveChanges();
 
@@ -144,6 +145,7 @@ namespace PeD.Controllers.Projetos
             {
                 var registro = Mapper.Map<RegistroFinanceiroRm>(request);
                 registro.ProjetoId = id;
+                registro.AuthorId = this.UserId();
                 _context.Add(registro);
                 _context.SaveChanges();
 
@@ -180,15 +182,23 @@ namespace PeD.Controllers.Projetos
                 return BadRequest();
             try
             {
-                // @todo Validar se o registro pertence ao projeto 
+                var pre = _context.Set<RegistroFinanceiroRh>().AsNoTracking().FirstOrDefault(r => r.Id == registroId);
+                if (pre is null)
+                    return NotFound();
+
+                if (pre.ProjetoId != id)
+                    return BadRequest();
 
                 var valorhora = _context.Set<RecursoHumano>()
                     .Where(r => r.Id == request.RecursoHumanoId)
                     .Select(r => r.ValorHora).First();
+
                 var registro = Mapper.Map<RegistroFinanceiroRh>(request);
                 registro.Valor = valorhora;
                 registro.ProjetoId = id;
+                registro.AuthorId = pre.AuthorId;
                 registro.Id = registroId;
+
                 registro.ComprovanteId = _context.Set<RegistroFinanceiro>().Where(r => r.Id == registroId)
                     .Select(r => r.ComprovanteId).FirstOrDefault();
                 ;
@@ -222,10 +232,18 @@ namespace PeD.Controllers.Projetos
                 return BadRequest();
             try
             {
-                // @todo Validar se o registro pertence ao projeto 
+                // @todo Validar se o registro pertence ao projeto
+                var pre = _context.Set<RegistroFinanceiroRm>().AsNoTracking().FirstOrDefault(r => r.Id == registroId);
+
+                if (pre is null)
+                    return NotFound();
+                if (pre.ProjetoId != id)
+                    return BadRequest();
+
                 var registro = Mapper.Map<RegistroFinanceiroRm>(request);
                 registro.ProjetoId = id;
                 registro.Id = registroId;
+                registro.AuthorId = pre.AuthorId;
                 registro.ComprovanteId = _context.Set<RegistroFinanceiro>().Where(r => r.Id == registroId)
                     .Select(r => r.ComprovanteId).FirstOrDefault();
                 _context.Update(registro);
