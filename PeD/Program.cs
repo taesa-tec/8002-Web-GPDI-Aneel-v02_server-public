@@ -26,48 +26,10 @@ namespace PeD
                 {
                     using (var scope = host.Services.CreateScope())
                     {
-                        var db = scope.ServiceProvider.GetRequiredService<GestorDbContext>();
-                        try
+                        var db = scope.ServiceProvider.GetService<GestorDbContext>();
+                        if (db != null)
                         {
-                            var pendingMigrations = db.Database.GetPendingMigrations();
-                            if (pendingMigrations.Count() > 0)
-                            {
-                                Log.Information("Rodando migrations pendentes");
-                                db.Database.Migrate();
-                                Log.Information("Migrations concluídas");
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(e, "Erro na migração");
-                            throw;
-                        }
-
-                        try
-                        {
-                            Log.Information("Atualizando Views");
-                            var viewType = typeof(IView);
-                            var views = AppDomain.CurrentDomain.GetAssemblies()
-                                .SelectMany(a => a.GetTypes())
-                                .Where(t => viewType.IsAssignableFrom(t) && !t.IsInterface);
-                            foreach (var view in views)
-                            {
-                                var viewObj = Activator.CreateInstance(view) as IView;
-                                var sql = viewObj?.CreateView ?? "";
-                                if (!string.IsNullOrWhiteSpace(sql))
-                                {
-                                    db.Database.ExecuteSqlRaw(sql);
-                                }
-                                else
-                                {
-                                    Log.Warning("View {View} sql não executado", view.ToString());
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(e, "Erro no update das views: {Erro}", e.Message);
-                            throw;
+                            UpdateDb(db);
                         }
                     }
 
@@ -81,6 +43,54 @@ namespace PeD
             finally
             {
                 Log.CloseAndFlush();
+            }
+        }
+
+        private static void UpdateDb(GestorDbContext db)
+        {
+            Log.Information("GestorDbContext");
+
+            try
+            {
+                var pendingMigrations = db.Database.GetPendingMigrations();
+                if (pendingMigrations.Count() > 0)
+                {
+                    Log.Information("Rodando migrations pendentes");
+                    db.Database.Migrate();
+                    Log.Information("Migrations concluídas");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Erro na migração");
+                throw;
+            }
+
+            try
+            {
+                Log.Information("Atualizando Views");
+                var viewType = typeof(IView);
+                var views = AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(a => a.GetTypes())
+                    .Where(t => viewType.IsAssignableFrom(t) && !t.IsInterface);
+                foreach (var view in views)
+                {
+                    var viewObj = Activator.CreateInstance(view) as IView;
+                    var sql = viewObj?.CreateView ?? "";
+                    if (!string.IsNullOrWhiteSpace(sql))
+                    {
+                        db.Database.ExecuteSqlRaw(sql);
+                    }
+                    else
+                    {
+                        Log.Warning("View {View} sql não executado", view.ToString());
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Erro no update das views: {Erro}", e.Message);
+                throw;
             }
         }
 

@@ -16,7 +16,6 @@ using AutoMapper;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -27,6 +26,7 @@ using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
 using PeD.Data;
 using PeD.HostedServices;
+using PeD.Middlewares;
 using PeD.Services;
 using PeD.Services.Captacoes;
 using PeD.Services.Demandas;
@@ -37,6 +37,7 @@ using TaesaCore.Data;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 using CaptacaoService = PeD.Services.Captacoes.CaptacaoService;
+using Log = Serilog.Log;
 using Path = System.IO.Path;
 
 
@@ -53,34 +54,31 @@ namespace PeD
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var spaPath = Configuration.GetValue<string>("SpaPath");
+            ConfigureSpa(services);
+            try
+            {
+                ConfigureDatabaseConnection(services);
+                ConfigureAuth(services);
+                ConfigureEmail(services);
+                services.AddTransient<IStartupFilter, IdentityInitializer>();
+                services.AddSingleton<IdentityInitializer>();
+            }
+            catch (Exception e)
+            {
+                Log.Warning("Erro na configuração: {Error}", e.Message);
+            }
+
 
             services.AddHostedService<PropostasServices>();
-            services.AddTransient<IStartupFilter, IdentityInitializer>();
-            services.AddAutoMapper(typeof(Startup));
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddAutoMapper(typeof(Startup));
 
-            services.AddControllers().AddNewtonsoftJson();
-
-            services.AddScoped<IViewRenderService, ViewRenderService>();
-            // Configurando o acesso a dados de projetos
-            if (System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Stage")
-            {
-                var connectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
-                services.AddDbContext<GestorDbContext>(options =>
-                    options.UseSqlServer(connectionString));
-            }
-            else
-            {
-                services.AddDbContext<GestorDbContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("BaseGestor")));
-            }
-
-            services.AddScoped<DbContext, GestorDbContext>();
 
             services.AddCors();
+            //services.AddControllers()
             services.AddMvc()
+                .AddNewtonsoftJson()
                 .AddFluentValidation(fv =>
                 {
                     fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup));
@@ -164,6 +162,8 @@ namespace PeD
                 .AddDefaultTokenProviders()
                 .AddErrorDescriber<PortugueseIdentityErrorDescriber>();
 
+            services.AddScoped<IViewRenderService, ViewRenderService>();
+            services.AddScoped<DbContext, GestorDbContext>();
             // Configurando a dependência para a classe de validação
             // de credenciais e geração de tokens
             services.AddScoped<AccessManager>();
@@ -176,45 +176,13 @@ namespace PeD
             #endregion
 
 
-            var tokenConfigurations = new TokenConfigurations();
-            new ConfigureFromConfigurationOptions<TokenConfigurations>(
-                    Configuration.GetSection("TokenConfigurations"))
-                .Configure(tokenConfigurations);
-            var signingConfigurations = new SigningConfigurations(tokenConfigurations.BaseHash);
-            services.AddSingleton(signingConfigurations);
-            services.AddSingleton(tokenConfigurations);
-            // Aciona a extensão que irá configurar o uso de
-            // autenticação e autorização via tokens
-            services.AddJwtSecurity(signingConfigurations, tokenConfigurations);
-            var sendgrid = Configuration.GetSection("SendGrid");
-            var emailConfig = new EmailConfig()
-            {
-                ApiKey = sendgrid.GetValue<string>("ApiKey"),
-                SenderEmail = sendgrid.GetValue<string>("SenderEmail"),
-                SenderName = sendgrid.GetValue<string>("SenderName"),
-            };
-            services.AddSingleton(emailConfig);
-
-            services.AddSingleton<IdentityInitializer>();
-
-            services.AddSpaStaticFiles(opt =>
-            {
-                if (!string.IsNullOrWhiteSpace(spaPath) || Directory.Exists(spaPath))
-                {
-                    opt.RootPath = spaPath;
-                }
-                else
-                {
-                    opt.RootPath = "StaticFiles/DefaultSpa";
-                }
-            });
-
             services.AddPropostaAuthorizations();
             services.AddRoleAuthorizations();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<Installer>();
             var storagePath = Configuration.GetValue<string>("StoragePath");
             if (!string.IsNullOrWhiteSpace(storagePath) && Directory.Exists(storagePath))
             {
@@ -222,13 +190,6 @@ namespace PeD
                 {
                     Directory.CreateDirectory(Path.Combine(storagePath, "avatar"));
                 }
-
-                // app.UseStaticFiles(new StaticFileOptions()
-                // {
-                //     ServeUnknownFileTypes = true,
-                //     FileProvider = new PhysicalFileProvider(Path.Combine(storagePath, "avatar")),
-                //     RequestPath = "/Avatar"
-                // });
             }
 
             if (env.IsDevelopment())
@@ -304,13 +265,61 @@ namespace PeD
                 endpoints.MapControllers();
                 // endpoints.MapControllerRoute("Areas", "api/{controller=Home}/{action=Index}/{id?}");
             });
-            
 
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
             app.UseSpa(spa => { });
+        }
+
+        private void ConfigureDatabaseConnection(IServiceCollection services)
+        {
+            var connectionString = Configuration.GetConnectionString("BaseGestor");
+            if (!string.IsNullOrWhiteSpace(connectionString))
+            {
+                services.AddDbContext<GestorDbContext>(options =>
+                    options.UseSqlServer(connectionString));
+            }
+        }
+
+        private void ConfigureAuth(IServiceCollection services)
+        {
+            var tokenConfigurations = new TokenConfigurations();
+            new ConfigureFromConfigurationOptions<TokenConfigurations>(Configuration.GetSection("TokenConfigurations"))
+                .Configure(tokenConfigurations);
+            var signingConfigurations = new SigningConfigurations(tokenConfigurations.BaseHash);
+            services.AddSingleton(signingConfigurations);
+            services.AddSingleton(tokenConfigurations);
+            services.AddJwtSecurity(signingConfigurations, tokenConfigurations);
+        }
+
+        private void ConfigureEmail(IServiceCollection services)
+        {
+            var sendgrid = Configuration.GetSection("SendGrid");
+            var emailConfig = new EmailConfig()
+            {
+                ApiKey = sendgrid.GetValue<string>("ApiKey"),
+                SenderEmail = sendgrid.GetValue<string>("SenderEmail"),
+                SenderName = sendgrid.GetValue<string>("SenderName"),
+            };
+            services.AddSingleton(emailConfig);
+        }
+
+        private void ConfigureSpa(IServiceCollection services)
+        {
+            var spaPath = Configuration.GetValue<string>("SpaPath");
+            services.AddSpaStaticFiles(opt =>
+            {
+                if (!string.IsNullOrWhiteSpace(spaPath) || Directory.Exists(spaPath))
+                {
+                    opt.RootPath = spaPath;
+                }
+                else
+                {
+                    opt.RootPath = "StaticFiles/DefaultSpa";
+                }
+            });
         }
     }
 }
