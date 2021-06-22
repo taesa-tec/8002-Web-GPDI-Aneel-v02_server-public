@@ -649,7 +649,7 @@ namespace PeD.Services.Demandas
             HtmlConverter.ConvertToPdf(html, stream);
             stream.Close();
             UpdatePdf(fullname);
-            return _arquivoService.FromPath(fullname, "application/pdf");
+            return _arquivoService.FromPath(fullname, "application/pdf", $"{form}-rv{revisao}.pdf");
         }
 
         public async Task<DemandaFormHistorico> SaveDemandaFormHistorico(DemandaFormView demandaFormView)

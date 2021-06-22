@@ -73,9 +73,12 @@ namespace PeD.Controllers.Propostas
             produto.PropostaId = Proposta.Id;
             produto.Created = DateTime.Now;
             if (produto.Classificacao != ProdutoClassificacao.Final || !_context.Set<Produto>()
-                .Any(p => p.Classificacao == ProdutoClassificacao.Final && p.PropostaId == Proposta.Id))
+                .Any(p =>
+                    p.Classificacao == ProdutoClassificacao.Final &&
+                    p.PropostaId == Proposta.Id &&
+                    p.Id != request.Id))
             {
-                Service.Post(produto);
+                Service.Put(produto);
                 PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
                 return Ok();
             }

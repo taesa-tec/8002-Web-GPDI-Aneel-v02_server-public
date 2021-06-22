@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
@@ -29,47 +31,39 @@ namespace PeD.Controllers.Propostas
         }
 
         [HttpGet("")]
-        public IActionResult Index()
+        public async Task<ActionResult> Index()
         {
             if (Proposta != null)
             {
-                return Ok(Mapper.Map<PropostaDto>(Proposta));
+                var authorizationResult = await this.Authorize(Proposta);
+                if (authorizationResult.Succeeded)
+                    return Ok(Mapper.Map<PropostaDto>(Proposta));
             }
 
             return NotFound();
         }
 
         [HttpGet("Pdf/{form}")]
-        public ActionResult GetDemandaPdf([FromRoute] Guid propostaId, string form,
+        public async Task<ActionResult> GetDemandaPdf([FromRoute] Guid propostaId, string form,
             [FromServices] GestorDbContext context,
             [FromServices] DemandaService demandaService)
         {
-            var id = context.Set<Captacao>()
+            var authorizationResult = await this.Authorize(Proposta);
+            if (!authorizationResult.Succeeded)
+                return NotFound();
+
+            var captacao = context.Set<Captacao>()
+                .Include(c => c.EspecificacaoTecnicaFile)
                 .Where(c => c.Id == Proposta.CaptacaoId)
-                .Select(c => c.DemandaId)
                 .FirstOrDefault();
+            if (captacao is null)
+                return NotFound();
+            var file = captacao.EspecificacaoTecnicaFile;
 
-            var info = context.Set<DemandaFormValues>()
-                .FirstOrDefault(values => values.DemandaId == id && values.FormKey == form);
+            if (file is null)
+                return NotFound();
 
-            if (info != null)
-            {
-                var filename = demandaService.GetDemandaFormPdfFilename(id, form, info.Revisao.ToString());
-
-                if (System.IO.File.Exists(filename))
-                {
-                    var name = string.Format("demanda-{0}-{1}-rev-{2}.pdf", id, form, info.Revisao);
-                    var response = PhysicalFile(filename, "application/pdf", name);
-                    if (Request.Query["dl"] == "1")
-                    {
-                        response.FileDownloadName = name;
-                    }
-
-                    return response;
-                }
-            }
-
-            return NotFound();
+            return PhysicalFile(file.Path, file.ContentType, file.Name ?? $"{form}.pdf");
         }
     }
 }

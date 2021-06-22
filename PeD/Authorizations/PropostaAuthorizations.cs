@@ -17,10 +17,7 @@ namespace PeD.Authorizations
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Access, policy => policy.Requirements.Add(new PropostaRequirement()));
-                options.AddPolicy(AccessEncerradas,
-                    policy => policy.Requirements.Add(
-                        new PropostaRequirement(captacaoEncerrada: true)));
-                options.AddPolicy(Edit, policy => policy.Requirements.Add(new PropostaRequirement(canEdit: true)));
+                options.AddPolicy(Edit, policy => policy.Requirements.Add(new PropostaRequirement(true)));
             });
             services.AddSingleton<IAuthorizationHandler, PropostaAuthorizationHandler>();
         }

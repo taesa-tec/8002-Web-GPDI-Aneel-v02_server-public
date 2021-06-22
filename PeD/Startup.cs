@@ -76,9 +76,9 @@ namespace PeD
 
 
             services.AddCors();
-            //services.AddControllers()
+            services.AddControllers().AddNewtonsoftJson();
             services.AddMvc()
-                .AddNewtonsoftJson()
+                
                 .AddFluentValidation(fv =>
                 {
                     fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup));
@@ -182,7 +182,7 @@ namespace PeD
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseMiddleware<Installer>();
+            //app.UseMiddleware<Installer>();
             var storagePath = Configuration.GetValue<string>("StoragePath");
             if (!string.IsNullOrWhiteSpace(storagePath) && Directory.Exists(storagePath))
             {

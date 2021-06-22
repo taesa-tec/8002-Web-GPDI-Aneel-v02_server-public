@@ -6,12 +6,10 @@ namespace PeD.Authorizations.Requirements
     public class PropostaRequirement : IAuthorizationRequirement
     {
         public bool CanEdit { get; }
-        public bool CaptacaoEncerrada { get; }
 
 
-        public PropostaRequirement(bool captacaoEncerrada = false, bool canEdit = false)
+        public PropostaRequirement(bool canEdit = false)
         {
-            CaptacaoEncerrada = captacaoEncerrada;
             CanEdit = canEdit;
         }
     }

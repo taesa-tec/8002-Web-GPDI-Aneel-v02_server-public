@@ -114,6 +114,7 @@ namespace PeD.Services.Captacoes
                 select captacao;
             return pendentes.Include(c => c.Propostas)
                 .ThenInclude(p => p.Contrato)
+                .Distinct()
                 .ToList();
         }
 
@@ -376,12 +377,13 @@ namespace PeD.Services.Captacoes
 
         #region 2.5
 
-        public List<Captacao> GetIdentificaoRiscoPendente()
+        public List<Captacao> GetIdentificaoRiscoPendente(string userId = null)
         {
             var captacoes = _context.Set<Captacao>().AsQueryable();
             var pendentes =
                 from captacao in captacoes
                 where captacao.Status == Captacao.CaptacaoStatus.AnaliseRisco
+                      && (userId == null || captacao.UsuarioRefinamentoId == userId)
                       && captacao.PropostaSelecionadaId != null
                       && (captacao.UsuarioAprovacaoId == null || captacao.ArquivoRiscosId == null)
                 select captacao;
@@ -393,13 +395,14 @@ namespace PeD.Services.Captacoes
                 .ToList();
         }
 
-        public List<Captacao> GetIdentificaoRiscoFinalizada()
+        public List<Captacao> GetIdentificaoRiscoFinalizada(string userId = null)
         {
             var captacoes = _context.Set<Captacao>().AsQueryable();
             var finalizados =
                 from captacao in captacoes
                 where (captacao.Status == Captacao.CaptacaoStatus.AnaliseRisco ||
                        captacao.Status == Captacao.CaptacaoStatus.Formalizacao)
+                      && (userId == null || captacao.UsuarioRefinamentoId == userId)
                       && captacao.PropostaSelecionadaId != null
                       && (captacao.UsuarioAprovacaoId != null || captacao.ArquivoRiscosId != null)
                 select captacao;
@@ -415,12 +418,13 @@ namespace PeD.Services.Captacoes
 
         #region 2.6
 
-        public List<Captacao> GetFormalizacao(bool? formalizacao)
+        public List<Captacao> GetFormalizacao(bool? formalizacao, string userId = null)
         {
             var captacoes = _context.Set<Captacao>().AsQueryable();
             var captacoesQuery =
                 from captacao in captacoes
                 where captacao.Status == Captacao.CaptacaoStatus.Formalizacao
+                      && (userId == null || captacao.UsuarioAprovacaoId == userId)
                       && captacao.PropostaSelecionadaId != null
                       && captacao.IsProjetoAprovado == formalizacao
                 select captacao;
@@ -468,7 +472,7 @@ namespace PeD.Services.Captacoes
                     Projeto = captacao.Titulo,
                     PropostaGuid = proposta.Guid
                 };
-                
+
                 if (proposta.Responsavel == null ||
                     string.IsNullOrWhiteSpace(proposta.Responsavel.Email))
                 {

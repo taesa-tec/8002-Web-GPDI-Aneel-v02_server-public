@@ -28,19 +28,14 @@ namespace PeD.HostedServices
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Atualizando propostas e captações");
                 try
                 {
                     using (var scope = Services.CreateScope())
                     {
                         var servicePropostas = scope.ServiceProvider.GetRequiredService<PropostaService>();
                         var serviceCaptacao = scope.ServiceProvider.GetRequiredService<CaptacaoService>();
-
                         await servicePropostas.FinalizarPropostasExpiradas(stoppingToken);
-                        _logger.LogInformation("Propostas Concluídas");
-
                         serviceCaptacao.EncerrarCaptacoesExpiradas();
-                        _logger.LogInformation("Captações Concluídas");
                     }
                 }
                 catch (Exception e)

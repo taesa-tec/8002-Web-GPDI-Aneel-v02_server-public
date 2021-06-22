@@ -423,7 +423,7 @@ namespace PeD.Controllers.Captacoes
         public ActionResult<List<CaptacaoDto>> GetIdentificaoRiscoPendente()
         {
             //Service.Paged()
-            var captacoes = Service.GetIdentificaoRiscoPendente();
+            var captacoes = Service.GetIdentificaoRiscoPendente(this.IsAdmin() ? null : this.UserId());
 
             var mapped = Mapper.Map<List<CaptacaoIdentificaoRiscosDto>>(captacoes);
             return Ok(mapped);
@@ -520,7 +520,7 @@ namespace PeD.Controllers.Captacoes
         public ActionResult<List<CaptacaoFormalizacaoDto>> GetFormalizacaoPendente()
         {
             //Service.Paged()
-            var captacoes = Service.GetFormalizacao(null);
+            var captacoes = Service.GetFormalizacao(null, this.IsAdmin() ? null : this.UserId());
 
             var mapped = Mapper.Map<List<CaptacaoFormalizacaoDto>>(captacoes);
             return Ok(mapped);
@@ -531,7 +531,7 @@ namespace PeD.Controllers.Captacoes
         public ActionResult<List<CaptacaoFormalizacaoDto>> Formalizados()
         {
             //Service.Paged()
-            var captacoes = Service.GetFormalizacao(true);
+            var captacoes = Service.GetFormalizacao(true, this.IsAdmin() ? null : this.UserId());
 
             var mapped = Mapper.Map<List<CaptacaoFormalizacaoDto>>(captacoes);
             return Ok(mapped);

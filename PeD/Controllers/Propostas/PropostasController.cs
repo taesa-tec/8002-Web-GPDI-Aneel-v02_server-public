@@ -56,7 +56,7 @@ namespace PeD.Controllers.Propostas
                 return Mapper.Map<PropostaDto>(proposta);
             }
 
-            return Forbid();
+            return NotFound();
         }
 
         #endregion

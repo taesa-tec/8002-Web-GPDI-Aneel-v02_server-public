@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PeD.Authorizations;
 using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
 using PeD.Services.Captacoes;
@@ -44,9 +45,10 @@ namespace PeD.Controllers.Propostas
             }
         }
 
-        protected async Task<bool> HasAccess()
+        protected async Task<bool> HasAccess(bool edit = false)
         {
-            var authorizationResult = await this.Authorize(Proposta);
+            var authorizationResult = await this.Authorize(Proposta,
+                edit ? PropostaAuthorizations.Edit : PropostaAuthorizations.Access);
             return authorizationResult.Succeeded;
         }
     }
@@ -100,7 +102,7 @@ namespace PeD.Controllers.Propostas
         [HttpPost]
         public virtual async Task<IActionResult> Post([FromBody] TRequest request)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
 
             var risco = Mapper.Map<T>(request);
@@ -114,7 +116,7 @@ namespace PeD.Controllers.Propostas
         [HttpPut]
         public virtual async Task<IActionResult> Put([FromBody] TRequest request)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
             var nodeInitial = Service
                 .Filter(q => q.AsNoTracking().Where(p => p.PropostaId == Proposta.Id && p.Id == request.Id))
@@ -135,7 +137,7 @@ namespace PeD.Controllers.Propostas
         [HttpDelete("{id:int}")]
         public virtual async Task<IActionResult> Delete(int id)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
             var node = Service.Filter(q => q.Where(p => p.PropostaId == Proposta.Id && p.Id == id)).FirstOrDefault();
             if (node == null)
