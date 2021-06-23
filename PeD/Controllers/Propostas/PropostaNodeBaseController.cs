@@ -17,6 +17,10 @@ using TaesaCore.Models;
 
 namespace PeD.Controllers.Propostas
 {
+    [SwaggerTag("Proposta")]
+    [ApiController]
+    [Authorize("Bearer")]
+    [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class PropostaNodeBaseController<T> : ControllerServiceBase<T> where T : BaseEntity
     {
         protected PropostaService PropostaService;

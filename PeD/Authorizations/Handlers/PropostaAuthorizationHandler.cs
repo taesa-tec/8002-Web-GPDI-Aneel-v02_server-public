@@ -38,7 +38,7 @@ namespace PeD.Authorizations.Handlers
                 }
 
                 if (!requirement.CanEdit || requirement.CanEdit && captacao != null &&
-                    (captacao.Status == Captacao.CaptacaoStatus.Elaboracao ||
+                    (captacao.Status == Captacao.CaptacaoStatus.Fornecedor ||
                      captacao.Status == Captacao.CaptacaoStatus.Refinamento))
                 {
                     context.Succeed(requirement);

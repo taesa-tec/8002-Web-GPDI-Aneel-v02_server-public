@@ -447,7 +447,7 @@ namespace PeD.Services.Demandas
                 captacao.EspecificacaoTecnicaFileId = demanda.EspecificacaoTecnicaFileId.Value;
                 demanda.EtapaAtual = DemandaEtapa.Captacao;
                 demanda.Status = DemandaStatus.Concluido;
-                demanda.CaptacaoDate = DateTime.Now;
+                demanda.CaptacaoDate = DateTime.UtcNow;
                 _context.SaveChanges();
 
                 if (captacao.Id == 0)

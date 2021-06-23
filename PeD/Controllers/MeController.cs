@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using PeD.Core.ApiModels;
 using PeD.Core.Extensions;
 using PeD.Core.Models;
+using PeD.Core.Requests.Users;
 using PeD.Services;
 
 namespace PeD.Controllers
@@ -31,14 +32,17 @@ namespace PeD.Controllers
         }
 
         [HttpPut("")]
-        public ActionResult<Resultado> EditMe([FromBody] ApplicationUser _user)
+        public ActionResult<ApplicationUserDto> EditMe([FromBody] EditMeRequest request)
         {
             var me = _service.Obter(ControllerExtension.UserId(this));
-            _user.Id = me.Id;
-            _user.Email = me.Email;
-            _user.Role = me.Role;
-            _user.Status = me.Status;
-            return _service.Atualizar(_user);
+            me.Cargo = request.Cargo;
+            me.Cpf = request.Cpf;
+            me.NomeCompleto = request.NomeCompleto;
+            var resultado = _service.Atualizar(me);
+            if (resultado.Sucesso)
+                return GetMe();
+
+            return BadRequest(resultado);
         }
 
         [HttpPost("Avatar")]

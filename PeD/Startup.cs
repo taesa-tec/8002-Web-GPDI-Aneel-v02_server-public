@@ -68,22 +68,34 @@ namespace PeD
                 Log.Warning("Erro na configuração: {Error}", e.Message);
             }
 
-
+            
+            services.AddControllers()
+                .AddNewtonsoftJson()
+                .AddFluentValidation(fv =>
+                {
+                    fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup));
+                    fv.RegisterValidatorsFromAssemblyContaining(typeof(ApplicationUser));
+                });
             services.AddHostedService<PropostasServices>();
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddAutoMapper(typeof(Startup));
 
 
-            services.AddCors();
-            services.AddControllers().AddNewtonsoftJson();
-            services.AddMvc()
-                
-                .AddFluentValidation(fv =>
-                {
-                    fv.RegisterValidatorsFromAssemblyContaining(typeof(Startup));
-                    fv.RegisterValidatorsFromAssemblyContaining(typeof(ApplicationUser));
-                });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder => builder
+                    .WithOrigins("http://localhost:4200", "http://localhost:4201",
+                        "http://ped.clientes.lojainterativa.com"
+                    )
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .WithExposedHeaders("Content-Disposition"));
+            });
+
+            //services.AddMvc();
+
 
             #region Swagger
 
@@ -134,6 +146,7 @@ namespace PeD
 
             #endregion
 
+            services.AddRazorPages();
             #region Serviços
 
             services.AddScoped<SendGridService>();
@@ -182,6 +195,8 @@ namespace PeD
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
             //app.UseMiddleware<Installer>();
             var storagePath = Configuration.GetValue<string>("StoragePath");
             if (!string.IsNullOrWhiteSpace(storagePath) && Directory.Exists(storagePath))
@@ -239,6 +254,9 @@ namespace PeD
 
 
             // Ativando middlewares para uso do Swagger
+
+            #region Swagger
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -250,25 +268,17 @@ namespace PeD
                 c.EnableValidator();
             });
 
+            #endregion
+
+            app.UseCors("CorsPolicy");
+
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseCors(builder =>
-                    builder.AllowAnyMethod()
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                //.AllowCredentials()
-            );
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                // endpoints.MapControllerRoute("Areas", "api/{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
+            
 
             app.UseSpa(spa => { });
         }
