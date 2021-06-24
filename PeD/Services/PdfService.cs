@@ -1,15 +1,24 @@
 using System;
 using System.IO;
+using iText.Html2pdf;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using PeD.Core.Models;
 
 namespace PeD.Services
 {
-    public class PdfHelper
+    public class PdfService
     {
+        private ArquivoService _arquivoService;
+
+        public PdfService(ArquivoService arquivoService)
+        {
+            _arquivoService = arquivoService;
+        }
+
         public static void AddPagesToPdf(string filename, int x, int y)
         {
             var filetmp = filename + ".tmp";
@@ -39,6 +48,16 @@ namespace PeD.Services
             doc.Close();
             File.Delete(filename);
             File.Move(filetmp, filename);
+        }
+
+        public FileUpload HtmlToPdf(string content, string name)
+        {
+            var file = Path.GetTempFileName();
+            var stream = new FileStream(file, FileMode.Create);
+            HtmlConverter.ConvertToPdf(content, stream);
+            stream.Close();
+            var arquivo = _arquivoService.FromPath(file, "application/pdf", $"{name}.pdf");
+            return arquivo;
         }
     }
 }

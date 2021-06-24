@@ -34,10 +34,11 @@ namespace PeD.Services.Captacoes
         private SendGridService _sendGridService;
         private UserService _userService;
         private ArquivoService _arquivoService;
+        private PdfService _pdfService;
 
         public PropostaService(IRepository<Proposta> repository, GestorDbContext context, IMapper mapper,
             IViewRenderService renderService, SendGridService sendGridService, UserService userService,
-            ILogger<PropostaService> logger, ArquivoService arquivoService)
+            ILogger<PropostaService> logger, ArquivoService arquivoService, PdfService pdfService)
             : base(repository)
         {
             this.context = context;
@@ -47,6 +48,7 @@ namespace PeD.Services.Captacoes
             _userService = userService;
             _logger = logger;
             _arquivoService = arquivoService;
+            _pdfService = pdfService;
             _captacaoPropostas = context.Set<Proposta>();
         }
 
@@ -368,7 +370,9 @@ namespace PeD.Services.Captacoes
 
         public Relatorio GetRelatorio(int propostaId)
         {
-            var proposta = _captacaoPropostas.Include(p => p.Relatorio).FirstOrDefault(p => p.Id == propostaId);
+            var proposta = _captacaoPropostas.Include(p => p.Relatorio)
+                .ThenInclude(r => r.File)
+                .FirstOrDefault(p => p.Id == propostaId);
             if (proposta != null)
             {
                 if (proposta.Relatorio == null || proposta.Relatorio.DataAlteracao < proposta.DataAlteracao)
@@ -386,14 +390,9 @@ namespace PeD.Services.Captacoes
         {
             if (relatorio != null)
             {
-                var file = Path.GetTempFileName();
-                var stream = new FileStream(file, FileMode.Create);
-                HtmlConverter.ConvertToPdf(relatorio.Content, stream);
-                stream.Close();
-                PdfHelper.AddPagesToPdf(file, 500, 820);
-                var arquivo = _arquivoService.FromPath(file, "application/pdf",
-                    $"relatorio-{relatorio.PropostaId}-{relatorio.DataAlteracao}.pdf");
-
+                var arquivo = _pdfService.HtmlToPdf(relatorio.Content,
+                    $"relatorio-{relatorio.PropostaId}-{relatorio.DataAlteracao}");
+                PdfService.AddPagesToPdf(arquivo.Path, 500, 820);
                 return arquivo;
             }
 
@@ -418,14 +417,8 @@ namespace PeD.Services.Captacoes
             var contratoContent = PrintContrato(contrato.PropostaId);
             if (contratoContent != null)
             {
-                var file = Path.GetTempFileName();
-                var stream = new FileStream(file, FileMode.Create);
-                HtmlConverter.ConvertToPdf(contratoContent, stream);
-                stream.Close();
-                PdfHelper.AddPagesToPdf(file, 475, 90);
-
-                var arquivo = _arquivoService.FromPath(file, "application/pdf",
-                    $"contrato-{contrato.PropostaId}.pdf");
+                var arquivo = _pdfService.HtmlToPdf(contratoContent, $"contrato-{contrato.PropostaId}");
+                PdfService.AddPagesToPdf(arquivo.Path, 475, 90);
                 return arquivo;
             }
 

@@ -277,12 +277,7 @@ namespace PeD.Controllers.Captacoes
                 var relatorio = serviceProposta.GetRelatorio(propostaId);
                 if (relatorio != null)
                 {
-                    var file = Path.GetTempFileName();
-                    var stream = new FileStream(file, FileMode.Create);
-                    HtmlConverter.ConvertToPdf(relatorio.Content, stream);
-                    stream.Close();
-
-                    return PhysicalFile(file, "application/octet-stream");
+                    return PhysicalFile(relatorio.File.Path, relatorio.File.ContentType, relatorio.File.FileName);
                 }
             }
 

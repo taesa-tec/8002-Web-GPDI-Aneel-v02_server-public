@@ -68,7 +68,7 @@ namespace PeD
                 Log.Warning("Erro na configuração: {Error}", e.Message);
             }
 
-            
+
             services.AddControllers()
                 .AddNewtonsoftJson()
                 .AddFluentValidation(fv =>
@@ -80,6 +80,7 @@ namespace PeD
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<PdfService>();
 
 
             services.AddCors(options =>
@@ -147,6 +148,7 @@ namespace PeD
             #endregion
 
             services.AddRazorPages();
+
             #region Serviços
 
             services.AddScoped<SendGridService>();
@@ -277,8 +279,6 @@ namespace PeD
             app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-
-            
 
             app.UseSpa(spa => { });
         }

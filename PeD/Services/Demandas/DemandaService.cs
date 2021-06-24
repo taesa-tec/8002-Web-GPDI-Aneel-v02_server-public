@@ -57,6 +57,7 @@ namespace PeD.Services.Demandas
         GestorDbContext _context;
         private SendGridService _sendGridService;
         private ArquivoService _arquivoService;
+        private PdfService _pdfService;
 
         #endregion
 
@@ -68,7 +69,8 @@ namespace PeD.Services.Demandas
             DemandaLogService logService,
             IWebHostEnvironment hostingEnvironment,
             SistemaService sistemaService, IViewRenderService viewRender, IService<Captacao> serviceCaptacao,
-            IConfiguration configuration, SendGridService sendGridService, ArquivoService arquivoService)
+            IConfiguration configuration, SendGridService sendGridService, ArquivoService arquivoService,
+            PdfService pdfService)
             : base(repository)
         {
             _context = context;
@@ -80,6 +82,7 @@ namespace PeD.Services.Demandas
             Configuration = configuration;
             _sendGridService = sendGridService;
             _arquivoService = arquivoService;
+            _pdfService = pdfService;
             LogService = logService;
 
 
@@ -644,12 +647,9 @@ namespace PeD.Services.Demandas
 
         public FileUpload SaveDemandaFormPdf(int id, string form, string html, string revisao)
         {
-            var fullname = Path.GetTempFileName(); //GetDemandaFormPdfFilename(id, form, revisao, true);
-            var stream = new FileStream(fullname, FileMode.Create);
-            HtmlConverter.ConvertToPdf(html, stream);
-            stream.Close();
-            UpdatePdf(fullname);
-            return _arquivoService.FromPath(fullname, "application/pdf", $"{form}-rv{revisao}.pdf");
+            var arquivo = _pdfService.HtmlToPdf(html, $"{form}-rv{revisao}");
+            UpdatePdf(arquivo.Path);
+            return arquivo;
         }
 
         public async Task<DemandaFormHistorico> SaveDemandaFormHistorico(DemandaFormView demandaFormView)
