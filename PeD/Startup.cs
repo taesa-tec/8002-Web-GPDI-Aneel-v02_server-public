@@ -164,9 +164,6 @@ namespace PeD
 
             #endregion
 
-            // Ativando a utilização do ASP.NET Identity, a fim de
-            // permitir a recuperação de seus objetos via injeção de
-            // dependências
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
                     options.User.AllowedUserNameCharacters =
