@@ -69,30 +69,32 @@ namespace PeD.Controllers.Projetos
 
         #region Listagem
 
+        protected List<RegistroFinanceiroInfo> GetRefpStatus(int id, StatusRegistro status)
+        {
+            var isGestor = this.IsAdmin() || User.IsInRole(Roles.User);
+            return _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == id && r.Status == status && (isGestor || r.AuthorId == this.UserId()))
+                .ToList();
+        }
+
         [HttpGet("Pendentes")]
         public ActionResult GetPendentes([FromRoute] int id)
         {
-            var registros = _context.Set<RegistroFinanceiroInfo>()
-                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Pendente)
-                .ToList();
+            var registros = GetRefpStatus(id, StatusRegistro.Pendente);
             return Ok(registros);
         }
 
         [HttpGet("Reprovados")]
         public ActionResult GetReprovados([FromRoute] int id)
         {
-            var registros = _context.Set<RegistroFinanceiroInfo>()
-                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Reprovado)
-                .ToList();
+            var registros = GetRefpStatus(id, StatusRegistro.Reprovado);
             return Ok(registros);
         }
 
         [HttpGet("Aprovados")]
         public ActionResult GetAprovados([FromRoute] int id)
         {
-            var registros = _context.Set<RegistroFinanceiroInfo>()
-                .Where(r => r.ProjetoId == id && r.Status == StatusRegistro.Aprovado)
-                .ToList();
+            var registros = GetRefpStatus(id, StatusRegistro.Aprovado);
             return Ok(Mapper.Map<List<RegistroFinanceiroInfoDto>>(registros));
         }
 
@@ -326,12 +328,13 @@ namespace PeD.Controllers.Projetos
                     .ThenInclude(r => r.Empresa)
                     .Include(r => r.Etapa)
                     .Include(r => r.CoExecutorFinanciador)
-                    .FirstOrDefault(r => r.Id == registroId);
+                    .FirstOrDefault(r => r.Id == registroId && (this.IsGestor() || r.AuthorId == this.UserId()));
                 return Ok(Mapper.Map<RegistroFinanceiroDto>(rh));
             }
             else
             {
-                var rm = _context.Set<RegistroFinanceiroRm>().FirstOrDefault(r => r.Id == registroId);
+                var rm = _context.Set<RegistroFinanceiroRm>().FirstOrDefault(r =>
+                    r.Id == registroId && (this.IsGestor() || r.AuthorId == this.UserId()));
                 return Ok(Mapper.Map<RegistroFinanceiroDto>(rm));
             }
         }
@@ -339,7 +342,8 @@ namespace PeD.Controllers.Projetos
         [HttpGet("{registroId:int}/Info")]
         public ActionResult GetInfo(int registroId)
         {
-            var registro = _context.Set<RegistroFinanceiroInfo>().FirstOrDefault(r => r.Id == registroId);
+            var registro = _context.Set<RegistroFinanceiroInfo>().FirstOrDefault(r =>
+                r.Id == registroId && (this.IsGestor() || r.AuthorId == this.UserId()));
 
             if (registro == null)
                 return NotFound();
@@ -349,10 +353,17 @@ namespace PeD.Controllers.Projetos
         [HttpGet("{registroId:int}/Observacoes")]
         public ActionResult GetObservacoes(int registroId)
         {
-            var registro = _context.Set<RegistroObservacao>().Include(ro => ro.Author)
-                .Where(ro => ro.RegistroId == registroId);
+            var registro = _context.Set<RegistroFinanceiro>().FirstOrDefault(r => r.Id == registroId);
 
-            return Ok(Mapper.Map<List<RegistroObservacaoDto>>(registro));
+            if (this.IsGestor() || registro != null && registro.AuthorId == this.UserId())
+            {
+                var registroObservacoes = _context.Set<RegistroObservacao>().Include(ro => ro.Author)
+                    .Where(ro => ro.RegistroId == registroId);
+
+                return Ok(Mapper.Map<List<RegistroObservacaoDto>>(registroObservacoes));
+            }
+
+            return NotFound();
         }
 
         #endregion

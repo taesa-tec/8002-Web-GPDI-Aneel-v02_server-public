@@ -1,8 +1,9 @@
+using Newtonsoft.Json;
+
 namespace PeD.Core.Models.Projetos.Xml
 {
     public class Prorrogacao : BaseXml
     {
-        public string Tipo => "";
         public Prorrogacao(string codigo, int duracao)
         {
             PD_PrazoExecProjeto = new PrazoProjeto()
@@ -10,6 +11,8 @@ namespace PeD.Core.Models.Projetos.Xml
                 Projeto = new Projeto(codigo, duracao)
             };
         }
+
+        [JsonIgnore] public override XmlTipo Tipo => XmlTipo.PRORROGAEXECUCAOPROJETO;
 
         public class Projeto
         {

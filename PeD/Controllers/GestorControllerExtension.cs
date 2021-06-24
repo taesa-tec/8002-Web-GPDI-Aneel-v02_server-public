@@ -14,7 +14,12 @@ namespace PeD.Controllers
 
         public static bool IsAdmin(this ControllerBase controller)
         {
-            return controller.User.FindFirst(ClaimTypes.Role).Value == Roles.Administrador;
+            return controller.User.IsInRole(Roles.Administrador);
+        }
+
+        public static bool IsGestor(this ControllerBase controller)
+        {
+            return controller.User.IsInRole(Roles.Administrador) || controller.User.IsInRole(Roles.User);
         }
     }
 }

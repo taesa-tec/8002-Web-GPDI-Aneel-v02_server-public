@@ -27,7 +27,7 @@ namespace PeD.Core.Models.Projetos.Xml
         }
 
         protected virtual string Root => "PED";
-        [JsonIgnore] public virtual XmlTipo Tipo => XmlTipo.PRORROGAEXECUCAOPROJETO;
+        [JsonIgnore] public virtual XmlTipo Tipo => XmlTipo.NONE;
 
         [JsonIgnore] public Dictionary<string, string> Attributes = new Dictionary<string, string>();
 

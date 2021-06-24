@@ -38,17 +38,27 @@ namespace PeD.Controllers.Projetos
             Context = context;
         }
 
+        protected IList<Projeto> GetProjetosStatus(Status status)
+        {
+            var isGestor = this.IsAdmin() || User.IsInRole(Roles.User);
+            return Service.Filter(q => q
+                .Include(p => p.Fornecedor)
+                .Where(p => p.Status == status &&
+                            (isGestor || p.Fornecedor.ResponsavelId == this.UserId())
+                ));
+        }
+
         [HttpGet("EmExecucao")]
         public ActionResult GetEmExecucao()
         {
-            var projetos = Service.Filter(q => q.Where(p => p.Status == Status.Execucao));
+            var projetos = GetProjetosStatus(Status.Execucao);
             return Ok(Mapper.Map<List<ProjetoDto>>(projetos));
         }
 
         [HttpGet("Finalizados")]
         public ActionResult GetFinalizados()
         {
-            var projetos = Service.Filter(q => q.Where(p => p.Status == Status.Finalizado));
+            var projetos = GetProjetosStatus(Status.Finalizado);
             return Ok(Mapper.Map<List<ProjetoDto>>(projetos));
         }
 
