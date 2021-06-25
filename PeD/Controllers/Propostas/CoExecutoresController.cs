@@ -40,7 +40,7 @@ namespace PeD.Controllers.Propostas
         [HttpPost]
         public override async Task<IActionResult> Post([FromBody] CoExecutorRequest request)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
 
             var coExecutor = new CoExecutor()
@@ -59,7 +59,7 @@ namespace PeD.Controllers.Propostas
         [HttpPut]
         public override async Task<IActionResult> Put([FromBody] CoExecutorRequest request)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
 
             var coExecutor = Service.Get(request.Id);
@@ -83,7 +83,7 @@ namespace PeD.Controllers.Propostas
         [HttpDelete("{id:int}")]
         public override async Task<IActionResult> Delete(int id)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
 
             var coExecutor = Service.Get(id);

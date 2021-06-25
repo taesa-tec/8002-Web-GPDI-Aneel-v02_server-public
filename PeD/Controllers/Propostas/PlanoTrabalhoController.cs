@@ -49,7 +49,7 @@ namespace PeD.Controllers.Propostas
         {
             if (Proposta == null)
                 return NotFound();
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
 
 

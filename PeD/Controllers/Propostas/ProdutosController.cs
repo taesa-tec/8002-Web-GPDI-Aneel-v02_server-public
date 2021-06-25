@@ -46,7 +46,7 @@ namespace PeD.Controllers.Propostas
         [HttpPost]
         public override async Task<IActionResult> Post(PropostaProdutoRequest request)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
             var produto = Mapper.Map<Produto>(request);
             produto.PropostaId = Proposta.Id;
@@ -67,7 +67,7 @@ namespace PeD.Controllers.Propostas
         [HttpPut]
         public override async Task<IActionResult> Put(PropostaProdutoRequest request)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
             var produto = Mapper.Map<Produto>(request);
             produto.PropostaId = Proposta.Id;
@@ -88,7 +88,7 @@ namespace PeD.Controllers.Propostas
 
         public override async Task<IActionResult> Delete(int id)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
             if (_context.Set<Etapa>().AsQueryable().Any(a => a.ProdutoId == id))
             {

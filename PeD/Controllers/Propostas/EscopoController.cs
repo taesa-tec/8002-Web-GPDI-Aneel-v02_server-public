@@ -44,7 +44,7 @@ namespace PeD.Controllers.Propostas
         public async Task<IActionResult> Post([FromBody] PropostaEscopoDto escopoDto,
             [FromServices] GestorDbContext context)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
 
             var metaContext = context.Set<Meta>();

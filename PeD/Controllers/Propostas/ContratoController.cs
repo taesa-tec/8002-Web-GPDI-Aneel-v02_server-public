@@ -54,7 +54,7 @@ namespace PeD.Controllers.Propostas
             [FromBody] ContratoRequest request,
             [FromServices] IService<ContratoComentario> service)
         {
-            if (!await HasAccess())
+            if (!await HasAccess(true))
                 return Forbid();
 
             if (Proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&

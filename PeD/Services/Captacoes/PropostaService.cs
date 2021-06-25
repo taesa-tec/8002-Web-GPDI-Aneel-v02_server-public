@@ -70,6 +70,7 @@ namespace PeD.Services.Captacoes
         public List<Proposta> GetPropostasEncerradas(string responsavelId) =>
             _captacaoPropostas
                 .Include(p => p.Fornecedor)
+                .Include(p => p.Contrato)
                 .Include(p =>
                     p.Captacao)
                 .Where(cp => cp.ResponsavelId == responsavelId &&
@@ -336,7 +337,7 @@ namespace PeD.Services.Captacoes
             var modelView = _mapper.Map<Core.Models.Relatorios.Fornecedores.Proposta>(proposta);
             var validacao = (new PropostaValidator()).Validate(modelView);
             var content = renderService.RenderToStringAsync("Proposta/Proposta", modelView).Result;
-            var relatorio = context.Set<Relatorio>().Where(r => r.Id == propostaId).FirstOrDefault() ?? new Relatorio()
+            var relatorio = context.Set<Relatorio>().Where(r => r.PropostaId == propostaId).FirstOrDefault() ?? new Relatorio()
             {
                 Content = content,
                 DataAlteracao = DateTime.Now,
