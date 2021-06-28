@@ -340,6 +340,8 @@ namespace PeD.Services.Captacoes
                         .ThenInclude(p => p.Contrato)
                         .Where(c => c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino < DateTime.Today))
                 .ToList();
+            if (expiradas.Count() == 0)
+                return;
             foreach (var expirada in expiradas)
             {
                 var isOk = expirada.Propostas.Count > 0 &&
@@ -352,6 +354,7 @@ namespace PeD.Services.Captacoes
             }
 
             Put(expiradas);
+
             _logger.LogInformation("Captações expiradas: {Count}", expiradas.Count);
         }
 

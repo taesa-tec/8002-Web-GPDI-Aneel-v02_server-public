@@ -235,7 +235,9 @@ namespace PeD.Controllers.Propostas
 
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPut("{id:guid}/Duracao")]
-        public async Task<ActionResult> PropostaDuracao(Guid id, [FromServices] IService<Etapa> etapaService,
+        public async Task<ActionResult> PropostaDuracao(Guid id,
+            [FromServices] IService<Etapa> etapaService,
+            [FromServices] IService<Meta> metaService,
             [FromBody] short meses)
         {
             var proposta = Service.GetProposta(id);
@@ -246,6 +248,11 @@ namespace PeD.Controllers.Propostas
             if (proposta.Participacao == StatusParticipacao.Aceito ||
                 proposta.Participacao == StatusParticipacao.Concluido)
             {
+                var metas = metaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id));
+                if (metas.Any() && meses < metas.Max(m => m.Meses))
+                    return Problem("Há metas em meses superiores à duração desejada",
+                        title: "Alteração não permitida", statusCode: StatusCodes.Status428PreconditionRequired);
+
                 var etapas = etapaService.Filter(q => q.Where(e => e.PropostaId == proposta.Id));
                 var max = etapas.Any() ? etapas.Select(e => e.Meses.Max()).Max() : 0;
                 if (meses < max)

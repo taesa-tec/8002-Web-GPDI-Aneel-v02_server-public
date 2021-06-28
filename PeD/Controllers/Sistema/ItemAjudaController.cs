@@ -20,7 +20,6 @@ namespace PeD.Controllers.Sistema
         {
         }
 
-        [ResponseCache(Duration = 3200)]
         [HttpGet("/api/Ajuda/{codigo}")]
         public ItemAjudaDto GetPorCodigo(string codigo)
         {
@@ -29,7 +28,6 @@ namespace PeD.Controllers.Sistema
             return Mapper.Map<ItemAjudaDto>(item);
         }
 
-        [ResponseCache(Duration = 3200)]
         [HttpGet("/api/Ajuda/{codigo}/Conteudo")]
         public string GetConteudoPorCodigo(string codigo)
         {

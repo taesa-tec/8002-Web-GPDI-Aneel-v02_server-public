@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
@@ -178,9 +180,9 @@ namespace PeD.Data
             builder.Entity<Meta>();
             builder.Entity<Etapa>(b =>
             {
-                b.Property(e => e.Meses).HasConversion(
-                    meses => JsonConvert.SerializeObject(meses),
-                    meses => JsonConvert.DeserializeObject<List<int>>(meses));
+                b.Property(e => e.Meses).JsonConversion();
+
+
                 b.HasOne(e => e.Produto).WithMany().HasForeignKey(e => e.ProdutoId).OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<EtapaProdutos>(b =>
@@ -201,9 +203,9 @@ namespace PeD.Data
                     .HasForeignKey(a => a.PropostaId)
                     .OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.Property(e => e.HoraMeses).HasConversion(
-                    meses => JsonConvert.SerializeObject(meses),
-                    meses => JsonConvert.DeserializeObject<Dictionary<short, short>>(meses));
+                b.Property(e => e.HoraMeses)
+                    .JsonConversion(new ValueComparer<Dictionary<short, short>>((l1, l2) => l1.SequenceEqual(l2),
+                        l => l.Aggregate(0, (i, s) => HashCode.Combine(i, s.GetHashCode()))));
             });
             builder.Entity<RecursoMaterial.AlocacaoRm>(b =>
             {
@@ -252,9 +254,7 @@ namespace PeD.Data
 
             builder.Entity<PeD.Core.Models.Projetos.Etapa>(b =>
             {
-                b.Property(e => e.Meses).HasConversion(
-                    meses => JsonConvert.SerializeObject(meses),
-                    meses => JsonConvert.DeserializeObject<List<int>>(meses));
+                b.Property(e => e.Meses).JsonConversion();
                 b.HasOne(e => e.Produto).WithMany().HasForeignKey(e => e.ProdutoId).OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<PeD.Core.Models.Projetos.EtapaProdutos>(b =>

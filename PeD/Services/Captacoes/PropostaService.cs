@@ -302,16 +302,18 @@ namespace PeD.Services.Captacoes
 
         public async Task FinalizarPropostasExpiradas(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Finalizando Propostas expiradas");
             if (stoppingToken.IsCancellationRequested)
                 return;
-            var propostas = GetPropostasEncerradasPendentes();
-            _logger.LogInformation($"Propostas expiradas: {propostas.Count()}");
-            foreach (var proposta in propostas)
+            var propostas = GetPropostasEncerradasPendentes().ToList();
+            if (propostas.Count() > 0)
             {
-                proposta.Participacao = StatusParticipacao.Concluido;
-                Put(proposta);
-                await SendEmailCaptacaoEncerrada(proposta);
+                _logger.LogInformation("Propostas expiradas: {Count}", propostas.Count());
+                foreach (var proposta in propostas)
+                {
+                    proposta.Participacao = StatusParticipacao.Concluido;
+                    Put(proposta);
+                    await SendEmailCaptacaoEncerrada(proposta);
+                }
             }
         }
 
@@ -337,13 +339,14 @@ namespace PeD.Services.Captacoes
             var modelView = _mapper.Map<Core.Models.Relatorios.Fornecedores.Proposta>(proposta);
             var validacao = (new PropostaValidator()).Validate(modelView);
             var content = renderService.RenderToStringAsync("Proposta/Proposta", modelView).Result;
-            var relatorio = context.Set<Relatorio>().Where(r => r.PropostaId == propostaId).FirstOrDefault() ?? new Relatorio()
-            {
-                Content = content,
-                DataAlteracao = DateTime.Now,
-                PropostaId = propostaId,
-                Validacao = validacao
-            };
+            var relatorio = context.Set<Relatorio>().Where(r => r.PropostaId == propostaId).FirstOrDefault() ??
+                            new Relatorio()
+                            {
+                                Content = content,
+                                DataAlteracao = DateTime.Now,
+                                PropostaId = propostaId,
+                                Validacao = validacao
+                            };
 
 
             if (relatorio.Id == 0)
