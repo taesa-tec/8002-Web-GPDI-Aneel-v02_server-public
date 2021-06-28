@@ -1,9 +1,12 @@
 using System.Linq;
 using AutoMapper;
 using PeD.Core.ApiModels.Projetos;
+using PeD.Core.ApiModels.Projetos.Resultados;
 using PeD.Core.Models.Projetos;
+using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Projetos;
+using PeD.Core.Requests.Projetos.Resultados;
 using CoExecutor = PeD.Core.Models.Projetos.CoExecutor;
 using Etapa = PeD.Core.Models.Projetos.Etapa;
 using Produto = PeD.Core.Models.Projetos.Produto;
@@ -19,6 +22,7 @@ namespace PeD.Mapping
             PropostaMapping();
             ProjetoResponses();
             ProjetoRequest();
+            Relatorios();
         }
 
         public void PropostaMapping()
@@ -99,6 +103,28 @@ namespace PeD.Mapping
 
             CreateMap<RecursoHumanoRequest, RecursoHumano>();
             CreateMap<RecursoMaterialRequest, RecursoMaterial>();
+        }
+
+        public void Relatorios()
+        {
+            CreateMap<Apoio, ApoioDto>();
+            CreateMap<ApoioRequest, Apoio>();
+            CreateMap<IndicadorEconomico, IndicadorEconomicoDto>();
+            CreateMap<IndicadorEconomicoRequest, IndicadorEconomico>();
+            CreateMap<PropriedadeIntelectualDepositante, PropriedadeIntelectualDepositanteDto>();
+            CreateMap<PropriedadeIntelectualDepositanteRequest, PropriedadeIntelectualDepositante>();
+            CreateMap<RelatorioEtapa, RelatorioEtapaDto>();
+            CreateMap<RelatorioEtapaRequest, RelatorioEtapa>();
+            CreateMap<Socioambiental, SocioambientalDto>();
+            CreateMap<SocioambientalRequest, Socioambiental>();
+            CreateMap<Capacitacao, CapacitacaoDto>();
+            CreateMap<CapacitacaoRequest, Capacitacao>();
+            CreateMap<ProducaoCientifica, ProducaoCientificaDto>();
+            CreateMap<ProducaoCientificaRequest, ProducaoCientifica>();
+            CreateMap<PropriedadeIntelectual, PropriedadeIntelectualDto>();
+            CreateMap<PropriedadeIntelectualRequest, PropriedadeIntelectual>();
+            CreateMap<RelatorioFinal, RelatorioFinalDto>();
+            CreateMap<RelatorioFinalRequest, RelatorioFinal>();
         }
     }
 }

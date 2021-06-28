@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
@@ -106,7 +107,7 @@ namespace PeD
                     new OpenApiInfo()
                     {
                         Title = "Taesa - Gestor P&D",
-                        Version = "2.2",
+                        Version = "2.8",
                         Description = "API REST criada com o ASP.NET Core 3.1 para comunição com o Gestor P&D",
                     });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -136,13 +137,19 @@ namespace PeD
                         new List<string>()
                     }
                 });
-
-
-                // Set the comments path for the Swagger JSON and UI.
+                c.SchemaGeneratorOptions.SchemaIdSelector = type => type.FullName;
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
-                c.EnableAnnotations();
+                c.SchemaGeneratorOptions.DiscriminatorNameSelector = type => type.FullName;
+                c.SwaggerGeneratorOptions.TagsSelector = description =>
+                {
+                    //var path = Regex.Replace(description.RelativePath, @"api/(\w+)?(\/?.*)", "$1");
+                    var path = Regex.Replace(description.RelativePath, @"^api\/|\/\{.+\}", "");
+                    path = path.Replace("/", " => ");
+                    return new[] {path};
+                };
+                //c.EnableAnnotations();
             });
 
             #endregion
