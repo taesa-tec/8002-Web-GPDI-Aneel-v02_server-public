@@ -12,6 +12,7 @@ using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Projetos;
+using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
@@ -344,6 +345,27 @@ namespace PeD.Services.Projetos
             _context.SaveChanges();
             projetoFile.File = file;
             return projetoFile;
+        }
+
+        public List<RelatorioEtapa> RelatoriosEtapas(int projetoId)
+        {
+            var projeto = _context.Set<Projeto>().Include(p => p.Etapas).ThenInclude(e => e.Relatorio)
+                .FirstOrDefault(p => p.Id == projetoId);
+            if (projeto is null)
+                return null;
+            var etapas = projeto.Etapas;
+            var relatorios = new List<RelatorioEtapa>();
+            foreach (var etapa in etapas)
+            {
+                var relatorio = etapa.Relatorio ?? new RelatorioEtapa() {ProjetoId = projetoId, EtapaId = etapa.Id};
+                if (relatorio.Id == 0)
+                    _context.Add(relatorio);
+                relatorios.Add(relatorio);
+            }
+
+            _context.SaveChanges();
+
+            return relatorios;
         }
     }
 }

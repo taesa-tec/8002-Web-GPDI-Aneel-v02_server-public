@@ -11,7 +11,7 @@ namespace PeD.Controllers.Projetos.Relatorios
 {
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/Projetos/{projetoId:int}/[controller]")]
+    [Route("api/Projetos/{projetoId:int}/Relatorio/[controller]")]
     public class IndicadorEconomicoController : ProjetoNodeBaseController<IndicadorEconomico, IndicadorEconomicoRequest,
         IndicadorEconomicoDto>
     {

@@ -111,7 +111,12 @@ namespace PeD.Mapping
             CreateMap<ApoioRequest, Apoio>();
             CreateMap<IndicadorEconomico, IndicadorEconomicoDto>();
             CreateMap<IndicadorEconomicoRequest, IndicadorEconomico>();
-            CreateMap<PropriedadeIntelectualDepositante, PropriedadeIntelectualDepositanteDto>();
+            CreateMap<PropriedadeIntelectualDepositante, PropriedadeIntelectualDepositanteDto>()
+                .ForMember(d => d.Depositante,
+                    o => o.MapFrom(src =>
+                        src.Empresa != null
+                            ? src.Empresa.Nome ?? (src.CoExecutor != null ? src.CoExecutor.RazaoSocial : null)
+                            : (src.CoExecutor != null ? src.CoExecutor.RazaoSocial : null)));
             CreateMap<PropriedadeIntelectualDepositanteRequest, PropriedadeIntelectualDepositante>();
             CreateMap<RelatorioEtapa, RelatorioEtapaDto>();
             CreateMap<RelatorioEtapaRequest, RelatorioEtapa>();
@@ -121,7 +126,9 @@ namespace PeD.Mapping
             CreateMap<CapacitacaoRequest, Capacitacao>();
             CreateMap<ProducaoCientifica, ProducaoCientificaDto>();
             CreateMap<ProducaoCientificaRequest, ProducaoCientifica>();
-            CreateMap<PropriedadeIntelectual, PropriedadeIntelectualDto>();
+            CreateMap<PropriedadeIntelectual, PropriedadeIntelectualDto>()
+                .ForMember(dest => dest.Inventores, opt => opt.MapFrom(src => src.Inventores.Select(i => i.Recurso)))
+                ;
             CreateMap<PropriedadeIntelectualRequest, PropriedadeIntelectual>();
             CreateMap<RelatorioFinal, RelatorioFinalDto>();
             CreateMap<RelatorioFinalRequest, RelatorioFinal>();

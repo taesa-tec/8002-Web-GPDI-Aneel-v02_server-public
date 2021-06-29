@@ -66,14 +66,14 @@ namespace PeD.Core.Models.Projetos.Resultados
         [MaxLength(500)]
         public string TransferenciaTecnologica { get; set; }
 
-        public int RelatorioArquivoId { get; set; }
+        public int? RelatorioArquivoId { get; set; }
 
         /// <summary>
         /// ARQUIVO PDF RELATÓRIO FINAL
         /// </summary>
         public FileUpload RelatorioArquivo { get; set; }
 
-        public int AuditoriaRelatorioArquivoId { get; set; }
+        public int? AuditoriaRelatorioArquivoId { get; set; }
 
         /// <summary>
         /// ARQUIVO EM FORMATO PDF DO RELATÓRIO DE AUDITORIA CONTÁBIL E FINANCEIRA DO PROJETO DE P&D

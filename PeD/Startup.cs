@@ -144,8 +144,8 @@ namespace PeD
                 c.SchemaGeneratorOptions.DiscriminatorNameSelector = type => type.FullName;
                 c.SwaggerGeneratorOptions.TagsSelector = description =>
                 {
-                    //var path = Regex.Replace(description.RelativePath, @"api/(\w+)?(\/?.*)", "$1");
-                    var path = Regex.Replace(description.RelativePath, @"^api\/|\/\{.+\}", "");
+                    var path = Regex.Replace(description.RelativePath, @"^api\/|\/\{.+?\}", "");
+                    // Log.Information("{P1} => {P2}", description.RelativePath, path);
                     path = path.Replace("/", " => ");
                     return new[] {path};
                 };

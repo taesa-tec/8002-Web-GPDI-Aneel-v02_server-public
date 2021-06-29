@@ -36,14 +36,10 @@ namespace PeD.Core.Models.Projetos.Resultados
         }
 
         public TipoIndicador Tipo { get; set; }
-        [MaxLength(400)]
-        public string Beneficio { get; set; }
-        [MaxLength(10)]
-        public string UnidadeBase { get; set; }
+        [MaxLength(400)] public string Beneficio { get; set; }
+        [MaxLength(10)] public string UnidadeBase { get; set; }
         [Column(TypeName = "decimal(18,2)")] public decimal ValorNumerico { get; set; }
-        [Column(TypeName = "decimal(5,2)")]public decimal PorcentagemImpacto { get; set; }
-        [Column(TypeName = "decimal(18,2)")]public decimal ValorBeneficio { get; set; }
-        
-        
+        [Column(TypeName = "decimal(5,2)")] public decimal PorcentagemImpacto { get; set; }
+        [Column(TypeName = "decimal(18,2)")] public decimal ValorBeneficio { get; set; }
     }
 }

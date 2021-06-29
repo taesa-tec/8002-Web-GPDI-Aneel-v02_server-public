@@ -99,7 +99,7 @@ namespace PeD.Data
             CaptacaoContext(modelBuilder);
             PropostaContext(modelBuilder);
             ProjetoContext(modelBuilder);
-            //ProjetoRelatorioContext(modelBuilder);
+            ProjetoRelatorioContext(modelBuilder);
             base.OnModelCreating(modelBuilder);
         }
 
@@ -386,7 +386,7 @@ namespace PeD.Data
             builder.Entity<RelatorioEtapa>(b =>
             {
                 b.ToTable("ProjetosRelatoriosEtapas");
-                b.HasOne(r => r.Etapa).WithMany().HasForeignKey(r => r.EtapaId).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(r => r.Etapa).WithOne(r => r.Relatorio).OnDelete(DeleteBehavior.NoAction);
             });
 
             builder.Entity<Socioambiental>(b =>

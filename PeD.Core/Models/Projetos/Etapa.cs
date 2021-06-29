@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using PeD.Core.Models.Projetos.Resultados;
 
 namespace PeD.Core.Models.Projetos
 {
@@ -13,6 +14,8 @@ namespace PeD.Core.Models.Projetos
         public List<int> Meses { get; set; }
         public short Ordem { get; set; }
         
+        public RelatorioEtapa Relatorio { get; set; }
+
         public IEnumerable<Alocacao> Alocacoes { get; set; }
     }
 }

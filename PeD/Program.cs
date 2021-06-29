@@ -62,7 +62,7 @@ namespace PeD
             }
             catch (Exception e)
             {
-                Log.Error(e, "Erro na migração");
+                Log.Error(e, "Erro na migração: {Error}", e.Message);
                 throw;
             }
 

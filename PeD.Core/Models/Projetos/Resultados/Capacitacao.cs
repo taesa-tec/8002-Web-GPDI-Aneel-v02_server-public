@@ -22,7 +22,7 @@ namespace PeD.Core.Models.Projetos.Resultados
         [MaxLength(50)] public string AreaPesquisa { get; set; }
         [MaxLength(200)] public string TituloTrabalhoOrigem { get; set; }
 
-        public int ArquivoTrabalhoOrigemId { get; set; }
+        public int? ArquivoTrabalhoOrigemId { get; set; }
         public FileUpload ArquivoTrabalhoOrigem { get; set; }
     }
 }

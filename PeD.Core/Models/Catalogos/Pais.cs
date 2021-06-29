@@ -4,12 +4,11 @@ namespace PeD.Core.Models.Catalogos
 {
     public class Pais : BaseEntity
     {
-        private string _nome;
+        public string Nome { get; set; }
 
-        public string Nome
+        public override string ToString()
         {
-            get => _nome;
-            set => _nome = value?.Trim();
+            return Nome;
         }
     }
 }

@@ -61,16 +61,6 @@ namespace PeD.Core.ApiModels.Projetos.Resultados
 
         public int RelatorioArquivoId { get; set; }
 
-        /// <summary>
-        /// ARQUIVO PDF RELATÓRIO FINAL
-        /// </summary>
-        public FileUpload RelatorioArquivo { get; set; }
-
         public int AuditoriaRelatorioArquivoId { get; set; }
-
-        /// <summary>
-        /// ARQUIVO EM FORMATO PDF DO RELATÓRIO DE AUDITORIA CONTÁBIL E FINANCEIRA DO PROJETO DE P&D
-        /// </summary>
-        public FileUpload AuditoriaRelatorioArquivo { get; set; }
     }
 }

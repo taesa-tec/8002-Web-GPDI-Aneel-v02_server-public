@@ -82,9 +82,15 @@ namespace PeD.Controllers.Projetos
             var projeto = Service.Get(id);
             if (projeto == null)
                 return NotFound();
+            if (projeto.Status == request.Status)
+                return Problem($"O projeto já está no com status {projeto.Status.ToString()}", null,
+                    StatusCodes.Status400BadRequest);
+
             projeto.Status = request.Status;
             Context.Update(projeto);
             Context.SaveChanges();
+            if (projeto.Status == Status.Finalizado)
+                Service.RelatoriosEtapas(projeto.Id);
 
             return Ok(Mapper.Map<ProjetoDto>(projeto));
         }
