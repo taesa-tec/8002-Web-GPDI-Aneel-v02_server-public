@@ -40,11 +40,6 @@ namespace PeD.Data
 {
     public class GestorDbContext : IdentityDbContext<ApplicationUser>
     {
-        public GestorDbContext(
-            DbContextOptions<GestorDbContext> options) : base(options)
-        {
-        }
-
         #region DbSet's
 
         public DbSet<FileUpload> Files { get; set; }
@@ -79,6 +74,11 @@ namespace PeD.Data
 
         #endregion
 
+        public GestorDbContext(DbContextOptions<GestorDbContext> options) : base(options)
+        {
+        }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Disable Cascate Delete
@@ -88,8 +88,7 @@ namespace PeD.Data
 
             foreach (var fk in cascadeFKs)
                 fk.DeleteBehavior = DeleteBehavior.Restrict;
-            // Tema
-            modelBuilder.Entity<Tema>().HasMany(p => p.SubTemas);
+
 
             modelBuilder.Entity<Demanda>(_d => { _d.Property(d => d.CreatedAt).HasDefaultValueSql("getdate()"); });
             modelBuilder.Entity<DemandaComentario>(_dc =>
@@ -100,7 +99,7 @@ namespace PeD.Data
             CaptacaoContext(modelBuilder);
             PropostaContext(modelBuilder);
             ProjetoContext(modelBuilder);
-            ProjetoRelatorioContext(modelBuilder);
+            //ProjetoRelatorioContext(modelBuilder);
             base.OnModelCreating(modelBuilder);
         }
 
@@ -345,20 +344,56 @@ namespace PeD.Data
 
         protected void ProjetoRelatorioContext(ModelBuilder builder)
         {
-            builder.Entity<Apoio>(b => { b.ToTable("ProjetosRelatoriosApoios"); });
-            builder.Entity<Capacitacao>(b => { b.ToTable("ProjetosRelatoriosCapacitacoes"); });
-            builder.Entity<IndicadorEconomico>(b => { b.ToTable("ProjetosRelatoriosIndicadoresEconomicos"); });
-            builder.Entity<ProducaoCientifica>(b => { b.ToTable("ProjetosRelatoriosProducoesCientificas"); });
-            builder.Entity<PropriedadeIntelectual>(b => { b.ToTable("ProjetosRelatoriosPropriedadesIntelectuais"); });
+            builder.Entity<RelatorioFinal>(b =>
+            {
+                b.ToTable("ProjetosRelatoriosFinais");
+                b.HasOne(r => r.Projeto).WithOne();
+            });
+            builder.Entity<Apoio>(b =>
+            {
+                b.ToTable("ProjetosRelatoriosApoios");
+                b.Property(a => a.Tipo).HasConversion<string>();
+            });
+            builder.Entity<Capacitacao>(b =>
+            {
+                b.ToTable("ProjetosRelatoriosCapacitacoes");
+                b.Property(i => i.Tipo).HasConversion<string>();
+                b.HasOne(c => c.Recurso).WithMany().HasForeignKey(c => c.RecursoId).OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<IndicadorEconomico>(b =>
+            {
+                b.ToTable("ProjetosRelatoriosIndicadoresEconomicos");
+                b.Property(i => i.Tipo).HasConversion<string>();
+            });
+            builder.Entity<ProducaoCientifica>(b =>
+            {
+                b.ToTable("ProjetosRelatoriosProducoesCientificas");
+                b.Property(i => i.Tipo).HasConversion<string>();
+            });
+            builder.Entity<PropriedadeIntelectual>(b =>
+            {
+                b.ToTable("ProjetosRelatoriosPropriedadesIntelectuais");
+
+                b.Property(i => i.Tipo).HasConversion<string>();
+            });
             builder.Entity<PropriedadeIntelectualInventores>(b =>
             {
                 b.ToTable("ProjetosRelatoriosPropriedadesIntelectuaisInventores");
+                b.HasOne(p => p.Recurso).WithMany().HasForeignKey(p => p.RecursoId).OnDelete(DeleteBehavior.NoAction);
                 b.HasKey(i => new {i.PropriedadeId, i.RecursoId});
             });
-            
-            builder.Entity<RelatorioEtapa>(b => { b.ToTable("ProjetosRelatoriosEtapas"); });
-            builder.Entity<RelatorioFinal>(b => { b.ToTable("ProjetosRelatoriosFinais"); });
-            builder.Entity<Socioambiental>(b => { b.ToTable("ProjetosRelatoriosSocioambiental"); });
+
+            builder.Entity<RelatorioEtapa>(b =>
+            {
+                b.ToTable("ProjetosRelatoriosEtapas");
+                b.HasOne(r => r.Etapa).WithMany().HasForeignKey(r => r.EtapaId).OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<Socioambiental>(b =>
+            {
+                b.ToTable("ProjetosRelatoriosSocioambiental");
+                b.Property(i => i.Tipo).HasConversion<string>();
+            });
         }
     }
 }

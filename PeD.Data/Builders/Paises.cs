@@ -279,6 +279,7 @@ namespace PeD.Data.Builders
             };
             var id = 1;
             paises.ForEach(p => p.Id = id++);
+            builder.HasData(paises);
             return builder;
         }
     }

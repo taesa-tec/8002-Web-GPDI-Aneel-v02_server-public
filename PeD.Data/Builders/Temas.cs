@@ -10,6 +10,7 @@ namespace PeD.Data.Builders
     {
         public static EntityTypeBuilder<Tema> Config(this EntityTypeBuilder<Tema> builder)
         {
+            builder.HasMany(p => p.SubTemas);
             return builder.Seed().ToTable("Temas");
         }
 
