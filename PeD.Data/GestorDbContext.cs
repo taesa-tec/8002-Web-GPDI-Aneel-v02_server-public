@@ -12,6 +12,7 @@ using PeD.Core.Models.Catalogos;
 using PeD.Core.Models.Demandas;
 using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Projetos;
+using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Models.Sistema;
 using PeD.Data.Builders;
@@ -95,14 +96,16 @@ namespace PeD.Data
             {
                 _dc.Property(dc => dc.CreatedAt).HasDefaultValueSql("getdate()");
             });
-            AddEntities(modelBuilder);
+            CommonContext(modelBuilder);
+            CaptacaoContext(modelBuilder);
+            PropostaContext(modelBuilder);
+            ProjetoContext(modelBuilder);
+            ProjetoRelatorioContext(modelBuilder);
             base.OnModelCreating(modelBuilder);
         }
 
-        protected void AddEntities(ModelBuilder builder)
+        protected void CommonContext(ModelBuilder builder)
         {
-            #region Global
-
             builder.Entity<Tema>().Config();
             builder.Entity<Segmento>().Config();
             builder.Entity<Estado>().Config();
@@ -116,10 +119,11 @@ namespace PeD.Data
             builder.Entity<Clausula>().ToTable("Clausulas");
             builder.Entity<FaseTipoDetalhado>().Config();
             builder.Entity<ItemAjuda>().Config();
+            builder.Entity<Fornecedor>();
+        }
 
-            #endregion
-
-            builder.Entity<Fornecedor>(); //.ToTable("Empresas");
+        protected void CaptacaoContext(ModelBuilder builder)
+        {
             builder.Entity<Captacao>(eb =>
             {
                 eb.Property(c => c.CreatedAt).HasDefaultValueSql("getdate()");
@@ -144,6 +148,11 @@ namespace PeD.Data
 
             builder.Entity<CaptacaoSubTema>();
 
+            builder.Entity<CaptacaoInfo>().ToView("CaptacoesView");
+        }
+
+        protected void PropostaContext(ModelBuilder builder)
+        {
             #region Proposta
 
             builder.Entity<Proposta>(_builder =>
@@ -171,8 +180,8 @@ namespace PeD.Data
                     validacao => JsonConvert.DeserializeObject<ValidationResult>(validacao));
             });
             builder.Entity<CoExecutor>();
-            builder.Entity<PeD.Core.Models.Propostas.PropostaContrato>();
-            builder.Entity<PeD.Core.Models.Propostas.PropostaContratoRevisao>(b =>
+            builder.Entity<PropostaContrato>();
+            builder.Entity<PropostaContratoRevisao>(b =>
             {
                 b.HasOne(c => c.Proposta).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
@@ -230,9 +239,10 @@ namespace PeD.Data
             });
 
             #endregion
+        }
 
-            #region Projeto
-
+        protected void ProjetoContext(ModelBuilder builder)
+        {
             builder.Entity<Projeto>(b =>
             {
                 b.HasIndex(p => p.CaptacaoId).IsUnique();
@@ -268,7 +278,7 @@ namespace PeD.Data
             builder.Entity<PeD.Core.Models.Projetos.RecursoMaterial>();
 
 
-            builder.Entity<PeD.Core.Models.Projetos.Alocacao>(b =>
+            builder.Entity<Core.Models.Projetos.Alocacao>(b =>
             {
                 b.HasDiscriminator(a => a.Tipo);
                 b.HasOne(a => a.CoExecutorFinanciador).WithMany().OnDelete(DeleteBehavior.NoAction);
@@ -324,20 +334,31 @@ namespace PeD.Data
             });
             builder.Entity<RegistroObservacao>(b => { b.ToTable("ProjetosRegistrosFinanceirosObservacoes"); });
 
-            builder.Entity<PeD.Core.Models.Projetos.ProjetoXml>(b =>
-            {
-                b.Property(l => l.Tipo).HasConversion<string>();
-            });
-
-            #endregion
-
-            builder.Entity<CaptacaoInfo>().ToView("CaptacoesView");
+            builder.Entity<ProjetoXml>(b => { b.Property(l => l.Tipo).HasConversion<string>(); });
             builder.Entity<RegistroFinanceiroInfo>(b =>
             {
                 b.Property(r => r.Status).HasConversion<string>();
                 b.Property(r => r.TipoDocumento).HasConversion<string>();
                 b.ToView("RegistrosFinanceirosView");
             });
+        }
+
+        protected void ProjetoRelatorioContext(ModelBuilder builder)
+        {
+            builder.Entity<Apoio>(b => { b.ToTable("ProjetosRelatoriosApoios"); });
+            builder.Entity<Capacitacao>(b => { b.ToTable("ProjetosRelatoriosCapacitacoes"); });
+            builder.Entity<IndicadorEconomico>(b => { b.ToTable("ProjetosRelatoriosIndicadoresEconomicos"); });
+            builder.Entity<ProducaoCientifica>(b => { b.ToTable("ProjetosRelatoriosProducoesCientificas"); });
+            builder.Entity<PropriedadeIntelectual>(b => { b.ToTable("ProjetosRelatoriosPropriedadesIntelectuais"); });
+            builder.Entity<PropriedadeIntelectualInventores>(b =>
+            {
+                b.ToTable("ProjetosRelatoriosPropriedadesIntelectuaisInventores");
+                b.HasKey(i => new {i.PropriedadeId, i.RecursoId});
+            });
+            
+            builder.Entity<RelatorioEtapa>(b => { b.ToTable("ProjetosRelatoriosEtapas"); });
+            builder.Entity<RelatorioFinal>(b => { b.ToTable("ProjetosRelatoriosFinais"); });
+            builder.Entity<Socioambiental>(b => { b.ToTable("ProjetosRelatoriosSocioambiental"); });
         }
     }
 }

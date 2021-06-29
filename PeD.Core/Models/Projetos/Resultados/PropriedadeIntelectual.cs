@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TaesaCore.Models;
 
 namespace PeD.Core.Models.Projetos.Resultados
 {
@@ -17,10 +18,8 @@ namespace PeD.Core.Models.Projetos.Resultados
 
         public TipoPropriedade Tipo { get; set; }
         public DateTime PedidoData { get; set; }
-        [MaxLength(15)]
-        public string PedidoNumero { get; set; }
-        [MaxLength(200)]
-        public string TituloINPI { get; set; }
+        [MaxLength(15)] public string PedidoNumero { get; set; }
+        [MaxLength(200)] public string TituloINPI { get; set; }
         public List<PropriedadeIntelectualInventores> Inventores { get; set; }
         public List<PropriedadeIntelectualDepositante> Depositantes { get; set; }
     }
@@ -34,7 +33,7 @@ namespace PeD.Core.Models.Projetos.Resultados
         public int RecursoId { get; set; }
     }
 
-    public class PropriedadeIntelectualDepositante
+    public class PropriedadeIntelectualDepositante : BaseEntity
     {
         public int PropriedadeId { get; set; }
         public PropriedadeIntelectual Propriedade { get; set; }
