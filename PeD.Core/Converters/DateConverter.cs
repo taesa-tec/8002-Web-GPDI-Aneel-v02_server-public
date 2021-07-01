@@ -9,4 +9,12 @@ namespace PeD.Core.Converters
             DateTimeFormat = "yyyy-MM-dd";
         }
     }
+
+    public class DateXmlConverter : IsoDateTimeConverter
+    {
+        public DateXmlConverter()
+        {
+            DateTimeFormat = "yyyyMMdd";
+        }
+    }
 }

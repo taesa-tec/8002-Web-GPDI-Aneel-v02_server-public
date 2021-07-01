@@ -17,9 +17,11 @@ using PeD.Core.Requests.Projetos;
 using PeD.Data;
 using PeD.Services;
 using PeD.Services.Projetos;
+using PeD.Services.Projetos.Xml;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
+using Log = Serilog.Log;
 
 namespace PeD.Controllers.Projetos
 {
@@ -303,6 +305,28 @@ namespace PeD.Controllers.Projetos
             }
             catch (Exception e)
             {
+                return Problem(e.Message);
+            }
+        }
+
+        [HttpPost("{id:int}/GerarXML/FinalProjeto")]
+        public ActionResult GerarXmlFinalProjeto(int id, [FromBody] XmlRequest request,
+            [FromServices] RelatorioFinalService service)
+        {
+            var projeto = Service.Get(id);
+            if (projeto is null)
+                return NotFound();
+
+
+            try
+            {
+                var doc = Service.SaveXml(id, request.Versao, service.RelatorioFinalPeD(id));
+                Console.WriteLine(projeto.Codigo);
+                return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.Name);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Error:{Error}", e.Message);
                 return Problem(e.Message);
             }
         }
