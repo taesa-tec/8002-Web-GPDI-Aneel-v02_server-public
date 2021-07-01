@@ -40,6 +40,7 @@ namespace PeD.Controllers.Projetos.Relatorios
             var prevRelatorio = Service.Filter(q => q.AsNoTracking().Where(r => r.ProjetoId == Projeto.Id))
                 .FirstOrDefault();
             var relatorio = Mapper.Map<RelatorioFinal>(request);
+            relatorio.ProjetoId = Projeto.Id;
             if (prevRelatorio is null)
                 Service.Post(relatorio);
             else

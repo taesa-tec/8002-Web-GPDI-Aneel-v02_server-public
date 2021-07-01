@@ -26,7 +26,8 @@ namespace PeD.Controllers.Projetos.Relatorios
 
         protected override IQueryable<RelatorioEtapa> Includes(IQueryable<RelatorioEtapa> queryable)
         {
-            return queryable.Include(r => r.Projeto).Include(r => r.Etapa).ThenInclude(e => e.Produto);
+            return queryable.Include(r => r.Projeto).Include(r => r.Etapa).ThenInclude(e => e.Produto)
+                .OrderBy(e => e.Etapa.Ordem);
         }
 
 #pragma warning disable 1998
