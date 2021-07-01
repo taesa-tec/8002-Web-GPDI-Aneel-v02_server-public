@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,32 @@ namespace PeD.Controllers.Projetos.Relatorios
 
         protected override IQueryable<RelatorioEtapa> Includes(IQueryable<RelatorioEtapa> queryable)
         {
-            return queryable.Include(r => r.Etapa).ThenInclude(e => e.Produto);
+            return queryable.Include(r => r.Projeto).Include(r => r.Etapa).ThenInclude(e => e.Produto);
+        }
+
+#pragma warning disable 1998
+        public override async Task<IActionResult> Post(RelatorioEtapaRequest request)
+#pragma warning restore 1998
+        {
+            var etapa = Service.Get(request.Id);
+            if (etapa is null || etapa.ProjetoId != Projeto.Id)
+                return NotFound();
+
+            etapa.AtividadesRealizadas = request.AtividadesRealizadas;
+            Service.Put(etapa);
+            return Ok();
+        }
+
+        public override async Task<IActionResult> Put(RelatorioEtapaRequest request)
+        {
+            return await Post(request);
+        }
+
+#pragma warning disable 1998
+        public override async Task<IActionResult> Delete(int id)
+#pragma warning restore 1998
+        {
+            return Forbid();
         }
     }
 }

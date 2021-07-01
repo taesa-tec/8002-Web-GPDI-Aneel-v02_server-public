@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+
 // ReSharper disable InconsistentNaming
 
 namespace PeD.Core.Models.Projetos.Xml.RelatorioFinal
@@ -12,7 +13,7 @@ namespace PeD.Core.Models.Projetos.Xml.RelatorioFinal
         [JsonIgnore] public override XmlTipo Tipo => XmlTipo.RELATORIOFINALPED;
 
 
-        public PD_RelFinalBase PD_RelFinalBase { get; set; }
+        public PD_RelFinalBasePD PD_RelFinalBase { get; set; }
         public PD_EquipeEmp PD_EquipeEmp { get; set; }
         public PD_EquipeExec PD_EquipeExec { get; set; }
         public PD_Etapas PD_Etapas { get; set; }
@@ -99,10 +100,6 @@ namespace PeD.Core.Models.Projetos.Xml.RelatorioFinal
         public string AplicFnc { get; set; }
         public string AplicAbrang { get; set; }
         public string AplicAmbito { get; set; }
-    }
-
-    public class PD_RelFinalBaseGestao : PD_RelFinalBase
-    {
     }
 
     public class PD_EquipeEmp

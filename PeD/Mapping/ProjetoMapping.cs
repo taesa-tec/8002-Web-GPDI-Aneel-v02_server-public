@@ -72,7 +72,7 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.Tema,
                     opt => opt.MapFrom(src => src.TemaId.HasValue ? (src.Tema.Nome ?? "") : src.TemaOutro))
                 ;
-            CreateMap<Etapa, EtapaDto>();
+            CreateMap<Etapa, EtapaDto>().ForMember(e => e.Produto, o => o.MapFrom(s => s.Produto.Titulo));
             CreateMap<RecursoHumano, RecursoHumanoDto>()
                 .ForMember(dest => dest.Empresa, opt =>
                     opt.MapFrom(src => src.Empresa != null ? src.Empresa.Nome : src.CoExecutor.RazaoSocial ?? ""));
@@ -118,7 +118,12 @@ namespace PeD.Mapping
                             ? src.Empresa.Nome ?? (src.CoExecutor != null ? src.CoExecutor.RazaoSocial : null)
                             : (src.CoExecutor != null ? src.CoExecutor.RazaoSocial : null)));
             CreateMap<PropriedadeIntelectualDepositanteRequest, PropriedadeIntelectualDepositante>();
-            CreateMap<RelatorioEtapa, RelatorioEtapaDto>();
+            CreateMap<RelatorioEtapa, RelatorioEtapaDto>()
+                .ForMember(d => d.Inicio,
+                    o => o.MapFrom(s => s.Projeto.DataInicioProjeto.AddMonths(s.Etapa.Meses.Min() - 1)))
+                .ForMember(d => d.Fim,
+                    o => o.MapFrom(s => s.Projeto.DataInicioProjeto.AddMonths(s.Etapa.Meses.Max() - 1)))
+                ;
             CreateMap<RelatorioEtapaRequest, RelatorioEtapa>();
             CreateMap<Socioambiental, SocioambientalDto>();
             CreateMap<SocioambientalRequest, Socioambiental>();

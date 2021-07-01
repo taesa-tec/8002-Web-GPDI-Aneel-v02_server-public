@@ -4,9 +4,8 @@ using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Projetos.Resultados
 {
-    public class RelatorioEtapaRequest  : BaseEntity
+    public class RelatorioEtapaRequest : BaseEntity
     {
-        public int EtapaId { get; set; }
         [MaxLength(300)] public string AtividadesRealizadas { get; set; }
     }
 }
