@@ -108,10 +108,10 @@ namespace PeD.Controllers.Projetos
             if (!await HasAccess(true))
                 return Forbid();
 
-            var risco = Mapper.Map<T>(request);
-            risco.ProjetoId = Projeto.Id;
-            Service.Post(risco);
-            return Ok();
+            var node = Mapper.Map<T>(request);
+            node.ProjetoId = Projeto.Id;
+            Service.Post(node);
+            return Ok(Mapper.Map<TResponse>(node));
         }
 
         [HttpPut]

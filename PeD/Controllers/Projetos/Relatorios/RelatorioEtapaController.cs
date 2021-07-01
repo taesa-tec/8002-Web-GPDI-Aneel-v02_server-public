@@ -40,7 +40,7 @@ namespace PeD.Controllers.Projetos.Relatorios
 
             etapa.AtividadesRealizadas = request.AtividadesRealizadas;
             Service.Put(etapa);
-            return Ok();
+            return Ok(Mapper.Map<RelatorioEtapaDto>(etapa));
         }
 
         public override async Task<IActionResult> Put(RelatorioEtapaRequest request)
