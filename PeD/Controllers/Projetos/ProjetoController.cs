@@ -295,12 +295,9 @@ namespace PeD.Controllers.Projetos
             var projeto = Service.Get(id);
             if (projeto is null)
                 return NotFound();
-
-
             try
             {
                 var doc = Service.SaveXml(id, request.Versao, new Prorrogacao(projeto.Codigo, projeto.Duracao));
-                Console.WriteLine(projeto.Codigo);
                 return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.Name);
             }
             catch (Exception e)
@@ -322,6 +319,26 @@ namespace PeD.Controllers.Projetos
             {
                 var doc = Service.SaveXml(id, request.Versao, service.RelatorioFinalPeD(id));
                 Console.WriteLine(projeto.Codigo);
+                return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.Name);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Error:{Error}", e.Message);
+                return Problem(e.Message);
+            }
+        }
+
+        [HttpPost("{id:int}/GerarXML/Auditoria")]
+        public ActionResult GerarXmlAuditoria(int id, [FromBody] XmlRequest request,
+            [FromServices] RelatorioAuditoriaService service)
+        {
+            var projeto = Service.Get(id);
+            if (projeto is null)
+                return NotFound();
+
+            try
+            {
+                var doc = Service.SaveXml(id, request.Versao, service.Auditoria(id));
                 return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.Name);
             }
             catch (Exception e)

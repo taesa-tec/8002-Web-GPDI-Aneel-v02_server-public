@@ -17,9 +17,6 @@ SELECT prf.Id,
        prf.EquipaLaboratorioNovo,
        prf.IsNacional,
        prf.MesReferencia,
-
-
-
        prf.RecursoHumanoId,
        prf.RecursoMaterialId,
        IIF(prf.Tipo = 'RegistroFinanceiroRm', PRM.Nome, PRH.NomeCompleto)                  AS Recurso,
@@ -27,6 +24,8 @@ SELECT prf.Id,
        prf.TipoDocumento,
        prf.NumeroDocumento,
        prf.DataDocumento,
+       EF.Valor as CodEmpresa,
+
        prf.FinanciadoraId,
        prf.CoExecutorFinanciadorId,
        IIF(prf.FinanciadoraId IS NULL, CONCAT('c-', prf.CoExecutorFinanciadorId),CONCAT('e-', prf.FinanciadoraId)) as FinanciadorCode,
@@ -67,7 +66,22 @@ SELECT prf.Id,
        prf.AtividadeRealizada,
        prf.EspecificaoTecnica,
        prf.FuncaoEtapa,
-       Etapas.Ordem as Etapa
+       Etapas.Ordem as Etapa,
+
+       CASE
+           WHEN prf.Tipo = 'RegistroFinanceiroRm' THEN
+               CASE
+                   WHEN prf.RecebedoraId IS NOT NULL THEN ER.Cnpj
+                   WHEN prf.CoExecutorRecebedorId IS NOT NULL THEN PCER.CNPJ
+                   END
+           ELSE
+               CASE
+                   WHEN PRH.EmpresaId IS NOT NULL THEN EH.Cnpj
+                   WHEN PRH.CoExecutorId IS NOT NULL THEN PCEH.CNPJ
+                   END
+           END
+           as CNPJExec,
+           PCEF.CNPJ as CNPJParc
 
 
 FROM ProjetosRegistrosFinanceiros prf

@@ -1,4 +1,5 @@
 using System;
+using PeD.Core.Models.Projetos;
 
 namespace PeD.Core.Requests.Captacao
 {
@@ -10,5 +11,6 @@ namespace PeD.Core.Requests.Captacao
         public int? EmpresaProponenteId { get; set; }
         public string TituloCompleto { get; set; }
         public DateTime? InicioProjeto { get; set; }
+        public TipoCompartilhamento Compartilhamento { get; set; }
     }
 }

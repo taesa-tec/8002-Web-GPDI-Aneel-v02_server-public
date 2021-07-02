@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using PeD.Core.Converters;
 
 namespace PeD.Core.Models.Projetos.Xml
 {
@@ -93,11 +95,9 @@ namespace PeD.Core.Models.Projetos.Xml
         public string FuncaoMbEqEmp { get; set; }
         private string _hhMbEqEmp { get; set; }
 
-        public string HhMbEqEmp
-        {
-            get => string.Format("{0:N}", _hhMbEqEmp);
-            set => _hhMbEqEmp = value;
-        }
+
+        [JsonConverter(typeof(NumberConverter), "{0:N}")]
+        public decimal HhMbEqEmp { get; set; }
 
         public string MesMbEqEmp { get; set; }
         public string HoraMesMbEqEmp { get; set; }
@@ -149,7 +149,8 @@ namespace PeD.Core.Models.Projetos.Xml
 
         public string TitulacaoMbEqExec { get; set; }
         public string FuncaoMbEqExec { get; set; }
-        public string HhMbEqExec { get; set; }
+        [JsonConverter(typeof(NumberConverter), "{0:C}")]
+        public decimal HhMbEqExec { get; set; }
         public string MesMbEqExec { get; set; }
         public string HoraMesMbEqExec { get; set; }
     }

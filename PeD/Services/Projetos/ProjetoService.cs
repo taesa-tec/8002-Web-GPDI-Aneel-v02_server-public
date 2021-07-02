@@ -82,6 +82,7 @@ namespace PeD.Services.Projetos
 
         public Projeto ParseProposta(int propostaId, int proponentId, string numero, string tituloCompleto,
             string responsavelId,
+            TipoCompartilhamento compartilhamento,
             DateTime inicio)
         {
             var proposta = _propostaService.GetPropostaFull(propostaId) ?? throw new NullReferenceException();
@@ -122,6 +123,7 @@ namespace PeD.Services.Projetos
             var codigo = $"PD-{proponente.Valor}-{numero}/{inicio.Year}";
             var projeto = new Projeto()
             {
+                Compartilhamento = compartilhamento,
                 PlanoTrabalhoFileId = relatorio.FileId.Value,
                 Codigo = codigo,
                 ContratoId = contrato.FileId.Value,
@@ -200,7 +202,9 @@ namespace PeD.Services.Projetos
                         a.CoExecutorRecebedorId = coexecutorCopy[a.CoExecutorRecebedorId.Value];
                     }
                 });
-            SaveXml(projeto.Id, "1", new InicioExecucao(projeto.Codigo, projeto.DataInicioProjeto, "CE"));// todo Criar campo em projeto e alterar modal no front 
+            SaveXml(projeto.Id, "1",
+                new InicioExecucao(projeto.Codigo, projeto.DataInicioProjeto,
+                    compartilhamento.ToString())); // todo Criar campo em projeto e alterar modal no front 
             return projeto;
         }
 

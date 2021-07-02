@@ -13,7 +13,7 @@ namespace PeD.Core.Models.Projetos
     {
         public string Titulo { get; set; }
         public string TituloCompleto { get; set; }
-
+        public TipoCompartilhamento Compartilhamento { get; set; }
         public int PlanoTrabalhoFileId { get; set; }
         public FileUpload PlanoTrabalhoFile { get; set; }
 

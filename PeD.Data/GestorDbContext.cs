@@ -249,6 +249,7 @@ namespace PeD.Data
                 b.HasOne(p => p.PlanoTrabalhoFile).WithOne().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(p => p.Contrato).WithOne().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(p => p.EspecificacaoTecnicaFile).WithOne().OnDelete(DeleteBehavior.NoAction);
+                b.Property(p => p.Compartilhamento).HasConversion<string>();
                 b.ToTable("Projetos");
             });
             builder.Entity<ProjetoArquivo>(b =>

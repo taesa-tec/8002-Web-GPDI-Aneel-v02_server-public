@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using PeD.Core.Attributes;
 using TaesaCore.Models;
 
+// ReSharper disable InconsistentNaming
+
 namespace PeD.Core.Models.Projetos
 {
     public enum TipoDocumento
@@ -90,6 +92,9 @@ namespace PeD.Core.Models.Projetos
         public int? RecursoMaterialId { get; set; }
         public int? FinanciadoraId { get; set; }
         public int? CoExecutorFinanciadorId { get; set; }
+        public string CodEmpresa { get; set; }
+        public string CNPJExec { get; set; }
+        public string CNPJParc { get; set; }
         public string FinanciadorCode { get; set; }
         public int? RecebedoraId { get; set; }
         public int? CoExecutorRecebedorId { get; set; }

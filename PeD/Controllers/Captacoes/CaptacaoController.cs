@@ -589,8 +589,13 @@ namespace PeD.Controllers.Captacoes
             if (request.Aprovado)
             {
                 var projeto = projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
+<<<<<<< HEAD
                     request.EmpresaProponenteId.Value, request.NumeroProjeto,
                     request.TituloCompleto, request.ResponsavelId, request.InicioProjeto.Value);
+=======
+                    request.EmpresaProponenteId, request.NumeroProjeto,
+                    request.TituloCompleto, request.ResponsavelId, request.Compartilhamento, request.InicioProjeto);
+>>>>>>> Xml auditoria
             }
 
 

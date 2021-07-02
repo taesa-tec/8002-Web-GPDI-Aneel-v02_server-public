@@ -4,8 +4,10 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Resultados;
+using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD;
 using PeD.Data;
+using PD_Recursos = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.PD_Recursos;
 
 namespace PeD.Services.Projetos.Xml
 {
@@ -23,7 +25,7 @@ namespace PeD.Services.Projetos.Xml
             return new RelatorioFinalPeD()
             {
                 PD_RelFinalBase = PD_RelFinalBase(projetoId),
-                PD_EquipeEmp = PD_EquipeEmp(projetoId), // @todo Depende das empresas cooperadas e coexecutoras
+                PD_EquipeEmp = PD_EquipeEmp(projetoId),
                 PD_EquipeExec = PD_EquipeExec(projetoId), // @todo Depende das empresas cooperadas e coexecutoras
                 PD_Etapas = PD_Etapas(projetoId),
                 PD_Recursos = PD_Recursos(projetoId),
@@ -62,12 +64,101 @@ namespace PeD.Services.Projetos.Xml
 
         private PD_EquipeEmp PD_EquipeEmp(int projetoId)
         {
-            return new PD_EquipeEmp() { };
+            var projeto = _context.Set<Projeto>().AsNoTracking().FirstOrDefault(p => p.Id == projetoId) ??
+                          throw new Exception("Projeto não encontrato");
+            var registros = _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == projetoId && r.CategoriaContabilCodigo == "RH" &&
+                            r.Status == StatusRegistro.Aprovado).ToList();
+            var rhIds = registros.Where(r => r.RecursoHumanoId.HasValue).Select(r => r.RecursoHumanoId.Value);
+            var recursosHumanos = _context.Set<RecursoHumano>()
+                .Include(r => r.Empresa)
+                .Where(r => r.ProjetoId == projetoId && r.EmpresaId != null && rhIds.Contains(r.Id))
+                .GroupBy(r => r.EmpresaId).ToList();
+
+
+            return new PD_EquipeEmp()
+            {
+                Empresas = new PedEmpresas()
+                {
+                    Empresa = recursosHumanos.Select(e => new PedEmpresa()
+                    {
+                        CodEmpresa = e.First().Empresa.Valor,
+                        TipoEmpresa = e.First().Empresa.Id == projeto.ProponenteId ? "P" : "C",
+                        Equipe = new Equipe()
+                        {
+                            EquipeEmpresa = e.Select(r => new EquipeEmpresa()
+                            {
+                                NomeMbEqEmp = r.NomeCompleto,
+                                CpfMbEqEmp = r.Documento,
+                                TitulacaoMbEqEmp = r.Titulacao,
+                                FuncaoMbEqEmp = r.Funcao,
+                                HhMbEqEmp = r.ValorHora,
+                                MesMbEqEmp = MesMbEqEmp(registros.Where(rf => rf.RecursoHumanoId == r.Id),
+                                    projeto.DataInicioProjeto),
+                                HoraMesMbEqEmp = HoraMesMbEqEmp(registros.Where(rf => rf.RecursoHumanoId == r.Id))
+                            }).ToList()
+                        }
+                    }).ToList()
+                }
+            };
+        }
+
+        protected string MesMbEqEmp(IEnumerable<RegistroFinanceiroInfo> registros, DateTime inicio)
+        {
+            Func<DateTime, int> mesesDiff = (fim) =>
+                1 + (fim.Year - inicio.Year) * 12 + fim.Month - inicio.Month;
+            var meses = registros.OrderBy(rf => rf.MesReferencia).Select(rf => mesesDiff(rf.MesReferencia));
+            return string.Join(',', meses);
+        }
+
+        protected string HoraMesMbEqEmp(IEnumerable<RegistroFinanceiroInfo> registros)
+        {
+            var horas = registros.OrderBy(rf => rf.MesReferencia).Select(rf => rf.QuantidadeHoras);
+            return string.Join(',', horas);
         }
 
         private PD_EquipeExec PD_EquipeExec(int projetoId)
         {
-            return new PD_EquipeExec();
+            var projeto = _context.Set<Projeto>().AsNoTracking().FirstOrDefault(p => p.Id == projetoId) ??
+                          throw new Exception("Projeto não encontrato");
+            var registros = _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == projetoId
+                            && r.CategoriaContabilCodigo == "RH"
+                            && r.Status == StatusRegistro.Aprovado).ToList();
+            var rhIds = registros.Where(r => r.RecursoHumanoId.HasValue).Select(r => r.RecursoHumanoId.Value);
+            var recursosHumanos = _context.Set<RecursoHumano>()
+                .Include(r => r.CoExecutor)
+                .Where(r => r.ProjetoId == projetoId && r.CoExecutorId != null && rhIds.Contains(r.Id))
+                .GroupBy(r => r.CoExecutorId).ToList();
+
+
+            return new PD_EquipeExec()
+            {
+                Executoras = new PedExecutoras()
+                {
+                    Executora = recursosHumanos.Select(r => new PedExecutora()
+                    {
+                        UfExec = r.First().CoExecutor.UF,
+                        RazaoSocialExec = r.First().CoExecutor.RazaoSocial,
+                        CNPJExec = r.First().CoExecutor.CNPJ,
+                        Equipe = new ExecEquipe()
+                        {
+                            EquipeExec = r.Select(rh => new EquipeExec()
+                            {
+                                NomeMbEqExec = rh.NomeCompleto,
+                                BRMbEqExec = rh.Nacionalidade,
+                                DocMbEqExec = rh.Documento,
+                                TitulacaoMbEqExec = rh.Titulacao,
+                                FuncaoMbEqExec = rh.Funcao,
+                                HhMbEqExec = rh.ValorHora,
+                                MesMbEqExec = MesMbEqEmp(registros.Where(rf => rf.RecursoHumanoId == rh.Id),
+                                    projeto.DataInicioProjeto),
+                                HoraMesMbEqExec = HoraMesMbEqEmp(registros.Where(rf => rf.RecursoHumanoId == rh.Id))
+                            }).ToList()
+                        }
+                    }).ToList()
+                }
+            };
         }
 
         private PD_Etapas PD_Etapas(int projetoId)
