@@ -14,6 +14,7 @@ using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Projetos.Xml;
+using PeD.Core.Models.Projetos.Xml.InicioExecucao;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Services.Captacoes;
@@ -26,6 +27,7 @@ using Log = Serilog.Log;
 using Meta = PeD.Core.Models.Projetos.Meta;
 using PlanoTrabalho = PeD.Core.Models.Projetos.PlanoTrabalho;
 using Produto = PeD.Core.Models.Projetos.Produto;
+using Projeto = PeD.Core.Models.Projetos.Projeto;
 using RecursoHumano = PeD.Core.Models.Projetos.RecursoHumano;
 using RecursoMaterial = PeD.Core.Models.Projetos.RecursoMaterial;
 using Risco = PeD.Core.Models.Projetos.Risco;
@@ -198,7 +200,7 @@ namespace PeD.Services.Projetos
                         a.CoExecutorRecebedorId = coexecutorCopy[a.CoExecutorRecebedorId.Value];
                     }
                 });
-
+            SaveXml(projeto.Id, "1", new InicioExecucao(projeto.Codigo, projeto.DataInicioProjeto, "CE"));// todo Criar campo em projeto e alterar modal no front 
             return projeto;
         }
 
