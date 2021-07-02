@@ -46,6 +46,8 @@ namespace PeD.Controllers.Projetos.Relatorios
             else
             {
                 relatorio.Id = prevRelatorio.Id;
+                relatorio.RelatorioArquivoId = prevRelatorio.RelatorioArquivoId;
+                relatorio.AuditoriaRelatorioArquivoId = prevRelatorio.AuditoriaRelatorioArquivoId;
                 Service.Put(relatorio);
             }
 
