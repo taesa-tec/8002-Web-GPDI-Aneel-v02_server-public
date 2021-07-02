@@ -25,7 +25,7 @@ namespace PeD.Controllers.Projetos.Relatorios
             authorizationService, projetoService)
         {
         }
-        
+
         [HttpPost("{id:int}/Arquivos/Origem")]
         public ActionResult UploadRelatorio(int id, List<IFormFile> file, [FromServices] ArquivoService arquivoService)
         {
@@ -48,8 +48,14 @@ namespace PeD.Controllers.Projetos.Relatorios
                 .FirstOrDefault();
             if (producaoCientifica is null || producaoCientifica.ArquivoTrabalhoOrigem is null)
                 return NotFound();
-            return PhysicalFile(producaoCientifica.ArquivoTrabalhoOrigem.Path, producaoCientifica.ArquivoTrabalhoOrigem.ContentType,
+            return PhysicalFile(producaoCientifica.ArquivoTrabalhoOrigem.Path,
+                producaoCientifica.ArquivoTrabalhoOrigem.ContentType,
                 producaoCientifica.ArquivoTrabalhoOrigem.FileName);
+        }
+
+        protected override void BeforePut(ProducaoCientifica actual, ProducaoCientifica @new)
+        {
+            @new.ArquivoTrabalhoOrigemId = actual.ArquivoTrabalhoOrigemId;
         }
     }
 }

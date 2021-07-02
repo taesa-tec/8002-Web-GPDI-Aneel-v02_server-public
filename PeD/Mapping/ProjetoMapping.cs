@@ -127,7 +127,8 @@ namespace PeD.Mapping
             CreateMap<RelatorioEtapaRequest, RelatorioEtapa>();
             CreateMap<Socioambiental, SocioambientalDto>();
             CreateMap<SocioambientalRequest, Socioambiental>();
-            CreateMap<Capacitacao, CapacitacaoDto>();
+            CreateMap<Capacitacao, CapacitacaoDto>()
+                .ForMember(d => d.Recurso, o => o.MapFrom(s => s.Recurso.NomeCompleto));
             CreateMap<CapacitacaoRequest, Capacitacao>();
             CreateMap<ProducaoCientifica, ProducaoCientificaDto>();
             CreateMap<ProducaoCientificaRequest, ProducaoCientifica>();

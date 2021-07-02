@@ -25,6 +25,11 @@ namespace PeD.Controllers.Projetos.Relatorios
         {
         }
 
+        protected override IQueryable<Capacitacao> Includes(IQueryable<Capacitacao> queryable)
+        {
+            return queryable.Include(c => c.Recurso);
+        }
+
         [HttpPost("{id:int}/Arquivos/Origem")]
         public ActionResult UploadRelatorio(int id, List<IFormFile> file, [FromServices] ArquivoService arquivoService)
         {
@@ -49,6 +54,11 @@ namespace PeD.Controllers.Projetos.Relatorios
                 return NotFound();
             return PhysicalFile(capacitacao.ArquivoTrabalhoOrigem.Path, capacitacao.ArquivoTrabalhoOrigem.ContentType,
                 capacitacao.ArquivoTrabalhoOrigem.FileName);
+        }
+
+        protected override void BeforePut(Capacitacao actual, Capacitacao @new)
+        {
+            @new.ArquivoTrabalhoOrigemId = actual.ArquivoTrabalhoOrigemId;
         }
     }
 }

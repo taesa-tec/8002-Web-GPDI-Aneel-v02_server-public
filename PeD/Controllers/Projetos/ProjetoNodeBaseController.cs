@@ -114,6 +114,10 @@ namespace PeD.Controllers.Projetos
             return Ok(Mapper.Map<TResponse>(node));
         }
 
+        protected virtual void BeforePut(T actual, T @new)
+        {
+        }
+
         [HttpPut]
         public virtual async Task<IActionResult> Put([FromBody] TRequest request)
         {
@@ -126,9 +130,11 @@ namespace PeD.Controllers.Projetos
             if (nodeInitial == null)
                 return NotFound();
 
+
             var node = Mapper.Map<T>(request);
             node.ProjetoId = Projeto.Id;
 
+            BeforePut(nodeInitial, node);
             Service.Put(node);
 
             return Ok(Mapper.Map<TResponse>(node));
