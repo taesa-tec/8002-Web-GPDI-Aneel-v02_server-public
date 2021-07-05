@@ -336,7 +336,7 @@ namespace PeD.Services.Projetos
 
             lines[0] = Regex.Replace(lines[0], "encoding=\"iso-8859-1\"", "encoding=\"ISO8859-1\"");
 
-            File.WriteAllLines(tempFileName, lines, System.Text.Encoding.GetEncoding("iso-8859-1"));
+            File.WriteAllLines(tempFileName, lines, System.Text.Encoding.GetEncoding("ISO-8859-1"));
 
             var file = _arquivoService.FromPath(tempFileName, "application/xml", filename);
 

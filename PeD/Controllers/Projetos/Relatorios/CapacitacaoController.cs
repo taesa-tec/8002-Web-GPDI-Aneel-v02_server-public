@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -31,13 +32,14 @@ namespace PeD.Controllers.Projetos.Relatorios
         }
 
         [HttpPost("{id:int}/Arquivos/Origem")]
-        public ActionResult UploadRelatorio(int id, List<IFormFile> file, [FromServices] ArquivoService arquivoService)
+        public async Task<ActionResult> UploadRelatorio(int id, List<IFormFile> file,
+            [FromServices] ArquivoService arquivoService)
         {
             var capacitacao = Service.Filter(q => q.Where(r => r.ProjetoId == Projeto.Id && r.Id == id))
                 .FirstOrDefault();
             if (capacitacao is null || file.Count == 0 || file.Count > 1)
                 return BadRequest();
-            var fileupload = arquivoService.SaveFile(file.FirstOrDefault());
+            var fileupload = await arquivoService.SaveFile(file.FirstOrDefault());
             capacitacao.ArquivoTrabalhoOrigemId = fileupload.Id;
             Service.Put(capacitacao);
             return Ok();

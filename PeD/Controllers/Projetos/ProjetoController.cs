@@ -318,7 +318,7 @@ namespace PeD.Controllers.Projetos
             try
             {
                 var doc = Service.SaveXml(id, request.Versao, service.RelatorioFinalPeD(id));
-                return PhysicalFile(doc.File.Path, doc.File.ContentType);
+                return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.Name);
             }
             catch (Exception e)
             {

@@ -170,6 +170,7 @@ namespace PeD
             services.AddScoped<CoExecutorService>();
             services.AddScoped<ProjetoService>();
             services.AddTransient<RelatorioFinalService>();
+            services.AddTransient<RelatorioAuditoriaService>();
 
             #endregion
 

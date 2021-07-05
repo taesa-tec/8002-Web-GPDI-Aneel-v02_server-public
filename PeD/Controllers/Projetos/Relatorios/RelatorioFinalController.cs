@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -55,24 +56,26 @@ namespace PeD.Controllers.Projetos.Relatorios
         }
 
         [HttpPost("Arquivos/Relatorio")]
-        public ActionResult UploadRelatorio(List<IFormFile> file, [FromServices] ArquivoService arquivoService)
+        public async Task<ActionResult> UploadRelatorio(List<IFormFile> file,
+            [FromServices] ArquivoService arquivoService)
         {
             var relatorio = Service.Filter(q => q.Where(r => r.ProjetoId == Projeto.Id)).FirstOrDefault();
             if (relatorio is null || file.Count == 0 || file.Count > 1)
                 return BadRequest();
-            var fileupload = arquivoService.SaveFile(file.FirstOrDefault());
+            var fileupload = await arquivoService.SaveFile(file.FirstOrDefault());
             relatorio.RelatorioArquivoId = fileupload.Id;
             Service.Put(relatorio);
             return Ok();
         }
 
         [HttpPost("Arquivos/RelatorioAuditoria")]
-        public ActionResult UploadRelatorioAuditoria(List<IFormFile> file, [FromServices] ArquivoService arquivoService)
+        public async Task<ActionResult> UploadRelatorioAuditoria(List<IFormFile> file,
+            [FromServices] ArquivoService arquivoService)
         {
             var relatorio = Service.Filter(q => q.Where(r => r.ProjetoId == Projeto.Id)).FirstOrDefault();
             if (relatorio is null || file.Count == 0 || file.Count > 1)
                 return BadRequest();
-            var fileupload = arquivoService.SaveFile(file.FirstOrDefault());
+            var fileupload = await arquivoService.SaveFile(file.FirstOrDefault());
             relatorio.AuditoriaRelatorioArquivoId = fileupload.Id;
             Service.Put(relatorio);
             return Ok();
