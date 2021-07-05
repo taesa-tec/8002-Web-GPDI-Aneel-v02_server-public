@@ -205,7 +205,7 @@ namespace PeD.Controllers.Demandas
             var file = DemandaService.GetDemandaFile(id, file_id);
             if (file != null && System.IO.File.Exists(file.Path))
             {
-                return PhysicalFile(file.Path, file.ContentType, file.Name);
+                return PhysicalFile(file.Path, file.ContentType, file.FileName);
             }
 
             return NotFound();
@@ -249,7 +249,7 @@ namespace PeD.Controllers.Demandas
             var file = context.Files.FirstOrDefault(f => f.Id == demanda.EspecificacaoTecnicaFileId.Value);
             if (file is null)
                 return NotFound();
-            return PhysicalFile(file.Path, "application/pdf", file.Name);
+            return PhysicalFile(file.Path, "application/pdf", file.FileName);
         }
 
         [AllowAnonymous]

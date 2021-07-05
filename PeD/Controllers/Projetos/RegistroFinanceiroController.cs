@@ -330,7 +330,7 @@ namespace PeD.Controllers.Projetos
                 return NotFound();
 
             var file = registro.Comprovante;
-            return PhysicalFile(file.Path, file.ContentType, file.Name);
+            return PhysicalFile(file.Path, file.ContentType, file.FileName);
         }
 
         #endregion

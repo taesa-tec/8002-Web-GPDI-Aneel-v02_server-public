@@ -119,7 +119,7 @@ namespace PeD.Controllers.Propostas
                 {
                     e.Message,
                     e.StackTrace,
-                    file.Arquivo.Name,
+                    file.Arquivo.FileName,
                     file.Arquivo.Path
                 });
             }
@@ -132,7 +132,7 @@ namespace PeD.Controllers.Propostas
             return new FileUpload()
             {
                 FileName = file.FileName,
-                Name = file.FileName,
+                Name = file.Name,
                 ContentType = file.ContentType,
                 Path = filename,
                 Size = file.Length,

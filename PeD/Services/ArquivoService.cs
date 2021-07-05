@@ -93,7 +93,8 @@ namespace PeD.Services
                 var arquivo = new FileUpload()
                 {
                     ContentType = file.ContentType,
-                    Name = file.FileName, FileName = file.Name,
+                    Name = file.Name, 
+                    FileName = file.FileName,
                     Size = file.Length,
                     CreatedAt = DateTime.Now
                 };

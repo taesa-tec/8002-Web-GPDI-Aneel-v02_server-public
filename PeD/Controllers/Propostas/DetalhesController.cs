@@ -63,7 +63,7 @@ namespace PeD.Controllers.Propostas
             if (file is null)
                 return NotFound();
 
-            return PhysicalFile(file.Path, file.ContentType, file.Name ?? $"{form}.pdf");
+            return PhysicalFile(file.Path, file.ContentType, file.FileName ?? $"{form}.pdf");
         }
     }
 }

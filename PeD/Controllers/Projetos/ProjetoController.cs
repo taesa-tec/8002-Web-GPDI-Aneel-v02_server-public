@@ -107,7 +107,7 @@ namespace PeD.Controllers.Projetos
                 return NotFound();
 
             return PhysicalFile(projeto.PlanoTrabalhoFile.Path, projeto.PlanoTrabalhoFile.ContentType,
-                projeto.PlanoTrabalhoFile.Name);
+                projeto.PlanoTrabalhoFile.FileName);
         }
 
         [HttpGet("{id:int}/Contrato")]
@@ -120,7 +120,7 @@ namespace PeD.Controllers.Projetos
                 return NotFound();
 
             return PhysicalFile(projeto.Contrato.Path, projeto.Contrato.ContentType,
-                projeto.Contrato.Name);
+                projeto.Contrato.FileName);
         }
 
         [HttpGet("{id:int}/EspecificacaoTecnica")]
@@ -133,7 +133,7 @@ namespace PeD.Controllers.Projetos
                 return NotFound();
 
             return PhysicalFile(projeto.EspecificacaoTecnicaFile.Path, projeto.EspecificacaoTecnicaFile.ContentType,
-                projeto.EspecificacaoTecnicaFile.Name);
+                projeto.EspecificacaoTecnicaFile.FileName);
         }
 
         [HttpGet("{id:int}/Empresas")]
@@ -233,7 +233,7 @@ namespace PeD.Controllers.Projetos
             if (log is null)
                 return NotFound();
 
-            return PhysicalFile(log.File.Path, log.File.ContentType, log.File.Name);
+            return PhysicalFile(log.File.Path, log.File.ContentType, log.File.FileName);
         }
 
         [HttpPost("{id:int}/LogsDuto")]
@@ -298,7 +298,7 @@ namespace PeD.Controllers.Projetos
             try
             {
                 var doc = Service.SaveXml(id, request.Versao, new Prorrogacao(projeto.Codigo, projeto.Duracao));
-                return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.Name);
+                return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.FileName);
             }
             catch (Exception e)
             {
@@ -318,7 +318,7 @@ namespace PeD.Controllers.Projetos
             try
             {
                 var doc = Service.SaveXml(id, request.Versao, service.RelatorioFinalPeD(id));
-                return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.Name);
+                return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.FileName);
             }
             catch (Exception e)
             {
@@ -338,7 +338,7 @@ namespace PeD.Controllers.Projetos
             try
             {
                 var doc = Service.SaveXml(id, request.Versao, service.Auditoria(id));
-                return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.Name);
+                return PhysicalFile(doc.File.Path, doc.File.ContentType, doc.File.FileName);
             }
             catch (Exception e)
             {

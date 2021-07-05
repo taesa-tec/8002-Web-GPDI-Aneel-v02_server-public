@@ -60,7 +60,7 @@ namespace PeD.Controllers
             return new FileUpload()
             {
                 FileName = file.FileName,
-                Name = file.FileName,
+                Name = file.Name,
                 ContentType = file.ContentType,
                 Path = filename,
                 Size = file.Length,

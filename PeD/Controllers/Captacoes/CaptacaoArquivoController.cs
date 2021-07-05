@@ -31,10 +31,10 @@ namespace PeD.Controllers.Captacoes
             if (file == null) return NotFound();
             if (System.IO.File.Exists(file.Path))
             {
-                var response = PhysicalFile(file.Path, file.ContentType, file.Name);
+                var response = PhysicalFile(file.Path, file.ContentType, file.FileName);
                 if (Request.Query["dl"] == "1")
                 {
-                    response.FileDownloadName = file.Name;
+                    response.FileDownloadName = file.FileName;
                 }
 
                 return response;
@@ -60,7 +60,7 @@ namespace PeD.Controllers.Captacoes
                 {
                     e.Message,
                     e.StackTrace,
-                    file.Name,
+                    file.FileName,
                     file.Path
                 });
             }
@@ -94,7 +94,7 @@ namespace PeD.Controllers.Captacoes
             return new CaptacaoArquivo()
             {
                 FileName = file.FileName,
-                Name = file.FileName,
+                Name = file.Name,
                 ContentType = file.ContentType,
                 Path = filename,
                 Size = file.Length,

@@ -29,7 +29,14 @@ namespace PeD.Core.Models
 
         public long Size { get; set; }
         [JsonIgnore] public string Path { get; set; }
+        
+        /// <summary>
+        /// Name file form
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Real filename
+        /// </summary>
         public string FileName { get; set; }
         public string ContentType { get; set; }
         public DateTime CreatedAt { get; set; }
