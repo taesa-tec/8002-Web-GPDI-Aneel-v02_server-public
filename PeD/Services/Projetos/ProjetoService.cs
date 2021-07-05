@@ -15,6 +15,7 @@ using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Models.Projetos.Xml.InicioExecucao;
+using PeD.Core.Models.Projetos.Xml.Interesse;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Services.Captacoes;
@@ -204,7 +205,8 @@ namespace PeD.Services.Projetos
                 });
             SaveXml(projeto.Id, "1",
                 new InicioExecucao(projeto.Codigo, projeto.DataInicioProjeto,
-                    compartilhamento.ToString())); // todo Criar campo em projeto e alterar modal no front 
+                    compartilhamento.ToString()));
+            SaveXml(projeto.Id, "1", new Interesse(projeto.Codigo, true));
             return projeto;
         }
 

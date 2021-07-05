@@ -4,7 +4,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <Title>PeD</Title>
         <Authors>Loja Interativa</Authors>
-        <AssemblyVersion>2.2</AssemblyVersion>
+        <AssemblyVersion>2.8</AssemblyVersion>
     </PropertyGroup>
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
