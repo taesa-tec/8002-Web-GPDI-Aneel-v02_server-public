@@ -332,7 +332,7 @@ namespace PeD.Services.Projetos
             var tempFileName = Path.GetTempFileName();
             document.Save(tempFileName);
 
-            string[] lines = File.ReadAllLines(tempFileName, System.Text.Encoding.GetEncoding("iso-8859-1"));
+            string[] lines = File.ReadAllLines(tempFileName, System.Text.Encoding.GetEncoding("ISO-8859-1"));
 
             lines[0] = Regex.Replace(lines[0], "encoding=\"iso-8859-1\"", "encoding=\"ISO8859-1\"");
 

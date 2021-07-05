@@ -117,7 +117,7 @@ namespace PeD.Mapping
                         src.Empresa != null
                             ? src.Empresa.Nome ?? (src.CoExecutor != null ? src.CoExecutor.RazaoSocial : null)
                             : (src.CoExecutor != null ? src.CoExecutor.RazaoSocial : null)));
-            CreateMap<PropriedadeIntelectualDepositanteRequest, PropriedadeIntelectualDepositante>();
+            
             CreateMap<RelatorioEtapa, RelatorioEtapaDto>()
                 .ForMember(d => d.Inicio,
                     o => o.MapFrom(s => s.Projeto.DataInicioProjeto.AddMonths(s.Etapa.Meses.Min() - 1)))
@@ -132,10 +132,19 @@ namespace PeD.Mapping
             CreateMap<CapacitacaoRequest, Capacitacao>();
             CreateMap<ProducaoCientifica, ProducaoCientificaDto>();
             CreateMap<ProducaoCientificaRequest, ProducaoCientifica>();
+            //CreateMap<PropriedadeIntelectualInventores, RecursoHumanoDto>().IncludeMembers(i => i.Recurso);
+            CreateMap<PropriedadeIntelectualDepositanteRequest, PropriedadeIntelectualDepositante>();
             CreateMap<PropriedadeIntelectual, PropriedadeIntelectualDto>()
-                .ForMember(dest => dest.Inventores, opt => opt.MapFrom(src => src.Inventores.Select(i => i.Recurso)))
+                .ForMember(dest => dest.Inventores,
+                    opt => opt.MapFrom(src => src.Inventores.Select(i => i.Recurso)))
                 ;
-            CreateMap<PropriedadeIntelectualRequest, PropriedadeIntelectual>();
+            CreateMap<PropriedadeIntelectualRequest, PropriedadeIntelectual>()
+                .ForMember(d => d.Inventores, o => o.MapFrom(s => s.Inventores.Select(i =>
+                    new PropriedadeIntelectualInventor()
+                    {
+                        RecursoId = i,
+                        PropriedadeId = s.Id
+                    })));
             CreateMap<RelatorioFinal, RelatorioFinalDto>();
             CreateMap<RelatorioFinalRequest, RelatorioFinal>();
         }

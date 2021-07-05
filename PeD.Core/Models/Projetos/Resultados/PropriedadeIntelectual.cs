@@ -20,11 +20,11 @@ namespace PeD.Core.Models.Projetos.Resultados
         public DateTime PedidoData { get; set; }
         [MaxLength(15)] public string PedidoNumero { get; set; }
         [MaxLength(200)] public string TituloINPI { get; set; }
-        public List<PropriedadeIntelectualInventores> Inventores { get; set; }
+        public List<PropriedadeIntelectualInventor> Inventores { get; set; }
         public List<PropriedadeIntelectualDepositante> Depositantes { get; set; }
     }
 
-    public class PropriedadeIntelectualInventores
+    public class PropriedadeIntelectualInventor
     {
         public int PropriedadeId { get; set; }
         public PropriedadeIntelectual Propriedade { get; set; }

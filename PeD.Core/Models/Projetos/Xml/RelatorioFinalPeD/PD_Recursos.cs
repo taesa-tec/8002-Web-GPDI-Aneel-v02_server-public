@@ -30,7 +30,7 @@ namespace PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD
     public class DestRecursos
     {
         public List<DestRecursosExec> DestRecursosExec { get; set; }
-        public List<DestRecursosEmp> DestRecursosEmp { get; set; }
+        public DestRecursosEmp DestRecursosEmp { get; set; }
     }
 
     public class CustoCatContabil<T>

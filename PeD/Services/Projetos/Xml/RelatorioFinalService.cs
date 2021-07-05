@@ -7,7 +7,11 @@ using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD;
 using PeD.Data;
+using DestRecursosEmp = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.DestRecursosEmp;
+using DestRecursosExec = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.DestRecursosExec;
 using PD_Recursos = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.PD_Recursos;
+using RecursoEmpresa = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.RecursoEmpresa;
+using RecursoParceira = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.RecursoParceira;
 
 namespace PeD.Services.Projetos.Xml
 {
@@ -22,24 +26,26 @@ namespace PeD.Services.Projetos.Xml
 
         public RelatorioFinalPeD RelatorioFinalPeD(int projetoId)
         {
+            var projeto = _context.Set<Projeto>().AsNoTracking().FirstOrDefault(p => p.Id == projetoId) ??
+                          throw new Exception("Projeto não encontrato");
+            var registros = _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == projetoId && r.Status == StatusRegistro.Aprovado).ToList();
             return new RelatorioFinalPeD()
             {
-                PD_RelFinalBase = PD_RelFinalBase(projetoId),
-                PD_EquipeEmp = PD_EquipeEmp(projetoId),
-                PD_EquipeExec = PD_EquipeExec(projetoId), // @todo Depende das empresas cooperadas e coexecutoras
-                PD_Etapas = PD_Etapas(projetoId),
-                PD_Recursos = PD_Recursos(projetoId),
+                PD_RelFinalBase = PD_RelFinalBase(projeto), // Projeto RelatorioFinal
+                PD_EquipeEmp = PD_EquipeEmp(projeto, registros), // Projeto RegistosFinaneceiroInfo
+                PD_EquipeExec = PD_EquipeExec(projeto, registros), // Projeto RegistosFinaneceiroInfo
+                PD_Etapas = PD_Etapas(projetoId), // RelatorioEtapa
+                PD_Recursos = PD_Recursos(projetoId), // RegistroFinanceiroInfo
                 PD_Resultados = PD_Resultados(projetoId),
             };
         }
 
-        private PD_RelFinalBase PD_RelFinalBase(int projetoId)
+        private PD_RelFinalBase PD_RelFinalBase(Projeto projeto)
         {
-            var projeto = _context.Set<Projeto>().FirstOrDefault(p => p.Id == projetoId) ??
-                          throw new Exception($"Projeto não encontrado!");
             var relatorioFinal = _context.Set<RelatorioFinal>()
                                      .Include(rf => rf.RelatorioArquivo)
-                                     .FirstOrDefault(rf => rf.ProjetoId == projetoId) ??
+                                     .FirstOrDefault(rf => rf.ProjetoId == projeto.Id) ??
                                  throw new Exception("Relatorio não encontrado!");
             return new PD_RelFinalBase()
             {
@@ -62,18 +68,16 @@ namespace PeD.Services.Projetos.Xml
             };
         }
 
-        private PD_EquipeEmp PD_EquipeEmp(int projetoId)
+        private PD_EquipeEmp PD_EquipeEmp(Projeto projeto, List<RegistroFinanceiroInfo> registros)
         {
-            var projeto = _context.Set<Projeto>().AsNoTracking().FirstOrDefault(p => p.Id == projetoId) ??
-                          throw new Exception("Projeto não encontrato");
-            var registros = _context.Set<RegistroFinanceiroInfo>()
-                .Where(r => r.ProjetoId == projetoId && r.CategoriaContabilCodigo == "RH" &&
-                            r.Status == StatusRegistro.Aprovado).ToList();
-            var rhIds = registros.Where(r => r.RecursoHumanoId.HasValue).Select(r => r.RecursoHumanoId.Value);
+            var rhRegistros = registros.Where(r => r.CategoriaContabilCodigo == "RH").ToList();
+            var rhIds = rhRegistros.Where(r => r.RecursoHumanoId.HasValue).Select(r => r.RecursoHumanoId.Value)
+                .ToList();
             var recursosHumanos = _context.Set<RecursoHumano>()
                 .Include(r => r.Empresa)
-                .Where(r => r.ProjetoId == projetoId && r.EmpresaId != null && rhIds.Contains(r.Id))
-                .GroupBy(r => r.EmpresaId).ToList();
+                .Where(r => r.ProjetoId == projeto.Id && r.EmpresaId != null && rhIds.Contains(r.Id))
+                .ToList()
+                .GroupBy(r => r.EmpresaId);
 
 
             return new PD_EquipeEmp()
@@ -117,19 +121,16 @@ namespace PeD.Services.Projetos.Xml
             return string.Join(',', horas);
         }
 
-        private PD_EquipeExec PD_EquipeExec(int projetoId)
+        private PD_EquipeExec PD_EquipeExec(Projeto projeto, List<RegistroFinanceiroInfo> registros)
         {
-            var projeto = _context.Set<Projeto>().AsNoTracking().FirstOrDefault(p => p.Id == projetoId) ??
-                          throw new Exception("Projeto não encontrato");
-            var registros = _context.Set<RegistroFinanceiroInfo>()
-                .Where(r => r.ProjetoId == projetoId
-                            && r.CategoriaContabilCodigo == "RH"
-                            && r.Status == StatusRegistro.Aprovado).ToList();
-            var rhIds = registros.Where(r => r.RecursoHumanoId.HasValue).Select(r => r.RecursoHumanoId.Value);
+            var rHregistros = registros
+                .Where(r => r.CategoriaContabilCodigo == "RH").ToList();
+            var rhIds = rHregistros.Where(r => r.RecursoHumanoId.HasValue).Select(r => r.RecursoHumanoId.Value);
             var recursosHumanos = _context.Set<RecursoHumano>()
                 .Include(r => r.CoExecutor)
-                .Where(r => r.ProjetoId == projetoId && r.CoExecutorId != null && rhIds.Contains(r.Id))
-                .GroupBy(r => r.CoExecutorId).ToList();
+                .Where(r => r.ProjetoId == projeto.Id && r.CoExecutorId != null && rhIds.Contains(r.Id))
+                .ToList()
+                .GroupBy(r => r.CoExecutorId);
 
 
             return new PD_EquipeExec()
@@ -179,7 +180,75 @@ namespace PeD.Services.Projetos.Xml
 
         private PD_Recursos PD_Recursos(int projetoId)
         {
-            return new PD_Recursos();
+            var registros = _context.Set<RegistroFinanceiroInfo>()
+                .Where(r => r.ProjetoId == projetoId
+                            && r.Status == StatusRegistro.Aprovado).ToList();
+
+            return new PD_Recursos()
+            {
+                RecursoEmpresa =
+                    RecursoEmpresa(registros.Where(r => r.FinanciadoraId != null && r.CategoriaContabilCodigo != "RH")),
+                RecursoParceira = RecursoParceira(registros.Where(r => r.CoExecutorFinanciadorId != null))
+            };
+        }
+
+        private List<RecursoEmpresa> RecursoEmpresa(IEnumerable<RegistroFinanceiroInfo> registros)
+        {
+            return registros.GroupBy(r => r.FinanciadoraId).Select(r => new RecursoEmpresa()
+            {
+                CodEmpresa = r.First().CodEmpresa,
+                DestRecursos = new DestRecursos()
+                {
+                    DestRecursosEmp = DestRecursosEmp(r.Where(i => i.FinanciadoraId == i.RecebedoraId)),
+                    DestRecursosExec = DestRecursosExec(r.Where(i => i.CoExecutorRecebedorId != null))
+                }
+            }).ToList();
+        }
+
+        private DestRecursosEmp DestRecursosEmp(IEnumerable<RegistroFinanceiroInfo> registros)
+        {
+            return new DestRecursosEmp()
+            {
+                CustoCatContabil = CustoCatContabil(registros)
+            };
+        }
+
+        private List<DestRecursosExec> DestRecursosExec(IEnumerable<RegistroFinanceiroInfo> registros)
+        {
+            return registros.GroupBy(r => r.CoExecutorRecebedorId).Select(i => new DestRecursosExec()
+            {
+                CNPJExec = i.First().CNPJExec,
+                CustoCatContabil = CustoCatContabil(i)
+            }).ToList();
+        }
+
+        private List<CustoCatContabil<ItemDespesa>> CustoCatContabil(IEnumerable<RegistroFinanceiroInfo> registros)
+        {
+            return registros.GroupBy(r => r.CategoriaContabilCodigo)
+                .Select(r => new CustoCatContabil<ItemDespesa>()
+                {
+                    CategoriaContabil = r.Key,
+                    ItemDespesa = r.Select(i => new ItemDespesa()
+                    {
+                        NomeItem = i.Recurso,
+                        JustificaItem = i.FuncaoEtapa,
+                        QtdeItem = (int) i.QuantidadeHoras,
+                        ValorIndItem = i.Valor,
+                        TipoItem = i.IsNacional.HasValue && i.IsNacional.Value,
+                        ItemLabE = i.EquipaLaboratorioExistente.HasValue && i.EquipaLaboratorioExistente.Value,
+                        ItemLabN = i.EquipaLaboratorioNovo.HasValue && i.EquipaLaboratorioNovo.Value
+                    }).ToList()
+                })
+                .ToList();
+        }
+
+        private List<RecursoParceira> RecursoParceira(IEnumerable<RegistroFinanceiroInfo> registros)
+        {
+            return registros.GroupBy(r => r.CoExecutorFinanciadorId).Select(r => new RecursoParceira()
+            {
+                CNPJParc = r.First().CNPJParc,
+                DestRecursosExec = DestRecursosExec(r)
+            }).ToList();
         }
 
         private PD_Resultados PD_Resultados(int projetoId)
@@ -217,9 +286,6 @@ namespace PeD.Services.Projetos.Xml
 
         private PD_ResultadosCT PD_ResultadosCT(int projetoId)
         {
-            var producoes = _context.Set<ProducaoCientifica>()
-                .Include(pc => pc.ArquivoTrabalhoOrigem)
-                .Where(pc => pc.ProjetoId == projetoId).ToList();
             return new PD_ResultadosCT()
             {
                 PD_ResultadosCT_PC = PD_ResultadosCT_PC(projetoId),

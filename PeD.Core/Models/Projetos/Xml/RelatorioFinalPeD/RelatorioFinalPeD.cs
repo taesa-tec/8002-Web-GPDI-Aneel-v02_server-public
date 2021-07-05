@@ -24,15 +24,11 @@ namespace PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD
         public string NomeItem { get; set; }
         public string JustificaItem { get; set; }
         public int? QtdeItem { get; set; }
-        private string _valorIndItem { get; set; }
 
-        public string ValorIndItem
-        {
-            get => decimal.Parse(_valorIndItem).ToString("N2");
-            set => _valorIndItem = value;
-        }
+        [JsonConverter(typeof(NumberConverter), "{0:N2}")]
+        public decimal ValorIndItem { get; set; }
 
-        [JsonConverter(typeof(YesOrNoConverter))]
+        [JsonConverter(typeof(YesOrNoConverter), "N","I")]// (N)acional (I)nternacional
         public bool TipoItem { get; set; }
     }
 

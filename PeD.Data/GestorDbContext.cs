@@ -377,7 +377,7 @@ namespace PeD.Data
 
                 b.Property(i => i.Tipo).HasConversion<string>();
             });
-            builder.Entity<PropriedadeIntelectualInventores>(b =>
+            builder.Entity<PropriedadeIntelectualInventor>(b =>
             {
                 b.ToTable("ProjetosRelatoriosPropriedadesIntelectuaisInventores");
                 b.HasOne(p => p.Recurso).WithMany().HasForeignKey(p => p.RecursoId).OnDelete(DeleteBehavior.NoAction);
