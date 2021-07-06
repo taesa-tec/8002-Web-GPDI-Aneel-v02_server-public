@@ -102,12 +102,22 @@ namespace PeD.Controllers.Propostas
             return Ok(Mapper.Map<TResponse>(node));
         }
 
+        protected virtual ActionResult Validate(TRequest request)
+        {
+            return null;
+        }
+
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
         public virtual async Task<IActionResult> Post([FromBody] TRequest request)
         {
             if (!await HasAccess(true))
                 return Forbid();
+            var validation = Validate(request);
+            if (validation != null)
+            {
+                return validation;
+            }
 
             var risco = Mapper.Map<T>(request);
             risco.PropostaId = Proposta.Id;
@@ -122,6 +132,12 @@ namespace PeD.Controllers.Propostas
         {
             if (!await HasAccess(true))
                 return Forbid();
+            var validation = Validate(request);
+            if (validation != null)
+            {
+                return validation;
+            }
+
             var nodeInitial = Service
                 .Filter(q => q.AsNoTracking().Where(p => p.PropostaId == Proposta.Id && p.Id == request.Id))
                 .FirstOrDefault();
