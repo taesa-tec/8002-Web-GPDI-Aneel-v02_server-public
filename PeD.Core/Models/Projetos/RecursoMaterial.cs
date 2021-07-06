@@ -22,7 +22,7 @@ namespace PeD.Core.Models.Projetos
             public CoExecutor CoExecutorRecebedor { get; set; }
             [Column(TypeName = "decimal(18, 2)")] public decimal Quantidade { get; set; }
 
-            public override decimal Valor => Quantidade * (RecursoMaterial?.ValorUnitario ?? 0);
+            public override decimal Custo => Quantidade * (RecursoMaterial?.ValorUnitario ?? 0);
         }
     }
 }

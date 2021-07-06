@@ -29,7 +29,7 @@ namespace PeD.Core.Models.Projetos
             public RecursoHumano RecursoHumano { get; set; }
             public List<AlocacaoRhHorasMes> HorasMeses { get; set; }
 
-            public override decimal Valor
+            public override decimal Custo
             {
                 get
                 {

@@ -16,13 +16,16 @@ using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Models.Projetos.Xml.InicioExecucao;
 using PeD.Core.Models.Projetos.Xml.Interesse;
+using PeD.Core.Models.Projetos.Xml.ProjetoPeD;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Services.Captacoes;
+using PeD.Services.Projetos.Xml;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 using Alocacao = PeD.Core.Models.Projetos.Alocacao;
 using CoExecutor = PeD.Core.Models.Projetos.CoExecutor;
+using Empresa = PeD.Core.Models.Empresa;
 using Escopo = PeD.Core.Models.Projetos.Escopo;
 using Log = Serilog.Log;
 using Meta = PeD.Core.Models.Projetos.Meta;
@@ -42,11 +45,12 @@ namespace PeD.Services.Projetos
         private ArquivoService _arquivoService;
         private XlsxService _xlsxService;
         private IMapper Mapper;
+        private ProjetoPeDService _projetoPeDService;
 
         public ProjetoService(IRepository<Projeto> repository,
             PropostaService propostaService,
             GestorDbContext context,
-            IMapper mapper, ArquivoService arquivoService, XlsxService xlsxService)
+            IMapper mapper, ArquivoService arquivoService, XlsxService xlsxService, ProjetoPeDService projetoPeDService)
             : base(repository)
         {
             _propostaService = propostaService;
@@ -54,6 +58,7 @@ namespace PeD.Services.Projetos
             Mapper = mapper;
             _arquivoService = arquivoService;
             _xlsxService = xlsxService;
+            _projetoPeDService = projetoPeDService;
         }
 
         #region Proposta para Projeto
@@ -90,7 +95,8 @@ namespace PeD.Services.Projetos
 
             var relatorio = _propostaService.GetRelatorio(propostaId);
             var contrato = _propostaService.GetContrato(propostaId);
-            var captacao = _context.Set<Captacao>().FirstOrDefault(c => c.Id == proposta.CaptacaoId);
+            var captacao = _context.Set<Captacao>().Include(c => c.SubTemas)
+                .FirstOrDefault(c => c.Id == proposta.CaptacaoId);
             var proponente = _context.Set<Empresa>().FirstOrDefault(e => e.Id == proponentId);
 
             if (captacao is null)
@@ -144,7 +150,10 @@ namespace PeD.Services.Projetos
                 CaptacaoId = proposta.CaptacaoId,
                 FornecedorId = proposta.FornecedorId,
                 PlanoTrabalho = planoTrabalho,
-                Escopo = escopo
+                Escopo = escopo,
+                SubTemas = captacao.SubTemas
+                    .Select(s => new ProjetoSubTema() {Outro = s.Outro, SubTemaId = s.SubTemaId})
+                    .ToList()
             };
             Post(projeto);
 
@@ -207,6 +216,7 @@ namespace PeD.Services.Projetos
                 new InicioExecucao(projeto.Codigo, projeto.DataInicioProjeto,
                     compartilhamento.ToString()));
             SaveXml(projeto.Id, "1", new Interesse(projeto.Codigo, true));
+            SaveXml(projeto.Id, "1", _projetoPeDService.ProjetoPed(projeto.Id));
             return projeto;
         }
 

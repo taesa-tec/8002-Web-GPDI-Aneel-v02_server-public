@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PeD.Data;
 
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    partial class GestorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210706171345_ProjetosUpdates")]
+    partial class ProjetosUpdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5211,9 +5213,6 @@ namespace PeD.Data.Migrations
 
                     b.Property<int>("PropostaId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Rascunho")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

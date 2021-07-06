@@ -15,6 +15,6 @@ namespace PeD.Core.Models.Projetos
         public CoExecutor CoExecutorFinanciador { get; set; }
 
         public string Justificativa { get; set; }
-        [NotMapped] public virtual decimal Valor { get; }
+        [NotMapped] public virtual decimal Custo { get; }
     }
 }

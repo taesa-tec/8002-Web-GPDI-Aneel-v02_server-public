@@ -147,7 +147,7 @@ namespace PeD.Services.Projetos.Xml
                             EquipeExec = r.Select(rh => new EquipeExec()
                             {
                                 NomeMbEqExec = rh.NomeCompleto,
-                                BRMbEqExec = rh.Nacionalidade,
+                                BRMbEqExec = rh.Nacionalidade == "Brasileiro",
                                 DocMbEqExec = rh.Documento,
                                 TitulacaoMbEqExec = rh.Titulacao,
                                 FuncaoMbEqExec = rh.Funcao,

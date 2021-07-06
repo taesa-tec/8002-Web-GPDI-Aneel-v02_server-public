@@ -171,6 +171,7 @@ namespace PeD
             services.AddScoped<ProjetoService>();
             services.AddTransient<RelatorioFinalService>();
             services.AddTransient<RelatorioAuditoriaService>();
+            services.AddTransient<ProjetoPeDService>();
 
             #endregion
 

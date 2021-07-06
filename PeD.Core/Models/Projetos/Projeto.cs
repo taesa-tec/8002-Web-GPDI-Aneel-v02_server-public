@@ -25,8 +25,14 @@ namespace PeD.Core.Models.Projetos
         public Status Status { get; set; }
 
         public int? TemaId { get; set; }
+
         public Tema Tema { get; set; }
+
+        public List<ProjetoSubTema> SubTemas { get; set; }
         public string TemaOutro { get; set; }
+
+        public string SegmentoId { get; set; }
+        public Segmento Segmento { get; set; }
 
         public int PropostaId { get; set; }
 
@@ -104,6 +110,13 @@ namespace PeD.Core.Models.Projetos
     {
         public int ProjetoId { get; set; }
         public Projeto Projeto { get; set; }
+    }
+
+    public class ProjetoSubTema : ProjetoNode
+    {
+        public int? SubTemaId { get; set; }
+        public Tema SubTema { get; set; }
+        public string Outro { get; set; }
     }
 
     public class ProjetoXml : ProjetoNode

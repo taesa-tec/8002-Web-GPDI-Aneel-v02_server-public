@@ -14,26 +14,18 @@ using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Propostas;
-using PeD.Core.Models.Sistema;
 using PeD.Data.Builders;
-using CategoriaContabil = PeD.Core.Models.Catalogos.CategoriaContabil;
+using Alocacao = PeD.Core.Models.Projetos.Alocacao;
 using CoExecutor = PeD.Core.Models.Propostas.CoExecutor;
-using Contrato = PeD.Core.Models.Contrato;
-using ContratoComentario = PeD.Core.Models.Propostas.ContratoComentario;
-using ContratoComentarioFile = PeD.Core.Models.Propostas.ContratoComentarioFile;
 using Escopo = PeD.Core.Models.Propostas.Escopo;
 using Etapa = PeD.Core.Models.Propostas.Etapa;
 using EtapaProdutos = PeD.Core.Models.Propostas.EtapaProdutos;
 using ItemAjuda = PeD.Core.Models.Sistema.ItemAjuda;
 using Meta = PeD.Core.Models.Propostas.Meta;
-using PlanoComentario = PeD.Core.Models.Propostas.PlanoComentario;
-using PlanoComentarioFile = PeD.Core.Models.Propostas.PlanoComentarioFile;
 using PlanoTrabalho = PeD.Core.Models.Propostas.PlanoTrabalho;
 using Produto = PeD.Core.Models.Propostas.Produto;
-using ProdutoTipo = PeD.Core.Models.Catalogos.ProdutoTipo;
 using RecursoHumano = PeD.Core.Models.Propostas.RecursoHumano;
 using RecursoMaterial = PeD.Core.Models.Propostas.RecursoMaterial;
-using Relatorio = PeD.Core.Models.Propostas.Relatorio;
 using Risco = PeD.Core.Models.Propostas.Risco;
 
 namespace PeD.Data
@@ -249,6 +241,7 @@ namespace PeD.Data
                 b.HasOne(p => p.PlanoTrabalhoFile).WithOne().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(p => p.Contrato).WithOne().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(p => p.EspecificacaoTecnicaFile).WithOne().OnDelete(DeleteBehavior.NoAction);
+                b.Property(p => p.SegmentoId).HasDefaultValue("G");
                 b.Property(p => p.Compartilhamento).HasConversion<string>();
                 b.ToTable("Projetos");
             });
@@ -258,27 +251,33 @@ namespace PeD.Data
                 b.ToTable("ProjetoArquivos");
             });
 
-            builder.Entity<PeD.Core.Models.Projetos.CoExecutor>();
-            builder.Entity<PeD.Core.Models.Projetos.Escopo>();
-            builder.Entity<PeD.Core.Models.Projetos.Meta>();
 
-            builder.Entity<PeD.Core.Models.Projetos.Etapa>(b =>
+            builder.Entity<ProjetoSubTema>(b =>
+            {
+                b.HasKey(e => new {e.ProjetoId, e.SubTemaId});
+                b.ToTable("ProjetosSubtemas");
+            });
+            builder.Entity<Core.Models.Projetos.CoExecutor>();
+            builder.Entity<Core.Models.Projetos.Escopo>();
+            builder.Entity<Core.Models.Projetos.Meta>();
+
+            builder.Entity<Core.Models.Projetos.Etapa>(b =>
             {
                 b.Property(e => e.Meses).JsonConversion();
                 b.HasOne(e => e.Produto).WithMany().HasForeignKey(e => e.ProdutoId).OnDelete(DeleteBehavior.NoAction);
             });
-            builder.Entity<PeD.Core.Models.Projetos.EtapaProdutos>(b =>
+            builder.Entity<Core.Models.Projetos.EtapaProdutos>(b =>
             {
                 b.HasOne(ep => ep.Produto).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(ep => ep.Etapa).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
-            builder.Entity<PeD.Core.Models.Projetos.PlanoTrabalho>();
-            builder.Entity<PeD.Core.Models.Projetos.Produto>();
-            builder.Entity<PeD.Core.Models.Projetos.RecursoHumano>();
-            builder.Entity<PeD.Core.Models.Projetos.RecursoMaterial>();
+            builder.Entity<Core.Models.Projetos.PlanoTrabalho>();
+            builder.Entity<Core.Models.Projetos.Produto>();
+            builder.Entity<Core.Models.Projetos.RecursoHumano>();
+            builder.Entity<Core.Models.Projetos.RecursoMaterial>();
 
 
-            builder.Entity<Core.Models.Projetos.Alocacao>(b =>
+            builder.Entity<Alocacao>(b =>
             {
                 b.HasDiscriminator(a => a.Tipo);
                 b.HasOne(a => a.CoExecutorFinanciador).WithMany().OnDelete(DeleteBehavior.NoAction);
@@ -289,7 +288,7 @@ namespace PeD.Data
                     .OnDelete(DeleteBehavior.NoAction);
                 b.ToTable("ProjetosRecursosAlocacoes");
             });
-            builder.Entity<PeD.Core.Models.Projetos.RecursoHumano.AlocacaoRh>(b =>
+            builder.Entity<Core.Models.Projetos.RecursoHumano.AlocacaoRh>(b =>
             {
                 b.HasMany(b => b.HorasMeses).WithOne().HasForeignKey(a => a.AlocacaoRhId);
                 b.HasOne(a => a.RecursoHumano).WithMany().OnDelete(DeleteBehavior.NoAction);
@@ -299,13 +298,13 @@ namespace PeD.Data
                 b.HasKey(b => new {b.AlocacaoRhId, b.Mes});
                 b.ToTable("ProjetosAlocacaoRhHorasMeses");
             });
-            builder.Entity<PeD.Core.Models.Projetos.RecursoMaterial.AlocacaoRm>(b =>
+            builder.Entity<Core.Models.Projetos.RecursoMaterial.AlocacaoRm>(b =>
             {
                 b.HasOne(a => a.EmpresaRecebedora).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.RecursoMaterial).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
-            builder.Entity<PeD.Core.Models.Projetos.Risco>();
+            builder.Entity<Core.Models.Projetos.Risco>();
 
             builder.Entity<RegistroFinanceiro>(b =>
             {

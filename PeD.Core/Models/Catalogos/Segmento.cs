@@ -1,17 +1,17 @@
-﻿using TaesaCore.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using TaesaCore.Models;
 
 namespace PeD.Core.Models.Catalogos
 {
-    public class Segmento : BaseEntity
+    public class Segmento
     {
-        private string _nome;
+        [Key] public string Valor { get; set; }
+        public string Nome { get; set; }
 
-        public string Nome
+
+        public override string ToString()
         {
-            get => _nome;
-            set => _nome = value?.Trim();
+            return Nome;
         }
-
-        public string Valor { get; set; }
     }
 }

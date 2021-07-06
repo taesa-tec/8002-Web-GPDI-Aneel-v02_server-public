@@ -28,6 +28,9 @@ namespace PeD.Core.ApiModels.Projetos
 
         public int? TemaId { get; set; }
         public string Tema { get; set; }
+        
+        public string SegmentoId { get; set; }
+        public string Segmento { get; set; }
 
         public string Captacao { get; set; }
         public int FornecedorId { get; set; }
