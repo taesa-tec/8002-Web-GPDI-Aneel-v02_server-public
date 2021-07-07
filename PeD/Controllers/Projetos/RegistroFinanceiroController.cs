@@ -47,7 +47,7 @@ namespace PeD.Controllers.Projetos
             return Ok(extrato);
         }
 
-        [ResponseCache(Duration = 3600)]
+        // [ResponseCache(Duration = 30)]//  @todo Criar lógica para armazenar as ultimas alterações do projeto 
         [HttpGet("Criar")]
         public ActionResult GetCriar([FromRoute] int id)
         {
@@ -236,13 +236,11 @@ namespace PeD.Controllers.Projetos
                 return BadRequest();
             try
             {
-                // @todo Validar se o registro pertence ao projeto
-                var pre = _context.Set<RegistroFinanceiroRm>().AsNoTracking().FirstOrDefault(r => r.Id == registroId);
+                var pre = _context.Set<RegistroFinanceiroRm>().AsNoTracking()
+                    .FirstOrDefault(r => r.Id == registroId && r.ProjetoId == id);
 
                 if (pre is null)
                     return NotFound();
-                if (pre.ProjetoId != id)
-                    return BadRequest();
 
                 var registro = Mapper.Map<RegistroFinanceiroRm>(request);
                 registro.ProjetoId = id;
@@ -270,6 +268,24 @@ namespace PeD.Controllers.Projetos
                 Console.WriteLine(e);
                 return Problem(e.Message);
             }
+        }
+
+        [HttpDelete("{registroId:int}")]
+        public ActionResult Remover([FromRoute] int id, [FromRoute] int registroId)
+        {
+            var pre = _context.Set<RegistroFinanceiro>().Include(r => r.Observacoes).AsNoTracking()
+                .FirstOrDefault(r => r.Id == registroId && r.ProjetoId == id);
+            if (pre is null)
+                return NotFound();
+            if (this.IsGestor() || (pre.AuthorId == this.UserId() && pre.Status == StatusRegistro.Pendente))
+            {
+                _context.RemoveRange(pre.Observacoes);
+                _context.Remove(pre);
+                _context.SaveChanges();
+                return NoContent();
+            }
+
+            return Forbid();
         }
 
         #endregion
