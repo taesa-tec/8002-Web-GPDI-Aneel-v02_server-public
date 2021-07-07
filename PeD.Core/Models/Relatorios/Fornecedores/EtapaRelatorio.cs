@@ -17,9 +17,9 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
                 .ToList();
         }
 
-        public static Dictionary<string, List<AlocacaoRecurso>> AgruparPorEmpresa(List<AlocacaoRecurso> list)
+        public static Dictionary<string, List<AlocacaoRecurso>> AgruparPorEmpresaRecebedora(List<AlocacaoRecurso> list)
         {
-            return list.GroupBy(i => i.EmpresaFinanciadoraCodigo)
+            return list.GroupBy(i => i.EmpresaRecebedoraCodigo)
                 .ToDictionary(i => i.Key, i => i.ToList());
         }
 
@@ -63,6 +63,8 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
         }
 
         public List<AlocacaoRecurso> Alocacoes { get; set; }
+
+        public decimal AlocacoesInternasSum => AlocacoesInternas.Sum(a => a.Valor);
 
         public List<AlocacaoRecurso> AlocacoesInternas
         {

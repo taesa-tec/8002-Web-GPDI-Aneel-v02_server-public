@@ -401,9 +401,14 @@
 
         @foreach (var etapa in Model.Etapas)
         {
-            <table border="1">
+            var recebedoras = EtapaRelatorio.AgruparPorEmpresaRecebedora(etapa.AlocacoesExternas);
+            var custoInterno = etapa.AlocacoesInternasSum;
+            var rowspan = 5 + (custoInterno > 0 ? 3 : 0) + (recebedoras.Count * 3);
+            <table border="1" style="page-break-inside: avoid">
                 <tr>
-                    <th rowspan="11" style="writing-mode: vertical-lr">Nº Etapa @etapa.Ordem</th>
+                    <th rowspan="@rowspan">
+                        <span style="white-space: nowrap; display:inline-block; transform: rotate(90deg);">Etapa Nº @etapa.Ordem</span>
+                    </th>
                     <th colspan="2">Mês Início</th>
                     <td>@etapa.MesInicio</td>
                     <th colspan="2">Mês Final</th>
@@ -422,29 +427,32 @@
                     <td colspan="7"> @etapa.Produto?.Titulo</td>
                 </tr>
                 <!-- Custo Interno -->
-                <tr>
-                    <th colspan="7">Valor do custo interno TAESA nesta etapa: @etapa.AlocacoesInternas.Sum(a => a.Valor).ToString("C")</th>
-                </tr>
-                <tr>
-                    <th width="14%">RH</th>
-                    <th width="14%">MP</th>
-                    <th width="14%">MC</th>
-                    <th width="14%">VD</th>
-                    <th width="14%">ST</th>
-                    <th width="14%">OU</th>
-                    <th >Taxa Adm.</th>
-                </tr>
-                <tr>
-                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "RH").ToString("C")</td>
-                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "MP").ToString("C")</td>
-                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "MC").ToString("C")</td>
-                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "VD").ToString("C")</td>
-                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "ST").ToString("C")</td>
-                    <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "OU").ToString("C")</td>
-                    <td>0%</td>
-                </tr>
+                @if (custoInterno > 0)
+                {
+                    <tr>
+                        <th colspan="7">Valor do custo interno TAESA nesta etapa: @custoInterno.ToString("C")</th>
+                    </tr>
+                    <tr>
+                        <th width="14%">RH</th>
+                        <th width="14%">MP</th>
+                        <th width="14%">MC</th>
+                        <th width="14%">VD</th>
+                        <th width="14%">ST</th>
+                        <th width="14%">OU</th>
+                        <th >Taxa Adm.</th>
+                    </tr>
+                    <tr>
+                        <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "RH").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "MP").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "MC").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "VD").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "ST").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(@etapa.AlocacoesInternas, "OU").ToString("C")</td>
+                        <td>0%</td>
+                    </tr>
+                }
                 <!-- Custo Externo -->
-                @foreach (var custos in EtapaRelatorio.AgruparPorEmpresa(etapa.AlocacoesExternas))
+                @foreach (var custos in recebedoras)
                 {
                     <tr>
                         <th colspan="7">Valor do custo que a TAESA pagará a @custos.Value.FirstOrDefault()?.EmpresaRecebedora nesta etapa: @custos.Value.Sum(i => i.Valor).ToString("C")</th>
@@ -475,27 +483,35 @@
         {
             @foreach (var recebedor in Model.EmpresasRecebedoras)
             {
-                <table border="1">
-                    <tr>
-                        <th width="25%">Empresa Pagadora:</th>
-                        <th width="25%">Empresa Recebedora:</th>
-                        <th width="25%">Etapa:</th>
-                        <th width="25%">Valor Total:</th>
-                    </tr>
-                    @foreach (var etapa in Model.Etapas)
-                    {
+                var totalRecebedor = Model.Etapas.Sum(etapa => EtapaRelatorio.CustoEntreEmpresas(etapa.Alocacoes, financiador.Key, recebedor.Key));
+                @if (totalRecebedor > 0)
+                {
+                    <table border="1">
                         <tr>
-                            <td>@financiador.Value</td>
-                            <td>@recebedor.Value</td>
-                            <td>@etapa.Ordem</td>
-                            <td>@EtapaRelatorio.CustoEntreEmpresas(etapa.Alocacoes, financiador.Key, recebedor.Key).ToString("C")</td>
+                            <th width="25%">Empresa Pagadora:</th>
+                            <th width="25%">Empresa Recebedora:</th>
+                            <th width="25%">Etapa:</th>
+                            <th width="25%">Valor Total:</th>
                         </tr>
-                    }
-                    <tr>
-                        <th colspan="3">Total @financiador.Value pagando a @recebedor.Value:</th>
-                        <td>@Model.Etapas.Sum(etapa => EtapaRelatorio.CustoEntreEmpresas(etapa.Alocacoes, financiador.Key, recebedor.Key)).ToString("C")</td>
-                    </tr>
-                </table>
+                        @foreach (var etapa in Model.Etapas)
+                        {
+                            var custo = EtapaRelatorio.CustoEntreEmpresas(etapa.Alocacoes, financiador.Key, recebedor.Key);
+                            @if (custo > 0)
+                            {
+                                <tr>
+                                    <td>@financiador.Value</td>
+                                    <td>@recebedor.Value</td>
+                                    <td>@etapa.Ordem</td>
+                                    <td>@custo.ToString("C")</td>
+                                </tr>
+                            }
+                        }
+                        <tr>
+                            <th colspan="3">Total @financiador.Value pagando a @recebedor.Value:</th>
+                            <td>@totalRecebedor.ToString("C")</td>
+                        </tr>
+                    </table>
+                }
             }
         }
     </td>
