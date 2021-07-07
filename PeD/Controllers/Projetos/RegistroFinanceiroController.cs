@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
 using PeD.Core.Models.Projetos;
@@ -184,7 +185,8 @@ namespace PeD.Controllers.Projetos
                 return BadRequest();
             try
             {
-                var pre = _context.Set<RegistroFinanceiroRh>().AsNoTracking().FirstOrDefault(r => r.Id == registroId);
+                var pre = _context.Set<RegistroFinanceiroRh>().AsNoTracking().FirstOrDefault(r =>
+                    r.Id == registroId && (this.IsGestor() || r.AuthorId == this.UserId()));
                 if (pre is null)
                     return NotFound();
 
@@ -284,6 +286,10 @@ namespace PeD.Controllers.Projetos
                     StatusCodes.Status422UnprocessableEntity);
             }
 
+            var registro = _context.Set<RegistroFinanceiro>()
+                .FirstOrDefault(r => r.Id == registroId && (this.IsGestor() || r.AuthorId == this.UserId()));
+            if (registro is null)
+                return NotFound();
             try
             {
                 var file = await arquivoService.SaveFile(upload);
@@ -355,7 +361,7 @@ namespace PeD.Controllers.Projetos
         {
             var registro = _context.Set<RegistroFinanceiro>().FirstOrDefault(r => r.Id == registroId);
 
-            if (this.IsGestor() || registro != null && registro.AuthorId == this.UserId())
+            if (registro != null && (this.IsGestor() || registro.AuthorId == this.UserId()))
             {
                 var registroObservacoes = _context.Set<RegistroObservacao>().Include(ro => ro.Author)
                     .Where(ro => ro.RegistroId == registroId);
@@ -368,7 +374,7 @@ namespace PeD.Controllers.Projetos
 
         #endregion
 
-
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPost("{registroId:int}/Aprovar")]
         public ActionResult AprovarRegistroFinanceiro(int registroId)
         {
@@ -384,6 +390,7 @@ namespace PeD.Controllers.Projetos
             return Ok();
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPost("{registroId:int}/Reprovar")]
         public ActionResult ReprovarRegistroFinanceiro(int registroId, [FromBody] RegistroAprovacaoRequest request)
         {

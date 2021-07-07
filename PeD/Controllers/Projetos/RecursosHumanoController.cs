@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Requests.Projetos;
@@ -59,6 +60,7 @@ namespace PeD.Controllers.Projetos
             return Ok(Mapper.Map<RecursoHumanoDto>(recurso));
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPut]
         [HttpPost]
         public ActionResult Post([FromRoute] int projetoId, [FromBody] RecursoHumanoRequest request)
@@ -79,6 +81,7 @@ namespace PeD.Controllers.Projetos
             return BadRequest();
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
