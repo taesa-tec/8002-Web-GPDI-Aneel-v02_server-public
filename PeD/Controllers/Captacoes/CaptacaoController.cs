@@ -564,7 +564,13 @@ namespace PeD.Controllers.Captacoes
                 return NotFound();
             }
 
-            if (string.IsNullOrWhiteSpace(request.ResponsavelId))
+            if (request.Aprovado &&
+                (
+                    string.IsNullOrWhiteSpace(request.ResponsavelId) ||
+                    !request.InicioProjeto.HasValue ||
+                    !request.EmpresaProponenteId.HasValue
+                )
+            )
             {
                 return BadRequest();
             }
@@ -572,15 +578,19 @@ namespace PeD.Controllers.Captacoes
             if (captacao.PropostaSelecionadaId == null)
                 return Problem("Sem proposta selecionada");
 
-            captacao.UsuarioExecucaoId = request.ResponsavelId;
+            if (request.Aprovado)
+            {
+                captacao.UsuarioExecucaoId = request.ResponsavelId;
+            }
+
             captacao.IsProjetoAprovado = request.Aprovado;
             Service.Put(captacao);
 
             if (request.Aprovado)
             {
                 var projeto = projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
-                    request.EmpresaProponenteId, request.NumeroProjeto,
-                    request.TituloCompleto, request.ResponsavelId, request.InicioProjeto);
+                    request.EmpresaProponenteId.Value, request.NumeroProjeto,
+                    request.TituloCompleto, request.ResponsavelId, request.InicioProjeto.Value);
             }
 
 
