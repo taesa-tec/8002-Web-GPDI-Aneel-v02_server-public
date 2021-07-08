@@ -290,7 +290,7 @@ namespace PeD.Services.Projetos
                 aba.Range("A1:F1").Row(1).Merge();
                 aba.ColumnWidth = 20;
                 aba.Cell("A2").InsertTable(tableCat);
-                var range = aba.Range(1, 1, aba.LastRowUsed().RowNumber(), 8);
+                var range = aba.Range(1, 1, aba.LastRowUsed().RowNumber(), 6);
 
                 range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
                 range.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
@@ -303,7 +303,7 @@ namespace PeD.Services.Projetos
 
                 aba.Range(rowNumber, 1, rowNumber, 6).Row(1).Merge();
                 aba.LastRowUsed().RowBelow(1).FirstCell().InsertTable(tableRegistros);
-                range = aba.Range(rowNumber, 1, aba.LastRowUsed().RowNumber(), 6);
+                range = aba.Range(rowNumber, 1, aba.LastRowUsed().RowNumber(), 8);
                 range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
                 range.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
             }
