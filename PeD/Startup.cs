@@ -190,6 +190,7 @@ namespace PeD
 
             services.AddPropostaAuthorizations();
             services.AddRoleAuthorizations();
+            services.AddTransient<XlsxService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

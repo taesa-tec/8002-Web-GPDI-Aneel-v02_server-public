@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using PeD.Core.Attributes;
 using TaesaCore.Models;
 
 namespace PeD.Core.Models.Projetos
@@ -70,9 +71,9 @@ namespace PeD.Core.Models.Projetos
 
         public string AuthorId { get; set; }
         public string FuncaoEtapa { get; set; }
-        public short Etapa { get; set; }
+        [XlxsColumn("Etapa", 1)] public short Etapa { get; set; }
         public string EspecificaoTecnica { get; set; }
-        public string NomeItem { get; set; }
+        [XlxsColumn("Nome", 0)] public string NomeItem { get; set; }
         public string Beneficiado { get; set; }
         public string CnpjBeneficiado { get; set; }
         public bool? EquipaLaboratorioExistente { get; set; }
@@ -93,13 +94,22 @@ namespace PeD.Core.Models.Projetos
         public int? RecebedoraId { get; set; }
         public int? CoExecutorRecebedorId { get; set; }
         public int? CategoriaContabilId { get; set; }
-        public string CategoriaContabil { get; set; }
+        [XlxsColumn("Categoria", 3)] public string CategoriaContabil { get; set; }
         public string CategoriaContabilCodigo { get; set; }
-        public string Financiador { get; set; }
-        public string Recebedor { get; set; }
-        [Column(TypeName = "decimal(18, 2)")] public decimal Valor { get; set; }
-        [Column(TypeName = "decimal(18, 2)")] public decimal QuantidadeHoras { get; set; }
-        [Column(TypeName = "decimal(18, 2)")] public decimal Custo { get; set; }
+        [XlxsColumn(4)] public string Financiador { get; set; }
+        [XlxsColumn(4)] public string Recebedor { get; set; }
+
+        [XlxsColumn(9, Type = typeof(decimal))]
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal Valor { get; set; }
+
+        [XlxsColumn("Quantidade / Horas", 8, Type = typeof(decimal))]
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal QuantidadeHoras { get; set; }
+
+        [XlxsColumn(10, Type = typeof(decimal))]
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal Custo { get; set; }
     }
 
     public class RegistroObservacao : BaseEntity

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using AutoMapper;
+using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
@@ -19,6 +21,7 @@ using TaesaCore.Services;
 using Alocacao = PeD.Core.Models.Projetos.Alocacao;
 using CoExecutor = PeD.Core.Models.Projetos.CoExecutor;
 using Escopo = PeD.Core.Models.Projetos.Escopo;
+using Log = Serilog.Log;
 using Meta = PeD.Core.Models.Projetos.Meta;
 using PlanoTrabalho = PeD.Core.Models.Projetos.PlanoTrabalho;
 using Produto = PeD.Core.Models.Projetos.Produto;
@@ -33,16 +36,20 @@ namespace PeD.Services.Projetos
         private PropostaService _propostaService;
         private GestorDbContext _context;
         private ArquivoService _arquivoService;
+        private XlsxService _xlsxService;
         private IMapper Mapper;
 
-        public ProjetoService(IRepository<Projeto> repository, PropostaService propostaService, GestorDbContext context,
-            IMapper mapper, ArquivoService arquivoService)
+        public ProjetoService(IRepository<Projeto> repository,
+            PropostaService propostaService,
+            GestorDbContext context,
+            IMapper mapper, ArquivoService arquivoService, XlsxService xlsxService)
             : base(repository)
         {
             _propostaService = propostaService;
             _context = context;
             Mapper = mapper;
             _arquivoService = arquivoService;
+            _xlsxService = xlsxService;
         }
 
         #region Proposta para Projeto
@@ -218,7 +225,7 @@ namespace PeD.Services.Projetos
                 .ToList();
         }
 
-        public IEnumerable<object> GetExtrato(int projetoId)
+        public IEnumerable<ExtratoFinanceiroEmpresaRefpDto> GetExtrato(int projetoId)
         {
             //Previsto
             var orcamentos = GetOrcamentos(projetoId);
@@ -257,6 +264,52 @@ namespace PeD.Services.Projetos
                         o.CategoriaContabilCodigo == c.CategoriaContabilCodigo)
                 }).Where(ef => ef.Previsto != 0 || ef.Realizado != 0)
             });
+        }
+
+        public XLWorkbook XlsExtrato(int projetoId)
+        {
+            var doc = new XLWorkbook();
+            var extratos = GetExtrato(projetoId).ToArray();
+            var geral = doc.AddWorksheet("Geral");
+            geral.ColumnWidth = 20;
+            var registros = extratos.SelectMany(r => r.Categorias.SelectMany(c => c.Registros)).ToArray();
+            var table = _xlsxService.DataTableFrom(registros);
+            geral.FirstCell().InsertTable(table);
+            var geraRange = geral.RangeUsed();
+            geraRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+            geraRange.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
+
+            foreach (var extrato in extratos)
+            {
+                var tableCat = _xlsxService.DataTableFrom(extrato.Categorias);
+                var tableRegistros = _xlsxService.DataTableFrom(extrato.Categorias.SelectMany(c => c.Registros));
+                var aba = doc.AddWorksheet(extrato.Nome);
+                var header = aba.Cell("A1");
+                header.SetValue(extrato.Nome);
+                header.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                aba.Range("A1:F1").Row(1).Merge();
+                aba.ColumnWidth = 20;
+                aba.Cell("A2").InsertTable(tableCat);
+                var range = aba.Range(1, 1, aba.LastRowUsed().RowNumber(), 6);
+
+                range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                range.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
+
+                aba.LastRowUsed().RowBelow(2).FirstCell().SetValue("Registros");
+                var rowNumber = aba.LastRowUsed().RowNumber();
+
+                header = aba.Range(rowNumber, 1, rowNumber, 6).FirstCell();
+                header.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                aba.Range(rowNumber, 1, rowNumber, 6).Row(1).Merge();
+                aba.LastRowUsed().RowBelow(1).FirstCell().InsertTable(tableRegistros);
+                range = aba.Range(rowNumber, 1, aba.LastRowUsed().RowNumber(), 6);
+                range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                range.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
+            }
+
+
+            return doc;
         }
 
         public ProjetoXml SaveXml(int projetoId, string versao, BaseXml xml)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -191,6 +192,17 @@ namespace PeD.Controllers.Projetos
             Context.Update(projeto);
             Context.SaveChanges();
             return Ok();
+        }
+
+        [HttpGet("{projetoId}/ExtratoFinanceiro/Xlsx")]
+        public ActionResult GetXlsx([FromRoute] int projetoId)
+        {
+            var xls = Service.XlsExtrato(projetoId);
+            var stream = new MemoryStream();
+            xls.SaveAs(stream);
+            stream.Position = 0;
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"projeto-{projetoId}-relatorio.xlsx");
         }
 
         #region Logs DUTO
