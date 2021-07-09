@@ -45,6 +45,11 @@ namespace PeD.Controllers.Propostas
                 return Forbid();
             var contrato = PropostaService.GetContrato(propostaId);
             contrato = PropostaService.GetContratoFull(contrato.PropostaId);
+            if (Proposta.ResponsavelId != this.UserId())
+            {
+                contrato.Rascunho = string.Empty;
+            }
+
             return Ok(Mapper.Map<PropostaContratoDto>(contrato));
         }
 
@@ -58,7 +63,8 @@ namespace PeD.Controllers.Propostas
                 return Forbid();
 
             if (Proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
-                (Proposta.ContratoAprovacao != StatusAprovacao.Alteracao || string.IsNullOrWhiteSpace(request.Alteracao)))
+                (Proposta.ContratoAprovacao != StatusAprovacao.Alteracao ||
+                 string.IsNullOrWhiteSpace(request.Alteracao)))
             {
                 return BadRequest();
             }
@@ -70,7 +76,16 @@ namespace PeD.Controllers.Propostas
             var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
 
             contratoProposta.Finalizado = !request.Draft;
-            contratoProposta.Conteudo = request.Conteudo;
+            if (request.Draft)
+            {
+                contratoProposta.Rascunho = request.Conteudo;
+            }
+            else
+            {
+                contratoProposta.Rascunho = "";
+                contratoProposta.Conteudo = request.Conteudo;
+            }
+
             if (contratoProposta.Id != 0)
             {
                 Service.Put(contratoProposta);
@@ -84,7 +99,7 @@ namespace PeD.Controllers.Propostas
             }
 
             // Só criar revisão se tiver alguma alteração de texto relevante
-            if (hasChanges)
+            if (hasChanges && !request.Draft)
             {
                 var revisao = contratoProposta.ToRevisao();
                 revisao.UserId = this.UserId();
@@ -92,7 +107,7 @@ namespace PeD.Controllers.Propostas
                 _context.SaveChanges();
             }
 
-            if (hasChanges || contratoProposta.FileId == null)
+            if (!request.Draft && (hasChanges || contratoProposta.FileId == null))
             {
                 var file = PropostaService.SaveContratoPdf(contratoProposta);
                 contratoProposta.File = file;
