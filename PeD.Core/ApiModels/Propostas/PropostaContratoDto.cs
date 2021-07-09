@@ -18,10 +18,11 @@ namespace PeD.Core.ApiModels.Propostas
         public int ParentId { get; set; }
         public Captacao.ContratoDto Parent { get; set; }
         public string Titulo { get; set; }
+        public string Rascunho { get; set; }
         public string Conteudo { get; set; }
         public List<ContratoRevisaoDto> Revisoes { get; set; }
         public bool Finalizado { get; set; }
-        
+
         public string Header { get; set; }
         public string Footer { get; set; }
     }

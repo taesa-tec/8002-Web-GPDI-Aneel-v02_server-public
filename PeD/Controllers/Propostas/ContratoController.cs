@@ -75,14 +75,14 @@ namespace PeD.Controllers.Propostas
             var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
             var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
 
-            contratoProposta.Finalizado = !request.Draft;
+            contratoProposta.Finalizado = contratoProposta.Finalizado || !request.Draft;
             if (request.Draft)
             {
                 contratoProposta.Rascunho = request.Conteudo;
             }
             else
             {
-                contratoProposta.Rascunho = "";
+                contratoProposta.Rascunho = null;
                 contratoProposta.Conteudo = request.Conteudo;
             }
 
