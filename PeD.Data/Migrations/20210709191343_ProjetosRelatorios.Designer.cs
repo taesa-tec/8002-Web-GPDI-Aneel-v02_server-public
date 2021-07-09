@@ -10,8 +10,8 @@ using PeD.Data;
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20210702200001_ProjetosCompartilhamento")]
-    partial class ProjetosCompartilhamento
+    [Migration("20210709191343_ProjetosRelatorios")]
+    partial class ProjetosRelatorios
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -2423,45 +2423,36 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Catalogos.Segmento", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Nome")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Valor")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
+                    b.HasKey("Valor");
 
                     b.ToTable("Segmentos");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Nome = "Geração",
-                            Valor = "G"
+                            Valor = "G",
+                            Nome = "Geração"
                         },
                         new
                         {
-                            Id = 2,
-                            Nome = "Transmissão",
-                            Valor = "T"
+                            Valor = "T",
+                            Nome = "Transmissão"
                         },
                         new
                         {
-                            Id = 3,
-                            Nome = "Distribuição",
-                            Valor = "D"
+                            Valor = "D",
+                            Nome = "Distribuição"
                         },
                         new
                         {
-                            Id = 4,
-                            Nome = "Comercialização",
-                            Valor = "C"
+                            Valor = "C",
+                            Nome = "Comercialização"
                         });
                 });
 
@@ -4073,6 +4064,11 @@ namespace PeD.Data.Migrations
                     b.Property<string>("ResponsavelId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("SegmentoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)")
+                        .HasDefaultValue("G");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -4111,6 +4107,8 @@ namespace PeD.Data.Migrations
 
                     b.HasIndex("ResponsavelId");
 
+                    b.HasIndex("SegmentoId");
+
                     b.HasIndex("TemaId");
 
                     b.ToTable("Projetos");
@@ -4129,6 +4127,27 @@ namespace PeD.Data.Migrations
                     b.HasIndex("ArquivoId");
 
                     b.ToTable("ProjetoArquivos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.ProjetoSubTema", b =>
+                {
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubTemaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Outro")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProjetoId", "SubTemaId");
+
+                    b.HasIndex("SubTemaId");
+
+                    b.ToTable("ProjetosSubtemas");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.ProjetoXml", b =>
@@ -4590,7 +4609,7 @@ namespace PeD.Data.Migrations
                     b.ToTable("PropriedadeIntelectualDepositante");
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectualInventores", b =>
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectualInventor", b =>
                 {
                     b.Property<int>("PropriedadeId")
                         .HasColumnType("int");
@@ -5194,6 +5213,9 @@ namespace PeD.Data.Migrations
 
                     b.Property<int>("PropostaId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Rascunho")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -6469,6 +6491,10 @@ namespace PeD.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ResponsavelId");
 
+                    b.HasOne("PeD.Core.Models.Catalogos.Segmento", "Segmento")
+                        .WithMany()
+                        .HasForeignKey("SegmentoId");
+
                     b.HasOne("PeD.Core.Models.Catalogos.Tema", "Tema")
                         .WithMany()
                         .HasForeignKey("TemaId");
@@ -6485,6 +6511,21 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
                         .WithMany("Arquivos")
                         .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.ProjetoSubTema", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
+                        .WithMany("SubTemas")
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Catalogos.Tema", "SubTema")
+                        .WithMany()
+                        .HasForeignKey("SubTemaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -6673,7 +6714,7 @@ namespace PeD.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectualInventores", b =>
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectualInventor", b =>
                 {
                     b.HasOne("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectual", "Propriedade")
                         .WithMany("Inventores")
