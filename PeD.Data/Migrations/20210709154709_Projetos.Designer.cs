@@ -10,7 +10,7 @@ using PeD.Data;
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20210621173934_Projetos")]
+    [Migration("20210709154709_Projetos")]
     partial class Projetos
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -3520,6 +3520,9 @@ namespace PeD.Data.Migrations
 
                     b.Property<int>("PropostaId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Rascunho")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

@@ -11,6 +11,7 @@ namespace PeD.Core.Models.Propostas
         
         public int ParentId { get; set; }
         [ForeignKey("ParentId")] public Contrato Parent { get; set; }
+        public string Rascunho { get; set; }
         public string Conteudo { get; set; }
         public List<PropostaContratoRevisao> Revisoes { get; set; }
         public bool Finalizado { get; set; }

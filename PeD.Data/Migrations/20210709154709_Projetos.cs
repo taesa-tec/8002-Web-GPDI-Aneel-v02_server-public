@@ -7,6 +7,11 @@ namespace PeD.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "Rascunho",
+                table: "PropostaContratos",
+                nullable: true);
+
             migrationBuilder.AddColumn<int>(
                 name: "EspecificacaoTecnicaFileId",
                 table: "Demandas",
@@ -1019,6 +1024,10 @@ namespace PeD.Data.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Captacoes_EspecificacaoTecnicaFileId",
                 table: "Captacoes");
+
+            migrationBuilder.DropColumn(
+                name: "Rascunho",
+                table: "PropostaContratos");
 
             migrationBuilder.DropColumn(
                 name: "EspecificacaoTecnicaFileId",

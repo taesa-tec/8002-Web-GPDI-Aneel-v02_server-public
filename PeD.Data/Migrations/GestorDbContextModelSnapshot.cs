@@ -3519,6 +3519,9 @@ namespace PeD.Data.Migrations
                     b.Property<int>("PropostaId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Rascunho")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FileId");
