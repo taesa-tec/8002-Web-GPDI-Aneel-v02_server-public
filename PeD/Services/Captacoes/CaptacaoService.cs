@@ -75,9 +75,9 @@ namespace PeD.Services.Captacoes
                     .Include(c => c.UsuarioSuprimento)
                     .Include(c => c.Propostas)
                     .Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada ||
-                                c.Status >= Captacao.CaptacaoStatus.Encerrada &&
-                                (c.Propostas.Count == 0 ||
-                                 c.Propostas.Any(p => !p.Finalizado || !p.Contrato.Finalizado))
+                                (c.Status >= Captacao.CaptacaoStatus.Encerrada &&
+                                 (c.Propostas.Count == 0 ||
+                                  c.Propostas.All(p => !p.Finalizado || !p.Contrato.Finalizado)))
                     ))
                 //@todo Verificar se funciona propostas zeradas
                 .ToList();
