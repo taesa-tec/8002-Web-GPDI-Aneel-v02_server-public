@@ -7,5 +7,6 @@ namespace PeD.Core.ApiModels.Projetos
         public string RazaoSocial { get; set; }
         public string Funcao { get; set; }
         public string Nome { get; set; }
+        public string Codigo { get; set; }
     }
 }
