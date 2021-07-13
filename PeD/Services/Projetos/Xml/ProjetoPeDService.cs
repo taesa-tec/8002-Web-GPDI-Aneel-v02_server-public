@@ -19,7 +19,10 @@ namespace PeD.Services.Projetos.Xml
 
         public ProjetoPed ProjetoPed(int projetoId)
         {
-            var projeto = _context.Set<Projeto>().FirstOrDefault(p => p.Id == projetoId) ??
+            var projeto = _context.Set<Projeto>()
+                              .Include(p => p.PlanoTrabalho)
+                              .Include(p => p.SubTemas).ThenInclude(s => s.SubTema)
+                              .FirstOrDefault(p => p.Id == projetoId) ??
                           throw new Exception("Projeto Não encontrado");
 
             return new ProjetoPed()

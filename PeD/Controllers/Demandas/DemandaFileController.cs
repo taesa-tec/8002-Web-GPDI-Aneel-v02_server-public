@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using PeD.Authorizations;
 using PeD.Core.Models.Demandas;
 using PeD.Data;
 
@@ -15,6 +16,7 @@ namespace PeD.Controllers.Demandas
     [Route("api/Demandas/")]
     [ApiController]
     [Authorize("Bearer")]
+    [Authorize(Policy = Policies.IsColaborador)]
     public class DemandaFileController : FileBaseController<DemandaFile>
     {
         public DemandaFileController(GestorDbContext context, IConfiguration configuration) : base(context,

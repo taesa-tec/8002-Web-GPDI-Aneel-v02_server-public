@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Demandas;
 using PeD.Core.Models.Demandas;
 using PeD.Core.Models.Demandas.Forms;
@@ -15,6 +16,7 @@ namespace PeD.Controllers.Demandas
     [Route("api/Demandas/")]
     [ApiController]
     [Authorize("Bearer")]
+    [Authorize(Policy = Policies.IsColaborador)]
     public partial class DemandaController : ControllerServiceBase<Demanda>
     {
         SistemaService sistemaService;
