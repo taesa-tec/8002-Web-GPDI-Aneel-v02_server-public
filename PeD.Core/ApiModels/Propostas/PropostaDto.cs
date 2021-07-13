@@ -13,6 +13,7 @@ namespace PeD.Core.ApiModels.Propostas
         public string CaptacaoStatus { get; set; }
         public int FornecedorId { get; set; }
         public string Fornecedor { get; set; }
+        public string ResponsavelId { get; set; }
         public int CaptacaoId { get; set; }
         public short Duracao { get; set; }
         public bool ContratoFinalizado { get; set; }
