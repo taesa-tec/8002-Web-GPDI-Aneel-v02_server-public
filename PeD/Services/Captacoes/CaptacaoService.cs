@@ -79,7 +79,6 @@ namespace PeD.Services.Captacoes
                                  (c.Propostas.Count == 0 ||
                                   c.Propostas.All(p => !p.Finalizado || !p.Contrato.Finalizado)))
                     ))
-                //@todo Verificar se funciona propostas zeradas
                 .ToList();
         }
 

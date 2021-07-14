@@ -8,6 +8,7 @@ namespace PeD.Core.ApiModels.Fornecedores
     {
         public string Nome { get; set; }
         public string CNPJ { get; set; }
+        public string UF { get; set; }
 
         public string ResponsavelId { get; set; }
         public string ResponsavelNome { get; set; }

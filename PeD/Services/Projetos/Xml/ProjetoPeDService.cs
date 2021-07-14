@@ -84,11 +84,11 @@ namespace PeD.Services.Projetos.Xml
             {
                 Empresas = new Empresas()
                 {
-                    Empresa = Empresas(projeto, recursos.Where(r => r.EmpresaId != null))
+                    Empresa = Empresas(projeto, recursos)
                 },
                 Executoras = new Executoras()
                 {
-                    Executora = Executoras(recursos.Where(r => r.CoExecutorId != null))
+                    Executora = Executoras(recursos)
                 }
             };
         }
@@ -96,11 +96,13 @@ namespace PeD.Services.Projetos.Xml
         private List<Empresa> Empresas(Projeto projeto, IEnumerable<RecursoHumano> recursos)
         {
             return recursos
-                .GroupBy(r => r.EmpresaId)
+                .Where(r => r.Empresa is {Categoria: Core.Models.Empresa.CategoriaEmpresa.Taesa} ||
+                            r.CoExecutor is {Funcao: CoExecutorFuncao.Cooperada})
+                .GroupBy(r => r.EmpresaId != null ? $"e-{r.EmpresaId}" : $"c-{r.CoExecutorId}")
                 .Select(r => new Empresa()
                 {
-                    CodEmpresa = r.First().Empresa.Valor,
-                    TipoEmpresa = r.First().Empresa.Id == projeto.ProponenteId,
+                    CodEmpresa = r.First().Empresa?.Valor ?? r.First().CoExecutor.Codigo,
+                    TipoEmpresa = r.First().Empresa?.Id == projeto.ProponenteId,
                     Equipe = new Equipe()
                     {
                         EquipeEmpresa = EquipeEmpresas(r)
@@ -111,12 +113,14 @@ namespace PeD.Services.Projetos.Xml
         private List<Executora> Executoras(IEnumerable<RecursoHumano> recursos)
         {
             return recursos
+                .Where(r => r.Empresa is {Categoria: Core.Models.Empresa.CategoriaEmpresa.Fornecedor} ||
+                            r.CoExecutor is {Funcao : CoExecutorFuncao.Executora})
                 .GroupBy(r => r.CoExecutorId)
                 .Select(a => new Executora()
                 {
-                    CNPJExec = a.First().CoExecutor.CNPJ,
-                    UfExec = a.First().CoExecutor.UF,
-                    RazaoSocialExec = a.First().CoExecutor.RazaoSocial,
+                    CNPJExec = a.First().CoExecutor?.CNPJ ?? a.First().Empresa.Cnpj,
+                    UfExec = a.First().CoExecutor?.UF ?? a.First().Empresa.UF,
+                    RazaoSocialExec = a.First().CoExecutor?.RazaoSocial ?? a.First().Empresa.Nome,
                     Equipe = new ExecEquipe()
                     {
                         EquipeExec = EquipeExecs(a)
@@ -159,11 +163,13 @@ namespace PeD.Services.Projetos.Xml
                 .Include(a => a.CoExecutorFinanciador)
                 .Include(a => a.CoExecutorRecebedor)
                 .Include(a => a.RecursoMaterial).ThenInclude(r => r.CategoriaContabil)
-                .Where(a => a.ProjetoId == projeto.Id);
+                .Where(a => a.ProjetoId == projeto.Id).ToList();
             return new PD_Recursos()
             {
-                RecursoEmpresa = RecursoEmpresa(alocacoes.Where(a => a.EmpresaFinanciadoraId != null)),
-                RecursoParceira = RecursoParceira(alocacoes.Where(a => a.CoExecutorFinanciadorId != null))
+                RecursoEmpresa = RecursoEmpresa(alocacoes.Where(a =>
+                    a.EmpresaFinanciadoraId != null || a.CoExecutorRecebedor is {Funcao: CoExecutorFuncao.Cooperada})),
+                RecursoParceira = RecursoParceira(alocacoes.Where(a => a.CoExecutorFinanciador is
+                    {Funcao: CoExecutorFuncao.Executora}))
             };
         }
 
@@ -171,7 +177,7 @@ namespace PeD.Services.Projetos.Xml
         {
             return alocacoes.GroupBy(a => a.EmpresaFinanciadoraId).Select(a => new RecursoEmpresa()
             {
-                CodEmpresa = a.First().EmpresaFinanciadora.Valor,
+                CodEmpresa = a.First().EmpresaFinanciadora?.Valor ?? a.First().CoExecutorFinanciador.Codigo,
                 DestRecursosExec = DestRecursosExec(a)
             }).ToList();
         }

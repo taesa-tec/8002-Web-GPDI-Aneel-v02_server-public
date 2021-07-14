@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using PeD.Core.Models;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Projetos.Xml;
@@ -75,9 +76,12 @@ namespace PeD.Services.Projetos.Xml
                 .ToList();
             var recursosHumanos = _context.Set<RecursoHumano>()
                 .Include(r => r.Empresa)
-                .Where(r => r.ProjetoId == projeto.Id && r.EmpresaId != null && rhIds.Contains(r.Id))
+                .Include(r => r.CoExecutor)
+                .Where(r => r.ProjetoId == projeto.Id && rhIds.Contains(r.Id))
                 .ToList()
-                .GroupBy(r => r.EmpresaId);
+                .Where(r => r.Empresa is {Categoria: Empresa.CategoriaEmpresa.Taesa} ||
+                            r.CoExecutor is {Funcao: CoExecutorFuncao.Cooperada})
+                .GroupBy(r => r.Empresa?.Codigo ?? r.CoExecutor.Codigo);
 
 
             return new PD_EquipeEmp()
@@ -86,7 +90,7 @@ namespace PeD.Services.Projetos.Xml
                 {
                     Empresa = recursosHumanos.Select(e => new PedEmpresa()
                     {
-                        CodEmpresa = e.First().Empresa.Valor,
+                        CodEmpresa = e.First().Empresa?.Codigo ?? e.First().CoExecutor.Codigo,
                         TipoEmpresa = e.First().Empresa.Id == projeto.ProponenteId ? "P" : "C",
                         Equipe = new Equipe()
                         {
