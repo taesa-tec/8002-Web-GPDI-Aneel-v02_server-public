@@ -9,8 +9,7 @@ namespace PeD.Core.Requests.Proposta
         public string Titulacao { get; set; }
         public string Funcao { get; set; }
         public string Nacionalidade { get; set; }
-        public int? EmpresaId { get; set; }
-        public int? CoExecutorId { get; set; }
+        public int EmpresaId { get; set; }
 
         //Cpf ou Passaport
         public string Documento { get; set; }

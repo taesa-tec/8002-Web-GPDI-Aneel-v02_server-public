@@ -20,6 +20,7 @@ using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
+using Empresa = PeD.Core.Models.Propostas.Empresa;
 
 namespace PeD.Controllers.Propostas
 {
@@ -65,7 +66,6 @@ namespace PeD.Controllers.Propostas
 
         [HttpGet("{id:guid}/Empresas")]
         public async Task<ActionResult> GetPropostaEmpresas(Guid id,
-            [FromServices] IService<CoExecutor> coexecutoresService,
             [FromServices] IService<Empresa> empresasService,
             [FromServices] IService<Fornecedor> fornecedorService
         )
@@ -75,18 +75,9 @@ namespace PeD.Controllers.Propostas
 
             if (authorizationResult.Succeeded)
             {
-                var empresa = empresasService.Filter(q => q.OrderBy(e => e.Id).Take(1)).FirstOrDefault();
-                var fornecedor = fornecedorService.Filter(q =>
-                    q.Where(e => e.ResponsavelId == proposta.ResponsavelId)).FirstOrDefault();
-                var coExecutores = coexecutoresService.Filter(q =>
+                var empresas = empresasService.Filter(q =>
                     q.Where(e => e.PropostaId == proposta.Id));
-                var response = new
-                {
-                    empresa,
-                    fornecedor,
-                    coExecutores = Mapper.Map<List<CoExecutorDto>>(coExecutores)
-                };
-                return Ok(response);
+                return Ok(Mapper.Map<List<EmpresaDto>>(empresas));
             }
 
             return Forbid();

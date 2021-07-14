@@ -15,12 +15,9 @@ namespace PeD.Core.Models.Projetos
         public string CategoriaContabil { get; set; }
         public string CategoriaContabilCodigo { get; set; }
         public string Recurso { get; set; }
-        public string FinanciadorCode { get; set; }
-        public int? EmpresaFinanciadoraId { get; set; }
-        public int? CoExecutorFinanciadorId { get; set; }
+        public int FinanciadoraId { get; set; }
         public string Financiador { get; set; }
-        public int? RecebedoraId { get; set; }
-        public int? CoExecutorRecebedorId { get; set; }
+        public int RecebedoraId { get; set; }
         public string Recebedor { get; set; }
         [Column(TypeName = "decimal(18, 2)")] public decimal Quantidade { get; set; }
         [Column(TypeName = "decimal(18, 2)")] public decimal Custo { get; set; }

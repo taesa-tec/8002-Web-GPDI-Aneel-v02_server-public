@@ -11,25 +11,25 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
 {
     public class Proposta
     {
-        public Dictionary<string, string> EmpresasFinanciadoras
+        public Dictionary<int, string> EmpresasFinanciadoras
         {
             get
             {
                 return Etapas.SelectMany(i => i.Alocacoes)
-                    .GroupBy(i => i.EmpresaFinanciadoraCodigo)
+                    .GroupBy(i => i.EmpresaFinanciadoraId)
                     .Select(i => i.First())
-                    .ToDictionary(a => a.EmpresaFinanciadoraCodigo, a => a.EmpresaFinanciadora);
+                    .ToDictionary(a => a.EmpresaFinanciadoraId, a => a.EmpresaFinanciadora);
             }
         }
 
-        public Dictionary<string, string> EmpresasRecebedoras
+        public Dictionary<int, string> EmpresasRecebedoras
         {
             get
             {
                 return Etapas.SelectMany(i => i.Alocacoes)
-                    .GroupBy(i => i.EmpresaRecebedoraCodigo)
+                    .GroupBy(i => i.EmpresaRecebedoraId)
                     .Select(i => i.First())
-                    .ToDictionary(a => a.EmpresaRecebedoraCodigo, a => a.EmpresaRecebedora);
+                    .ToDictionary(a => a.EmpresaRecebedoraId, a => a.EmpresaRecebedora);
             }
         }
 
@@ -78,7 +78,7 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
         /// 6   - Entidades
         ///         2 - CoExecutores                Proposta.CoExecutores 
         ///</summary>
-        public List<CoExecutor> CoExecutores { get; set; }
+        public List<Propostas.Empresa> Empresas { get; set; }
 
         /// <summary>
         /// 7   - Justificativa e Motivação         Proposta.PlanoTrabalho.Motivacao 

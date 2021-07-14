@@ -68,16 +68,13 @@ namespace PeD.Mapping
 
             CreateMap<RecursoHumano, RecursoHumanoDto>()
                 .ForMember(dest => dest.Empresa, opt =>
-                    opt.MapFrom(src => src.Empresa != null ? src.Empresa.Nome : src.CoExecutor.RazaoSocial ?? ""));
+                    opt.MapFrom(src => src.Empresa));
             CreateMap<RecursoHumanoRequest, RecursoHumano>();
 
             CreateMap<AlocacaoRecursoHumanoRequest, RecursoHumano.AlocacaoRh>();
             CreateMap<RecursoHumano.AlocacaoRh, AlocacaoRecursoHumanoDto>()
                 .ForMember(dest => dest.EmpresaFinanciadora, opt =>
-                    opt.MapFrom(src =>
-                        src.EmpresaFinanciadora != null
-                            ? src.EmpresaFinanciadora.Nome
-                            : src.CoExecutorFinanciador.RazaoSocial ?? ""))
+                    opt.MapFrom(src => src.EmpresaFinanciadora.RazaoSocial))
                 .ForMember(dest => dest.Recurso, opt => opt
                     .MapFrom(src => src.Recurso.NomeCompleto))
                 .ForMember(dest => dest.Etapa, opt => opt
@@ -94,15 +91,9 @@ namespace PeD.Mapping
             CreateMap<AlocacaoRecursoMaterialRequest, RecursoMaterial.AlocacaoRm>();
             CreateMap<RecursoMaterial.AlocacaoRm, AlocacaoRecursoMaterialDto>()
                 .ForMember(dest => dest.EmpresaFinanciadora, opt =>
-                    opt.MapFrom(src =>
-                        src.EmpresaFinanciadora != null
-                            ? src.EmpresaFinanciadora.Nome
-                            : src.CoExecutorFinanciador.RazaoSocial ?? ""))
+                    opt.MapFrom(src => src.EmpresaFinanciadora.RazaoSocial))
                 .ForMember(dest => dest.EmpresaRecebedora, opt =>
-                    opt.MapFrom(src =>
-                        src.EmpresaRecebedora != null
-                            ? src.EmpresaRecebedora.Nome
-                            : src.CoExecutorRecebedor.RazaoSocial ?? ""))
+                    opt.MapFrom(src => src.EmpresaRecebedora.Nome))
                 .ForMember(dest => dest.Recurso, opt => opt.MapFrom(src =>
                     src.Recurso.Nome))
                 .ForMember(dest => dest.RecursoCategoria, opt => opt.MapFrom(src =>

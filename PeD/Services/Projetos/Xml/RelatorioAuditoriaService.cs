@@ -62,8 +62,8 @@ namespace PeD.Services.Projetos.Xml
 
         protected List<RecursoParceira> RecursoParceiras(List<RegistroFinanceiroInfo> registros)
         {
-            var parceiras = registros.Where(r => r.CoExecutorFinanciadorId != null)
-                .GroupBy(r => r.CoExecutorFinanciadorId);
+            var parceiras = registros.Where(r => r.FinanciadoraFuncao == Funcao.Executora)
+                .GroupBy(r => r.FinanciadoraId);
 
             return parceiras.Select(rf => new RecursoParceira()
             {

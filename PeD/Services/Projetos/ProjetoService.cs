@@ -24,7 +24,6 @@ using PeD.Services.Projetos.Xml;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 using Alocacao = PeD.Core.Models.Projetos.Alocacao;
-using CoExecutor = PeD.Core.Models.Projetos.CoExecutor;
 using Empresa = PeD.Core.Models.Empresa;
 using Escopo = PeD.Core.Models.Projetos.Escopo;
 using Log = Serilog.Log;
@@ -158,17 +157,11 @@ namespace PeD.Services.Projetos
             Post(projeto);
 
 
-            var coexecutorCopy = CopyPropostaNodes<CoExecutor>(projeto.Id, proposta.CoExecutores);
+            var empresasCopy = CopyPropostaNodes<Core.Models.Projetos.Empresa>(projeto.Id, proposta.Empresas);
             var produtosCopy = CopyPropostaNodes<Produto>(projeto.Id, proposta.Produtos);
 
-            var rhCopy = CopyPropostaNodes<RecursoHumano>(projeto.Id, proposta.RecursosHumanos, rh =>
-            {
-                if (rh.CoExecutorId != null)
-                {
-                    rh.CoExecutor = null;
-                    rh.CoExecutorId = coexecutorCopy[rh.CoExecutorId.Value];
-                }
-            });
+            var rhCopy = CopyPropostaNodes<RecursoHumano>(projeto.Id, proposta.RecursosHumanos,
+                r => { r.EmpresaId = empresasCopy[r.EmpresaId]; });
             var rmCopy = CopyPropostaNodes<RecursoMaterial>(projeto.Id, proposta.RecursosMateriais);
             var etapaCopy = CopyPropostaNodes<Core.Models.Projetos.Etapa>(projeto.Id, proposta.Etapas, etapa =>
             {
@@ -186,31 +179,19 @@ namespace PeD.Services.Projetos
                     a.Etapa = null;
                     a.EtapaId = etapaCopy[a.EtapaId];
 
-                    if (a.CoExecutorFinanciadorId != null)
-                    {
-                        a.CoExecutorFinanciadorId = coexecutorCopy[a.CoExecutorFinanciadorId.Value];
-                    }
+                    a.EmpresaFinanciadoraId = empresasCopy[a.EmpresaFinanciadoraId];
                 });
             CopyPropostaNodes<RecursoMaterial.AlocacaoRm>(projeto.Id, proposta.RecursosMateriaisAlocacoes,
                 a =>
                 {
                     a.RecursoMaterial = null;
                     a.RecursoMaterialId = rmCopy[a.RecursoMaterialId];
-
                     a.Etapa = null;
                     a.EtapaId = etapaCopy[a.EtapaId];
-                    a.CoExecutorRecebedor = null;
-                    a.CoExecutorFinanciador = null;
-
-                    if (a.CoExecutorFinanciadorId != null)
-                    {
-                        a.CoExecutorFinanciadorId = coexecutorCopy[a.CoExecutorFinanciadorId.Value];
-                    }
-
-                    if (a.CoExecutorRecebedorId != null)
-                    {
-                        a.CoExecutorRecebedorId = coexecutorCopy[a.CoExecutorRecebedorId.Value];
-                    }
+                    a.EmpresaRecebedora = null;
+                    a.EmpresaFinanciadora = null;
+                    a.EmpresaFinanciadoraId = empresasCopy[a.EmpresaFinanciadoraId];
+                    a.EmpresaRecebedoraId = empresasCopy[a.EmpresaRecebedoraId];
                 });
             SaveXml(projeto.Id, "1",
                 new InicioExecucao(projeto.Codigo, projeto.DataInicioProjeto,
@@ -253,10 +234,10 @@ namespace PeD.Services.Projetos
             // Financiadores
             var empresas = (new[]
                 {
-                    orcamentos.Select(o => new {o.Financiador, o.FinanciadorCode}),
-                    extratos.Select(o => new {o.Financiador, o.FinanciadorCode})
+                    orcamentos.Select(o => new {o.Financiador, o.FinanciadoraId}),
+                    extratos.Select(o => new {o.Financiador, o.FinanciadoraId})
                 }).SelectMany(i => i)
-                .GroupBy(e => e.FinanciadorCode)
+                .GroupBy(e => e.FinanciadoraId)
                 .Select(e => e.First());
             var categorias = (new[]
                 {
@@ -270,16 +251,16 @@ namespace PeD.Services.Projetos
             return empresas.Select(e => new ExtratoFinanceiroEmpresaRefpDto()
             {
                 Nome = e.Financiador,
-                Codigo = e.FinanciadorCode,
+                Codigo = e.FinanciadoraId,
                 Categorias = categorias.Select(c => new ExtratoFinanceiroGroupRefpDto()
                 {
                     Nome = c.CategoriaContabil,
                     Codigo = c.CategoriaContabilCodigo,
                     Orcamento = orcamentos.Where(o =>
-                        o.FinanciadorCode == e.FinanciadorCode &&
+                        o.FinanciadoraId == e.FinanciadoraId &&
                         o.CategoriaContabilCodigo == c.CategoriaContabilCodigo),
                     Registros = extratos.Where(o =>
-                        o.FinanciadorCode == e.FinanciadorCode &&
+                        o.FinanciadoraId == e.FinanciadoraId &&
                         o.CategoriaContabilCodigo == c.CategoriaContabilCodigo)
                 }).Where(ef => ef.Previsto != 0 || ef.Realizado != 0)
             });

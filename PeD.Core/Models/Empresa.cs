@@ -7,8 +7,7 @@ namespace PeD.Core.Models
         public enum CategoriaEmpresa
         {
             Taesa = 1,
-            Fornecedor,
-            CoExecutor
+            Fornecedor
         }
 
         public string UF { get; set; }

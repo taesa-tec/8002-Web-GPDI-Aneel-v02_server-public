@@ -40,8 +40,6 @@ namespace PeD.Core.Models.Projetos.Resultados
 
         public int? EmpresaId { get; set; }
         public Empresa Empresa { get; set; }
-        public int? CoExecutorId { get; set; }
-        public CoExecutor CoExecutor { get; set; }
 
         [Column(TypeName = "decimal(5,2)")] public decimal Porcentagem { get; set; }
     }

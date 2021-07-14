@@ -14,6 +14,7 @@ using PeD.Data;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Interfaces;
+using Empresa = PeD.Core.Models.Propostas.Empresa;
 
 namespace PeD.Controllers.Propostas
 {
@@ -21,13 +22,12 @@ namespace PeD.Controllers.Propostas
     [ApiController]
     [Authorize("Bearer")]
     [Route("api/Propostas/{propostaId:guid}/[controller]")]
-    //PropostaNodeBaseController<Risco, RiscoRequest, PropostaRiscoDto>
-    public class CoExecutoresController : PropostaNodeBaseController<CoExecutor, CoExecutorRequest, CoExecutorDto>
+    public class EmpresasController : PropostaNodeBaseController<Empresa, EmpresaRequest, EmpresaDto>
     {
-        new private CoExecutorService Service;
+        new private EmpresaService Service;
         private GestorDbContext _context;
 
-        public CoExecutoresController(CoExecutorService service, IMapper mapper,
+        public EmpresasController(EmpresaService service, IMapper mapper,
             IAuthorizationService authorizationService, PropostaService propostaService, GestorDbContext context) :
             base(service, mapper, authorizationService, propostaService)
         {
@@ -38,12 +38,12 @@ namespace PeD.Controllers.Propostas
 
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
-        public override async Task<IActionResult> Post([FromBody] CoExecutorRequest request)
+        public override async Task<IActionResult> Post([FromBody] EmpresaRequest request)
         {
             if (!await HasAccess(true))
                 return Forbid();
 
-            var coExecutor = new CoExecutor()
+            var empresa = new Empresa()
             {
                 PropostaId = Proposta.Id,
                 RazaoSocial = request.RazaoSocial,
@@ -51,27 +51,27 @@ namespace PeD.Controllers.Propostas
                 CNPJ = request.CNPJ,
                 Funcao = request.Funcao
             };
-            Service.Save(coExecutor);
+            Service.Save(empresa);
             return Ok();
         }
 
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPut]
-        public override async Task<IActionResult> Put([FromBody] CoExecutorRequest request)
+        public override async Task<IActionResult> Put([FromBody] EmpresaRequest request)
         {
             if (!await HasAccess(true))
                 return Forbid();
 
-            var coExecutor = Service.Get(request.Id);
-            if (coExecutor.PropostaId == Proposta.Id)
+            var empresa = Service.Get(request.Id);
+            if (empresa.PropostaId == Proposta.Id)
             {
-                coExecutor.Id = request.Id;
-                coExecutor.PropostaId = Proposta.Id;
-                coExecutor.RazaoSocial = request.RazaoSocial;
-                coExecutor.UF = request.UF;
-                coExecutor.CNPJ = request.CNPJ;
-                coExecutor.Funcao = request.Funcao;
-                Service.Save(coExecutor);
+                empresa.Id = request.Id;
+                empresa.PropostaId = Proposta.Id;
+                empresa.RazaoSocial = request.RazaoSocial;
+                empresa.UF = request.UF;
+                empresa.CNPJ = request.CNPJ;
+                empresa.Funcao = request.Funcao;
+                Service.Save(empresa);
                 PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
                 return Ok();
             }
@@ -86,17 +86,17 @@ namespace PeD.Controllers.Propostas
             if (!await HasAccess(true))
                 return Forbid();
 
-            var coExecutor = Service.Get(id);
-            if (coExecutor == null)
+            var empresa = Service.Get(id);
+            if (empresa == null)
             {
                 return NotFound();
             }
 
-            if (coExecutor.PropostaId == Proposta.Id)
+            if (empresa.PropostaId == Proposta.Id)
             {
                 if (_context.Set<RecursoMaterial.AlocacaoRm>().AsQueryable().Any(a =>
-                        a.CoExecutorRecebedorId == id || a.CoExecutorFinanciadorId == id) ||
-                    _context.Set<RecursoHumano.AlocacaoRh>().AsQueryable().Any(a => a.CoExecutorFinanciadorId == id))
+                        a.EmpresaRecebedoraId == id || a.EmpresaFinanciadoraId == id) ||
+                    _context.Set<RecursoHumano.AlocacaoRh>().AsQueryable().Any(a => a.EmpresaFinanciadoraId == id))
                 {
                     return Problem("Não é possível apagar uma entidade relacionada com alocações de recursos", null,
                         StatusCodes.Status409Conflict);

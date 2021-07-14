@@ -167,7 +167,7 @@ namespace PeD
             services.AddScoped<SistemaService>();
             services.AddScoped<CaptacaoService>();
             services.AddScoped<PropostaService>();
-            services.AddScoped<CoExecutorService>();
+            services.AddScoped<EmpresaService>();
             services.AddScoped<ProjetoService>();
             services.AddTransient<RelatorioFinalService>();
             services.AddTransient<RelatorioAuditoriaService>();

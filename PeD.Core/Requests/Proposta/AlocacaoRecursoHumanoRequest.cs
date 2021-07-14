@@ -8,8 +8,7 @@ namespace PeD.Core.Requests.Proposta
     {
         public int RecursoId { get; set; }
         public int EtapaId { get; set; }
-        public int? EmpresaFinanciadoraId { get; set; }
-        public int? CoExecutorFinanciadorId { get; set; }
+        public int EmpresaFinanciadoraId { get; set; }
         public string Justificativa { get; set; }
         public Dictionary<short, short> HoraMeses { get; set; }
     }

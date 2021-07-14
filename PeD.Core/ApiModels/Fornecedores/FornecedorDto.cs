@@ -14,6 +14,6 @@ namespace PeD.Core.ApiModels.Fornecedores
         public string ResponsavelNome { get; set; }
         public string ResponsavelEmail { get; set; }
         public bool Ativo { get; set; }
-        public List<CoExecutorDto> CoExecutores { get; set; }
+        public List<EmpresaDto> Empresas { get; set; }
     }
 }

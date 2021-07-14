@@ -37,7 +37,6 @@ namespace PeD.Controllers.Propostas
         {
             return queryable
                     .Include(r => r.Empresa)
-                    .Include(r => r.CoExecutor)
                 ;
         }
 

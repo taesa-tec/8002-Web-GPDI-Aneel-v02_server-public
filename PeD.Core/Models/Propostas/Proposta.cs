@@ -52,7 +52,7 @@ namespace PeD.Core.Models.Propostas
         public PropostaContrato Contrato { get; set; }
         public StatusAprovacao ContratoAprovacao { get; set; }
         public List<PropostaArquivo> Arquivos { get; set; }
-        public List<CoExecutor> CoExecutores { get; set; }
+        public List<Empresa> Empresas { get; set; }
         public List<Produto> Produtos { get; set; }
         public List<Etapa> Etapas { get; set; }
         public List<Meta> Metas { get; set; }

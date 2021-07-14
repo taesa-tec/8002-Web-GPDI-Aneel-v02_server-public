@@ -2,22 +2,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PeD.Core.Models.Propostas
 {
-    public enum CoExecutorFuncao
+    public enum Funcao
     {
         Executora,
-        Proponente,
         Cooperada,
-        Interveniente
     }
 
-    [Table("PropostaCoExecutores")]
-    public class CoExecutor : PropostaNode
+    [Table("PropostaEmpresas")]
+    public class Empresa : PropostaNode
     {
+        public int? EmpresaRefId { get; set; }
+        public Models.Empresa EmpresaRef { get; set; }
         public string CNPJ { get; set; }
         public string UF { get; set; }
         public string RazaoSocial { get; set; }
         public string Codigo { get; set; }
 
-        public CoExecutorFuncao Funcao { get; set; }
+        public Funcao Funcao { get; set; }
+        public string Nome => EmpresaRef?.Nome ?? RazaoSocial;
     }
 }

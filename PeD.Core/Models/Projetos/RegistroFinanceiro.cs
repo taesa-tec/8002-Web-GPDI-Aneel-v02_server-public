@@ -37,11 +37,8 @@ namespace PeD.Core.Models.Projetos
 
         #region Empresa Financiadora
 
-        public int? FinanciadoraId { get; set; }
+        public int FinanciadoraId { get; set; }
         public Empresa Financiadora { get; set; }
-
-        public int? CoExecutorFinanciadorId { get; set; }
-        public CoExecutor CoExecutorFinanciador { get; set; }
 
         #endregion
 
@@ -90,14 +87,13 @@ namespace PeD.Core.Models.Projetos
         public string Recurso { get; set; }
         public int? RecursoHumanoId { get; set; }
         public int? RecursoMaterialId { get; set; }
-        public int? FinanciadoraId { get; set; }
-        public int? CoExecutorFinanciadorId { get; set; }
+        public int FinanciadoraId { get; set; }
+        public Funcao FinanciadoraFuncao { get; set; }
         public string CodEmpresa { get; set; }
         public string CNPJExec { get; set; }
         public string CNPJParc { get; set; }
-        public string FinanciadorCode { get; set; }
-        public int? RecebedoraId { get; set; }
-        public int? CoExecutorRecebedorId { get; set; }
+        public int RecebedoraId { get; set; }
+        public Funcao RecebedoraFuncao { get; set; }
         public int? CategoriaContabilId { get; set; }
         [XlxsColumn("Categoria", 3)] public string CategoriaContabil { get; set; }
         public string CategoriaContabilCodigo { get; set; }

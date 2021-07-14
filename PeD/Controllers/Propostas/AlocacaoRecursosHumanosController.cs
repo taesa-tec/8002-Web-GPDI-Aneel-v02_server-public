@@ -11,6 +11,7 @@ using PeD.Data;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Interfaces;
+using Empresa = PeD.Core.Models.Propostas.Empresa;
 
 namespace PeD.Controllers.Propostas
 {
@@ -39,15 +40,17 @@ namespace PeD.Controllers.Propostas
                     .Include(r => r.Recurso)
                     .Include(r => r.Etapa)
                     .Include(r => r.EmpresaFinanciadora)
-                    .Include(r => r.CoExecutorFinanciador)
                 ;
         }
 
         protected override ActionResult Validate(AlocacaoRecursoHumanoRequest request)
         {
-            var recurso = _context.Set<RecursoHumano>().FirstOrDefault(r => r.Id == request.RecursoId);
-            if (recurso != null && recurso.EmpresaId != null && request.CoExecutorFinanciadorId != null)
-                return ValidationProblem("Não é permitido um co-executor destinar recursos a uma empresa Taesa");
+            var recurso = _context.Set<RecursoHumano>().Include(r => r.Empresa)
+                .FirstOrDefault(r => r.Id == request.RecursoId);
+            var empresa = _context.Set<Empresa>().FirstOrDefault(e => e.Id == request.EmpresaFinanciadoraId);
+            if (recurso != null && recurso.Empresa.Funcao == Funcao.Cooperada && empresa is {Funcao: Funcao.Executora})
+                return ValidationProblem(
+                    "Não é permitido um co-executor/executor destinar recursos a uma empresa Proponente/Cooperada");
             return null;
         }
     }

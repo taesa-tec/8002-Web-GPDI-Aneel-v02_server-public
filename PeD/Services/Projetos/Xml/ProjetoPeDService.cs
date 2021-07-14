@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Xml.ProjetoPeD;
 using PeD.Data;
+using Empresa = PeD.Core.Models.Projetos.Xml.ProjetoPeD.Empresa;
 
 namespace PeD.Services.Projetos.Xml
 {
@@ -78,7 +79,6 @@ namespace PeD.Services.Projetos.Xml
         {
             var recursos = _context.Set<RecursoHumano>()
                 .Include(r => r.Empresa)
-                .Include(r => r.CoExecutor)
                 .Where(a => a.ProjetoId == projeto.Id).ToList();
             return new PD_Equipe()
             {
@@ -96,13 +96,12 @@ namespace PeD.Services.Projetos.Xml
         private List<Empresa> Empresas(Projeto projeto, IEnumerable<RecursoHumano> recursos)
         {
             return recursos
-                .Where(r => r.Empresa is {Categoria: Core.Models.Empresa.CategoriaEmpresa.Taesa} ||
-                            r.CoExecutor is {Funcao: CoExecutorFuncao.Cooperada})
-                .GroupBy(r => r.EmpresaId != null ? $"e-{r.EmpresaId}" : $"c-{r.CoExecutorId}")
+                .Where(r => r.Empresa is {Funcao: Funcao.Cooperada})
+                .GroupBy(r => r.EmpresaId)
                 .Select(r => new Empresa()
                 {
-                    CodEmpresa = r.First().Empresa?.Valor ?? r.First().CoExecutor.Codigo,
-                    TipoEmpresa = r.First().Empresa?.Id == projeto.ProponenteId,
+                    CodEmpresa = r.First().Empresa.Codigo,
+                    TipoEmpresa = r.First().Empresa.EmpresaRefId == projeto.ProponenteId,
                     Equipe = new Equipe()
                     {
                         EquipeEmpresa = EquipeEmpresas(r)
@@ -113,14 +112,13 @@ namespace PeD.Services.Projetos.Xml
         private List<Executora> Executoras(IEnumerable<RecursoHumano> recursos)
         {
             return recursos
-                .Where(r => r.Empresa is {Categoria: Core.Models.Empresa.CategoriaEmpresa.Fornecedor} ||
-                            r.CoExecutor is {Funcao : CoExecutorFuncao.Executora})
-                .GroupBy(r => r.CoExecutorId)
+                .Where(r => r.Empresa is {Funcao : Funcao.Executora})
+                .GroupBy(r => r.EmpresaId)
                 .Select(a => new Executora()
                 {
-                    CNPJExec = a.First().CoExecutor?.CNPJ ?? a.First().Empresa.Cnpj,
-                    UfExec = a.First().CoExecutor?.UF ?? a.First().Empresa.UF,
-                    RazaoSocialExec = a.First().CoExecutor?.RazaoSocial ?? a.First().Empresa.Nome,
+                    CNPJExec = a.First().Empresa.CNPJ,
+                    UfExec = a.First().Empresa.UF,
+                    RazaoSocialExec = a.First().Empresa.Nome,
                     Equipe = new ExecEquipe()
                     {
                         EquipeExec = EquipeExecs(a)
@@ -159,17 +157,16 @@ namespace PeD.Services.Projetos.Xml
         {
             var alocacoes = _context.Set<RecursoMaterial.AlocacaoRm>()
                 .Include(a => a.EmpresaFinanciadora)
+                .ThenInclude(e => e.EmpresaRef)
                 .Include(a => a.EmpresaRecebedora)
-                .Include(a => a.CoExecutorFinanciador)
-                .Include(a => a.CoExecutorRecebedor)
+                .ThenInclude(e => e.EmpresaRef)
                 .Include(a => a.RecursoMaterial).ThenInclude(r => r.CategoriaContabil)
                 .Where(a => a.ProjetoId == projeto.Id).ToList();
             return new PD_Recursos()
             {
-                RecursoEmpresa = RecursoEmpresa(alocacoes.Where(a =>
-                    a.EmpresaFinanciadoraId != null || a.CoExecutorRecebedor is {Funcao: CoExecutorFuncao.Cooperada})),
-                RecursoParceira = RecursoParceira(alocacoes.Where(a => a.CoExecutorFinanciador is
-                    {Funcao: CoExecutorFuncao.Executora}))
+                RecursoEmpresa = RecursoEmpresa(alocacoes.Where(a => a.EmpresaFinanciadora.Funcao != Funcao.Executora)),
+                RecursoParceira =
+                    RecursoParceira(alocacoes.Where(a => a.EmpresaFinanciadora.Funcao == Funcao.Executora))
             };
         }
 
@@ -177,7 +174,7 @@ namespace PeD.Services.Projetos.Xml
         {
             return alocacoes.GroupBy(a => a.EmpresaFinanciadoraId).Select(a => new RecursoEmpresa()
             {
-                CodEmpresa = a.First().EmpresaFinanciadora?.Valor ?? a.First().CoExecutorFinanciador.Codigo,
+                CodEmpresa = a.First().EmpresaFinanciadora.Codigo,
                 DestRecursosExec = DestRecursosExec(a)
             }).ToList();
         }
@@ -186,17 +183,18 @@ namespace PeD.Services.Projetos.Xml
         {
             return alocacoes.GroupBy(a => a.EmpresaFinanciadoraId).Select(a => new RecursoParceira()
             {
-                CNPJParc = a.First().CoExecutorFinanciador.CNPJ,
+                CNPJParc = a.First().EmpresaFinanciadora.CNPJ,
                 DestRecursosExec = DestRecursosExec(a)
             }).ToList();
         }
 
         private List<DestRecursosExec> DestRecursosExec(IEnumerable<RecursoMaterial.AlocacaoRm> alocacoes)
         {
-            return alocacoes.Where(i => i.CoExecutorRecebedorId != null).GroupBy(i => i.CoExecutorRecebedorId)
+            return alocacoes.Where(i => i.EmpresaRecebedora is {Funcao: Funcao.Executora})
+                .GroupBy(i => i.EmpresaRecebedoraId)
                 .Select(e => new DestRecursosExec()
                 {
-                    CNPJExec = e.First().CoExecutorRecebedor.CNPJ,
+                    CNPJExec = e.First().EmpresaRecebedora.CNPJ,
                     CustoCatContabilExec = e.GroupBy(i => i.RecursoMaterial.CategoriaContabilId)
                         .Select(c => new CustoCatContabilExec()
                         {
