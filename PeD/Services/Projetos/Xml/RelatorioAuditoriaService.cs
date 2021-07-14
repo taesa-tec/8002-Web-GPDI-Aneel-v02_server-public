@@ -51,10 +51,10 @@ namespace PeD.Services.Projetos.Xml
 
         protected List<RecursoEmpresa> RecursoEmpresas(List<RegistroFinanceiroInfo> registros)
         {
-            var financiadores = registros.Where(r => r.FinanciadoraId != null).GroupBy(r => r.FinanciadoraId);
+            var financiadores = registros.Where(r => r.FinanciadoraFuncao != Funcao.Executora ).GroupBy(r => r.FinanciadoraId);
             return financiadores.Select(f => new RecursoEmpresa()
             {
-                CodEmpresa = f.First().CodEmpresa,
+                CodEmpresa = f.First().FinanciadoraCodigo,
                 DestRecursosExec = DestRecursosExec(f),
                 DestRecursosEmp = DestRecursosEmp(f)
             }).ToList();

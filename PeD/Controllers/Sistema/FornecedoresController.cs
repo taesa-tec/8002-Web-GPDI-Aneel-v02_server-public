@@ -155,6 +155,7 @@ namespace PeD.Controllers.Sistema
                 Ativo = true,
                 Nome = model.Nome,
                 Cnpj = model.Cnpj,
+                UF = model.Uf,
                 Categoria = Empresa.CategoriaEmpresa.Fornecedor,
             };
 

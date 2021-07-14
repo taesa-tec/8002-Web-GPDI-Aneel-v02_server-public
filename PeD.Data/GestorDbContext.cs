@@ -192,8 +192,15 @@ namespace PeD.Data
             });
             builder.Entity<PlanoTrabalho>();
             builder.Entity<Produto>();
-            builder.Entity<RecursoHumano>();
-            builder.Entity<RecursoMaterial>();
+            builder.Entity<RecursoHumano>(b =>
+            {
+                b.HasOne(r => r.Proposta).WithMany(p => p.RecursosHumanos).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(r => r.Empresa).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<RecursoMaterial>(b =>
+            {
+                b.HasOne(r => r.Proposta).WithMany(p => p.RecursosMateriais).OnDelete(DeleteBehavior.NoAction);
+            });
             builder.Entity<RecursoHumano.AlocacaoRh>(b =>
             {
                 b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
@@ -273,8 +280,15 @@ namespace PeD.Data
             });
             builder.Entity<Core.Models.Projetos.PlanoTrabalho>();
             builder.Entity<Core.Models.Projetos.Produto>();
-            builder.Entity<Core.Models.Projetos.RecursoHumano>();
-            builder.Entity<Core.Models.Projetos.RecursoMaterial>();
+            builder.Entity<Core.Models.Projetos.RecursoHumano>(b =>
+            {
+                b.HasOne(r => r.Projeto).WithMany(p => p.RecursosHumanos).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(r => r.Empresa).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<Core.Models.Projetos.RecursoMaterial>(b =>
+            {
+                b.HasOne(r => r.Projeto).WithMany(p => p.RecursosMateriais).OnDelete(DeleteBehavior.NoAction);
+            });
 
 
             builder.Entity<Alocacao>(b =>

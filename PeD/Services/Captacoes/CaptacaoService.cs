@@ -18,6 +18,8 @@ using PeD.Views.Email.Captacao.Propostas;
 using TaesaCore.Interfaces;
 using TaesaCore.Models;
 using TaesaCore.Services;
+using Empresa = PeD.Core.Models.Propostas.Empresa;
+using Funcao = PeD.Core.Models.Propostas.Funcao;
 
 namespace PeD.Services.Captacoes
 {
@@ -207,6 +209,8 @@ namespace PeD.Services.Captacoes
                 .ThenInclude(f => f.Responsavel)
                 .Where(cf => cf.CaptacaoId == id)
                 .Select(cf => cf.Fornecedor);
+            var taesa = _context.Empresas.FirstOrDefault(e => e.Nome == "TAESA") ??
+                        throw new Exception("Empresa TAESA não encontrada!");
 
             var propostas = fornecedores.Select(f => new Proposta()
             {
@@ -219,7 +223,26 @@ namespace PeD.Services.Captacoes
                     ParentId = (int) captacao.ContratoId
                 },
                 Participacao = StatusParticipacao.Pendente,
-                DataCriacao = DateTime.Now
+                DataCriacao = DateTime.Now,
+                Empresas = new List<Empresa>()
+                {
+                    new Empresa()
+                    {
+                        Funcao = Funcao.Cooperada,
+                        EmpresaRefId = taesa.Id,
+                        Codigo = taesa.Codigo,
+                        RazaoSocial = taesa.Nome,
+                        CNPJ = taesa.Cnpj
+                    },
+                    new Empresa()
+                    {
+                        Funcao = Funcao.Executora,
+                        EmpresaRefId = f.Id,
+                        RazaoSocial = f.Nome,
+                        CNPJ = f.Cnpj,
+                        UF = f.UF
+                    }
+                }
             });
 
             _context.AddRange(propostas);

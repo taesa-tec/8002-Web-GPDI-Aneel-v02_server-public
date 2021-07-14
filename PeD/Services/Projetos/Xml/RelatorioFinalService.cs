@@ -200,7 +200,7 @@ namespace PeD.Services.Projetos.Xml
         {
             return registros.GroupBy(r => r.FinanciadoraId).Select(r => new RecursoEmpresa()
             {
-                CodEmpresa = r.First().CodEmpresa,
+                CodEmpresa = r.First().FinanciadoraCodigo,
                 DestRecursos = new DestRecursos()
                 {
                     DestRecursosEmp = DestRecursosEmp(r.Where(i => i.FinanciadoraId == i.RecebedoraId)),
