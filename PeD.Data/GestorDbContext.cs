@@ -24,6 +24,7 @@ using Etapa = PeD.Core.Models.Propostas.Etapa;
 using EtapaProdutos = PeD.Core.Models.Propostas.EtapaProdutos;
 using ItemAjuda = PeD.Core.Models.Sistema.ItemAjuda;
 using Meta = PeD.Core.Models.Propostas.Meta;
+using Orcamento = PeD.Core.Models.Projetos.Orcamento;
 using PlanoTrabalho = PeD.Core.Models.Propostas.PlanoTrabalho;
 using Produto = PeD.Core.Models.Propostas.Produto;
 using RecursoHumano = PeD.Core.Models.Propostas.RecursoHumano;
@@ -234,10 +235,12 @@ namespace PeD.Data
             builder.Entity<PlanoComentario>(b => { b.ToTable("PlanoComentarios"); });
             builder.Entity<PlanoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
             builder.Entity<ContratoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
-            builder.Entity<Orcamento>(b =>
+            builder.Entity<AlocacaoInfo>(b =>
             {
+                b.Property(a => a.EmpresaFinanciadoraFuncao).HasConversion<string>();
+                b.Property(a => a.EmpresaRecebedoraFuncao).HasConversion<string>();
                 b.HasNoKey();
-                b.ToView("ProjetoOrcamentoView");
+                b.ToView("PropostaAlocacoesView");
             });
 
             #endregion
@@ -354,6 +357,11 @@ namespace PeD.Data
                 b.Property(r => r.Status).HasConversion<string>();
                 b.Property(r => r.TipoDocumento).HasConversion<string>();
                 b.ToView("RegistrosFinanceirosView");
+            });
+            builder.Entity<Orcamento>(b =>
+            {
+                b.HasNoKey();
+                b.ToView("ProjetoOrcamentoView");
             });
         }
 

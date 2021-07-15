@@ -29,6 +29,7 @@ using Empresa = PeD.Core.Models.Empresa;
 using Escopo = PeD.Core.Models.Projetos.Escopo;
 using Log = Serilog.Log;
 using Meta = PeD.Core.Models.Projetos.Meta;
+using Orcamento = PeD.Core.Models.Projetos.Orcamento;
 using PlanoTrabalho = PeD.Core.Models.Projetos.PlanoTrabalho;
 using Produto = PeD.Core.Models.Projetos.Produto;
 using Projeto = PeD.Core.Models.Projetos.Projeto;

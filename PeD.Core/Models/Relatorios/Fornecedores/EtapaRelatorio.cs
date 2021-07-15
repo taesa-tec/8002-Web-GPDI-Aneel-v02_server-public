@@ -17,25 +17,25 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
                 .ToList();
         }
 
-        public static Dictionary<int, List<AlocacaoRecurso>> AgruparPorEmpresaRecebedora(List<AlocacaoRecurso> list)
+        public static Dictionary<int, List<AlocacaoInfo>> AgruparPorEmpresaRecebedora(List<AlocacaoInfo> list)
         {
             return list.GroupBy(i => i.EmpresaRecebedoraId)
                 .ToDictionary(i => i.Key, i => i.ToList());
         }
 
-        public static decimal CustoPorCategoria(List<AlocacaoRecurso> list, string categoria)
+        public static decimal CustoPorCategoria(List<AlocacaoInfo> list, string categoria)
         {
-            return list.Where(a => a.CategoriaContabil == categoria).Sum(i => i.Valor);
+            return list.Where(a => a.Categoria == categoria).Sum(i => i.Valor);
         }
 
-        public static decimal CustoEntreEmpresas(List<AlocacaoRecurso> list, int financiadoraId, int recebedoraId)
+        public static decimal CustoEntreEmpresas(List<AlocacaoInfo> list, int financiadoraId, int recebedoraId)
         {
             return list.Where(i =>
                     i.EmpresaFinanciadoraId == financiadoraId && i.EmpresaRecebedoraId == recebedoraId)
                 .Sum(x => x.Valor);
         }
 
-        public static decimal CustoFinanciadora(List<AlocacaoRecurso> list, int financiadoraId, bool interno = true)
+        public static decimal CustoFinanciadora(List<AlocacaoInfo> list, int financiadoraId, bool interno = true)
         {
             return list.Where(i =>
                     i.EmpresaFinanciadoraId == financiadoraId &&
@@ -48,6 +48,7 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
             return CustoFinanciadora(list.SelectMany(e => e.Alocacoes).ToList(), financiadoraId, interno);
         }
 
+        public int Id { get; set; }
         public string DescricaoAtividades { get; set; }
         public short MesInicio { get; set; }
         public short MesFim { get; set; }
@@ -62,11 +63,11 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
             return Alocacoes.Where(i => i.EmpresaFinanciadoraId != i.EmpresaRecebedoraId).Sum(a => a.Valor);
         }
 
-        public List<AlocacaoRecurso> Alocacoes { get; set; }
+        public List<AlocacaoInfo> Alocacoes { get; set; }
 
         public decimal AlocacoesInternasSum => AlocacoesInternas.Sum(a => a.Valor);
 
-        public List<AlocacaoRecurso> AlocacoesInternas
+        public List<AlocacaoInfo> AlocacoesInternas
         {
             get
             {
@@ -75,7 +76,7 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
             }
         }
 
-        public List<AlocacaoRecurso> AlocacoesExternas
+        public List<AlocacaoInfo> AlocacoesExternas
         {
             get
             {
@@ -87,7 +88,7 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
         }
 
 
-        public Dictionary<int, Dictionary<int, List<AlocacaoRecurso>>> AlocacoesEntreEmpresas
+        public Dictionary<int, Dictionary<int, List<AlocacaoInfo>>> AlocacoesEntreEmpresas
         {
             get
             {
@@ -99,9 +100,5 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
                     );
             }
         }
-
-        public List<AlocacaoRecurso> AlocacaoPorCategoria => AgruparPorCategoria(Alocacoes);
-        public List<AlocacaoRecurso> AlocacoesInternasPorCategoria => AgruparPorCategoria(AlocacoesInternas);
-        public List<AlocacaoRecurso> AlocacoesExternasPorCategoria => AgruparPorCategoria(AlocacoesExternas);
     }
 }

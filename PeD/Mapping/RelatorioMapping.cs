@@ -35,9 +35,7 @@ namespace PeD.Mapping
             CreateMap<Etapa, EtapaRelatorio>()
                 .ForMember(d => d.MesInicio, opt => opt.MapFrom(s => s.Meses.Min()))
                 .ForMember(d => d.MesFim, opt => opt.MapFrom(s => s.Meses.Max()))
-                .ForMember(d => d.Alocacoes, opt => opt.MapFrom(src =>
-                    (new List<Alocacao>()).Concat(src.RecursosHumanosAlocacoes)
-                    .Concat(src.RecursosMateriaisAlocacoes)));
+                .ForMember(d => d.Alocacoes, opt => opt.Ignore());
         }
     }
 }

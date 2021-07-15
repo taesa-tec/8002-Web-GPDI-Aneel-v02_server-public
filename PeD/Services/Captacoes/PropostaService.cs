@@ -330,10 +330,18 @@ namespace PeD.Services.Captacoes
 
         #region Relatórios
 
+        public List<AlocacaoInfo> GetAlocacoes(int propostaId)
+        {
+            return context.Set<AlocacaoInfo>().Where(a => a.PropostaId == propostaId).ToList();
+        }
+
         public Relatorio UpdateRelatorio(int propostaId)
         {
             var proposta = GetPropostaFull(propostaId);
+            var alocacoes = GetAlocacoes(propostaId);
             var modelView = _mapper.Map<Core.Models.Relatorios.Fornecedores.Proposta>(proposta);
+            modelView.Etapas.ForEach(e => { e.Alocacoes = alocacoes.Where(a => a.EtapaId == e.Id).ToList(); });
+
             var validacao = (new PropostaValidator()).Validate(modelView);
             var content = renderService.RenderToStringAsync("Proposta/Proposta", modelView).Result;
             var relatorio = context.Set<Relatorio>().Where(r => r.PropostaId == propostaId).FirstOrDefault() ??

@@ -3,9 +3,10 @@ namespace PeD.Data.Views
     public class PropostaOrcamento : IView
     {
         public string CreateView => @"
-CREATE OR ALTER VIEW PropostaOrcamentoView AS
+CREATE OR ALTER VIEW PropostaAlocacoesView AS
 SELECT 'RH'                                                                     as Categoria,
        Alocacao.PropostaId,
+       Alocacao.EtapaId,
        Etapas.Ordem                                                             as EtapaOrdem,
        Alocacao.EmpresaFinanciadoraId,
        COALESCE(FinanciadoraRef.Nome, Financiadora.RazaoSocial)                 as EmpresaFinanciadora,
@@ -36,6 +37,7 @@ UNION ALL
 
 SELECT Categoria.Valor                                          as Categoria,
        Alocacao.PropostaId,
+       Alocacao.EtapaId,
        Etapas.Ordem,
        Alocacao.EmpresaFinanciadoraId,
        COALESCE(FinanciadoraRef.Nome, Financiadora.RazaoSocial) as EmpresaFinanciadora,
