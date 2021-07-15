@@ -20,19 +20,26 @@ namespace PeD.Core.Models.Propostas
 
         [Column(TypeName = "decimal(10, 2)")] public decimal ValorHora { get; set; }
         public string UrlCurriculo { get; set; }
+    }
 
+    [Table("PropostaRecursosHumanosAlocacao")]
+    public class AlocacaoRh : Propostas.Alocacao
+    {
+        public int RecursoId { get; set; }
+        public RecursoHumano Recurso { get; set; }
 
-        [Table("PropostaRecursosHumanosAlocacao")]
-        public class AlocacaoRh : Propostas.Alocacao
+        public List<AlocacaoRhHorasMes> HorasMeses { get; set; }
+
+        public override decimal Valor
         {
-            public int RecursoId { get; set; }
-            public RecursoHumano Recurso { get; set; }
-            public Dictionary<short, short> HoraMeses { get; set; }
-
-            public override decimal Valor
-            {
-                get { return HoraMeses.Sum(i => i.Value) * (Recurso?.ValorHora ?? 0); }
-            }
+            get { return (HorasMeses is null) ? 0 : HorasMeses.Sum(i => i.Horas) * (Recurso?.ValorHora ?? 0); }
         }
+    }
+
+    public class AlocacaoRhHorasMes
+    {
+        public int AlocacaoRhId { get; set; }
+        public int Mes { get; set; }
+        public int Horas { get; set; }
     }
 }

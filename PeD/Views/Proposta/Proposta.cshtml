@@ -1,5 +1,6 @@
 @using PeD.Core.Models.Relatorios.Fornecedores
 @using Microsoft.Extensions.Configuration
+@using PeD.Core.Models.Propostas
 @inject IConfiguration Configuration
 @model PeD.Core.Models.Relatorios.Fornecedores.Proposta
 
@@ -148,8 +149,13 @@
             @foreach (var e in Model.Empresas)
             {
                 <tr>
-                    <td>@e.Proposta.Fornecedor.Nome</td>
-                    <td>@e.RazaoSocial</td>
+                    <td>@e.Nome</td>
+                    <td>
+                        @if (e.Funcao == Funcao.Cooperada)
+                        {
+                            <span>Empresa de energia Elétrica</span>
+                        }
+                    </td>
                     <td>@e.Funcao</td>
                 </tr>
             }

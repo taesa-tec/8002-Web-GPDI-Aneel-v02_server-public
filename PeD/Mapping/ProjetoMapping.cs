@@ -7,6 +7,8 @@ using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Projetos;
 using PeD.Core.Requests.Projetos.Resultados;
+using AlocacaoRh = PeD.Core.Models.Propostas.AlocacaoRh;
+using AlocacaoRhHorasMes = PeD.Core.Models.Propostas.AlocacaoRhHorasMes;
 using Empresa = PeD.Core.Models.Projetos.Empresa;
 using Etapa = PeD.Core.Models.Projetos.Etapa;
 using Produto = PeD.Core.Models.Projetos.Produto;
@@ -45,13 +47,12 @@ namespace PeD.Mapping
                 .IncludeBase<PropostaNode, ProjetoNode>();
             CreateMap<Core.Models.Propostas.RecursoMaterial, Core.Models.Projetos.RecursoMaterial>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
-            CreateMap<Core.Models.Propostas.RecursoHumano.AlocacaoRh,
-                    Core.Models.Projetos.RecursoHumano.AlocacaoRh>().IncludeBase<PropostaNode, ProjetoNode>()
-                .ForMember(dest => dest.HorasMeses, opt => opt.MapFrom(
-                    src => src.HoraMeses.Select(kv => new RecursoHumano.AlocacaoRhHorasMes()
-                        {Mes = kv.Key, Horas = kv.Value})))
+            CreateMap<AlocacaoRhHorasMes, Core.Models.Projetos.AlocacaoRhHorasMes>();
+            CreateMap<AlocacaoRh,
+                    Core.Models.Projetos.AlocacaoRh>().IncludeBase<PropostaNode, ProjetoNode>()
+                .ForMember(dest => dest.HorasMeses, opt => opt.MapFrom(src => src.HorasMeses))
                 .ForMember(dest => dest.RecursoHumanoId, opt => opt.MapFrom(src => src.RecursoId));
-            CreateMap<Core.Models.Propostas.RecursoMaterial.AlocacaoRm,
+            CreateMap<AlocacaoRm,
                     Core.Models.Projetos.RecursoMaterial.AlocacaoRm>().IncludeBase<PropostaNode, ProjetoNode>()
                 .ForMember(dest => dest.RecursoMaterialId, opt => opt.MapFrom(src => src.RecursoId));
             ;

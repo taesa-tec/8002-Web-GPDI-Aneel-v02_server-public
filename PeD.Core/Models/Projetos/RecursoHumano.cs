@@ -19,27 +19,25 @@ namespace PeD.Core.Models.Projetos
 
         [Column(TypeName = "decimal(10, 2)")] public decimal ValorHora { get; set; }
         public string UrlCurriculo { get; set; }
+    }
 
-        public class AlocacaoRh : Alocacao
+
+    public class AlocacaoRh : Alocacao
+    {
+        public int RecursoHumanoId { get; set; }
+        public RecursoHumano RecursoHumano { get; set; }
+        public List<AlocacaoRhHorasMes> HorasMeses { get; set; }
+
+        public override decimal Custo
         {
-            public int RecursoHumanoId { get; set; }
-            public RecursoHumano RecursoHumano { get; set; }
-            public List<AlocacaoRhHorasMes> HorasMeses { get; set; }
-
-            public override decimal Custo
-            {
-                get
-                {
-                    return (HorasMeses is null) ? 0 : HorasMeses.Sum(i => i.Horas) * (RecursoHumano?.ValorHora ?? 0);
-                }
-            }
+            get { return (HorasMeses is null) ? 0 : HorasMeses.Sum(i => i.Horas) * (RecursoHumano?.ValorHora ?? 0); }
         }
+    }
 
-        public class AlocacaoRhHorasMes
-        {
-            public int AlocacaoRhId { get; set; }
-            public int Mes { get; set; }
-            public int Horas { get; set; }
-        }
+    public class AlocacaoRhHorasMes
+    {
+        public int AlocacaoRhId { get; set; }
+        public int Mes { get; set; }
+        public int Horas { get; set; }
     }
 }

@@ -24,6 +24,7 @@ using PeD.Services.Projetos.Xml;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
 using Alocacao = PeD.Core.Models.Projetos.Alocacao;
+using AlocacaoRh = PeD.Core.Models.Projetos.AlocacaoRh;
 using Empresa = PeD.Core.Models.Empresa;
 using Escopo = PeD.Core.Models.Projetos.Escopo;
 using Log = Serilog.Log;
@@ -171,7 +172,7 @@ namespace PeD.Services.Projetos
             });
             CopyPropostaNodes<Risco>(projeto.Id, proposta.Riscos);
             CopyPropostaNodes<Meta>(projeto.Id, proposta.Metas);
-            CopyPropostaNodes<RecursoHumano.AlocacaoRh>(projeto.Id, proposta.RecursosHumanosAlocacoes,
+            CopyPropostaNodes<AlocacaoRh>(projeto.Id, proposta.RecursosHumanosAlocacoes,
                 a =>
                 {
                     a.RecursoHumano = null;

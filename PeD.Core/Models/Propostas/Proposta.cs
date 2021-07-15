@@ -59,8 +59,8 @@ namespace PeD.Core.Models.Propostas
         public List<Risco> Riscos { get; set; }
         public List<RecursoHumano> RecursosHumanos { get; set; }
         public List<RecursoMaterial> RecursosMateriais { get; set; }
-        [InverseProperty("Proposta")] public List<RecursoHumano.AlocacaoRh> RecursosHumanosAlocacoes { get; set; }
-        [InverseProperty("Proposta")] public List<RecursoMaterial.AlocacaoRm> RecursosMateriaisAlocacoes { get; set; }
+        [InverseProperty("Proposta")] public List<AlocacaoRh> RecursosHumanosAlocacoes { get; set; }
+        [InverseProperty("Proposta")] public List<AlocacaoRm> RecursosMateriaisAlocacoes { get; set; }
         public List<Relatorio> HistoricoRelatorios { get; set; }
         public List<ContratoComentario> ContratoComentarios { get; set; }
         public List<PlanoComentario> PlanoTrabalhoComentarios { get; set; }

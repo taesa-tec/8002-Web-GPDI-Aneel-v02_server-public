@@ -42,7 +42,7 @@ namespace PeD.Controllers.Propostas
 
         public override async Task<IActionResult> Delete(int id)
         {
-            if (_context.Set<RecursoHumano.AlocacaoRh>().AsQueryable().Any(a => a.RecursoId == id))
+            if (_context.Set<AlocacaoRh>().AsQueryable().Any(a => a.RecursoId == id))
             {
                 return Problem("Não é possível apagar um recurso já alocado", null, StatusCodes.Status409Conflict);
             }

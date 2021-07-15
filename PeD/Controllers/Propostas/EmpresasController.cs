@@ -94,9 +94,9 @@ namespace PeD.Controllers.Propostas
 
             if (empresa.PropostaId == Proposta.Id)
             {
-                if (_context.Set<RecursoMaterial.AlocacaoRm>().AsQueryable().Any(a =>
+                if (_context.Set<AlocacaoRm>().AsQueryable().Any(a =>
                         a.EmpresaRecebedoraId == id || a.EmpresaFinanciadoraId == id) ||
-                    _context.Set<RecursoHumano.AlocacaoRh>().AsQueryable().Any(a => a.EmpresaFinanciadoraId == id))
+                    _context.Set<AlocacaoRh>().AsQueryable().Any(a => a.EmpresaFinanciadoraId == id))
                 {
                     return Problem("Não é possível apagar uma entidade relacionada com alocações de recursos", null,
                         StatusCodes.Status409Conflict);

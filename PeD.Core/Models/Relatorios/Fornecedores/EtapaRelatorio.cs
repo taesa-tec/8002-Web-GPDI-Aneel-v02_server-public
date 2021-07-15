@@ -70,9 +70,7 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
         {
             get
             {
-                return Alocacoes.Where(c =>
-                        c.EmpresaFinanciadoraFuncao == Funcao.Cooperada &&
-                        c.EmpresaRecebedoraFuncao == Funcao.Cooperada)
+                return Alocacoes.Where(c => c.EmpresaFinanciadoraId == c.EmpresaRecebedoraId)
                     .ToList();
             }
         }

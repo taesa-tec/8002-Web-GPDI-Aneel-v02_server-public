@@ -16,6 +16,8 @@ using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Propostas;
 using PeD.Data.Builders;
 using Alocacao = PeD.Core.Models.Projetos.Alocacao;
+using AlocacaoRh = PeD.Core.Models.Propostas.AlocacaoRh;
+using AlocacaoRhHorasMes = PeD.Core.Models.Projetos.AlocacaoRhHorasMes;
 using Empresa = PeD.Core.Models.Propostas.Empresa;
 using Escopo = PeD.Core.Models.Propostas.Escopo;
 using Etapa = PeD.Core.Models.Propostas.Etapa;
@@ -201,7 +203,7 @@ namespace PeD.Data
             {
                 b.HasOne(r => r.Proposta).WithMany(p => p.RecursosMateriais).OnDelete(DeleteBehavior.NoAction);
             });
-            builder.Entity<RecursoHumano.AlocacaoRh>(b =>
+            builder.Entity<AlocacaoRh>(b =>
             {
                 b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Etapa).WithMany(e => e.RecursosHumanosAlocacoes).OnDelete(DeleteBehavior.NoAction);
@@ -210,11 +212,13 @@ namespace PeD.Data
                     .HasForeignKey(a => a.PropostaId)
                     .OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.Property(e => e.HoraMeses)
-                    .JsonConversion(new ValueComparer<Dictionary<short, short>>((l1, l2) => l1.SequenceEqual(l2),
-                        l => l.Aggregate(0, (i, s) => HashCode.Combine(i, s.GetHashCode()))));
             });
-            builder.Entity<RecursoMaterial.AlocacaoRm>(b =>
+            builder.Entity<PeD.Core.Models.Propostas.AlocacaoRhHorasMes>(b =>
+            {
+                b.HasKey(br => new {br.AlocacaoRhId, br.Mes});
+                b.ToTable("PropostasAlocacaoRhHorasMeses");
+            });
+            builder.Entity<AlocacaoRm>(b =>
             {
                 b.HasOne(a => a.Etapa).WithMany(e => e.RecursosMateriaisAlocacoes).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.EmpresaRecebedora).WithMany().OnDelete(DeleteBehavior.NoAction);
@@ -301,12 +305,12 @@ namespace PeD.Data
                     .OnDelete(DeleteBehavior.NoAction);
                 b.ToTable("ProjetosRecursosAlocacoes");
             });
-            builder.Entity<Core.Models.Projetos.RecursoHumano.AlocacaoRh>(b =>
+            builder.Entity<Core.Models.Projetos.AlocacaoRh>(b =>
             {
                 b.HasMany(b => b.HorasMeses).WithOne().HasForeignKey(a => a.AlocacaoRhId);
                 b.HasOne(a => a.RecursoHumano).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
-            builder.Entity<Core.Models.Projetos.RecursoHumano.AlocacaoRhHorasMes>(b =>
+            builder.Entity<AlocacaoRhHorasMes>(b =>
             {
                 b.HasKey(b => new {b.AlocacaoRhId, b.Mes});
                 b.ToTable("ProjetosAlocacaoRhHorasMeses");

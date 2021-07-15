@@ -71,8 +71,15 @@ namespace PeD.Mapping
                     opt.MapFrom(src => src.Empresa.Nome));
             CreateMap<RecursoHumanoRequest, RecursoHumano>();
 
-            CreateMap<AlocacaoRecursoHumanoRequest, RecursoHumano.AlocacaoRh>();
-            CreateMap<RecursoHumano.AlocacaoRh, AlocacaoRecursoHumanoDto>()
+            CreateMap<AlocacaoRecursoHumanoRequest, AlocacaoRh>()
+                .ForMember(d => d.HorasMeses, o => o.MapFrom(s => s.HoraMeses.Select(h => new AlocacaoRhHorasMes()
+                {
+                    AlocacaoRhId = s.Id,
+                    Mes = h.Key,
+                    Horas = h.Value
+                })));
+
+            CreateMap<AlocacaoRh, AlocacaoRecursoHumanoDto>()
                 .ForMember(dest => dest.EmpresaFinanciadora, opt =>
                     opt.MapFrom(src => src.EmpresaFinanciadora.RazaoSocial))
                 .ForMember(dest => dest.Recurso, opt => opt
@@ -80,7 +87,8 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.Etapa, opt => opt
                     .MapFrom(src => src.Etapa.Ordem))
                 .ForMember(dest => dest.Valor, opt =>
-                    opt.MapFrom(src => src.Recurso.ValorHora * src.HoraMeses.Sum(m => m.Value)))
+                    opt.MapFrom(src => src.Recurso.ValorHora * src.HorasMeses.Sum(m => m.Horas)))
+                .ForMember(d => d.HoraMeses, o => o.MapFrom(s => s.HorasMeses.ToDictionary(i => i.Mes, i => i.Horas)))
                 ;
 
             CreateMap<RecursoMaterialRequest, RecursoMaterial>();
@@ -88,8 +96,8 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.CategoriaContabil, opt =>
                     opt.MapFrom(src => src.CategoriaContabil.Nome));
 
-            CreateMap<AlocacaoRecursoMaterialRequest, RecursoMaterial.AlocacaoRm>();
-            CreateMap<RecursoMaterial.AlocacaoRm, AlocacaoRecursoMaterialDto>()
+            CreateMap<AlocacaoRecursoMaterialRequest, AlocacaoRm>();
+            CreateMap<AlocacaoRm, AlocacaoRecursoMaterialDto>()
                 .ForMember(dest => dest.EmpresaFinanciadora, opt =>
                     opt.MapFrom(src => src.EmpresaFinanciadora.RazaoSocial))
                 .ForMember(dest => dest.EmpresaRecebedora, opt =>
