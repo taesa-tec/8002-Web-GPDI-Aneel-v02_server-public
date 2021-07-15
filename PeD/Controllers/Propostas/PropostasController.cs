@@ -64,7 +64,7 @@ namespace PeD.Controllers.Propostas
 
         #region Empresas Relacionadas a proposta
 
-        [HttpGet("{id:guid}/Empresas")]
+        [HttpGet("{id:guid}/EmpresasOld")]
         public async Task<ActionResult> GetPropostaEmpresas(Guid id,
             [FromServices] IService<Empresa> empresasService,
             [FromServices] IService<Fornecedor> fornecedorService

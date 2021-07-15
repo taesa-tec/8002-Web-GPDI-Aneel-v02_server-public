@@ -1801,6 +1801,7 @@ namespace PeD.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PropostaId = table.Column<int>(nullable: false),
+                    Required = table.Column<bool>(nullable: false),
                     EmpresaRefId = table.Column<int>(nullable: true),
                     CNPJ = table.Column<string>(nullable: true),
                     UF = table.Column<string>(nullable: true),

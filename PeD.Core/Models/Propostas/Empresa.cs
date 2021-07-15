@@ -11,6 +11,7 @@ namespace PeD.Core.Models.Propostas
     [Table("PropostaEmpresas")]
     public class Empresa : PropostaNode
     {
+        public bool Required { get; set; }
         public int? EmpresaRefId { get; set; }
         public Models.Empresa EmpresaRef { get; set; }
         public string CNPJ { get; set; }

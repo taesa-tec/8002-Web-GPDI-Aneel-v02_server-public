@@ -68,7 +68,7 @@ namespace PeD.Mapping
 
             CreateMap<RecursoHumano, RecursoHumanoDto>()
                 .ForMember(dest => dest.Empresa, opt =>
-                    opt.MapFrom(src => src.Empresa));
+                    opt.MapFrom(src => src.Empresa.Nome));
             CreateMap<RecursoHumanoRequest, RecursoHumano>();
 
             CreateMap<AlocacaoRecursoHumanoRequest, RecursoHumano.AlocacaoRh>();

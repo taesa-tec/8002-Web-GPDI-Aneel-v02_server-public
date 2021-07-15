@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using FluentValidation;
 
 namespace PeD.Core.Models.Propostas
 {

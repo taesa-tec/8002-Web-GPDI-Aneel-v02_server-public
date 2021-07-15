@@ -10,7 +10,7 @@ using PeD.Data;
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20210714203321_Initial")]
+    [Migration("20210715131020_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4832,6 +4832,9 @@ namespace PeD.Data.Migrations
 
                     b.Property<string>("RazaoSocial")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UF")
                         .HasColumnType("nvarchar(max)");

@@ -4831,6 +4831,9 @@ namespace PeD.Data.Migrations
                     b.Property<string>("RazaoSocial")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Required")
+                        .HasColumnType("bit");
+
                     b.Property<string>("UF")
                         .HasColumnType("nvarchar(max)");
 
