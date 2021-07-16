@@ -10,8 +10,8 @@ using PeD.Data;
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20210715192409_Recursos")]
-    partial class Recursos
+    [Migration("20210715233705_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

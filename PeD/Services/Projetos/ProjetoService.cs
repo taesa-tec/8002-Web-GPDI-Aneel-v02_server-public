@@ -160,10 +160,20 @@ namespace PeD.Services.Projetos
 
 
             var empresasCopy = CopyPropostaNodes<Core.Models.Projetos.Empresa>(projeto.Id, proposta.Empresas);
-            var produtosCopy = CopyPropostaNodes<Produto>(projeto.Id, proposta.Produtos);
+            var produtosCopy = CopyPropostaNodes<Produto>(projeto.Id, proposta.Produtos, p =>
+            {
+                p.ProdutoTipo = null;
+                
+                p.FaseCadeia = null;
+                p.TipoDetalhado = null;
+            });
 
             var rhCopy = CopyPropostaNodes<RecursoHumano>(projeto.Id, proposta.RecursosHumanos,
-                r => { r.EmpresaId = empresasCopy[r.EmpresaId]; });
+                r =>
+                {
+                    r.Empresa = null;
+                    r.EmpresaId = empresasCopy[r.EmpresaId];
+                });
             var rmCopy = CopyPropostaNodes<RecursoMaterial>(projeto.Id, proposta.RecursosMateriais);
             var etapaCopy = CopyPropostaNodes<Core.Models.Projetos.Etapa>(projeto.Id, proposta.Etapas, etapa =>
             {

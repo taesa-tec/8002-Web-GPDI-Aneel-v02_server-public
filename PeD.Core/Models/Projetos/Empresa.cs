@@ -17,13 +17,8 @@ namespace PeD.Core.Models.Projetos
         public string CNPJ { get; set; }
         public string UF { get; set; }
 
-        protected string _codigo;
 
-        public string Codigo
-        {
-            get => EmpresaRefId != null ? EmpresaRef?.Codigo : _codigo;
-            set => _codigo = value;
-        }
+        public string Codigo { get; set; }
 
         public string RazaoSocial { get; set; }
         public string Nome => RazaoSocial;

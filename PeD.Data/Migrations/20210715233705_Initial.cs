@@ -2153,8 +2153,7 @@ namespace PeD.Data.Migrations
                     EtapaId = table.Column<int>(nullable: false),
                     EmpresaFinanciadoraId = table.Column<int>(nullable: false),
                     Justificativa = table.Column<string>(nullable: true),
-                    RecursoId = table.Column<int>(nullable: false),
-                    HoraMeses = table.Column<string>(nullable: true)
+                    RecursoId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -2223,6 +2222,25 @@ namespace PeD.Data.Migrations
                         column: x => x.RecursoId,
                         principalTable: "PropostaRecursosMateriais",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropostasAlocacaoRhHorasMeses",
+                columns: table => new
+                {
+                    AlocacaoRhId = table.Column<int>(nullable: false),
+                    Mes = table.Column<int>(nullable: false),
+                    Horas = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropostasAlocacaoRhHorasMeses", x => new { x.AlocacaoRhId, x.Mes });
+                    table.ForeignKey(
+                        name: "FK_PropostasAlocacaoRhHorasMeses_PropostaRecursosHumanosAlocacao_AlocacaoRhId",
+                        column: x => x.AlocacaoRhId,
+                        principalTable: "PropostaRecursosHumanosAlocacao",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -4102,13 +4120,13 @@ namespace PeD.Data.Migrations
                 name: "PropostaPlanosTrabalhos");
 
             migrationBuilder.DropTable(
-                name: "PropostaRecursosHumanosAlocacao");
-
-            migrationBuilder.DropTable(
                 name: "PropostaRecursosMateriaisAlocacao");
 
             migrationBuilder.DropTable(
                 name: "PropostaRiscos");
+
+            migrationBuilder.DropTable(
+                name: "PropostasAlocacaoRhHorasMeses");
 
             migrationBuilder.DropTable(
                 name: "PropostasArquivos");
@@ -4144,13 +4162,10 @@ namespace PeD.Data.Migrations
                 name: "PropostaContratos");
 
             migrationBuilder.DropTable(
-                name: "PropostaRecursosHumanos");
-
-            migrationBuilder.DropTable(
-                name: "PropostaEtapas");
-
-            migrationBuilder.DropTable(
                 name: "PropostaRecursosMateriais");
+
+            migrationBuilder.DropTable(
+                name: "PropostaRecursosHumanosAlocacao");
 
             migrationBuilder.DropTable(
                 name: "ProjetosRelatoriosPropriedadesIntelectuais");
@@ -4165,10 +4180,10 @@ namespace PeD.Data.Migrations
                 name: "ProjetoRecursosMateriais");
 
             migrationBuilder.DropTable(
-                name: "PropostaEmpresas");
+                name: "PropostaEtapas");
 
             migrationBuilder.DropTable(
-                name: "PropostaProdutos");
+                name: "PropostaRecursosHumanos");
 
             migrationBuilder.DropTable(
                 name: "ProjetoProdutos");
@@ -4180,19 +4195,25 @@ namespace PeD.Data.Migrations
                 name: "CategoriasContabeis");
 
             migrationBuilder.DropTable(
+                name: "PropostaProdutos");
+
+            migrationBuilder.DropTable(
+                name: "PropostaEmpresas");
+
+            migrationBuilder.DropTable(
+                name: "Projetos");
+
+            migrationBuilder.DropTable(
                 name: "FaseTipoDetalhado");
 
             migrationBuilder.DropTable(
                 name: "ProdutoTipos");
 
             migrationBuilder.DropTable(
-                name: "Projetos");
+                name: "Segmentos");
 
             migrationBuilder.DropTable(
                 name: "FasesCadeiaProduto");
-
-            migrationBuilder.DropTable(
-                name: "Segmentos");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

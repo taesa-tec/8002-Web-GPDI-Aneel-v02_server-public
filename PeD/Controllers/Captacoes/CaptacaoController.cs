@@ -551,7 +551,7 @@ namespace PeD.Controllers.Captacoes
         [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPost("{id}/Formalizacao")]
         public ActionResult Formalizar(int id, [FromBody] CaptacaoFormalizacaoRequest request,
-            [FromServices] ProjetoService projetoService)
+            [FromServices] ProjetoService projetoService, [FromServices] GestorDbContext context)
         {
             var captacao = Service.Filter(q => q
                 .Where(c => c.Status == Captacao.CaptacaoStatus.Formalizacao &&
@@ -584,16 +584,18 @@ namespace PeD.Controllers.Captacoes
             }
 
             captacao.IsProjetoAprovado = request.Aprovado;
+
             Service.Put(captacao);
 
             if (request.Aprovado)
             {
+                if (!request.EmpresaProponenteId.HasValue) throw new Exception("Empresa Proponente não definida!");
+                if (!request.InicioProjeto.HasValue) throw new Exception("Data de início não definida!");
                 var projeto = projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
                     request.EmpresaProponenteId.Value, request.NumeroProjeto,
                     request.TituloCompleto, request.ResponsavelId, request.Compartilhamento,
                     request.InicioProjeto.Value);
             }
-
 
             return Ok();
         }

@@ -22,6 +22,7 @@ namespace PeD.Services.Projetos.Xml
         {
             var projeto = _context.Set<Projeto>()
                               .Include(p => p.PlanoTrabalho)
+                              .Include(p => p.Tema)
                               .Include(p => p.SubTemas).ThenInclude(s => s.SubTema)
                               .FirstOrDefault(p => p.Id == projetoId) ??
                           throw new Exception("Projeto Não encontrado");
