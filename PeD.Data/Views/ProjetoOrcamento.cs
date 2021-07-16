@@ -9,29 +9,25 @@ SELECT A.Id,
        A.Tipo,
        A.EtapaId,
        ETAPAS.Ordem,
-       ALOC_HORAS.Mes,
        A.RecursoHumanoId,
        A.RecursoMaterialId,
-       IIF(A.Tipo = 'AlocacaoRm', RECURSOMATERIAL.Nome, RECURSOHUMANO.NomeCompleto)       AS Recurso,
-       IIF(A.Tipo = 'AlocacaoRm', CC.Nome, 'Recursos Humanos')                            AS CategoriaContabil,
-       IIF(A.Tipo = 'AlocacaoRm', CC.Valor, 'RH')                                         AS CategoriaContabilCodigo,
+       IIF(A.Tipo = 'AlocacaoRm', RECURSOMATERIAL.Nome, RECURSOHUMANO.NomeCompleto)                    AS Recurso,
+       IIF(A.Tipo = 'AlocacaoRm', CC.Nome, 'Recursos Humanos')                                         AS CategoriaContabil,
+       IIF(A.Tipo = 'AlocacaoRm', CC.Valor, 'RH')                                                      AS CategoriaContabilCodigo,
 
-       A.EmpresaFinanciadoraId                                                            as FinanciadorId,
+       A.EmpresaFinanciadoraId                                                                         as FinanciadoraId,
+       COALESCE(FinanciadoraRef.Nome, Financiadora.RazaoSocial)                                        as Financiadora,
 
-       COALESCE(FinanciadoraRef.Nome, Financiadora.RazaoSocial)                           as Financiador,
 
+       IIF(A.Tipo = 'AlocacaoRm', A.EmpresaRecebedoraId, RECURSOHUMANO.EmpresaId)                      AS RecebedoraId,
 
-       IIF(A.Tipo = 'AlocacaoRm', A.EmpresaRecebedoraId, RECURSOHUMANO.EmpresaId)         AS RecebedoraId,
+       IIF(A.Tipo = 'AlocacaoRm', COALESCE(FinanciadoraRef.Nome, Financiadora.RazaoSocial),
+           COALESCE(EmpresaRHRef.Nome, EmpresaRH.RazaoSocial))                                         as Recebedora,
 
-       CASE
-           WHEN A.Tipo = 'AlocacaoRm' THEN COALESCE(FinanciadoraRef.Nome, Financiadora.RazaoSocial)
-           ELSE COALESCE(EmpresaRHRef.Nome, EmpresaRH.RazaoSocial)
-           END                                                                            as Recebedor,
-
-       IIF(A.Tipo = 'AlocacaoRm', A.Quantidade, ALOC_HORAS.Horas)                         AS Quantidade,
-       IIF(A.Tipo = 'AlocacaoRm', RECURSOMATERIAL.ValorUnitario, RECURSOHUMANO.ValorHora) AS Custo,
-       IIF(A.Tipo = 'AlocacaoRm', CAST(A.Quantidade * RECURSOMATERIAL.ValorUnitario AS DECIMAL(18, 2)),
-           CAST(ALOC_HORAS.Horas * RECURSOHUMANO.ValorHora as DECIMAL(18, 2)))            AS Total
+       COALESCE(IIF(A.Tipo = 'AlocacaoRm', A.Quantidade, SUM(ALOC_HORAS.Horas)), 0)                    AS Quantidade,
+       COALESCE(IIF(A.Tipo = 'AlocacaoRm', RECURSOMATERIAL.ValorUnitario, RECURSOHUMANO.ValorHora), 0) AS Custo,
+       COALESCE(IIF(A.Tipo = 'AlocacaoRm', CAST(A.Quantidade * RECURSOMATERIAL.ValorUnitario AS DECIMAL(18, 2)),
+                    CAST(Sum(ALOC_HORAS.Horas) * RECURSOHUMANO.ValorHora as DECIMAL(18, 2))), 0)       AS Total
 
 
 FROM ProjetosRecursosAlocacoes A
@@ -52,6 +48,12 @@ FROM ProjetosRecursosAlocacoes A
     -- RECEBEORES RH
          LEFT JOIN ProjetoEmpresas EmpresaRH on RECURSOHUMANO.EmpresaId = EmpresaRH.Id
          LEFT JOIN Empresas EmpresaRHRef on EmpresaRH.EmpresaRefId = EmpresaRHRef.Id
+GROUP BY A.Id, A.ProjetoId, A.Tipo, A.EtapaId, ETAPAS.Ordem, A.RecursoHumanoId, A.RecursoMaterialId,
+         A.EmpresaFinanciadoraId,
+         A.Quantidade, RECURSOMATERIAL.ValorUnitario,
+         RECURSOHUMANO.ValorHora, RECURSOMATERIAL.Nome, RECURSOHUMANO.NomeCompleto, CC.Nome, CC.Valor,
+         FinanciadoraRef.Nome, Financiadora.RazaoSocial, A.EmpresaRecebedoraId, RECURSOHUMANO.EmpresaId,
+         EmpresaRHRef.Nome, EmpresaRH.RazaoSocial
 ";
     }
 }

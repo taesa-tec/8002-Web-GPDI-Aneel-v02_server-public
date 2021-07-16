@@ -27,6 +27,7 @@ using Alocacao = PeD.Core.Models.Projetos.Alocacao;
 using AlocacaoRh = PeD.Core.Models.Projetos.AlocacaoRh;
 using Empresa = PeD.Core.Models.Empresa;
 using Escopo = PeD.Core.Models.Projetos.Escopo;
+using Funcao = PeD.Core.Models.Projetos.Funcao;
 using Log = Serilog.Log;
 using Meta = PeD.Core.Models.Projetos.Meta;
 using Orcamento = PeD.Core.Models.Projetos.Orcamento;
@@ -157,13 +158,23 @@ namespace PeD.Services.Projetos
                     .ToList()
             };
             Post(projeto);
+            _context.Add(new Core.Models.Projetos.Empresa()
+            {
+                Codigo = proponente.Codigo,
+                Funcao = Funcao.Proponente,
+                RazaoSocial = proponente.Nome,
+                CNPJ = proponente.Cnpj,
+                UF = proponente.UF,
+                EmpresaRefId = proponente.Id,
+                ProjetoId = projeto.Id
+            });
 
 
             var empresasCopy = CopyPropostaNodes<Core.Models.Projetos.Empresa>(projeto.Id, proposta.Empresas);
             var produtosCopy = CopyPropostaNodes<Produto>(projeto.Id, proposta.Produtos, p =>
             {
                 p.ProdutoTipo = null;
-                
+
                 p.FaseCadeia = null;
                 p.TipoDetalhado = null;
             });
@@ -190,7 +201,6 @@ namespace PeD.Services.Projetos
                     a.RecursoHumanoId = rhCopy[a.RecursoHumanoId];
                     a.Etapa = null;
                     a.EtapaId = etapaCopy[a.EtapaId];
-
                     a.EmpresaFinanciadoraId = empresasCopy[a.EmpresaFinanciadoraId];
                 });
             CopyPropostaNodes<RecursoMaterial.AlocacaoRm>(projeto.Id, proposta.RecursosMateriaisAlocacoes,
@@ -246,8 +256,8 @@ namespace PeD.Services.Projetos
             // Financiadores
             var empresas = (new[]
                 {
-                    orcamentos.Select(o => new {o.Financiador, o.FinanciadoraId}),
-                    extratos.Select(o => new {o.Financiador, o.FinanciadoraId})
+                    orcamentos.Select(o => new {Financiador = o.Financiadora, o.FinanciadoraId}),
+                    extratos.Select(o => new {Financiador = o.Financiadora, o.FinanciadoraId})
                 }).SelectMany(i => i)
                 .GroupBy(e => e.FinanciadoraId)
                 .Select(e => e.First());

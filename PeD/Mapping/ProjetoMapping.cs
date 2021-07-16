@@ -47,7 +47,8 @@ namespace PeD.Mapping
                 .IncludeBase<PropostaNode, ProjetoNode>();
             CreateMap<Core.Models.Propostas.RecursoMaterial, Core.Models.Projetos.RecursoMaterial>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
-            CreateMap<AlocacaoRhHorasMes, Core.Models.Projetos.AlocacaoRhHorasMes>();
+            CreateMap<AlocacaoRhHorasMes, Core.Models.Projetos.AlocacaoRhHorasMes>()
+                .ForMember(d => d.AlocacaoRhId, o => o.MapFrom(s => 0));
             CreateMap<AlocacaoRh,
                     Core.Models.Projetos.AlocacaoRh>().IncludeBase<PropostaNode, ProjetoNode>()
                 .ForMember(dest => dest.HorasMeses, opt => opt.MapFrom(src => src.HorasMeses))

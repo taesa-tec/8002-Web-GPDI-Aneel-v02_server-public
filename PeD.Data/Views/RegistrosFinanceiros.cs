@@ -36,22 +36,25 @@ SELECT Registro.Id,
        Financiadora.Codigo                                                                    as FinanciadoraCodigo,
        Financiadora.Funcao                                                                    as FinanciadoraFuncao,
        Financiadora.CNPJ                                                                      as CNPJParc,
-       COALESCE(FinanciadoraRef.Nome, Financiadora.RazaoSocial)                               as Financiador,
+       COALESCE(FinanciadoraRef.Nome, Financiadora.RazaoSocial)                               as Financiadora,
 
        IIF(Registro.Tipo = 'RegistroFinanceiroRm', Registro.RecebedoraId, RecursoH.EmpresaId) AS RecebedoraId,
        IIF(Registro.Tipo = 'RegistroFinanceiroRm', Recebedora.Codigo, EmpresaRH.Codigo)       AS RecebedoraCodigo,
-       IIF(Registro.Tipo = 'RegistroFinanceiroRm', Recebedora.Funcao, EmpresaRH.Funcao) AS RecebedoraFuncao,
-       COALESCE(RecebedoraRef.Nome, Recebedora.RazaoSocial)                             as Recebedora,
-       IIF(Registro.Tipo = 'RegistroFinanceiroRm', Recebedora.Cnpj, EmpresaRH.Cnpj)     as CNPJExec,
+       IIF(Registro.Tipo = 'RegistroFinanceiroRm', Recebedora.Funcao, EmpresaRH.Funcao)       AS RecebedoraFuncao,
+       IIF(Registro.Tipo = 'RegistroFinanceiroRm',
+           COALESCE(RecebedoraRef.Nome, Recebedora.RazaoSocial),
+           COALESCE(EmpresaRHRef.Nome, EmpresaRH.RazaoSocial))                              AS Recebedora,
+
+       IIF(Registro.Tipo = 'RegistroFinanceiroRm', Recebedora.Cnpj, EmpresaRH.Cnpj)           as CNPJExec,
 
 
-       IIF(Registro.Tipo = 'RegistroFinanceiroRh', 'Recursos Humanos', Cat.Nome)        as CategoriaContabil,
-       IIF(Registro.Tipo = 'RegistroFinanceiroRh', 'RH', Cat.Valor)                     as CategoriaContabilCodigo,
+       IIF(Registro.Tipo = 'RegistroFinanceiroRh', 'Recursos Humanos', Cat.Nome)              as CategoriaContabil,
+       IIF(Registro.Tipo = 'RegistroFinanceiroRh', 'RH', Cat.Valor)                           as CategoriaContabilCodigo,
 
 
        IIF(Registro.Tipo = 'RegistroFinanceiroRm', COALESCE(Registro.Valor * Registro.Quantidade, 0),
-           COALESCE(Registro.Valor * Registro.Horas, 0))                                AS Custo,
-       IIF(Registro.Tipo = 'RegistroFinanceiroRm', Registro.Quantidade, Registro.Horas) as QuantidadeHoras
+           COALESCE(Registro.Valor * Registro.Horas, 0))                                      AS Custo,
+       IIF(Registro.Tipo = 'RegistroFinanceiroRm', Registro.Quantidade, Registro.Horas)       as QuantidadeHoras
 
 
 FROM ProjetosRegistrosFinanceiros Registro
@@ -64,6 +67,7 @@ FROM ProjetosRegistrosFinanceiros Registro
          LEFT JOIN ProjetoEmpresas Recebedora on Recebedora.Id = Registro.RecebedoraId
          LEFT JOIN Empresas RecebedoraRef on Recebedora.EmpresaRefId = RecebedoraRef.Id
          LEFT JOIN ProjetoEmpresas EmpresaRH on EmpresaRH.Id = RecursoH.EmpresaId
+         LEFT JOIN Empresas EmpresaRHRef on EmpresaRH.EmpresaRefId = EmpresaRHRef.Id
          LEFT JOIN ProjetoEtapas Etapa on Registro.EtapaId = Etapa.Id
 ";
 

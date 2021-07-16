@@ -127,6 +127,7 @@ namespace PeD.Services.Captacoes
                 // RH
                 .Include(p => p.RecursosHumanos)
                 .Include(p => p.RecursosHumanosAlocacoes)
+                .ThenInclude(a => a.HorasMeses)
                 // RM
                 .Include(p => p.RecursosMateriais)
                 .Include(p => p.RecursosMateriaisAlocacoes)
