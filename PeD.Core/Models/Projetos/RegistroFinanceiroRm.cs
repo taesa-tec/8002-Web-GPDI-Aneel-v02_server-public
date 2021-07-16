@@ -26,11 +26,8 @@ namespace PeD.Core.Models.Projetos
 
         #region Empresa Recebedora
 
-        public int? RecebedoraId { get; set; }
+        public int RecebedoraId { get; set; }
         public Empresa Recebedora { get; set; }
-
-        public int? CoExecutorRecebedorId { get; set; }
-        public CoExecutor CoExecutorRecebedor { get; set; }
 
         #endregion
     }

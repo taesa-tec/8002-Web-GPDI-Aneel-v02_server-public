@@ -15,11 +15,9 @@ namespace PeD.Core.Models.Projetos
         {
             public int RecursoMaterialId { get; set; }
             public RecursoMaterial RecursoMaterial { get; set; }
-            public int? EmpresaRecebedoraId { get; set; }
+            public int EmpresaRecebedoraId { get; set; }
             public Empresa EmpresaRecebedora { get; set; }
 
-            public int? CoExecutorRecebedorId { get; set; }
-            public CoExecutor CoExecutorRecebedor { get; set; }
             [Column(TypeName = "decimal(18, 2)")] public decimal Quantidade { get; set; }
 
             public override decimal Custo => Quantidade * (RecursoMaterial?.ValorUnitario ?? 0);

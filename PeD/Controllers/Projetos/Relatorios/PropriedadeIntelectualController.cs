@@ -33,8 +33,6 @@ namespace PeD.Controllers.Projetos.Relatorios
             return queryable
                 .Include(p => p.Depositantes)
                 .ThenInclude(d => d.Empresa)
-                .Include(p => p.Depositantes)
-                .ThenInclude(d => d.CoExecutor)
                 .Include(d => d.Inventores)
                 .ThenInclude(i => i.Recurso);
         }

@@ -7,6 +7,7 @@ using PeD.Core;
 using PeD.Views.Email;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using Serilog;
 
 namespace PeD.Services
 {
@@ -75,14 +76,13 @@ namespace PeD.Services
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(From,
                     tos.Select(to => new EmailAddress(to)).ToList(),
                     subject, "", viewContent);
-                if (!tos.Contains("diego.franca@lojainterativa.com"))
-                    message.AddBcc("diego.franca@lojainterativa.com", "Diego");
-                //*
-                if (!tos.Contains("servilio.assis@taesa.com.br"))
-                    message.AddBcc("servilio.assis@taesa.com.br", "Servilio");
-                //*/
-                if (!tos.Contains("bruno.galindo@lojainterativa.com"))
-                    message.AddBcc("bruno.galindo@lojainterativa.com", "Bruno");
+
+                foreach (var bcc in EmailConfig.Bcc)
+                {
+                    if (!tos.Contains(bcc))
+                        message.AddBcc(bcc);
+                }
+
                 await Client.SendEmailAsync(message);
             }
             catch (Exception e)

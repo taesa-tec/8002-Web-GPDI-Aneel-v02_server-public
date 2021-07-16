@@ -46,7 +46,6 @@ namespace PeD.Services
             GestorDbContext = gestorDbContext;
         }
 
-        // @todo retornar o status do usuário
         public bool ValidateCredentials(Login user)
         {
             if (user != null && !String.IsNullOrWhiteSpace(user.Email))
@@ -98,7 +97,7 @@ namespace PeD.Services
                     new Claim(JwtRegisteredClaimNames.UniqueName, user.Email),
                     new Claim(ClaimTypes.GroupSid, userIdentity.EmpresaId.ToString()),
                     new Claim(ClaimTypes.Role,
-                        userIdentity.Role ?? ""), // @todo Remover do sistema o uso do Role da tabela de usuários
+                        userIdentity.Role ?? "")
                 }.Concat(roles.Select(r => new Claim(ClaimTypes.Role, r)))
             );
 

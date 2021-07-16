@@ -7,7 +7,9 @@ using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Projetos;
 using PeD.Core.Requests.Projetos.Resultados;
-using CoExecutor = PeD.Core.Models.Projetos.CoExecutor;
+using AlocacaoRh = PeD.Core.Models.Propostas.AlocacaoRh;
+using AlocacaoRhHorasMes = PeD.Core.Models.Propostas.AlocacaoRhHorasMes;
+using Empresa = PeD.Core.Models.Projetos.Empresa;
 using Etapa = PeD.Core.Models.Projetos.Etapa;
 using Produto = PeD.Core.Models.Projetos.Produto;
 using RecursoHumano = PeD.Core.Models.Projetos.RecursoHumano;
@@ -33,7 +35,7 @@ namespace PeD.Mapping
             CreateMap<PropostaNode, ProjetoNode>()
                 .ForMember(p => p.Id, opt => opt.MapFrom(s => 0));
 
-            CreateMap<Core.Models.Propostas.CoExecutor, Core.Models.Projetos.CoExecutor>()
+            CreateMap<Core.Models.Propostas.Empresa, Core.Models.Projetos.Empresa>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
             CreateMap<Core.Models.Propostas.Produto, Core.Models.Projetos.Produto>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
@@ -45,13 +47,13 @@ namespace PeD.Mapping
                 .IncludeBase<PropostaNode, ProjetoNode>();
             CreateMap<Core.Models.Propostas.RecursoMaterial, Core.Models.Projetos.RecursoMaterial>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
-            CreateMap<Core.Models.Propostas.RecursoHumano.AlocacaoRh,
-                    Core.Models.Projetos.RecursoHumano.AlocacaoRh>().IncludeBase<PropostaNode, ProjetoNode>()
-                .ForMember(dest => dest.HorasMeses, opt => opt.MapFrom(
-                    src => src.HoraMeses.Select(kv => new RecursoHumano.AlocacaoRhHorasMes()
-                        {Mes = kv.Key, Horas = kv.Value})))
+            CreateMap<AlocacaoRhHorasMes, Core.Models.Projetos.AlocacaoRhHorasMes>()
+                .ForMember(d => d.AlocacaoRhId, o => o.MapFrom(s => 0));
+            CreateMap<AlocacaoRh,
+                    Core.Models.Projetos.AlocacaoRh>().IncludeBase<PropostaNode, ProjetoNode>()
+                .ForMember(dest => dest.HorasMeses, opt => opt.MapFrom(src => src.HorasMeses))
                 .ForMember(dest => dest.RecursoHumanoId, opt => opt.MapFrom(src => src.RecursoId));
-            CreateMap<Core.Models.Propostas.RecursoMaterial.AlocacaoRm,
+            CreateMap<AlocacaoRm,
                     Core.Models.Projetos.RecursoMaterial.AlocacaoRm>().IncludeBase<PropostaNode, ProjetoNode>()
                 .ForMember(dest => dest.RecursoMaterialId, opt => opt.MapFrom(src => src.RecursoId));
             ;
@@ -75,12 +77,12 @@ namespace PeD.Mapping
             CreateMap<Etapa, EtapaDto>().ForMember(e => e.Produto, o => o.MapFrom(s => s.Produto.Titulo));
             CreateMap<RecursoHumano, RecursoHumanoDto>()
                 .ForMember(dest => dest.Empresa, opt =>
-                    opt.MapFrom(src => src.Empresa != null ? src.Empresa.Nome : src.CoExecutor.RazaoSocial ?? ""));
+                    opt.MapFrom(src => src.Empresa.Nome));
             ;
             CreateMap<RecursoMaterial, RecursoMaterialDto>()
                 .ForMember(dest => dest.CategoriaContabil, opt =>
                     opt.MapFrom(src => src.CategoriaContabil.Nome));
-            CreateMap<CoExecutor, CoExecutorDto>();
+            CreateMap<Empresa, EmpresaDto>();
 
             CreateMap<RegistroFinanceiroRh, RegistroFinanceiroDto>()
                 .ForMember(r => r.RecursoHumano, opt => opt.MapFrom(src => src.RecursoHumano.NomeCompleto));
@@ -112,12 +114,8 @@ namespace PeD.Mapping
             CreateMap<IndicadorEconomico, IndicadorEconomicoDto>();
             CreateMap<IndicadorEconomicoRequest, IndicadorEconomico>();
             CreateMap<PropriedadeIntelectualDepositante, PropriedadeIntelectualDepositanteDto>()
-                .ForMember(d => d.Depositante,
-                    o => o.MapFrom(src =>
-                        src.Empresa != null
-                            ? src.Empresa.Nome ?? (src.CoExecutor != null ? src.CoExecutor.RazaoSocial : null)
-                            : (src.CoExecutor != null ? src.CoExecutor.RazaoSocial : null)));
-            
+                .ForMember(d => d.Depositante, o => o.MapFrom(src => src.Empresa.Nome));
+
             CreateMap<RelatorioEtapa, RelatorioEtapaDto>()
                 .ForMember(d => d.Inicio,
                     o => o.MapFrom(s => s.Projeto.DataInicioProjeto.AddMonths(s.Etapa.Meses.Min() - 1)))

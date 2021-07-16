@@ -32,7 +32,7 @@ namespace PeD.Core.ApiModels.Projetos
     public class ExtratoFinanceiroEmpresaRefpDto
     {
         public string Nome { get; set; }
-        public string Codigo { get; set; }
+        public int Codigo { get; set; }
         public decimal Previsto => Categorias.Sum(ec => ec.Previsto);
         public decimal Realizado => Categorias.Sum(ec => ec.Realizado);
         public decimal Desvio => Previsto > 0 ? ((Realizado / Previsto) - 1) * 100m : 0;

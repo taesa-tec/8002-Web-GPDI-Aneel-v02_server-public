@@ -71,6 +71,10 @@ namespace PeD.Controllers.Propostas
         }
 
 
+        protected virtual void BeforePut(T actual, T @new)
+        {
+        }
+
         protected virtual IQueryable<T> Includes(IQueryable<T> queryable)
         {
             return queryable;
@@ -148,6 +152,7 @@ namespace PeD.Controllers.Propostas
             var node = Mapper.Map<T>(request);
             node.PropostaId = Proposta.Id;
 
+            BeforePut(nodeInitial, node);
             Service.Put(node);
             PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
 

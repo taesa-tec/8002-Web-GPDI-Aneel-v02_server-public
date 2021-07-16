@@ -21,6 +21,7 @@ using PeD.Services.Projetos.Xml;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
+using Empresa = PeD.Core.Models.Projetos.Empresa;
 using Log = Serilog.Log;
 
 namespace PeD.Controllers.Projetos
@@ -137,21 +138,10 @@ namespace PeD.Controllers.Projetos
         }
 
         [HttpGet("{id:int}/Empresas")]
-        public ActionResult Empresas(int id, [FromServices] IService<Empresa> empresasService)
+        public ActionResult Empresas(int id, [FromServices] IService<Core.Models.Empresa> empresasService)
         {
-            var projeto = Service.Get(id);
-            var coExecutores = Context.Set<CoExecutor>().AsQueryable().Where(c => c.ProjetoId == id).ToList();
-            var empresas = empresasService.Filter(q =>
-                q.Where(e => e.Categoria == Empresa.CategoriaEmpresa.Taesa).OrderBy(e => e.Id));
-            var fornecedor = Context.Set<Fornecedor>().AsQueryable().FirstOrDefault(c => c.Id == projeto.FornecedorId);
-            empresas.Add(fornecedor);
-
-            var response = new
-            {
-                empresas,
-                coExecutores = Mapper.Map<List<CoExecutorDto>>(coExecutores)
-            };
-            return Ok(response);
+            var empresas = Context.Set<Empresa>().AsQueryable().Where(c => c.ProjetoId == id).ToList();
+            return Ok(empresas);
         }
 
         [HttpGet("{id:int}/Produtos")]

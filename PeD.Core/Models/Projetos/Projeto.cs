@@ -45,7 +45,7 @@ namespace PeD.Core.Models.Projetos
         public string Numero { get; set; }
 
         public int? ProponenteId { get; set; }
-        public Empresa Proponente { get; set; }
+        public Models.Empresa Proponente { get; set; }
 
         /// <summary>
         /// Data de entrada do proposta no sitema
@@ -77,7 +77,7 @@ namespace PeD.Core.Models.Projetos
         public Captacao Captacao { get; set; }
 
         public List<ProjetoArquivo> Arquivos { get; set; }
-        public List<CoExecutor> CoExecutores { get; set; }
+        public List<Empresa> Empresas { get; set; }
         public List<Produto> Produtos { get; set; }
         public List<Etapa> Etapas { get; set; }
 

@@ -7,16 +7,16 @@ using TaesaCore.Services;
 
 namespace PeD.Services.Captacoes
 {
-    public class CoExecutorService : BaseService<CoExecutor>
+    public class EmpresaService : BaseService<Empresa>
     {
-        public CoExecutorService(IRepository<CoExecutor> repository) : base(repository)
+        public EmpresaService(IRepository<Empresa> repository) : base(repository)
         {
         }
 
-        public IList<CoExecutor> GetPorProposta(int propostaId) =>
+        public IList<Empresa> GetPorProposta(int propostaId) =>
             Filter(q => q.Where(ce => ce.PropostaId == propostaId));
 
-        public IList<CoExecutor> GetPorResponsavel(string responsavelId) =>
+        public IList<Empresa> GetPorResponsavel(string responsavelId) =>
             Filter(q => q
                 .Include(ce => ce.Proposta)
                 .ThenInclude(p => p.Fornecedor)

@@ -9,8 +9,7 @@ namespace PeD.Core.ApiModels.Projetos
 
         public int? ComprovanteId { get; set; }
 
-        public int? FinanciadoraId { get; set; }
-        public int? CoExecutorFinanciadorId { get; set; }
+        public int FinanciadoraId { get; set; }
 
         public string Financiadora { get; set; }
         public DateTime MesReferencia { get; set; }
@@ -53,9 +52,6 @@ namespace PeD.Core.ApiModels.Projetos
 
         public int? RecebedoraId { get; set; }
         public string Recebedora { get; set; }
-
-        public int? CoExecutorRecebedorId { get; set; }
-        public string CoExecutorRecebedor { get; set; }
 
         #endregion
     }

@@ -10,8 +10,8 @@ using PeD.Data;
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20210709154709_Projetos")]
-    partial class Projetos
+    [Migration("20210716223053_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1077,6 +1077,1303 @@ namespace PeD.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Paises");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nome = "Açores"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nome = "Acrotiri e Deceleia"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nome = "Afeganistão"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Nome = "África do Sul"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Nome = "Albânia"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Nome = "Alemanha"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Nome = "Andorra"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Nome = "Angola"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Nome = "Anguila"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Nome = "Antártida"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Nome = "Antígua e Barbuda"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Nome = "Antilhas Holandesas"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Nome = "Arábia Saudita"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Nome = "Argélia"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Nome = "Argentina"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Nome = "Armênia"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Nome = "Aruba"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Nome = "Austrália"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Nome = "Áustria"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Nome = "Azerbaijão"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Nome = "Bahamas"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Nome = "Bangladesh"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Nome = "Barbados"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Nome = "Barém"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Nome = "Bélgica"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Nome = "Belize"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Nome = "Benim"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Nome = "Bermudas"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Nome = "Bielorrússia"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Nome = "Bolívia"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Nome = "Bósnia e Herzegovina"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Nome = "Botsuana"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Nome = "Brasil"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Nome = "Brunei"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Nome = "Bulgária"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Nome = "Burquina Faso"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Nome = "Burundi"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Nome = "Butão"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Nome = "Cabo Verde"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Nome = "Camarões"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Nome = "Camboja"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Nome = "Canadá"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Nome = "Canárias"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Nome = "Catar"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Nome = "Cazaquistão"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Nome = "Chade"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Nome = "Chile"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Nome = "China"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Nome = "Chipre"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            Nome = "Colômbia"
+                        },
+                        new
+                        {
+                            Id = 51,
+                            Nome = "Comores"
+                        },
+                        new
+                        {
+                            Id = 52,
+                            Nome = "Coreia do Norte"
+                        },
+                        new
+                        {
+                            Id = 53,
+                            Nome = "Coreia do Sul"
+                        },
+                        new
+                        {
+                            Id = 54,
+                            Nome = "Costa do Marfim"
+                        },
+                        new
+                        {
+                            Id = 55,
+                            Nome = "Costa Rica"
+                        },
+                        new
+                        {
+                            Id = 56,
+                            Nome = "Croácia"
+                        },
+                        new
+                        {
+                            Id = 57,
+                            Nome = "Cuba"
+                        },
+                        new
+                        {
+                            Id = 58,
+                            Nome = "Curaçao"
+                        },
+                        new
+                        {
+                            Id = 59,
+                            Nome = "Dinamarca"
+                        },
+                        new
+                        {
+                            Id = 60,
+                            Nome = "Djibuti"
+                        },
+                        new
+                        {
+                            Id = 61,
+                            Nome = "Domínica"
+                        },
+                        new
+                        {
+                            Id = 62,
+                            Nome = "Egito"
+                        },
+                        new
+                        {
+                            Id = 63,
+                            Nome = "El Salvador"
+                        },
+                        new
+                        {
+                            Id = 64,
+                            Nome = "Emirados Árabes Unidos"
+                        },
+                        new
+                        {
+                            Id = 65,
+                            Nome = "Equador"
+                        },
+                        new
+                        {
+                            Id = 66,
+                            Nome = "Eritreia"
+                        },
+                        new
+                        {
+                            Id = 67,
+                            Nome = "Escócia"
+                        },
+                        new
+                        {
+                            Id = 68,
+                            Nome = "Eslováquia"
+                        },
+                        new
+                        {
+                            Id = 69,
+                            Nome = "Eslovênia"
+                        },
+                        new
+                        {
+                            Id = 70,
+                            Nome = "Espanha"
+                        },
+                        new
+                        {
+                            Id = 71,
+                            Nome = "Estados Unidos"
+                        },
+                        new
+                        {
+                            Id = 72,
+                            Nome = "Estônia"
+                        },
+                        new
+                        {
+                            Id = 73,
+                            Nome = "Etiópia"
+                        },
+                        new
+                        {
+                            Id = 74,
+                            Nome = "Faroé"
+                        },
+                        new
+                        {
+                            Id = 75,
+                            Nome = "Fiji"
+                        },
+                        new
+                        {
+                            Id = 76,
+                            Nome = "Filipinas"
+                        },
+                        new
+                        {
+                            Id = 77,
+                            Nome = "Finlândia"
+                        },
+                        new
+                        {
+                            Id = 78,
+                            Nome = "França"
+                        },
+                        new
+                        {
+                            Id = 79,
+                            Nome = "Gabão"
+                        },
+                        new
+                        {
+                            Id = 80,
+                            Nome = "Gâmbia"
+                        },
+                        new
+                        {
+                            Id = 81,
+                            Nome = "Gana"
+                        },
+                        new
+                        {
+                            Id = 82,
+                            Nome = "Geórgia"
+                        },
+                        new
+                        {
+                            Id = 83,
+                            Nome = "Geórgia do Sul e Sandwich do Sul"
+                        },
+                        new
+                        {
+                            Id = 84,
+                            Nome = "Gibraltar"
+                        },
+                        new
+                        {
+                            Id = 85,
+                            Nome = "Granada"
+                        },
+                        new
+                        {
+                            Id = 86,
+                            Nome = "Grécia"
+                        },
+                        new
+                        {
+                            Id = 87,
+                            Nome = "Groenlândia"
+                        },
+                        new
+                        {
+                            Id = 88,
+                            Nome = "Guadalupe"
+                        },
+                        new
+                        {
+                            Id = 89,
+                            Nome = "Guam"
+                        },
+                        new
+                        {
+                            Id = 90,
+                            Nome = "Guatemala"
+                        },
+                        new
+                        {
+                            Id = 91,
+                            Nome = "Guernsey"
+                        },
+                        new
+                        {
+                            Id = 92,
+                            Nome = "Guiana"
+                        },
+                        new
+                        {
+                            Id = 93,
+                            Nome = "Guiana Francesa"
+                        },
+                        new
+                        {
+                            Id = 94,
+                            Nome = "Guiné"
+                        },
+                        new
+                        {
+                            Id = 95,
+                            Nome = "Guiné Bissau"
+                        },
+                        new
+                        {
+                            Id = 96,
+                            Nome = "Guiné Equatorial"
+                        },
+                        new
+                        {
+                            Id = 97,
+                            Nome = "Haiti"
+                        },
+                        new
+                        {
+                            Id = 98,
+                            Nome = "Holanda (Países baixos)"
+                        },
+                        new
+                        {
+                            Id = 99,
+                            Nome = "Honduras"
+                        },
+                        new
+                        {
+                            Id = 100,
+                            Nome = "Hong Kong"
+                        },
+                        new
+                        {
+                            Id = 101,
+                            Nome = "Hungria"
+                        },
+                        new
+                        {
+                            Id = 102,
+                            Nome = "Iêmen"
+                        },
+                        new
+                        {
+                            Id = 103,
+                            Nome = "Ilha Bouvet"
+                        },
+                        new
+                        {
+                            Id = 104,
+                            Nome = "Ilha da Madeira"
+                        },
+                        new
+                        {
+                            Id = 105,
+                            Nome = "Ilha de Clipperton"
+                        },
+                        new
+                        {
+                            Id = 106,
+                            Nome = "Ilha de Man"
+                        },
+                        new
+                        {
+                            Id = 107,
+                            Nome = "Ilha de Navassa"
+                        },
+                        new
+                        {
+                            Id = 108,
+                            Nome = "Ilha do Natal"
+                        },
+                        new
+                        {
+                            Id = 109,
+                            Nome = "Ilha Jan Mayen"
+                        },
+                        new
+                        {
+                            Id = 110,
+                            Nome = "Ilha Norfolk"
+                        },
+                        new
+                        {
+                            Id = 111,
+                            Nome = "Ilha Wake"
+                        },
+                        new
+                        {
+                            Id = 112,
+                            Nome = "Ilhas Ashmore e Cartier"
+                        },
+                        new
+                        {
+                            Id = 113,
+                            Nome = "Ilhas Caimão"
+                        },
+                        new
+                        {
+                            Id = 114,
+                            Nome = "Ilhas Cocos"
+                        },
+                        new
+                        {
+                            Id = 115,
+                            Nome = "Ilhas Cook"
+                        },
+                        new
+                        {
+                            Id = 116,
+                            Nome = "Ilhas do mar de coral"
+                        },
+                        new
+                        {
+                            Id = 117,
+                            Nome = "Ilhas Falkland"
+                        },
+                        new
+                        {
+                            Id = 118,
+                            Nome = "Ilhas Heard e McDonald"
+                        },
+                        new
+                        {
+                            Id = 119,
+                            Nome = "Ilhas Marshall"
+                        },
+                        new
+                        {
+                            Id = 120,
+                            Nome = "Ilhas Paracel"
+                        },
+                        new
+                        {
+                            Id = 121,
+                            Nome = "Ilhas Pitcairn"
+                        },
+                        new
+                        {
+                            Id = 122,
+                            Nome = "Ilhas Salomão"
+                        },
+                        new
+                        {
+                            Id = 123,
+                            Nome = "Ilhas Spratly"
+                        },
+                        new
+                        {
+                            Id = 124,
+                            Nome = "Ilhas Turcas e Caicos"
+                        },
+                        new
+                        {
+                            Id = 125,
+                            Nome = "Ilhas Virgens Americanas"
+                        },
+                        new
+                        {
+                            Id = 126,
+                            Nome = "Ilhas Virgens Britânicas"
+                        },
+                        new
+                        {
+                            Id = 127,
+                            Nome = "Índia"
+                        },
+                        new
+                        {
+                            Id = 128,
+                            Nome = "Indonésia"
+                        },
+                        new
+                        {
+                            Id = 129,
+                            Nome = "Inglaterra"
+                        },
+                        new
+                        {
+                            Id = 130,
+                            Nome = "Irã"
+                        },
+                        new
+                        {
+                            Id = 131,
+                            Nome = "Iraque"
+                        },
+                        new
+                        {
+                            Id = 132,
+                            Nome = "Irlanda"
+                        },
+                        new
+                        {
+                            Id = 133,
+                            Nome = "Irlanda do norte"
+                        },
+                        new
+                        {
+                            Id = 134,
+                            Nome = "Islândia"
+                        },
+                        new
+                        {
+                            Id = 135,
+                            Nome = "Israel"
+                        },
+                        new
+                        {
+                            Id = 136,
+                            Nome = "Itália"
+                        },
+                        new
+                        {
+                            Id = 137,
+                            Nome = "Jamaica"
+                        },
+                        new
+                        {
+                            Id = 138,
+                            Nome = "Japão"
+                        },
+                        new
+                        {
+                            Id = 139,
+                            Nome = "Jersey"
+                        },
+                        new
+                        {
+                            Id = 140,
+                            Nome = "Jordânia"
+                        },
+                        new
+                        {
+                            Id = 141,
+                            Nome = "Kosovo"
+                        },
+                        new
+                        {
+                            Id = 142,
+                            Nome = "Kuwait"
+                        },
+                        new
+                        {
+                            Id = 143,
+                            Nome = "Laos"
+                        },
+                        new
+                        {
+                            Id = 144,
+                            Nome = "Lesoto"
+                        },
+                        new
+                        {
+                            Id = 145,
+                            Nome = "Letônia"
+                        },
+                        new
+                        {
+                            Id = 146,
+                            Nome = "Líbano"
+                        },
+                        new
+                        {
+                            Id = 147,
+                            Nome = "Libéria"
+                        },
+                        new
+                        {
+                            Id = 148,
+                            Nome = "Líbia"
+                        },
+                        new
+                        {
+                            Id = 149,
+                            Nome = "Liechtenstein"
+                        },
+                        new
+                        {
+                            Id = 150,
+                            Nome = "Lituânia"
+                        },
+                        new
+                        {
+                            Id = 151,
+                            Nome = "Luxemburgo"
+                        },
+                        new
+                        {
+                            Id = 152,
+                            Nome = "Macau"
+                        },
+                        new
+                        {
+                            Id = 153,
+                            Nome = "Macedônia"
+                        },
+                        new
+                        {
+                            Id = 154,
+                            Nome = "Madagascar"
+                        },
+                        new
+                        {
+                            Id = 155,
+                            Nome = "Malásia"
+                        },
+                        new
+                        {
+                            Id = 156,
+                            Nome = "Malawi"
+                        },
+                        new
+                        {
+                            Id = 157,
+                            Nome = "Maldivas"
+                        },
+                        new
+                        {
+                            Id = 158,
+                            Nome = "Mali"
+                        },
+                        new
+                        {
+                            Id = 159,
+                            Nome = "Malta"
+                        },
+                        new
+                        {
+                            Id = 160,
+                            Nome = "Marianas do Norte"
+                        },
+                        new
+                        {
+                            Id = 161,
+                            Nome = "Marrocos"
+                        },
+                        new
+                        {
+                            Id = 162,
+                            Nome = "Martinica"
+                        },
+                        new
+                        {
+                            Id = 163,
+                            Nome = "Maurício"
+                        },
+                        new
+                        {
+                            Id = 164,
+                            Nome = "Mauritânia"
+                        },
+                        new
+                        {
+                            Id = 165,
+                            Nome = "Mayotte"
+                        },
+                        new
+                        {
+                            Id = 166,
+                            Nome = "México"
+                        },
+                        new
+                        {
+                            Id = 167,
+                            Nome = "Micronésia"
+                        },
+                        new
+                        {
+                            Id = 168,
+                            Nome = "Moçambique"
+                        },
+                        new
+                        {
+                            Id = 169,
+                            Nome = "Moldávia"
+                        },
+                        new
+                        {
+                            Id = 170,
+                            Nome = "Mônaco"
+                        },
+                        new
+                        {
+                            Id = 171,
+                            Nome = "Mongólia"
+                        },
+                        new
+                        {
+                            Id = 172,
+                            Nome = "Monserrate"
+                        },
+                        new
+                        {
+                            Id = 173,
+                            Nome = "Montenegro"
+                        },
+                        new
+                        {
+                            Id = 174,
+                            Nome = "Myanmar"
+                        },
+                        new
+                        {
+                            Id = 175,
+                            Nome = "Namíbia"
+                        },
+                        new
+                        {
+                            Id = 176,
+                            Nome = "Nauru"
+                        },
+                        new
+                        {
+                            Id = 177,
+                            Nome = "Nepal"
+                        },
+                        new
+                        {
+                            Id = 178,
+                            Nome = "Nicarágua"
+                        },
+                        new
+                        {
+                            Id = 179,
+                            Nome = "Níger"
+                        },
+                        new
+                        {
+                            Id = 180,
+                            Nome = "Nigéria"
+                        },
+                        new
+                        {
+                            Id = 181,
+                            Nome = "Niue"
+                        },
+                        new
+                        {
+                            Id = 182,
+                            Nome = "Noruega"
+                        },
+                        new
+                        {
+                            Id = 183,
+                            Nome = "Nova Caledônia"
+                        },
+                        new
+                        {
+                            Id = 184,
+                            Nome = "Nova Zelândia"
+                        },
+                        new
+                        {
+                            Id = 185,
+                            Nome = "Omã"
+                        },
+                        new
+                        {
+                            Id = 186,
+                            Nome = "País de Gales"
+                        },
+                        new
+                        {
+                            Id = 187,
+                            Nome = "Palau"
+                        },
+                        new
+                        {
+                            Id = 188,
+                            Nome = "Palestina"
+                        },
+                        new
+                        {
+                            Id = 189,
+                            Nome = "Panamá"
+                        },
+                        new
+                        {
+                            Id = 190,
+                            Nome = "Papua-Nova Guiné"
+                        },
+                        new
+                        {
+                            Id = 191,
+                            Nome = "Paquistão"
+                        },
+                        new
+                        {
+                            Id = 192,
+                            Nome = "Paraguai"
+                        },
+                        new
+                        {
+                            Id = 193,
+                            Nome = "Peru"
+                        },
+                        new
+                        {
+                            Id = 194,
+                            Nome = "Polinésia Francesa"
+                        },
+                        new
+                        {
+                            Id = 195,
+                            Nome = "Polônia"
+                        },
+                        new
+                        {
+                            Id = 196,
+                            Nome = "Porto Rico"
+                        },
+                        new
+                        {
+                            Id = 197,
+                            Nome = "Portugal"
+                        },
+                        new
+                        {
+                            Id = 198,
+                            Nome = "Quênia"
+                        },
+                        new
+                        {
+                            Id = 199,
+                            Nome = "Quirguizistão"
+                        },
+                        new
+                        {
+                            Id = 200,
+                            Nome = "Quiribati"
+                        },
+                        new
+                        {
+                            Id = 201,
+                            Nome = "Reino Unido"
+                        },
+                        new
+                        {
+                            Id = 202,
+                            Nome = "República Centro-Africana"
+                        },
+                        new
+                        {
+                            Id = 203,
+                            Nome = "República Checa"
+                        },
+                        new
+                        {
+                            Id = 204,
+                            Nome = "República Democrática do Congo"
+                        },
+                        new
+                        {
+                            Id = 205,
+                            Nome = "República do Congo"
+                        },
+                        new
+                        {
+                            Id = 206,
+                            Nome = "República Dominicana"
+                        },
+                        new
+                        {
+                            Id = 207,
+                            Nome = "Romênia"
+                        },
+                        new
+                        {
+                            Id = 208,
+                            Nome = "Ruanda"
+                        },
+                        new
+                        {
+                            Id = 209,
+                            Nome = "Rússia"
+                        },
+                        new
+                        {
+                            Id = 210,
+                            Nome = "Saara Ocidental"
+                        },
+                        new
+                        {
+                            Id = 211,
+                            Nome = "Samoa"
+                        },
+                        new
+                        {
+                            Id = 212,
+                            Nome = "Samoa Americana"
+                        },
+                        new
+                        {
+                            Id = 213,
+                            Nome = "Santa Helena"
+                        },
+                        new
+                        {
+                            Id = 214,
+                            Nome = "Santa Lúcia"
+                        },
+                        new
+                        {
+                            Id = 215,
+                            Nome = "São Cristóvão e Neves"
+                        },
+                        new
+                        {
+                            Id = 216,
+                            Nome = "São Marinho"
+                        },
+                        new
+                        {
+                            Id = 217,
+                            Nome = "São Pedro e Miquelon"
+                        },
+                        new
+                        {
+                            Id = 218,
+                            Nome = "São Tomé e Príncipe"
+                        },
+                        new
+                        {
+                            Id = 219,
+                            Nome = "São Vicente e Granadinas"
+                        },
+                        new
+                        {
+                            Id = 220,
+                            Nome = "Seicheles"
+                        },
+                        new
+                        {
+                            Id = 221,
+                            Nome = "Senegal"
+                        },
+                        new
+                        {
+                            Id = 222,
+                            Nome = "Serra Leoa"
+                        },
+                        new
+                        {
+                            Id = 223,
+                            Nome = "Sérvia"
+                        },
+                        new
+                        {
+                            Id = 224,
+                            Nome = "Singapura"
+                        },
+                        new
+                        {
+                            Id = 225,
+                            Nome = "Síria"
+                        },
+                        new
+                        {
+                            Id = 226,
+                            Nome = "Somália"
+                        },
+                        new
+                        {
+                            Id = 227,
+                            Nome = "Sri Lanka"
+                        },
+                        new
+                        {
+                            Id = 228,
+                            Nome = "Suazilândia"
+                        },
+                        new
+                        {
+                            Id = 229,
+                            Nome = "Sudão"
+                        },
+                        new
+                        {
+                            Id = 230,
+                            Nome = "Sudão do Sul"
+                        },
+                        new
+                        {
+                            Id = 231,
+                            Nome = "Suécia"
+                        },
+                        new
+                        {
+                            Id = 232,
+                            Nome = "Suíça"
+                        },
+                        new
+                        {
+                            Id = 233,
+                            Nome = "Suriname"
+                        },
+                        new
+                        {
+                            Id = 234,
+                            Nome = "Tailândia"
+                        },
+                        new
+                        {
+                            Id = 235,
+                            Nome = "Taiwan"
+                        },
+                        new
+                        {
+                            Id = 236,
+                            Nome = "Tajiquistão"
+                        },
+                        new
+                        {
+                            Id = 237,
+                            Nome = "Tanzânia"
+                        },
+                        new
+                        {
+                            Id = 238,
+                            Nome = "Território Britânico do Oceano Índico"
+                        },
+                        new
+                        {
+                            Id = 239,
+                            Nome = "Territórios Austrais Franceses"
+                        },
+                        new
+                        {
+                            Id = 240,
+                            Nome = "Timor Leste"
+                        },
+                        new
+                        {
+                            Id = 241,
+                            Nome = "Togo"
+                        },
+                        new
+                        {
+                            Id = 242,
+                            Nome = "Tokelau"
+                        },
+                        new
+                        {
+                            Id = 243,
+                            Nome = "Tonga"
+                        },
+                        new
+                        {
+                            Id = 244,
+                            Nome = "Trindade e Tobago"
+                        },
+                        new
+                        {
+                            Id = 245,
+                            Nome = "Tunísia"
+                        },
+                        new
+                        {
+                            Id = 246,
+                            Nome = "Turquemenistão"
+                        },
+                        new
+                        {
+                            Id = 247,
+                            Nome = "Turquia"
+                        },
+                        new
+                        {
+                            Id = 248,
+                            Nome = "Tuvalu"
+                        },
+                        new
+                        {
+                            Id = 249,
+                            Nome = "Ucrânia"
+                        },
+                        new
+                        {
+                            Id = 250,
+                            Nome = "Uganda"
+                        },
+                        new
+                        {
+                            Id = 251,
+                            Nome = "Uruguai"
+                        },
+                        new
+                        {
+                            Id = 252,
+                            Nome = "Uzbequistão"
+                        },
+                        new
+                        {
+                            Id = 253,
+                            Nome = "Vanuatu"
+                        },
+                        new
+                        {
+                            Id = 254,
+                            Nome = "Vaticano"
+                        },
+                        new
+                        {
+                            Id = 255,
+                            Nome = "Venezuela"
+                        },
+                        new
+                        {
+                            Id = 256,
+                            Nome = "Vietnã"
+                        },
+                        new
+                        {
+                            Id = 257,
+                            Nome = "Wallis e Futuna"
+                        },
+                        new
+                        {
+                            Id = 258,
+                            Nome = "Zâmbia"
+                        },
+                        new
+                        {
+                            Id = 259,
+                            Nome = "Zimbabué"
+                        });
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Catalogos.ProdutoTipo", b =>
@@ -1126,45 +2423,36 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Catalogos.Segmento", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Valor")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Nome")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Valor")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
+                    b.HasKey("Valor");
 
                     b.ToTable("Segmentos");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Nome = "Geração",
-                            Valor = "G"
+                            Valor = "G",
+                            Nome = "Geração"
                         },
                         new
                         {
-                            Id = 2,
-                            Nome = "Transmissão",
-                            Valor = "T"
+                            Valor = "T",
+                            Nome = "Transmissão"
                         },
                         new
                         {
-                            Id = 3,
-                            Nome = "Distribuição",
-                            Valor = "D"
+                            Valor = "D",
+                            Nome = "Distribuição"
                         },
                         new
                         {
-                            Id = 4,
-                            Nome = "Comercialização",
-                            Valor = "C"
+                            Valor = "C",
+                            Nome = "Comercialização"
                         });
                 });
 
@@ -2190,6 +3478,9 @@ namespace PeD.Data.Migrations
                     b.Property<string>("Nome")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UF")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Valor")
                         .HasColumnType("nvarchar(max)");
 
@@ -2439,10 +3730,7 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CoExecutorFinanciadorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaFinanciadoraId")
+                    b.Property<int>("EmpresaFinanciadoraId")
                         .HasColumnType("int");
 
                     b.Property<int>("EtapaId")
@@ -2460,8 +3748,6 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoExecutorFinanciadorId");
-
                     b.HasIndex("EmpresaFinanciadoraId");
 
                     b.HasIndex("EtapaId");
@@ -2473,7 +3759,23 @@ namespace PeD.Data.Migrations
                     b.HasDiscriminator<string>("Tipo").HasValue("Alocacao");
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Projetos.CoExecutor", b =>
+            modelBuilder.Entity("PeD.Core.Models.Projetos.AlocacaoRhHorasMes", b =>
+                {
+                    b.Property<int>("AlocacaoRhId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Mes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Horas")
+                        .HasColumnType("int");
+
+                    b.HasKey("AlocacaoRhId", "Mes");
+
+                    b.ToTable("ProjetosAlocacaoRhHorasMeses");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Empresa", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2482,6 +3784,12 @@ namespace PeD.Data.Migrations
 
                     b.Property<string>("CNPJ")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Codigo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmpresaRefId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Funcao")
                         .HasColumnType("int");
@@ -2497,9 +3805,11 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaRefId");
+
                     b.HasIndex("ProjetoId");
 
-                    b.ToTable("ProjetoCoExecutores");
+                    b.ToTable("ProjetoEmpresas");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.Escopo", b =>
@@ -2736,6 +4046,10 @@ namespace PeD.Data.Migrations
                     b.Property<string>("Codigo")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Compartilhamento")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ContratoId")
                         .HasColumnType("int");
 
@@ -2771,6 +4085,11 @@ namespace PeD.Data.Migrations
 
                     b.Property<string>("ResponsavelId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SegmentoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)")
+                        .HasDefaultValue("G");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -2810,6 +4129,8 @@ namespace PeD.Data.Migrations
 
                     b.HasIndex("ResponsavelId");
 
+                    b.HasIndex("SegmentoId");
+
                     b.HasIndex("TemaId");
 
                     b.ToTable("Projetos");
@@ -2828,6 +4149,27 @@ namespace PeD.Data.Migrations
                     b.HasIndex("ArquivoId");
 
                     b.ToTable("ProjetoArquivos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.ProjetoSubTema", b =>
+                {
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubTemaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Outro")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProjetoId", "SubTemaId");
+
+                    b.HasIndex("SubTemaId");
+
+                    b.ToTable("ProjetosSubtemas");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.ProjetoXml", b =>
@@ -2866,13 +4208,10 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CoExecutorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Documento")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EmpresaId")
+                    b.Property<int>("EmpresaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Funcao")
@@ -2898,29 +4237,11 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoExecutorId");
-
                     b.HasIndex("EmpresaId");
 
                     b.HasIndex("ProjetoId");
 
                     b.ToTable("ProjetoRecursosHumanos");
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoHumano+AlocacaoRhHorasMes", b =>
-                {
-                    b.Property<int>("AlocacaoRhId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Mes")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Horas")
-                        .HasColumnType("int");
-
-                    b.HasKey("AlocacaoRhId", "Mes");
-
-                    b.ToTable("ProjetosAlocacaoRhHorasMeses");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoMaterial", b =>
@@ -2964,9 +4285,6 @@ namespace PeD.Data.Migrations
                     b.Property<string>("AuthorId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("CoExecutorFinanciadorId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ComprovanteId")
                         .HasColumnType("int");
 
@@ -2976,7 +4294,7 @@ namespace PeD.Data.Migrations
                     b.Property<int>("EtapaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FinanciadoraId")
+                    b.Property<int>("FinanciadoraId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("MesReferencia")
@@ -3007,8 +4325,6 @@ namespace PeD.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
-
-                    b.HasIndex("CoExecutorFinanciadorId");
 
                     b.HasIndex("ComprovanteId");
 
@@ -3051,6 +4367,374 @@ namespace PeD.Data.Migrations
                     b.ToTable("ProjetosRegistrosFinanceirosObservacoes");
                 });
 
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.Apoio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CnpjReceptora")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Laboratorio")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("LaboratorioArea")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("MateriaisEquipamentos")
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjetoId");
+
+                    b.ToTable("ProjetosRelatoriosApoios");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.Capacitacao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AreaPesquisa")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<int?>("ArquivoTrabalhoOrigemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CnpjInstituicao")
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.Property<DateTime?>("DataConclusao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsConcluido")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecursoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TituloTrabalhoOrigem")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArquivoTrabalhoOrigemId");
+
+                    b.HasIndex("ProjetoId");
+
+                    b.HasIndex("RecursoId");
+
+                    b.ToTable("ProjetosRelatoriosCapacitacoes");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.IndicadorEconomico", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Beneficio")
+                        .HasColumnType("nvarchar(400)")
+                        .HasMaxLength(400);
+
+                    b.Property<decimal>("PorcentagemImpacto")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnidadeBase")
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<decimal>("ValorBeneficio")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ValorNumerico")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjetoId");
+
+                    b.ToTable("ProjetosRelatoriosIndicadoresEconomicos");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.ProducaoCientifica", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("ArquivoTrabalhoOrigemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Cidade")
+                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(30);
+
+                    b.Property<bool>("ConfirmacaoPublicacao")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("DataPublicacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LinkPublicacao")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("NomeEventoPublicacao")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<int>("PaisId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TituloTrabalho")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArquivoTrabalhoOrigemId");
+
+                    b.HasIndex("PaisId");
+
+                    b.HasIndex("ProjetoId");
+
+                    b.ToTable("ProjetosRelatoriosProducoesCientificas");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectual", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("PedidoData")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PedidoNumero")
+                        .HasColumnType("nvarchar(15)")
+                        .HasMaxLength(15);
+
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TituloINPI")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjetoId");
+
+                    b.ToTable("ProjetosRelatoriosPropriedadesIntelectuais");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectualDepositante", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EmpresaId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Porcentagem")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("PropriedadeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.HasIndex("PropriedadeId");
+
+                    b.ToTable("PropriedadeIntelectualDepositante");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectualInventor", b =>
+                {
+                    b.Property<int>("PropriedadeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecursoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PropriedadeId", "RecursoId");
+
+                    b.HasIndex("RecursoId");
+
+                    b.ToTable("ProjetosRelatoriosPropriedadesIntelectuaisInventores");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.RelatorioEtapa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AtividadesRealizadas")
+                        .HasColumnType("nvarchar(300)")
+                        .HasMaxLength(300);
+
+                    b.Property<int>("EtapaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EtapaId")
+                        .IsUnique();
+
+                    b.HasIndex("ProjetoId");
+
+                    b.ToTable("ProjetosRelatoriosEtapas");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.RelatorioFinal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AbrangenciaProduto")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("AmbitoAplicacaoProduto")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("AplicabilidadeJustificativa")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<int?>("AuditoriaRelatorioArquivoId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAplicabilidadeAlcancada")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProdutoAlcancado")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsTecnicaImplementada")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RelatorioArquivoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResultadosTestes")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("TecnicaImplementada")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("TecnicaProduto")
+                        .HasColumnType("nvarchar(1000)")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("TransferenciaTecnologica")
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuditoriaRelatorioArquivoId");
+
+                    b.HasIndex("ProjetoId")
+                        .IsUnique();
+
+                    b.HasIndex("RelatorioArquivoId");
+
+                    b.ToTable("ProjetosRelatoriosFinais");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.Socioambiental", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("DescricaoResultado")
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.Property<int>("ProjetoId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ResultadoPositivo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjetoId");
+
+                    b.ToTable("ProjetosRelatoriosSocioambiental");
+                });
+
             modelBuilder.Entity("PeD.Core.Models.Projetos.Risco", b =>
                 {
                     b.Property<int>("Id")
@@ -3080,33 +4764,98 @@ namespace PeD.Data.Migrations
                     b.ToTable("ProjetoRiscos");
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Propostas.CoExecutor", b =>
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRh", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("CNPJ")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Funcao")
+                    b.Property<int>("EmpresaFinanciadoraId")
                         .HasColumnType("int");
+
+                    b.Property<int>("EtapaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Justificativa")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PropostaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RazaoSocial")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UF")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("RecursoId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaFinanciadoraId");
+
+                    b.HasIndex("EtapaId");
+
                     b.HasIndex("PropostaId");
 
-                    b.ToTable("PropostaCoExecutores");
+                    b.HasIndex("RecursoId");
+
+                    b.ToTable("PropostaRecursosHumanosAlocacao");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRhHorasMes", b =>
+                {
+                    b.Property<int>("AlocacaoRhId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Mes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Horas")
+                        .HasColumnType("int");
+
+                    b.HasKey("AlocacaoRhId", "Mes");
+
+                    b.ToTable("PropostasAlocacaoRhHorasMeses");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRm", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EmpresaFinanciadoraId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmpresaRecebedoraId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EtapaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Justificativa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantidade")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("RecursoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaFinanciadoraId");
+
+                    b.HasIndex("EmpresaRecebedoraId");
+
+                    b.HasIndex("EtapaId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.HasIndex("RecursoId");
+
+                    b.ToTable("PropostaRecursosMateriaisAlocacao");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.ContratoComentario", b =>
@@ -3150,6 +4899,47 @@ namespace PeD.Data.Migrations
                     b.HasIndex("FileId");
 
                     b.ToTable("ContratoComentarioFile");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Empresa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CNPJ")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Codigo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmpresaRefId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Funcao")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RazaoSocial")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UF")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaRefId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaEmpresas");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.Escopo", b =>
@@ -3576,13 +5366,10 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CoExecutorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Documento")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EmpresaId")
+                    b.Property<int>("EmpresaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Funcao")
@@ -3608,56 +5395,11 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoExecutorId");
-
                     b.HasIndex("EmpresaId");
 
                     b.HasIndex("PropostaId");
 
                     b.ToTable("PropostaRecursosHumanos");
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano+AlocacaoRh", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CoExecutorFinanciadorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaFinanciadoraId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EtapaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("HoraMeses")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Justificativa")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PropostaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RecursoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CoExecutorFinanciadorId");
-
-                    b.HasIndex("EmpresaFinanciadoraId");
-
-                    b.HasIndex("EtapaId");
-
-                    b.HasIndex("PropostaId");
-
-                    b.HasIndex("RecursoId");
-
-                    b.ToTable("PropostaRecursosHumanosAlocacao");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial", b =>
@@ -3689,59 +5431,6 @@ namespace PeD.Data.Migrations
                     b.HasIndex("PropostaId");
 
                     b.ToTable("PropostaRecursosMateriais");
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial+AlocacaoRm", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CoExecutorFinanciadorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CoExecutorRecebedorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaFinanciadoraId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaRecebedoraId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EtapaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Justificativa")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PropostaId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Quantidade")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<int>("RecursoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CoExecutorFinanciadorId");
-
-                    b.HasIndex("CoExecutorRecebedorId");
-
-                    b.HasIndex("EmpresaFinanciadoraId");
-
-                    b.HasIndex("EmpresaRecebedoraId");
-
-                    b.HasIndex("EtapaId");
-
-                    b.HasIndex("PropostaId");
-
-                    b.HasIndex("RecursoId");
-
-                    b.ToTable("PropostaRecursosMateriaisAlocacao");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.Relatorio", b =>
@@ -4247,7 +5936,7 @@ namespace PeD.Data.Migrations
                     b.HasDiscriminator().HasValue("DemandaFile");
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoHumano+AlocacaoRh", b =>
+            modelBuilder.Entity("PeD.Core.Models.Projetos.AlocacaoRh", b =>
                 {
                     b.HasBaseType("PeD.Core.Models.Projetos.Alocacao");
 
@@ -4263,10 +5952,7 @@ namespace PeD.Data.Migrations
                 {
                     b.HasBaseType("PeD.Core.Models.Projetos.Alocacao");
 
-                    b.Property<int?>("CoExecutorRecebedorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaRecebedoraId")
+                    b.Property<int>("EmpresaRecebedoraId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Quantidade")
@@ -4274,8 +5960,6 @@ namespace PeD.Data.Migrations
 
                     b.Property<int>("RecursoMaterialId")
                         .HasColumnType("int");
-
-                    b.HasIndex("CoExecutorRecebedorId");
 
                     b.HasIndex("EmpresaRecebedoraId");
 
@@ -4315,9 +5999,6 @@ namespace PeD.Data.Migrations
                     b.Property<string>("CnpjBeneficiado")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CoExecutorRecebedorId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("EquipaLaboratorioExistente")
                         .HasColumnType("bit");
 
@@ -4339,15 +6020,13 @@ namespace PeD.Data.Migrations
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RecebedoraId")
+                    b.Property<int>("RecebedoraId")
                         .HasColumnType("int");
 
                     b.Property<int>("RecursoMaterialId")
                         .HasColumnType("int");
 
                     b.HasIndex("CategoriaContabilId");
-
-                    b.HasIndex("CoExecutorRecebedorId");
 
                     b.HasIndex("RecebedoraId");
 
@@ -4634,15 +6313,11 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.Alocacao", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutorFinanciador")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorFinanciadorId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaFinanciadora")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "EmpresaFinanciadora")
                         .WithMany()
                         .HasForeignKey("EmpresaFinanciadoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.Etapa", "Etapa")
                         .WithMany("Alocacoes")
@@ -4657,10 +6332,23 @@ namespace PeD.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Projetos.CoExecutor", b =>
+            modelBuilder.Entity("PeD.Core.Models.Projetos.AlocacaoRhHorasMes", b =>
                 {
+                    b.HasOne("PeD.Core.Models.Projetos.AlocacaoRh", null)
+                        .WithMany("HorasMeses")
+                        .HasForeignKey("AlocacaoRhId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Empresa", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaRef")
+                        .WithMany()
+                        .HasForeignKey("EmpresaRefId");
+
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
-                        .WithMany("CoExecutores")
+                        .WithMany("Empresas")
                         .HasForeignKey("ProjetoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4798,6 +6486,10 @@ namespace PeD.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ResponsavelId");
 
+                    b.HasOne("PeD.Core.Models.Catalogos.Segmento", "Segmento")
+                        .WithMany()
+                        .HasForeignKey("SegmentoId");
+
                     b.HasOne("PeD.Core.Models.Catalogos.Tema", "Tema")
                         .WithMany()
                         .HasForeignKey("TemaId");
@@ -4814,6 +6506,21 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
                         .WithMany("Arquivos")
                         .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.ProjetoSubTema", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
+                        .WithMany("SubTemas")
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Catalogos.Tema", "SubTema")
+                        .WithMany()
+                        .HasForeignKey("SubTemaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -4835,27 +6542,16 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoHumano", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutor")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "Empresa")
                         .WithMany()
-                        .HasForeignKey("CoExecutorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "Empresa")
-                        .WithMany()
-                        .HasForeignKey("EmpresaId");
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
                         .WithMany("RecursosHumanos")
                         .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoHumano+AlocacaoRhHorasMes", b =>
-                {
-                    b.HasOne("PeD.Core.Models.Projetos.RecursoHumano+AlocacaoRh", null)
-                        .WithMany("HorasMeses")
-                        .HasForeignKey("AlocacaoRhId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -4870,7 +6566,7 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
                         .WithMany("RecursosMateriais")
                         .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -4879,11 +6575,6 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.ApplicationUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId");
-
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutorFinanciador")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorFinanciadorId")
-                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PeD.Core.Models.FileUpload", "Comprovante")
                         .WithMany()
@@ -4895,10 +6586,11 @@ namespace PeD.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PeD.Core.Models.Empresa", "Financiadora")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "Financiadora")
                         .WithMany()
                         .HasForeignKey("FinanciadoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
                         .WithMany()
@@ -4920,6 +6612,142 @@ namespace PeD.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.Apoio", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
+                        .WithMany()
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.Capacitacao", b =>
+                {
+                    b.HasOne("PeD.Core.Models.FileUpload", "ArquivoTrabalhoOrigem")
+                        .WithMany()
+                        .HasForeignKey("ArquivoTrabalhoOrigemId");
+
+                    b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
+                        .WithMany()
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Projetos.RecursoHumano", "Recurso")
+                        .WithMany()
+                        .HasForeignKey("RecursoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.IndicadorEconomico", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
+                        .WithMany()
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.ProducaoCientifica", b =>
+                {
+                    b.HasOne("PeD.Core.Models.FileUpload", "ArquivoTrabalhoOrigem")
+                        .WithMany()
+                        .HasForeignKey("ArquivoTrabalhoOrigemId");
+
+                    b.HasOne("PeD.Core.Models.Catalogos.Pais", "Pais")
+                        .WithMany()
+                        .HasForeignKey("PaisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
+                        .WithMany()
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectual", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
+                        .WithMany()
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectualDepositante", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectual", "Propriedade")
+                        .WithMany("Depositantes")
+                        .HasForeignKey("PropriedadeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectualInventor", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectual", "Propriedade")
+                        .WithMany("Inventores")
+                        .HasForeignKey("PropriedadeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Projetos.RecursoHumano", "Recurso")
+                        .WithMany()
+                        .HasForeignKey("RecursoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.RelatorioEtapa", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Projetos.Etapa", "Etapa")
+                        .WithOne("Relatorio")
+                        .HasForeignKey("PeD.Core.Models.Projetos.Resultados.RelatorioEtapa", "EtapaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
+                        .WithMany()
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.RelatorioFinal", b =>
+                {
+                    b.HasOne("PeD.Core.Models.FileUpload", "AuditoriaRelatorioArquivo")
+                        .WithMany()
+                        .HasForeignKey("AuditoriaRelatorioArquivoId");
+
+                    b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
+                        .WithOne()
+                        .HasForeignKey("PeD.Core.Models.Projetos.Resultados.RelatorioFinal", "ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.FileUpload", "RelatorioArquivo")
+                        .WithMany()
+                        .HasForeignKey("RelatorioArquivoId");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.Socioambiental", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
+                        .WithMany()
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("PeD.Core.Models.Projetos.Risco", b =>
                 {
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
@@ -4929,12 +6757,71 @@ namespace PeD.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Propostas.CoExecutor", b =>
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRh", b =>
                 {
+                    b.HasOne("PeD.Core.Models.Propostas.Empresa", "EmpresaFinanciadora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaFinanciadoraId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
+                        .WithMany("RecursosHumanosAlocacoes")
+                        .HasForeignKey("EtapaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
-                        .WithMany("CoExecutores")
+                        .WithMany("RecursosHumanosAlocacoes")
                         .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.RecursoHumano", "Recurso")
+                        .WithMany()
+                        .HasForeignKey("RecursoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRhHorasMes", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.AlocacaoRh", null)
+                        .WithMany("HorasMeses")
+                        .HasForeignKey("AlocacaoRhId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRm", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.Empresa", "EmpresaFinanciadora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaFinanciadoraId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Empresa", "EmpresaRecebedora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaRecebedoraId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
+                        .WithMany("RecursosMateriaisAlocacoes")
+                        .HasForeignKey("EtapaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany("RecursosMateriaisAlocacoes")
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.RecursoMaterial", "Recurso")
+                        .WithMany()
+                        .HasForeignKey("RecursoId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -4962,6 +6849,19 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.FileUpload", "File")
                         .WithMany()
                         .HasForeignKey("FileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Empresa", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaRef")
+                        .WithMany()
+                        .HasForeignKey("EmpresaRefId");
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany("Empresas")
+                        .HasForeignKey("PropostaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -5158,47 +7058,15 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutor")
+                    b.HasOne("PeD.Core.Models.Propostas.Empresa", "Empresa")
                         .WithMany()
-                        .HasForeignKey("CoExecutorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "Empresa")
-                        .WithMany()
-                        .HasForeignKey("EmpresaId");
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
                         .WithMany("RecursosHumanos")
                         .HasForeignKey("PropostaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano+AlocacaoRh", b =>
-                {
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutorFinanciador")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorFinanciadorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaFinanciadora")
-                        .WithMany()
-                        .HasForeignKey("EmpresaFinanciadoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
-                        .WithMany("RecursosHumanosAlocacoes")
-                        .HasForeignKey("EtapaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
-                        .WithMany("RecursosHumanosAlocacoes")
-                        .HasForeignKey("PropostaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PeD.Core.Models.Propostas.RecursoHumano", "Recurso")
-                        .WithMany()
-                        .HasForeignKey("RecursoId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -5214,45 +7082,6 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
                         .WithMany("RecursosMateriais")
                         .HasForeignKey("PropostaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial+AlocacaoRm", b =>
-                {
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutorFinanciador")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorFinanciadorId");
-
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutorRecebedor")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorRecebedorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaFinanciadora")
-                        .WithMany()
-                        .HasForeignKey("EmpresaFinanciadoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaRecebedora")
-                        .WithMany()
-                        .HasForeignKey("EmpresaRecebedoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
-                        .WithMany("RecursosMateriaisAlocacoes")
-                        .HasForeignKey("EtapaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
-                        .WithMany("RecursosMateriaisAlocacoes")
-                        .HasForeignKey("PropostaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PeD.Core.Models.Propostas.RecursoMaterial", "Recurso")
-                        .WithMany()
-                        .HasForeignKey("RecursoId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -5295,7 +7124,7 @@ namespace PeD.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoHumano+AlocacaoRh", b =>
+            modelBuilder.Entity("PeD.Core.Models.Projetos.AlocacaoRh", b =>
                 {
                     b.HasOne("PeD.Core.Models.Projetos.RecursoHumano", "RecursoHumano")
                         .WithMany()
@@ -5306,14 +7135,11 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoMaterial+AlocacaoRm", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutorRecebedor")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorRecebedorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaRecebedora")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "EmpresaRecebedora")
                         .WithMany()
                         .HasForeignKey("EmpresaRecebedoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.RecursoMaterial", "RecursoMaterial")
                         .WithMany()
@@ -5339,15 +7165,11 @@ namespace PeD.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutorRecebedor")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorRecebedorId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PeD.Core.Models.Empresa", "Recebedora")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "Recebedora")
                         .WithMany()
                         .HasForeignKey("RecebedoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.RecursoMaterial", "RecursoMaterial")
                         .WithMany()

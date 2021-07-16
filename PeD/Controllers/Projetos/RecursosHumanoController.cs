@@ -38,8 +38,7 @@ namespace PeD.Controllers.Projetos
         {
             var recursos = Service.Filter(q => q
                 .Include(r => r.Empresa)
-                .Include(r => r.CoExecutor)
-                .Where(q => q.ProjetoId == projetoId)
+                .Where(qw => qw.ProjetoId == projetoId)
             );
             return Ok(Mapper.Map<List<RecursoHumanoDto>>(recursos));
         }
@@ -49,7 +48,6 @@ namespace PeD.Controllers.Projetos
         {
             var recurso = Service.Filter(q => q
                 .Include(r => r.Empresa)
-                .Include(r => r.CoExecutor)
                 .Where(q => q.ProjetoId == projetoId && q.Id == id)
             ).FirstOrDefault();
             if (recurso == null)

@@ -9,12 +9,10 @@ namespace PeD.Core.ApiModels.Projetos
         public string RecursoCategoria { get; set; }
         public int EtapaId { get; set; }
 
-        public int? EmpresaFinanciadoraId { get; set; }
-        public int? CoExecutorFinanciadorId { get; set; }
+        public int EmpresaFinanciadoraId { get; set; }
         public string EmpresaFinanciadora { get; set; }
 
-        public int? EmpresaRecebedoraId { get; set; }
-        public int? CoExecutorRecebedorId { get; set; }
+        public int EmpresaRecebedoraId { get; set; }
         public string EmpresaRecebedora { get; set; }
 
         public string Justificativa { get; set; }

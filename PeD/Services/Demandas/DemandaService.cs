@@ -406,7 +406,6 @@ namespace PeD.Services.Demandas
                     throw new DemandaException("Especificação Técnica ausente");
                 }
 
-                // @todo TEMA ANEEL
                 if (temaAneel == null)
                     throw new DemandaException("Tema Aneel ausente");
 

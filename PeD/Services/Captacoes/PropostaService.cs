@@ -114,39 +114,28 @@ namespace PeD.Services.Captacoes
         public Proposta GetPropostaFull(int id)
         {
             return _captacaoPropostas
+                .AsNoTracking()
                 //Captacao
-                .Include("Captacao.Tema")
+                .Include(p => p.Captacao).ThenInclude(c => c.Tema)
                 .Include(p => p.Captacao).ThenInclude(c => c.SubTemas).ThenInclude(s => s.SubTema)
                 //
-
+                .Include(p => p.Etapas)
                 // Produto
                 .Include("Produtos.ProdutoTipo")
                 .Include("Produtos.FaseCadeia")
                 .Include("Produtos.TipoDetalhado")
-                .Include("Etapas.Produto.ProdutoTipo")
-                .Include("Etapas.Produto.FaseCadeia")
-                .Include("Etapas.Produto.TipoDetalhado")
                 // RH
                 .Include(p => p.RecursosHumanos)
                 .Include(p => p.RecursosHumanosAlocacoes)
-                .Include("Etapas.RecursosHumanosAlocacoes.Recurso")
-                .Include("Etapas.RecursosHumanosAlocacoes.EmpresaFinanciadora")
-                .Include("Etapas.RecursosHumanosAlocacoes.CoExecutorFinanciador")
+                .ThenInclude(a => a.HorasMeses)
                 // RM
                 .Include(p => p.RecursosMateriais)
                 .Include(p => p.RecursosMateriaisAlocacoes)
-                .Include("Etapas.RecursosMateriaisAlocacoes.Recurso.CategoriaContabil")
-                .Include("Etapas.RecursosMateriaisAlocacoes.EmpresaFinanciadora")
-                .Include("Etapas.RecursosMateriaisAlocacoes.CoExecutorFinanciador")
-                .Include("Etapas.RecursosMateriaisAlocacoes.EmpresaRecebedora")
-                .Include("Etapas.RecursosMateriaisAlocacoes.CoExecutorRecebedor")
-                .Include(p => p.CoExecutores)
+                .Include(p => p.Empresas)
                 .Include(p => p.Escopo)
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Metas)
                 .Include(p => p.PlanoTrabalho)
-                .Include(p => p.Produtos)
-                .ThenInclude(p => p.FaseCadeia)
                 .Include(p => p.Riscos)
                 .FirstOrDefault(p => p.Id == id);
         }
@@ -333,10 +322,20 @@ namespace PeD.Services.Captacoes
 
         #region Relatórios
 
+        public List<AlocacaoInfo> GetAlocacoes(int propostaId)
+        {
+            return context.Set<AlocacaoInfo>().Where(a => a.PropostaId == propostaId).ToList();
+        }
+
         public Relatorio UpdateRelatorio(int propostaId)
         {
             var proposta = GetPropostaFull(propostaId);
+
+            var alocacoes = GetAlocacoes(propostaId);
             var modelView = _mapper.Map<Core.Models.Relatorios.Fornecedores.Proposta>(proposta);
+            modelView.Etapas.ForEach(e => { e.Alocacoes = alocacoes.Where(a => a.EtapaId == e.Id).ToList(); });
+            proposta = context.Set<Proposta>().FirstOrDefault(p => p.Id == propostaId);
+
             var validacao = (new PropostaValidator()).Validate(modelView);
             var content = renderService.RenderToStringAsync("Proposta/Proposta", modelView).Result;
             var relatorio = context.Set<Relatorio>().Where(r => r.PropostaId == propostaId).FirstOrDefault() ??
@@ -374,17 +373,22 @@ namespace PeD.Services.Captacoes
 
         public Relatorio GetRelatorio(int propostaId)
         {
-            var proposta = _captacaoPropostas.Include(p => p.Relatorio)
-                .ThenInclude(r => r.File)
-                .FirstOrDefault(p => p.Id == propostaId);
-            if (proposta != null)
+            var dataAlteracao = _captacaoPropostas
+                .AsNoTracking()
+                .Where(p => p.Id == propostaId)
+                .Select(p => p.DataAlteracao)
+                .FirstOrDefault();
+            var relatorio = context.Set<Relatorio>().AsNoTracking()
+                .Include(r => r.File)
+                .FirstOrDefault(r => r.PropostaId == propostaId);
+            if (relatorio != null)
             {
-                if (proposta.Relatorio == null || proposta.Relatorio.DataAlteracao < proposta.DataAlteracao)
+                if (relatorio.DataAlteracao < dataAlteracao)
                 {
                     return UpdateRelatorio(propostaId);
                 }
 
-                return proposta.Relatorio;
+                return relatorio;
             }
 
             return null;

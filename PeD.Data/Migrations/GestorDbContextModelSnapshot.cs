@@ -3476,6 +3476,9 @@ namespace PeD.Data.Migrations
                     b.Property<string>("Nome")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UF")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Valor")
                         .HasColumnType("nvarchar(max)");
 
@@ -3725,10 +3728,7 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CoExecutorFinanciadorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaFinanciadoraId")
+                    b.Property<int>("EmpresaFinanciadoraId")
                         .HasColumnType("int");
 
                     b.Property<int>("EtapaId")
@@ -3746,8 +3746,6 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoExecutorFinanciadorId");
-
                     b.HasIndex("EmpresaFinanciadoraId");
 
                     b.HasIndex("EtapaId");
@@ -3759,7 +3757,23 @@ namespace PeD.Data.Migrations
                     b.HasDiscriminator<string>("Tipo").HasValue("Alocacao");
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Projetos.CoExecutor", b =>
+            modelBuilder.Entity("PeD.Core.Models.Projetos.AlocacaoRhHorasMes", b =>
+                {
+                    b.Property<int>("AlocacaoRhId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Mes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Horas")
+                        .HasColumnType("int");
+
+                    b.HasKey("AlocacaoRhId", "Mes");
+
+                    b.ToTable("ProjetosAlocacaoRhHorasMeses");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Empresa", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3768,6 +3782,12 @@ namespace PeD.Data.Migrations
 
                     b.Property<string>("CNPJ")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Codigo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmpresaRefId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Funcao")
                         .HasColumnType("int");
@@ -3783,9 +3803,11 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaRefId");
+
                     b.HasIndex("ProjetoId");
 
-                    b.ToTable("ProjetoCoExecutores");
+                    b.ToTable("ProjetoEmpresas");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.Escopo", b =>
@@ -4184,13 +4206,10 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CoExecutorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Documento")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EmpresaId")
+                    b.Property<int>("EmpresaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Funcao")
@@ -4216,29 +4235,11 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoExecutorId");
-
                     b.HasIndex("EmpresaId");
 
                     b.HasIndex("ProjetoId");
 
                     b.ToTable("ProjetoRecursosHumanos");
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoHumano+AlocacaoRhHorasMes", b =>
-                {
-                    b.Property<int>("AlocacaoRhId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Mes")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Horas")
-                        .HasColumnType("int");
-
-                    b.HasKey("AlocacaoRhId", "Mes");
-
-                    b.ToTable("ProjetosAlocacaoRhHorasMeses");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoMaterial", b =>
@@ -4282,9 +4283,6 @@ namespace PeD.Data.Migrations
                     b.Property<string>("AuthorId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("CoExecutorFinanciadorId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ComprovanteId")
                         .HasColumnType("int");
 
@@ -4294,7 +4292,7 @@ namespace PeD.Data.Migrations
                     b.Property<int>("EtapaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FinanciadoraId")
+                    b.Property<int>("FinanciadoraId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("MesReferencia")
@@ -4325,8 +4323,6 @@ namespace PeD.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
-
-                    b.HasIndex("CoExecutorFinanciadorId");
 
                     b.HasIndex("ComprovanteId");
 
@@ -4584,10 +4580,7 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CoExecutorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaId")
+                    b.Property<int>("EmpresaId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Porcentagem")
@@ -4597,8 +4590,6 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CoExecutorId");
 
                     b.HasIndex("EmpresaId");
 
@@ -4771,33 +4762,98 @@ namespace PeD.Data.Migrations
                     b.ToTable("ProjetoRiscos");
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Propostas.CoExecutor", b =>
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRh", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("CNPJ")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Funcao")
+                    b.Property<int>("EmpresaFinanciadoraId")
                         .HasColumnType("int");
+
+                    b.Property<int>("EtapaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Justificativa")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PropostaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RazaoSocial")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UF")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("RecursoId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaFinanciadoraId");
+
+                    b.HasIndex("EtapaId");
+
                     b.HasIndex("PropostaId");
 
-                    b.ToTable("PropostaCoExecutores");
+                    b.HasIndex("RecursoId");
+
+                    b.ToTable("PropostaRecursosHumanosAlocacao");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRhHorasMes", b =>
+                {
+                    b.Property<int>("AlocacaoRhId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Mes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Horas")
+                        .HasColumnType("int");
+
+                    b.HasKey("AlocacaoRhId", "Mes");
+
+                    b.ToTable("PropostasAlocacaoRhHorasMeses");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRm", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("EmpresaFinanciadoraId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmpresaRecebedoraId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EtapaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Justificativa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantidade")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("RecursoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaFinanciadoraId");
+
+                    b.HasIndex("EmpresaRecebedoraId");
+
+                    b.HasIndex("EtapaId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.HasIndex("RecursoId");
+
+                    b.ToTable("PropostaRecursosMateriaisAlocacao");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.ContratoComentario", b =>
@@ -4841,6 +4897,47 @@ namespace PeD.Data.Migrations
                     b.HasIndex("FileId");
 
                     b.ToTable("ContratoComentarioFile");
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Empresa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CNPJ")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Codigo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmpresaRefId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Funcao")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PropostaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RazaoSocial")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UF")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaRefId");
+
+                    b.HasIndex("PropostaId");
+
+                    b.ToTable("PropostaEmpresas");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.Escopo", b =>
@@ -5267,13 +5364,10 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CoExecutorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Documento")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EmpresaId")
+                    b.Property<int>("EmpresaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Funcao")
@@ -5299,56 +5393,11 @@ namespace PeD.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoExecutorId");
-
                     b.HasIndex("EmpresaId");
 
                     b.HasIndex("PropostaId");
 
                     b.ToTable("PropostaRecursosHumanos");
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano+AlocacaoRh", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CoExecutorFinanciadorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaFinanciadoraId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EtapaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("HoraMeses")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Justificativa")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PropostaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RecursoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CoExecutorFinanciadorId");
-
-                    b.HasIndex("EmpresaFinanciadoraId");
-
-                    b.HasIndex("EtapaId");
-
-                    b.HasIndex("PropostaId");
-
-                    b.HasIndex("RecursoId");
-
-                    b.ToTable("PropostaRecursosHumanosAlocacao");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial", b =>
@@ -5380,59 +5429,6 @@ namespace PeD.Data.Migrations
                     b.HasIndex("PropostaId");
 
                     b.ToTable("PropostaRecursosMateriais");
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial+AlocacaoRm", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CoExecutorFinanciadorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CoExecutorRecebedorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaFinanciadoraId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaRecebedoraId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EtapaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Justificativa")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PropostaId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Quantidade")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<int>("RecursoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CoExecutorFinanciadorId");
-
-                    b.HasIndex("CoExecutorRecebedorId");
-
-                    b.HasIndex("EmpresaFinanciadoraId");
-
-                    b.HasIndex("EmpresaRecebedoraId");
-
-                    b.HasIndex("EtapaId");
-
-                    b.HasIndex("PropostaId");
-
-                    b.HasIndex("RecursoId");
-
-                    b.ToTable("PropostaRecursosMateriaisAlocacao");
                 });
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.Relatorio", b =>
@@ -5938,7 +5934,7 @@ namespace PeD.Data.Migrations
                     b.HasDiscriminator().HasValue("DemandaFile");
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoHumano+AlocacaoRh", b =>
+            modelBuilder.Entity("PeD.Core.Models.Projetos.AlocacaoRh", b =>
                 {
                     b.HasBaseType("PeD.Core.Models.Projetos.Alocacao");
 
@@ -5954,10 +5950,7 @@ namespace PeD.Data.Migrations
                 {
                     b.HasBaseType("PeD.Core.Models.Projetos.Alocacao");
 
-                    b.Property<int?>("CoExecutorRecebedorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EmpresaRecebedoraId")
+                    b.Property<int>("EmpresaRecebedoraId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Quantidade")
@@ -5965,8 +5958,6 @@ namespace PeD.Data.Migrations
 
                     b.Property<int>("RecursoMaterialId")
                         .HasColumnType("int");
-
-                    b.HasIndex("CoExecutorRecebedorId");
 
                     b.HasIndex("EmpresaRecebedoraId");
 
@@ -6006,9 +5997,6 @@ namespace PeD.Data.Migrations
                     b.Property<string>("CnpjBeneficiado")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CoExecutorRecebedorId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("EquipaLaboratorioExistente")
                         .HasColumnType("bit");
 
@@ -6030,15 +6018,13 @@ namespace PeD.Data.Migrations
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RecebedoraId")
+                    b.Property<int>("RecebedoraId")
                         .HasColumnType("int");
 
                     b.Property<int>("RecursoMaterialId")
                         .HasColumnType("int");
 
                     b.HasIndex("CategoriaContabilId");
-
-                    b.HasIndex("CoExecutorRecebedorId");
 
                     b.HasIndex("RecebedoraId");
 
@@ -6325,15 +6311,11 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.Alocacao", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutorFinanciador")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorFinanciadorId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaFinanciadora")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "EmpresaFinanciadora")
                         .WithMany()
                         .HasForeignKey("EmpresaFinanciadoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.Etapa", "Etapa")
                         .WithMany("Alocacoes")
@@ -6348,10 +6330,23 @@ namespace PeD.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Projetos.CoExecutor", b =>
+            modelBuilder.Entity("PeD.Core.Models.Projetos.AlocacaoRhHorasMes", b =>
                 {
+                    b.HasOne("PeD.Core.Models.Projetos.AlocacaoRh", null)
+                        .WithMany("HorasMeses")
+                        .HasForeignKey("AlocacaoRhId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Projetos.Empresa", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaRef")
+                        .WithMany()
+                        .HasForeignKey("EmpresaRefId");
+
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
-                        .WithMany("CoExecutores")
+                        .WithMany("Empresas")
                         .HasForeignKey("ProjetoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -6545,27 +6540,16 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoHumano", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutor")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "Empresa")
                         .WithMany()
-                        .HasForeignKey("CoExecutorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "Empresa")
-                        .WithMany()
-                        .HasForeignKey("EmpresaId");
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
                         .WithMany("RecursosHumanos")
                         .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoHumano+AlocacaoRhHorasMes", b =>
-                {
-                    b.HasOne("PeD.Core.Models.Projetos.RecursoHumano+AlocacaoRh", null)
-                        .WithMany("HorasMeses")
-                        .HasForeignKey("AlocacaoRhId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -6580,7 +6564,7 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
                         .WithMany("RecursosMateriais")
                         .HasForeignKey("ProjetoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -6589,11 +6573,6 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.ApplicationUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId");
-
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutorFinanciador")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorFinanciadorId")
-                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PeD.Core.Models.FileUpload", "Comprovante")
                         .WithMany()
@@ -6605,10 +6584,11 @@ namespace PeD.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PeD.Core.Models.Empresa", "Financiadora")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "Financiadora")
                         .WithMany()
                         .HasForeignKey("FinanciadoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.Projeto", "Projeto")
                         .WithMany()
@@ -6697,18 +6677,16 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectualDepositante", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutor")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "Empresa")
                         .WithMany()
-                        .HasForeignKey("CoExecutorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "Empresa")
-                        .WithMany()
-                        .HasForeignKey("EmpresaId");
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectual", "Propriedade")
                         .WithMany("Depositantes")
                         .HasForeignKey("PropriedadeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -6777,12 +6755,71 @@ namespace PeD.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Propostas.CoExecutor", b =>
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRh", b =>
                 {
+                    b.HasOne("PeD.Core.Models.Propostas.Empresa", "EmpresaFinanciadora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaFinanciadoraId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
+                        .WithMany("RecursosHumanosAlocacoes")
+                        .HasForeignKey("EtapaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
-                        .WithMany("CoExecutores")
+                        .WithMany("RecursosHumanosAlocacoes")
                         .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.RecursoHumano", "Recurso")
+                        .WithMany()
+                        .HasForeignKey("RecursoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRhHorasMes", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.AlocacaoRh", null)
+                        .WithMany("HorasMeses")
+                        .HasForeignKey("AlocacaoRhId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.AlocacaoRm", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Propostas.Empresa", "EmpresaFinanciadora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaFinanciadoraId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Empresa", "EmpresaRecebedora")
+                        .WithMany()
+                        .HasForeignKey("EmpresaRecebedoraId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
+                        .WithMany("RecursosMateriaisAlocacoes")
+                        .HasForeignKey("EtapaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany("RecursosMateriaisAlocacoes")
+                        .HasForeignKey("PropostaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PeD.Core.Models.Propostas.RecursoMaterial", "Recurso")
+                        .WithMany()
+                        .HasForeignKey("RecursoId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -6810,6 +6847,19 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.FileUpload", "File")
                         .WithMany()
                         .HasForeignKey("FileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PeD.Core.Models.Propostas.Empresa", b =>
+                {
+                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaRef")
+                        .WithMany()
+                        .HasForeignKey("EmpresaRefId");
+
+                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
+                        .WithMany("Empresas")
+                        .HasForeignKey("PropostaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -7006,47 +7056,15 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutor")
+                    b.HasOne("PeD.Core.Models.Propostas.Empresa", "Empresa")
                         .WithMany()
-                        .HasForeignKey("CoExecutorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "Empresa")
-                        .WithMany()
-                        .HasForeignKey("EmpresaId");
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
                         .WithMany("RecursosHumanos")
                         .HasForeignKey("PropostaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoHumano+AlocacaoRh", b =>
-                {
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutorFinanciador")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorFinanciadorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaFinanciadora")
-                        .WithMany()
-                        .HasForeignKey("EmpresaFinanciadoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
-                        .WithMany("RecursosHumanosAlocacoes")
-                        .HasForeignKey("EtapaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
-                        .WithMany("RecursosHumanosAlocacoes")
-                        .HasForeignKey("PropostaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PeD.Core.Models.Propostas.RecursoHumano", "Recurso")
-                        .WithMany()
-                        .HasForeignKey("RecursoId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -7062,45 +7080,6 @@ namespace PeD.Data.Migrations
                     b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
                         .WithMany("RecursosMateriais")
                         .HasForeignKey("PropostaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PeD.Core.Models.Propostas.RecursoMaterial+AlocacaoRm", b =>
-                {
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutorFinanciador")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorFinanciadorId");
-
-                    b.HasOne("PeD.Core.Models.Propostas.CoExecutor", "CoExecutorRecebedor")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorRecebedorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaFinanciadora")
-                        .WithMany()
-                        .HasForeignKey("EmpresaFinanciadoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaRecebedora")
-                        .WithMany()
-                        .HasForeignKey("EmpresaRecebedoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PeD.Core.Models.Propostas.Etapa", "Etapa")
-                        .WithMany("RecursosMateriaisAlocacoes")
-                        .HasForeignKey("EtapaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PeD.Core.Models.Propostas.Proposta", "Proposta")
-                        .WithMany("RecursosMateriaisAlocacoes")
-                        .HasForeignKey("PropostaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PeD.Core.Models.Propostas.RecursoMaterial", "Recurso")
-                        .WithMany()
-                        .HasForeignKey("RecursoId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -7143,7 +7122,7 @@ namespace PeD.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoHumano+AlocacaoRh", b =>
+            modelBuilder.Entity("PeD.Core.Models.Projetos.AlocacaoRh", b =>
                 {
                     b.HasOne("PeD.Core.Models.Projetos.RecursoHumano", "RecursoHumano")
                         .WithMany()
@@ -7154,14 +7133,11 @@ namespace PeD.Data.Migrations
 
             modelBuilder.Entity("PeD.Core.Models.Projetos.RecursoMaterial+AlocacaoRm", b =>
                 {
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutorRecebedor")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorRecebedorId");
-
-                    b.HasOne("PeD.Core.Models.Empresa", "EmpresaRecebedora")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "EmpresaRecebedora")
                         .WithMany()
                         .HasForeignKey("EmpresaRecebedoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.RecursoMaterial", "RecursoMaterial")
                         .WithMany()
@@ -7187,15 +7163,11 @@ namespace PeD.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PeD.Core.Models.Projetos.CoExecutor", "CoExecutorRecebedor")
-                        .WithMany()
-                        .HasForeignKey("CoExecutorRecebedorId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("PeD.Core.Models.Empresa", "Recebedora")
+                    b.HasOne("PeD.Core.Models.Projetos.Empresa", "Recebedora")
                         .WithMany()
                         .HasForeignKey("RecebedoraId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.RecursoMaterial", "RecursoMaterial")
                         .WithMany()

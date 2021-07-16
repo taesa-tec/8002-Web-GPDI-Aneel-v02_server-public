@@ -16,12 +16,15 @@ using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Propostas;
 using PeD.Data.Builders;
 using Alocacao = PeD.Core.Models.Projetos.Alocacao;
-using CoExecutor = PeD.Core.Models.Propostas.CoExecutor;
+using AlocacaoRh = PeD.Core.Models.Propostas.AlocacaoRh;
+using AlocacaoRhHorasMes = PeD.Core.Models.Projetos.AlocacaoRhHorasMes;
+using Empresa = PeD.Core.Models.Propostas.Empresa;
 using Escopo = PeD.Core.Models.Propostas.Escopo;
 using Etapa = PeD.Core.Models.Propostas.Etapa;
 using EtapaProdutos = PeD.Core.Models.Propostas.EtapaProdutos;
 using ItemAjuda = PeD.Core.Models.Sistema.ItemAjuda;
 using Meta = PeD.Core.Models.Propostas.Meta;
+using Orcamento = PeD.Core.Models.Projetos.Orcamento;
 using PlanoTrabalho = PeD.Core.Models.Propostas.PlanoTrabalho;
 using Produto = PeD.Core.Models.Propostas.Produto;
 using RecursoHumano = PeD.Core.Models.Propostas.RecursoHumano;
@@ -36,7 +39,7 @@ namespace PeD.Data
 
         public DbSet<FileUpload> Files { get; set; }
 
-        public DbSet<Empresa> Empresas { get; set; }
+        public DbSet<Core.Models.Empresa> Empresas { get; set; }
         public DbSet<Tema> Temas { get; set; }
         public DbSet<FaseCadeiaProduto> ProdutoFasesCadeia { get; set; }
 
@@ -101,7 +104,7 @@ namespace PeD.Data
             builder.Entity<Segmento>().Config();
             builder.Entity<Estado>().Config();
             builder.Entity<Pais>().Config();
-            builder.Entity<Empresa>().Config();
+            builder.Entity<Core.Models.Empresa>().Config();
             builder.Entity<CategoriaContabil>().Config();
             builder.Entity<CategoriaContabilAtividade>().Seed();
             builder.Entity<FaseCadeiaProduto>().Config();
@@ -170,7 +173,7 @@ namespace PeD.Data
                     validacao => JsonConvert.SerializeObject(validacao),
                     validacao => JsonConvert.DeserializeObject<ValidationResult>(validacao));
             });
-            builder.Entity<CoExecutor>();
+            builder.Entity<Empresa>(b => { b.Property(e => e.Funcao).HasConversion<string>(); });
             builder.Entity<PropostaContrato>();
             builder.Entity<PropostaContratoRevisao>(b =>
             {
@@ -192,9 +195,16 @@ namespace PeD.Data
             });
             builder.Entity<PlanoTrabalho>();
             builder.Entity<Produto>();
-            builder.Entity<RecursoHumano>();
-            builder.Entity<RecursoMaterial>();
-            builder.Entity<RecursoHumano.AlocacaoRh>(b =>
+            builder.Entity<RecursoHumano>(b =>
+            {
+                b.HasOne(r => r.Proposta).WithMany(p => p.RecursosHumanos).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(r => r.Empresa).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<RecursoMaterial>(b =>
+            {
+                b.HasOne(r => r.Proposta).WithMany(p => p.RecursosMateriais).OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<AlocacaoRh>(b =>
             {
                 b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Etapa).WithMany(e => e.RecursosHumanosAlocacoes).OnDelete(DeleteBehavior.NoAction);
@@ -203,11 +213,13 @@ namespace PeD.Data
                     .HasForeignKey(a => a.PropostaId)
                     .OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Recurso).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.Property(e => e.HoraMeses)
-                    .JsonConversion(new ValueComparer<Dictionary<short, short>>((l1, l2) => l1.SequenceEqual(l2),
-                        l => l.Aggregate(0, (i, s) => HashCode.Combine(i, s.GetHashCode()))));
             });
-            builder.Entity<RecursoMaterial.AlocacaoRm>(b =>
+            builder.Entity<PeD.Core.Models.Propostas.AlocacaoRhHorasMes>(b =>
+            {
+                b.HasKey(br => new {br.AlocacaoRhId, br.Mes});
+                b.ToTable("PropostasAlocacaoRhHorasMeses");
+            });
+            builder.Entity<AlocacaoRm>(b =>
             {
                 b.HasOne(a => a.Etapa).WithMany(e => e.RecursosMateriaisAlocacoes).OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.EmpresaRecebedora).WithMany().OnDelete(DeleteBehavior.NoAction);
@@ -223,10 +235,12 @@ namespace PeD.Data
             builder.Entity<PlanoComentario>(b => { b.ToTable("PlanoComentarios"); });
             builder.Entity<PlanoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
             builder.Entity<ContratoComentarioFile>(b => { b.HasKey(pf => new {pf.ComentarioId, pf.FileId}); });
-            builder.Entity<Orcamento>(b =>
+            builder.Entity<AlocacaoInfo>(b =>
             {
+                b.Property(a => a.EmpresaFinanciadoraFuncao).HasConversion<string>();
+                b.Property(a => a.EmpresaRecebedoraFuncao).HasConversion<string>();
                 b.HasNoKey();
-                b.ToView("ProjetoOrcamentoView");
+                b.ToView("PropostaAlocacoesView");
             });
 
             #endregion
@@ -257,7 +271,7 @@ namespace PeD.Data
                 b.HasKey(e => new {e.ProjetoId, e.SubTemaId});
                 b.ToTable("ProjetosSubtemas");
             });
-            builder.Entity<Core.Models.Projetos.CoExecutor>();
+            builder.Entity<Core.Models.Projetos.Empresa>();
             builder.Entity<Core.Models.Projetos.Escopo>();
             builder.Entity<Core.Models.Projetos.Meta>();
 
@@ -273,14 +287,20 @@ namespace PeD.Data
             });
             builder.Entity<Core.Models.Projetos.PlanoTrabalho>();
             builder.Entity<Core.Models.Projetos.Produto>();
-            builder.Entity<Core.Models.Projetos.RecursoHumano>();
-            builder.Entity<Core.Models.Projetos.RecursoMaterial>();
+            builder.Entity<Core.Models.Projetos.RecursoHumano>(b =>
+            {
+                b.HasOne(r => r.Projeto).WithMany(p => p.RecursosHumanos).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(r => r.Empresa).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<Core.Models.Projetos.RecursoMaterial>(b =>
+            {
+                b.HasOne(r => r.Projeto).WithMany(p => p.RecursosMateriais).OnDelete(DeleteBehavior.NoAction);
+            });
 
 
             builder.Entity<Alocacao>(b =>
             {
                 b.HasDiscriminator(a => a.Tipo);
-                b.HasOne(a => a.CoExecutorFinanciador).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.EmpresaFinanciadora).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(a => a.Etapa).WithMany(e => e.Alocacoes).HasForeignKey(a => a.EtapaId)
                     .OnDelete(DeleteBehavior.NoAction);
@@ -288,12 +308,12 @@ namespace PeD.Data
                     .OnDelete(DeleteBehavior.NoAction);
                 b.ToTable("ProjetosRecursosAlocacoes");
             });
-            builder.Entity<Core.Models.Projetos.RecursoHumano.AlocacaoRh>(b =>
+            builder.Entity<Core.Models.Projetos.AlocacaoRh>(b =>
             {
                 b.HasMany(b => b.HorasMeses).WithOne().HasForeignKey(a => a.AlocacaoRhId);
                 b.HasOne(a => a.RecursoHumano).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
-            builder.Entity<Core.Models.Projetos.RecursoHumano.AlocacaoRhHorasMes>(b =>
+            builder.Entity<AlocacaoRhHorasMes>(b =>
             {
                 b.HasKey(b => new {b.AlocacaoRhId, b.Mes});
                 b.ToTable("ProjetosAlocacaoRhHorasMeses");
@@ -311,7 +331,6 @@ namespace PeD.Data
                 b.HasOne(r => r.Projeto).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(r => r.Etapa).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(r => r.Financiadora).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(r => r.CoExecutorFinanciador).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasMany(r => r.Observacoes).WithOne().HasForeignKey(o => o.RegistroId)
                     .OnDelete(DeleteBehavior.NoAction);
                 b.Property(r => r.Tipo).HasMaxLength(200);
@@ -329,7 +348,6 @@ namespace PeD.Data
             {
                 b.HasOne(r => r.RecursoMaterial).WithMany().OnDelete(DeleteBehavior.NoAction);
                 b.HasOne(r => r.Recebedora).WithMany().OnDelete(DeleteBehavior.NoAction);
-                b.HasOne(r => r.CoExecutorRecebedor).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<RegistroObservacao>(b => { b.ToTable("ProjetosRegistrosFinanceirosObservacoes"); });
 
@@ -339,6 +357,16 @@ namespace PeD.Data
                 b.Property(r => r.Status).HasConversion<string>();
                 b.Property(r => r.TipoDocumento).HasConversion<string>();
                 b.ToView("RegistrosFinanceirosView");
+            });
+            builder.Entity<Orcamento>(b =>
+            {
+                b.HasNoKey();
+                b.ToView("ProjetoOrcamentoView");
+            });
+            builder.Entity<PropriedadeIntelectualDepositante>(b =>
+            {
+                b.HasOne(p => p.Propriedade).WithMany(p => p.Depositantes).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.Empresa).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
         }
 

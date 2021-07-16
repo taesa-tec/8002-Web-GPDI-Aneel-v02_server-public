@@ -18,6 +18,7 @@ using PeD.Services.Projetos;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
+using Empresa = PeD.Core.Models.Projetos.Empresa;
 
 namespace PeD.Controllers.Projetos
 {
@@ -28,10 +29,11 @@ namespace PeD.Controllers.Projetos
     public class RegistroFinanceiroController : ControllerServiceBase<Projeto>
     {
         private new ProjetoService Service;
-        private IService<Empresa> _serviceEmpresa;
+        private IService<Core.Models.Empresa> _serviceEmpresa;
         private GestorDbContext _context;
 
-        public RegistroFinanceiroController(ProjetoService service, IMapper mapper, IService<Empresa> serviceEmpresa,
+        public RegistroFinanceiroController(ProjetoService service, IMapper mapper,
+            IService<Core.Models.Empresa> serviceEmpresa,
             GestorDbContext context) :
             base(service, mapper)
         {
@@ -54,16 +56,15 @@ namespace PeD.Controllers.Projetos
             var colaboradores = Mapper.Map<List<RecursoHumanoDto>>(Service.NodeList<RecursoHumano>(id));
             var recursos = Mapper.Map<List<RecursoMaterialDto>>(Service.NodeList<RecursoMaterial>(id));
             var etapas = Mapper.Map<List<EtapaDto>>(Service.NodeList<Etapa>(id));
-            var coexecutores = Mapper.Map<List<CoExecutorDto>>(Service.NodeList<CoExecutor>(id));
+            var empresas = Mapper.Map<List<EmpresaDto>>(Service.NodeList<Empresa>(id));
             var projeto = Service.Get(id);
-            var empresas = _serviceEmpresa.Filter(q => q
-                .Where(e => e.Categoria == Empresa.CategoriaEmpresa.Taesa || e.Id == projeto.FornecedorId));
             var mesesN = etapas.SelectMany(etapa => etapa.Meses).Distinct();
             var meses = mesesN.Select(m => projeto.DataInicioProjeto.AddMonths(m - 1));
             var categorias = _context.CategoriasContabeis.ToList();
             return Ok(new
             {
-                recursos, colaboradores, etapas, meses, coexecutores, empresas, categorias
+                recursos, colaboradores, etapas, meses,
+                empresas, categorias
             });
         }
 
@@ -349,7 +350,7 @@ namespace PeD.Controllers.Projetos
                     .Include(r => r.RecursoHumano)
                     .ThenInclude(r => r.Empresa)
                     .Include(r => r.Etapa)
-                    .Include(r => r.CoExecutorFinanciador)
+                    .Include(r => r.Financiadora)
                     .FirstOrDefault(r => r.Id == registroId && (this.IsGestor() || r.AuthorId == this.UserId()));
                 return Ok(Mapper.Map<RegistroFinanceiroDto>(rh));
             }

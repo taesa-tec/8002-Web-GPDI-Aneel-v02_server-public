@@ -14,6 +14,7 @@ using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using AutoMapper;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -167,7 +168,7 @@ namespace PeD
             services.AddScoped<SistemaService>();
             services.AddScoped<CaptacaoService>();
             services.AddScoped<PropostaService>();
-            services.AddScoped<CoExecutorService>();
+            services.AddScoped<EmpresaService>();
             services.AddScoped<ProjetoService>();
             services.AddTransient<RelatorioFinalService>();
             services.AddTransient<RelatorioAuditoriaService>();
@@ -257,8 +258,10 @@ namespace PeD
             // Define Cultura Padrão
             var cultureInfo = new CultureInfo("pt-BR");
             cultureInfo.NumberFormat.CurrencySymbol = "R$";
+            ValidatorOptions.Global.LanguageManager.Culture = cultureInfo;
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+            CultureInfo.CurrentUICulture = cultureInfo;
             // Criação de estruturas, usuários e permissões
             // na base do ASP.NET Identity Core (caso ainda não
             // existam)
@@ -298,7 +301,12 @@ namespace PeD
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
                 services.AddDbContext<GestorDbContext>(options =>
-                    options.UseSqlServer(connectionString));
+                    {
+                        options.UseSqlServer(connectionString);
+                        options.EnableSensitiveDataLogging();
+                        ;
+                    }
+                );
             }
         }
 
@@ -321,6 +329,7 @@ namespace PeD
                 ApiKey = sendgrid.GetValue<string>("ApiKey"),
                 SenderEmail = sendgrid.GetValue<string>("SenderEmail"),
                 SenderName = sendgrid.GetValue<string>("SenderName"),
+                Bcc = sendgrid.GetSection("Bcc").Get<string[]>()
             };
             services.AddSingleton(emailConfig);
         }

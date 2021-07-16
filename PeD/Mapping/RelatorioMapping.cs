@@ -10,71 +10,32 @@ namespace PeD.Mapping
     {
         public RelatorioMapping()
         {
-            CreateMap<RecursoHumano.AlocacaoRh, AlocacaoRecurso>()
+            CreateMap<AlocacaoRh, AlocacaoRecurso>()
+                .ForMember(c => c.EmpresaFinanciadoraFuncao, o => o.MapFrom(s => s.EmpresaFinanciadora.Funcao))
+                .ForMember(c => c.EmpresaRecebedoraFuncao, o => o.MapFrom(s => s.Recurso.Empresa.Funcao))
                 .ForMember(c => c.CategoriaContabil, opt => opt.MapFrom(s => "RH"))
-                .ForMember(c => c.EmpresaFinanciadoraCodigo, opt => opt
-                    .MapFrom(s =>
-                        s.EmpresaFinanciadoraId != null
-                            ? s.EmpresaFinanciadora.Categoria.ToString() + "-" + s.EmpresaFinanciadoraId
-                            : "CoExecutor-" + s.CoExecutorFinanciadorId
-                    )
-                ).ForMember(c => c.EmpresaFinanciadora, opt => opt
-                    .MapFrom(s =>
-                        s.EmpresaFinanciadoraId != null
-                            ? s.EmpresaFinanciadora.Nome
-                            : s.CoExecutorFinanciador.RazaoSocial
-                    )
-                ).ForMember(c => c.EmpresaRecebedoraCodigo, opt => opt
-                    .MapFrom(s =>
-                        s.Recurso.EmpresaId != null
-                            ? s.Recurso.Empresa.Categoria.ToString() + "-" + s.Recurso.Empresa.Id
-                            : "CoExecutor-" + s.Recurso.CoExecutorId)
+                .ForMember(c => c.EmpresaFinanciadora, opt => opt
+                    .MapFrom(s => s.EmpresaFinanciadora.Nome)
                 ).ForMember(c => c.EmpresaRecebedora, opt => opt
-                    .MapFrom(s =>
-                        s.Recurso.EmpresaId != null ? s.Recurso.Empresa.Nome : s.Recurso.CoExecutor.RazaoSocial
-                    )
+                    .MapFrom(s => s.Recurso.Empresa.Nome)
                 );
 
 
-            CreateMap<RecursoMaterial.AlocacaoRm, AlocacaoRecurso>()
+            CreateMap<AlocacaoRm, AlocacaoRecurso>()
                 .ForMember(c => c.CategoriaContabil, opt => opt
                     .MapFrom(s => s.Recurso.CategoriaContabil.Valor)
                 )
-                .ForMember(c => c.EmpresaFinanciadoraCodigo, opt => opt
-                    .MapFrom(s =>
-                        s.EmpresaFinanciadoraId != null
-                            ? s.EmpresaFinanciadora.Categoria.ToString() + "-" + s.EmpresaFinanciadoraId
-                            : "CoExecutor-" + s.CoExecutorFinanciadorId
-                    )
-                )
                 .ForMember(c => c.EmpresaFinanciadora, opt => opt
-                    .MapFrom(s =>
-                        s.EmpresaFinanciadoraId != null
-                            ? s.EmpresaFinanciadora.Nome
-                            : s.CoExecutorFinanciador.RazaoSocial
-                    )
-                )
-                .ForMember(c => c.EmpresaRecebedoraCodigo, opt => opt
-                    .MapFrom(s =>
-                        s.EmpresaRecebedoraId != null
-                            ? s.EmpresaRecebedora.Categoria.ToString() + "-" + s.EmpresaRecebedoraId
-                            : "CoExecutor-" + s.CoExecutorRecebedorId
-                    )
+                    .MapFrom(s => s.EmpresaFinanciadora.Nome)
                 )
                 .ForMember(c => c.EmpresaRecebedora, opt => opt
-                    .MapFrom(s =>
-                        s.EmpresaRecebedoraId != null
-                            ? s.EmpresaRecebedora.Nome
-                            : s.CoExecutorRecebedor.RazaoSocial
-                    )
+                    .MapFrom(s => s.EmpresaRecebedora.Nome)
                 );
 
             CreateMap<Etapa, EtapaRelatorio>()
                 .ForMember(d => d.MesInicio, opt => opt.MapFrom(s => s.Meses.Min()))
                 .ForMember(d => d.MesFim, opt => opt.MapFrom(s => s.Meses.Max()))
-                .ForMember(d => d.Alocacoes, opt => opt.MapFrom(src =>
-                    (new List<Alocacao>()).Concat(src.RecursosHumanosAlocacoes)
-                    .Concat(src.RecursosMateriaisAlocacoes)));
+                .ForMember(d => d.Alocacoes, opt => opt.Ignore());
         }
     }
 }

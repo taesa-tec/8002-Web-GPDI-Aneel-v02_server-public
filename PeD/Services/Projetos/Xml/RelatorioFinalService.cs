@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using PeD.Core.Models;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Projetos.Xml;
@@ -9,6 +10,7 @@ using PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD;
 using PeD.Data;
 using DestRecursosEmp = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.DestRecursosEmp;
 using DestRecursosExec = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.DestRecursosExec;
+using Empresa = PeD.Core.Models.Empresa;
 using PD_Recursos = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.PD_Recursos;
 using RecursoEmpresa = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.RecursoEmpresa;
 using RecursoParceira = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.RecursoParceira;
@@ -75,9 +77,10 @@ namespace PeD.Services.Projetos.Xml
                 .ToList();
             var recursosHumanos = _context.Set<RecursoHumano>()
                 .Include(r => r.Empresa)
-                .Where(r => r.ProjetoId == projeto.Id && r.EmpresaId != null && rhIds.Contains(r.Id))
+                .Where(r => r.ProjetoId == projeto.Id && rhIds.Contains(r.Id))
                 .ToList()
-                .GroupBy(r => r.EmpresaId);
+                .Where(r => r.Empresa is {Funcao: Funcao.Cooperada})
+                .GroupBy(r => r.Empresa.Codigo);
 
 
             return new PD_EquipeEmp()
@@ -86,8 +89,8 @@ namespace PeD.Services.Projetos.Xml
                 {
                     Empresa = recursosHumanos.Select(e => new PedEmpresa()
                     {
-                        CodEmpresa = e.First().Empresa.Valor,
-                        TipoEmpresa = e.First().Empresa.Id == projeto.ProponenteId ? "P" : "C",
+                        CodEmpresa = e.First().Empresa.Codigo,
+                        TipoEmpresa = e.First().Empresa.EmpresaRefId == projeto.ProponenteId ? "P" : "C",
                         Equipe = new Equipe()
                         {
                             EquipeEmpresa = e.Select(r => new EquipeEmpresa()
@@ -127,10 +130,10 @@ namespace PeD.Services.Projetos.Xml
                 .Where(r => r.CategoriaContabilCodigo == "RH").ToList();
             var rhIds = rHregistros.Where(r => r.RecursoHumanoId.HasValue).Select(r => r.RecursoHumanoId.Value);
             var recursosHumanos = _context.Set<RecursoHumano>()
-                .Include(r => r.CoExecutor)
-                .Where(r => r.ProjetoId == projeto.Id && r.CoExecutorId != null && rhIds.Contains(r.Id))
+                .Include(r => r.Empresa)
+                .Where(r => r.ProjetoId == projeto.Id && r.Empresa.Funcao == Funcao.Executora && rhIds.Contains(r.Id))
                 .ToList()
-                .GroupBy(r => r.CoExecutorId);
+                .GroupBy(r => r.EmpresaId);
 
 
             return new PD_EquipeExec()
@@ -139,9 +142,9 @@ namespace PeD.Services.Projetos.Xml
                 {
                     Executora = recursosHumanos.Select(r => new PedExecutora()
                     {
-                        UfExec = r.First().CoExecutor.UF,
-                        RazaoSocialExec = r.First().CoExecutor.RazaoSocial,
-                        CNPJExec = r.First().CoExecutor.CNPJ,
+                        UfExec = r.First().Empresa.UF,
+                        RazaoSocialExec = r.First().Empresa.Nome,
+                        CNPJExec = r.First().Empresa.CNPJ,
                         Equipe = new ExecEquipe()
                         {
                             EquipeExec = r.Select(rh => new EquipeExec()
@@ -187,8 +190,9 @@ namespace PeD.Services.Projetos.Xml
             return new PD_Recursos()
             {
                 RecursoEmpresa =
-                    RecursoEmpresa(registros.Where(r => r.FinanciadoraId != null && r.CategoriaContabilCodigo != "RH")),
-                RecursoParceira = RecursoParceira(registros.Where(r => r.CoExecutorFinanciadorId != null))
+                    RecursoEmpresa(registros.Where(r =>
+                        r.FinanciadoraFuncao != Funcao.Executora && r.CategoriaContabilCodigo != "RH")),
+                RecursoParceira = RecursoParceira(registros.Where(r => r.FinanciadoraFuncao == Funcao.Executora))
             };
         }
 
@@ -196,11 +200,11 @@ namespace PeD.Services.Projetos.Xml
         {
             return registros.GroupBy(r => r.FinanciadoraId).Select(r => new RecursoEmpresa()
             {
-                CodEmpresa = r.First().CodEmpresa,
+                CodEmpresa = r.First().FinanciadoraCodigo,
                 DestRecursos = new DestRecursos()
                 {
                     DestRecursosEmp = DestRecursosEmp(r.Where(i => i.FinanciadoraId == i.RecebedoraId)),
-                    DestRecursosExec = DestRecursosExec(r.Where(i => i.CoExecutorRecebedorId != null))
+                    DestRecursosExec = DestRecursosExec(r.Where(i => i.RecebedoraFuncao == Funcao.Executora))
                 }
             }).ToList();
         }
@@ -215,7 +219,7 @@ namespace PeD.Services.Projetos.Xml
 
         private List<DestRecursosExec> DestRecursosExec(IEnumerable<RegistroFinanceiroInfo> registros)
         {
-            return registros.GroupBy(r => r.CoExecutorRecebedorId).Select(i => new DestRecursosExec()
+            return registros.GroupBy(r => r.RecebedoraId).Select(i => new DestRecursosExec()
             {
                 CNPJExec = i.First().CNPJExec,
                 CustoCatContabil = CustoCatContabil(i)
@@ -244,7 +248,7 @@ namespace PeD.Services.Projetos.Xml
 
         private List<RecursoParceira> RecursoParceira(IEnumerable<RegistroFinanceiroInfo> registros)
         {
-            return registros.GroupBy(r => r.CoExecutorFinanciadorId).Select(r => new RecursoParceira()
+            return registros.GroupBy(r => r.FinanciadoraId).Select(r => new RecursoParceira()
             {
                 CNPJParc = r.First().CNPJParc,
                 DestRecursosExec = DestRecursosExec(r)
@@ -274,7 +278,7 @@ namespace PeD.Services.Projetos.Xml
                 {
                     TipoCP = cp.Tipo.ToString(),
                     ConclusaoCP = cp.IsConcluido,
-                    DataCP = cp.DataConclusao.Value,
+                    DataCP = cp.DataConclusao.HasValue ? cp.DataConclusao.Value : throw new Exception("Data de conclusão da capacitação não informada"),
                     DocMmbEqCP = cp.Recurso.Documento,
                     CNPJInstCP = cp.CnpjInstituicao,
                     AreaCP = cp.AreaPesquisa,
@@ -337,8 +341,6 @@ namespace PeD.Services.Projetos.Xml
         {
             var propriedades = _context.Set<PropriedadeIntelectual>()
                 .Include(p => p.Depositantes)
-                .ThenInclude(d => d.CoExecutor)
-                .Include(p => p.Depositantes)
                 .ThenInclude(d => d.Empresa)
                 .Include(p => p.Inventores)
                 .ThenInclude(i => i.Recurso)
@@ -363,7 +365,7 @@ namespace PeD.Services.Projetos.Xml
                         Depositante = p.Depositantes.Select(d => new Depositante_PI()
                         {
                             PercInstCT_PI = d.Porcentagem,
-                            CNPJInstCT_PI = d.Empresa?.Cnpj ?? d.CoExecutor?.CNPJ
+                            CNPJInstCT_PI = d.Empresa.CNPJ
                         }).ToList()
                     }
                 }).ToList()

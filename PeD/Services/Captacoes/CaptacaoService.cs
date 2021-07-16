@@ -18,6 +18,8 @@ using PeD.Views.Email.Captacao.Propostas;
 using TaesaCore.Interfaces;
 using TaesaCore.Models;
 using TaesaCore.Services;
+using Empresa = PeD.Core.Models.Propostas.Empresa;
+using Funcao = PeD.Core.Models.Propostas.Funcao;
 
 namespace PeD.Services.Captacoes
 {
@@ -79,7 +81,6 @@ namespace PeD.Services.Captacoes
                                  (c.Propostas.Count == 0 ||
                                   c.Propostas.All(p => !p.Finalizado || !p.Contrato.Finalizado)))
                     ))
-                //@todo Verificar se funciona propostas zeradas
                 .ToList();
         }
 
@@ -207,23 +208,55 @@ namespace PeD.Services.Captacoes
                 .Include(cf => cf.Fornecedor)
                 .ThenInclude(f => f.Responsavel)
                 .Where(cf => cf.CaptacaoId == id)
-                .Select(cf => cf.Fornecedor);
-
-            var propostas = fornecedores.Select(f => new Proposta()
-            {
-                FornecedorId = f.Id,
-                Fornecedor = f,
-                ResponsavelId = f.ResponsavelId,
-                CaptacaoId = id,
-                Contrato = new PropostaContrato()
+                .Select(cf => cf.Fornecedor).ToList();
+            var taesa = _context.Empresas.FirstOrDefault(e => e.Nome == "TAESA") ??
+                        throw new Exception("Empresa TAESA não encontrada!");
+            var contratoId = captacao.ContratoId.HasValue
+                ? captacao.ContratoId.Value
+                : throw new Exception("Contrato não definido");
+            
+            fornecedores.ForEach(f =>
                 {
-                    ParentId = (int) captacao.ContratoId
-                },
-                Participacao = StatusParticipacao.Pendente,
-                DataCriacao = DateTime.Now
-            });
-
-            _context.AddRange(propostas);
+                    var proposta = new Proposta()
+                    {
+                        FornecedorId = f.Id,
+                        Fornecedor = f,
+                        ResponsavelId = f.ResponsavelId,
+                        CaptacaoId = id,
+                        Contrato = new PropostaContrato()
+                        {
+                            ParentId = contratoId
+                        },
+                        Participacao = StatusParticipacao.Pendente,
+                        DataCriacao = DateTime.Now,
+                        Empresas = new List<Empresa>()
+                        {
+                            new Empresa()
+                            {
+                                Required = true,
+                                Funcao = Funcao.Executora,
+                                EmpresaRefId = f.Id,
+                                RazaoSocial = f.Nome,
+                                CNPJ = f.Cnpj,
+                                UF = f.UF
+                            }
+                        }
+                    };
+                    _context.Add(proposta);
+                    _context.SaveChanges();
+                    _context.Add(new Empresa()
+                    {
+                        Required = true,
+                        PropostaId = proposta.Id,
+                        Funcao = Funcao.Cooperada,
+                        EmpresaRefId = taesa.Id,
+                        Codigo = taesa.Codigo,
+                        RazaoSocial = taesa.Nome,
+                        CNPJ = taesa.Cnpj
+                    });
+                    _context.SaveChanges();
+                }
+            );
             _context.Update(captacao);
             await _context.SaveChangesAsync();
 

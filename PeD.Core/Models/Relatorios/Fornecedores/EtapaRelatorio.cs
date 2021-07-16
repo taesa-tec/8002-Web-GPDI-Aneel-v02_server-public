@@ -17,37 +17,38 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
                 .ToList();
         }
 
-        public static Dictionary<string, List<AlocacaoRecurso>> AgruparPorEmpresaRecebedora(List<AlocacaoRecurso> list)
+        public static Dictionary<int, List<AlocacaoInfo>> AgruparPorEmpresaRecebedora(List<AlocacaoInfo> list)
         {
-            return list.GroupBy(i => i.EmpresaRecebedoraCodigo)
+            return list.GroupBy(i => i.EmpresaRecebedoraId)
                 .ToDictionary(i => i.Key, i => i.ToList());
         }
 
-        public static decimal CustoPorCategoria(List<AlocacaoRecurso> list, string categoria)
+        public static decimal CustoPorCategoria(List<AlocacaoInfo> list, string categoria)
         {
-            return list.Where(a => a.CategoriaContabil == categoria).Sum(i => i.Valor);
+            return list.Where(a => a.Categoria == categoria).Sum(i => i.Valor);
         }
 
-        public static decimal CustoEntreEmpresas(List<AlocacaoRecurso> list, string financiadora, string recebedora)
+        public static decimal CustoEntreEmpresas(List<AlocacaoInfo> list, int financiadoraId, int recebedoraId)
         {
             return list.Where(i =>
-                    i.EmpresaFinanciadoraCodigo == financiadora && i.EmpresaRecebedoraCodigo == recebedora)
+                    i.EmpresaFinanciadoraId == financiadoraId && i.EmpresaRecebedoraId == recebedoraId)
                 .Sum(x => x.Valor);
         }
 
-        public static decimal CustoFinanciadora(List<AlocacaoRecurso> list, string financiadora, bool interno = true)
+        public static decimal CustoFinanciadora(List<AlocacaoInfo> list, int financiadoraId, bool interno = true)
         {
             return list.Where(i =>
-                    i.EmpresaFinanciadoraCodigo == financiadora &&
-                    (interno || i.EmpresaRecebedoraCodigo != financiadora))
+                    i.EmpresaFinanciadoraId == financiadoraId &&
+                    (interno || i.EmpresaRecebedoraId != financiadoraId))
                 .Sum(x => x.Valor);
         }
 
-        public static decimal CustoFinanciadora(List<EtapaRelatorio> list, string financiadora, bool interno = true)
+        public static decimal CustoFinanciadora(List<EtapaRelatorio> list, int financiadoraId, bool interno = true)
         {
-            return CustoFinanciadora(list.SelectMany(e => e.Alocacoes).ToList(), financiadora, interno);
+            return CustoFinanciadora(list.SelectMany(e => e.Alocacoes).ToList(), financiadoraId, interno);
         }
 
+        public int Id { get; set; }
         public string DescricaoAtividades { get; set; }
         public short MesInicio { get; set; }
         public short MesFim { get; set; }
@@ -59,51 +60,45 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
         {
             if (interno)
                 return Alocacoes.Sum(a => a.Valor);
-            return Alocacoes.Where(i => i.EmpresaFinanciadoraCodigo != i.EmpresaRecebedoraCodigo).Sum(a => a.Valor);
+            return Alocacoes.Where(i => i.EmpresaFinanciadoraId != i.EmpresaRecebedoraId).Sum(a => a.Valor);
         }
 
-        public List<AlocacaoRecurso> Alocacoes { get; set; }
+        public List<AlocacaoInfo> Alocacoes { get; set; }
 
         public decimal AlocacoesInternasSum => AlocacoesInternas.Sum(a => a.Valor);
 
-        public List<AlocacaoRecurso> AlocacoesInternas
+        public List<AlocacaoInfo> AlocacoesInternas
         {
             get
             {
-                return Alocacoes.Where(c =>
-                        c.EmpresaFinanciadoraCodigo.StartsWith("Taesa") &&
-                        c.EmpresaRecebedoraCodigo.StartsWith("Taesa"))
+                return Alocacoes.Where(c => c.EmpresaFinanciadoraId == c.EmpresaRecebedoraId)
                     .ToList();
             }
         }
 
-        public List<AlocacaoRecurso> AlocacoesExternas
-        {
-            get
-            {
-                return Alocacoes.Where(c =>
-                        c.EmpresaFinanciadoraCodigo.StartsWith("Taesa") &&
-                        !c.EmpresaRecebedoraCodigo.StartsWith("Taesa"))
-                    .ToList();
-            }
-        }
-
-
-        public Dictionary<string, Dictionary<string, List<AlocacaoRecurso>>> AlocacoesEntreEmpresas
+        public List<AlocacaoInfo> AlocacoesExternas
         {
             get
             {
                 return Alocacoes
-                    .GroupBy(i => i.EmpresaFinanciadoraCodigo)
+                    .Where(c => c.EmpresaFinanciadoraFuncao == Funcao.Cooperada &&
+                                c.EmpresaRecebedoraFuncao == Funcao.Executora)
+                    .ToList();
+            }
+        }
+
+
+        public Dictionary<int, Dictionary<int, List<AlocacaoInfo>>> AlocacoesEntreEmpresas
+        {
+            get
+            {
+                return Alocacoes
+                    .GroupBy(i => i.EmpresaFinanciadoraId)
                     .ToDictionary(i => i.Key, i => i
-                        .GroupBy(x => x.EmpresaRecebedoraCodigo)
+                        .GroupBy(x => x.EmpresaRecebedoraId)
                         .ToDictionary(x => x.Key, x => x.ToList())
                     );
             }
         }
-
-        public List<AlocacaoRecurso> AlocacaoPorCategoria => AgruparPorCategoria(Alocacoes);
-        public List<AlocacaoRecurso> AlocacoesInternasPorCategoria => AgruparPorCategoria(AlocacoesInternas);
-        public List<AlocacaoRecurso> AlocacoesExternasPorCategoria => AgruparPorCategoria(AlocacoesExternas);
     }
 }

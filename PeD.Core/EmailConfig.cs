@@ -7,5 +7,6 @@ namespace PeD.Core
         public string ApiKey { get; set; }
         public string SenderName { get; set; }
         public string SenderEmail { get; set; }
+        public string[] Bcc { get; set; }
     }
 }

@@ -7,7 +7,6 @@ namespace PeD.Core.ApiModels.Propostas
         public string Funcao { get; set; }
         public string Nacionalidade { get; set; }
         public int? EmpresaId { get; set; }
-        public int? CoExecutorId { get; set; }
         public string Empresa { get; set; }
 
         //Cpf ou Passaport

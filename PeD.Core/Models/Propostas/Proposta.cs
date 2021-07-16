@@ -52,15 +52,15 @@ namespace PeD.Core.Models.Propostas
         public PropostaContrato Contrato { get; set; }
         public StatusAprovacao ContratoAprovacao { get; set; }
         public List<PropostaArquivo> Arquivos { get; set; }
-        public List<CoExecutor> CoExecutores { get; set; }
+        public List<Empresa> Empresas { get; set; }
         public List<Produto> Produtos { get; set; }
         public List<Etapa> Etapas { get; set; }
         public List<Meta> Metas { get; set; }
         public List<Risco> Riscos { get; set; }
         public List<RecursoHumano> RecursosHumanos { get; set; }
         public List<RecursoMaterial> RecursosMateriais { get; set; }
-        [InverseProperty("Proposta")] public List<RecursoHumano.AlocacaoRh> RecursosHumanosAlocacoes { get; set; }
-        [InverseProperty("Proposta")] public List<RecursoMaterial.AlocacaoRm> RecursosMateriaisAlocacoes { get; set; }
+        [InverseProperty("Proposta")] public List<AlocacaoRh> RecursosHumanosAlocacoes { get; set; }
+        [InverseProperty("Proposta")] public List<AlocacaoRm> RecursosMateriaisAlocacoes { get; set; }
         public List<Relatorio> HistoricoRelatorios { get; set; }
         public List<ContratoComentario> ContratoComentarios { get; set; }
         public List<PlanoComentario> PlanoTrabalhoComentarios { get; set; }
