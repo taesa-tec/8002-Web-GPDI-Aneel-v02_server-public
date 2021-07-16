@@ -116,7 +116,7 @@ namespace PeD.Services.Captacoes
             return _captacaoPropostas
                 .AsNoTracking()
                 //Captacao
-                .Include("Captacao.Tema")
+                .Include(p => p.Captacao).ThenInclude(c => c.Tema)
                 .Include(p => p.Captacao).ThenInclude(c => c.SubTemas).ThenInclude(s => s.SubTema)
                 //
                 .Include(p => p.Etapas)
@@ -330,9 +330,11 @@ namespace PeD.Services.Captacoes
         public Relatorio UpdateRelatorio(int propostaId)
         {
             var proposta = GetPropostaFull(propostaId);
+
             var alocacoes = GetAlocacoes(propostaId);
             var modelView = _mapper.Map<Core.Models.Relatorios.Fornecedores.Proposta>(proposta);
             modelView.Etapas.ForEach(e => { e.Alocacoes = alocacoes.Where(a => a.EtapaId == e.Id).ToList(); });
+            proposta = context.Set<Proposta>().FirstOrDefault(p => p.Id == propostaId);
 
             var validacao = (new PropostaValidator()).Validate(modelView);
             var content = renderService.RenderToStringAsync("Proposta/Proposta", modelView).Result;
@@ -371,17 +373,22 @@ namespace PeD.Services.Captacoes
 
         public Relatorio GetRelatorio(int propostaId)
         {
-            var proposta = _captacaoPropostas.Include(p => p.Relatorio)
-                .ThenInclude(r => r.File)
-                .FirstOrDefault(p => p.Id == propostaId);
-            if (proposta != null)
+            var dataAlteracao = _captacaoPropostas
+                .AsNoTracking()
+                .Where(p => p.Id == propostaId)
+                .Select(p => p.DataAlteracao)
+                .FirstOrDefault();
+            var relatorio = context.Set<Relatorio>().AsNoTracking()
+                .Include(r => r.File)
+                .FirstOrDefault(r => r.PropostaId == propostaId);
+            if (relatorio != null)
             {
-                if (proposta.Relatorio == null || proposta.Relatorio.DataAlteracao < proposta.DataAlteracao)
+                if (relatorio.DataAlteracao < dataAlteracao)
                 {
                     return UpdateRelatorio(propostaId);
                 }
 
-                return proposta.Relatorio;
+                return relatorio;
             }
 
             return null;

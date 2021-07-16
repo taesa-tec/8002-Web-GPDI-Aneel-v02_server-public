@@ -1368,7 +1368,7 @@ namespace PeD.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PropriedadeId = table.Column<int>(nullable: false),
-                    EmpresaId = table.Column<int>(nullable: true),
+                    EmpresaId = table.Column<int>(nullable: false),
                     Porcentagem = table.Column<decimal>(type: "decimal(5,2)", nullable: false)
                 },
                 constraints: table =>
@@ -1378,14 +1378,12 @@ namespace PeD.Data.Migrations
                         name: "FK_PropriedadeIntelectualDepositante_ProjetoEmpresas_EmpresaId",
                         column: x => x.EmpresaId,
                         principalTable: "ProjetoEmpresas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PropriedadeIntelectualDepositante_ProjetosRelatoriosPropriedadesIntelectuais_PropriedadeId",
                         column: x => x.PropriedadeId,
                         principalTable: "ProjetosRelatoriosPropriedadesIntelectuais",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(

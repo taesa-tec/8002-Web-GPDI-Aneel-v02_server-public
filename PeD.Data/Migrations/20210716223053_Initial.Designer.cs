@@ -10,7 +10,7 @@ using PeD.Data;
 namespace PeD.Data.Migrations
 {
     [DbContext(typeof(GestorDbContext))]
-    [Migration("20210715233705_Initial")]
+    [Migration("20210716223053_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4582,7 +4582,7 @@ namespace PeD.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("EmpresaId")
+                    b.Property<int>("EmpresaId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Porcentagem")
@@ -6681,12 +6681,14 @@ namespace PeD.Data.Migrations
                 {
                     b.HasOne("PeD.Core.Models.Projetos.Empresa", "Empresa")
                         .WithMany()
-                        .HasForeignKey("EmpresaId");
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("PeD.Core.Models.Projetos.Resultados.PropriedadeIntelectual", "Propriedade")
                         .WithMany("Depositantes")
                         .HasForeignKey("PropriedadeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 

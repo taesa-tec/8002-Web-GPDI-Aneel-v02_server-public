@@ -301,7 +301,12 @@ namespace PeD
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
                 services.AddDbContext<GestorDbContext>(options =>
-                    options.UseSqlServer(connectionString));
+                    {
+                        options.UseSqlServer(connectionString);
+                        options.EnableSensitiveDataLogging();
+                        ;
+                    }
+                );
             }
         }
 

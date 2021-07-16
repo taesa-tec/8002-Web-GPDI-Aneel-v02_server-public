@@ -363,6 +363,11 @@ namespace PeD.Data
                 b.HasNoKey();
                 b.ToView("ProjetoOrcamentoView");
             });
+            builder.Entity<PropriedadeIntelectualDepositante>(b =>
+            {
+                b.HasOne(p => p.Propriedade).WithMany(p => p.Depositantes).OnDelete(DeleteBehavior.NoAction);
+                b.HasOne(p => p.Empresa).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
         }
 
         protected void ProjetoRelatorioContext(ModelBuilder builder)

@@ -87,7 +87,7 @@ namespace PeD.Controllers.Propostas
 
 
         [HttpGet("{id:guid}/Documento")]
-        public async Task<ActionResult> PropostaDoc(Guid id)
+        public async Task<ActionResult> PropostaDoc(Guid id, [FromServices] GestorDbContext context)
         {
             var tempproposta = Service.GetProposta(id);
             if (tempproposta == null)
@@ -95,9 +95,12 @@ namespace PeD.Controllers.Propostas
                 return NotFound();
             }
 
+            context.Entry(tempproposta).State = EntityState.Detached;
+
             var authorizationResult = await this.Authorize(tempproposta);
             if (!authorizationResult.Succeeded)
                 return Forbid();
+
 
             var relatorio = Service.GetRelatorio(tempproposta.Id);
             if (relatorio != null)
