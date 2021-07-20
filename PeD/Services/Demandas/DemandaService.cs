@@ -277,6 +277,11 @@ namespace PeD.Services.Demandas
                             string.Format(" {0} alterou a etapa da demanda para \"{1}\"", user.NomeCompleto,
                                 demanda.EtapaDesc));
                     }
+
+                    var revisao = _context.DemandaFormValues.Include("Files")
+                        .FirstOrDefault(df => df.DemandaId == id && df.FormKey == EspecificacaoTecnicaForm.Key)
+                        ?.Revisao ?? 1;
+                    SavePdf(demanda, EspecificacaoTecnicaForm.Key, revisao.ToString()).Wait();
                 }
                 else
                 {
@@ -598,15 +603,19 @@ namespace PeD.Services.Demandas
             _context.SaveChanges();
 
             var demanda = _context.Demandas.FirstOrDefault(d => d.Id == id);
+            await SavePdf(demanda, form, dfData.Revisao.ToString());
+        }
+
+        protected async Task SavePdf(Demanda demanda, string form, string revisao)
+        {
             if (string.IsNullOrWhiteSpace(demanda?.SuperiorDiretoId))
                 throw new DemandaException("Defina o superior direto antes de continuar");
 
-            var demandaFormView = GetDemandaFormView(id, form);
+            var demandaFormView = GetDemandaFormView(demanda.Id, form);
             var versao = await SaveDemandaFormHistorico(demandaFormView);
-            dfData.Html = versao.Content;
-
-            var file = SaveDemandaFormPdf(id, form, versao.Content, dfData.Revisao.ToString());
+            var file = SaveDemandaFormPdf(demanda.Id, form, versao.Content, revisao);
             demanda.EspecificacaoTecnicaFileId = file.Id;
+            _context.SaveChanges();
         }
 
         public DemandaFormView GetDemandaFormView(int id, string form)
@@ -615,9 +624,13 @@ namespace PeD.Services.Demandas
             var demanda = GetById(id);
             var renderDocument = RenderDocument(id, form);
             var formDemanda = _context.DemandaFormValues.FirstOrDefault(df => df.DemandaId == id && df.FormKey == form);
+            var equipePed = sistemaService.GetEquipePeD();
 
             return new DemandaFormView
             {
+                Diretor = _context.Users.First(u => u.Id == equipePed.Diretor),
+                Coordenador = _context.Users.First(u => u.Id == equipePed.Coordenador),
+                Gerente = _context.Users.First(u => u.Id == equipePed.Gerente),
                 Demanda = demanda,
                 Form = mainForm,
                 Rendered = renderDocument,

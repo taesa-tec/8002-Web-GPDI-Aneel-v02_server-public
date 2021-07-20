@@ -63,44 +63,21 @@ namespace PeD.Services
             return Users;
         }
 
-        public Resultado Incluir(ApplicationUser dadosUser)
+        public async Task Incluir(ApplicationUser dadosUser)
         {
-            Resultado resultado = DadosValidos(dadosUser);
-            resultado.Acao = "Inclusão de User";
-
-            if (resultado.Inconsistencias.Count == 0 &&
-                _context.Users.Where(
-                    p => p.Email == dadosUser.Email).Count() > 0)
+            dadosUser.Id = Guid.NewGuid().ToString();
+            dadosUser.EmailConfirmed = true;
+            dadosUser.DataCadastro = DateTime.Now;
+            await CreateUser(dadosUser, dadosUser.Role);
+            try
             {
-                resultado.Inconsistencias.Add(
-                    "E-mail já cadastrado");
+                accessManager.SendRecoverAccountEmail(dadosUser.Email, true,
+                    "Seja bem-vindo ao Gerenciador PDI Taesa").Wait(10000);
             }
-
-            if (resultado.Sucesso)
+            catch (Exception)
             {
-                string Password = DateTime.Now.ToString().ToMD5() + $"@Mi{DateTime.Now.Minute}";
-                dadosUser.Id = Guid.NewGuid().ToString();
-                dadosUser.EmailConfirmed = true;
-                dadosUser.DataCadastro = DateTime.Now;
-                resultado = CreateUser(dadosUser, Password, dadosUser.Role);
-                string UserId = resultado.Id;
-                if (resultado.Sucesso)
-                {
-                    try
-                    {
-                        accessManager.SendRecoverAccountEmail(dadosUser.Email, true,
-                            "Seja bem-vindo ao Gerenciador P&D Taesa").Wait(10000);
-                    }
-                    catch (Exception e)
-                    {
-                        resultado.Inconsistencias.Add(e.Message);
-                    }
-
-                    resultado.Id = UserId;
-                }
+                // ignored
             }
-
-            return resultado;
         }
 
         public Resultado Atualizar(ApplicationUser dadosUser)
@@ -212,34 +189,28 @@ namespace PeD.Services
             return resultado;
         }
 
-        public Resultado CreateUser(ApplicationUser user, string password, string initialRole = null)
+
+        public async Task CreateUser(ApplicationUser user, string initialRole = null, string password = null)
         {
-            var resultado = new Resultado();
-            resultado.Acao = "Inclusão de User";
+            if (await _userManager.FindByEmailAsync(user.Email) != null)
+                throw new Exception("Email já cadastrado!");
+
             user.UserName = user.Email;
 
-            if (_userManager.FindByEmailAsync(user.Email).Result == null)
+            var result = password != null
+                ? await _userManager.CreateAsync(user, password)
+                : await _userManager.CreateAsync(user);
+
+            if (result.Succeeded &&
+                !String.IsNullOrWhiteSpace(initialRole))
             {
-                var result = _userManager
-                    .CreateAsync(user, password).Result;
-
-                if (result.Succeeded &&
-                    !String.IsNullOrWhiteSpace(initialRole))
-                {
-                    resultado.Id = user.Id;
-                    _userManager.AddToRoleAsync(user, initialRole).Wait();
-                }
-
-                if (result.Errors.Count() > 0)
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        resultado.Inconsistencias.Add(error.Description);
-                    }
-                }
+                _userManager.AddToRoleAsync(user, initialRole).Wait();
             }
 
-            return resultado;
+            if (result.Errors.Count() > 0)
+            {
+                throw new Exception(result.ToString());
+            }
         }
 
         public async Task Desativar(string emailOrId)
@@ -284,6 +255,12 @@ namespace PeD.Services
 
             if (File.Exists(fullname))
             {
+                if (file is null)
+                {
+                    File.Delete(fullname);
+                    return;
+                }
+
                 File.Move(fullname, fullname + ".old");
             }
 

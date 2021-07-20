@@ -1,3 +1,5 @@
+using FluentValidation;
+
 namespace PeD.Core.Requests.Users
 {
     public class NewUserRequest
@@ -17,5 +19,15 @@ namespace PeD.Core.Requests.Users
         public int? EmpresaId { get; set; }
 
         public string RazaoSocial { get; set; }
+    }
+
+    public class NewUserValidator : AbstractValidator<NewUserRequest>
+    {
+        public NewUserValidator()
+        {
+            RuleFor(r => r.NomeCompleto).NotEmpty();
+            RuleFor(r => r.Email).NotEmpty().EmailAddress();
+            RuleFor(r => r.Role).NotEmpty();
+        }
     }
 }

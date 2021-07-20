@@ -108,9 +108,9 @@ namespace PeD
                 c.SwaggerDoc("v2",
                     new OpenApiInfo()
                     {
-                        Title = "Taesa - Gestor P&D",
+                        Title = "Taesa - Gestor PDI",
                         Version = "2.8",
-                        Description = "API REST criada com o ASP.NET Core 3.1 para comunição com o Gestor P&D",
+                        Description = "API REST criada com o ASP.NET Core 3.1 para comunição com o Gestor PDI",
                     });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {

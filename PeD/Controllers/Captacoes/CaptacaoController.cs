@@ -214,6 +214,13 @@ namespace PeD.Controllers.Captacoes
             }
         }
 
+        [ResponseCache(Duration = 600)]
+        [HttpGet("Counts")]
+        public ActionResult Contagem()
+        {
+            return Ok(Service.GetCountByStatus());
+        }
+
         #endregion
 
         #region 2.3

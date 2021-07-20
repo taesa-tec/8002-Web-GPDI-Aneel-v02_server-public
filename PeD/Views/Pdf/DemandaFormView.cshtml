@@ -143,7 +143,7 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
             </tr>
             <tr align="center">
                 <td style="border:none" class="text-center">
-                    <span>Contratação de Projeto de P&D</span>
+                    <span>Contratação de Projeto de PDI</span>
                 </td>
             </tr>
         </table>
@@ -162,6 +162,7 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
                 <td style="border:none" class="text-center">
                     <span>
                         <strong id="projeto-titulo">@Model.Demanda.Titulo</strong>
+                        &nbsp;
                         <span id="projeto-descricao">@Model.Demanda.EtapaDesc</span>
                     </span>
                 </td>
@@ -234,12 +235,12 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
                 <td>
                     <span id="autor">@Model.Demanda.Criador.NomeCompleto</span>
                 </td>
-                <td>Marcio Barony</td>
-                <td>Francisco de Assis Pereira</td>
+                <td>@(Model.Demanda.Revisor?.NomeCompleto ?? "A definir")</td>
+                <td>@Model.Gerente.NomeCompleto</td>
                 <td>
-                    <span id="gerente">@Model.Demanda.SuperiorDireto.NomeCompleto</span>
+                    <span>@Model.Demanda.SuperiorDireto.NomeCompleto</span>
                 </td>
-                <td>Marco Antônio Resende Faria</td>
+                <td>@Model.Diretor.NomeCompleto</td>
             </tr>
             <tr>
                 <td>
@@ -248,12 +249,10 @@ c-9.2,5.8-13.4,12-15.3,22.9c-0.9,9.1-0.2,16.8,4.6,24.8c13.6,19.3,39.2,14.1,59.1,
                 <td>
                     <span id="autor-funcao">@(Model.Demanda.Criador.Cargo ?? "Superior não cadastrado")</span>
                 </td>
-                <td>Coordenador de Pesquisa e Desenvolvimento</td>
-                <td>Gerente de Gestão de Ativos</td>
-                <td>
-                    <span id="gerente-funcao">@(Model.Demanda.SuperiorDireto.Cargo ?? "Não Informado")</span>
-                </td>
-                <td>Diretor Técnico</td>
+                <td>@(Model.Demanda.Revisor?.Cargo ?? "Não cadastrato")</td>
+                <td>@(Model.Gerente.Cargo ?? "Não cadastrato")</td>
+                <td>@(Model.Coordenador.Cargo ?? "Não cadastrato")</td>
+                <td>@Model.Diretor.Cargo</td>
             </tr>
             <tr>
                 <td height="72">

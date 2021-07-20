@@ -49,7 +49,9 @@ namespace PeD.Services.Sistema
             var diretor = GetOption<string>("equipe-ped-diretor");
             var gerente = GetOption<string>("equipe-ped-gerente");
             var coordenador = GetOption<string>("equipe-ped-coordenador");
-            var equipeOutros = _userManager.GetUsersInRoleAsync(Roles.User).Result.Select(u => u.Id).ToList();
+            var equipeOutros = _userManager.GetUsersInRoleAsync(Roles.User).Result
+                .Concat(_userManager.GetUsersInRoleAsync(Roles.Colaborador).Result)
+                .Select(u => u.Id).ToList();
             var equipe = new EquipePeD()
             {
                 Diretor = diretor,

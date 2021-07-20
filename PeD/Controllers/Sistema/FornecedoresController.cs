@@ -66,16 +66,7 @@ namespace PeD.Controllers.Sistema
                     EmpresaId = fornecedor.Id == 0 ? (int?) null : fornecedor.Id
                 };
 
-                var md5Hash = MD5.Create();
-                var data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(DateTime.Now.Ticks.ToString()));
-                var sBuilder = new StringBuilder();
-                for (var i = 0; i < data.Length; i++)
-                {
-                    sBuilder.Append(data[i].ToString("x2"));
-                }
-
-                //_userManager.CreateAsync(responsavel, sBuilder.ToString());
-                var userResult = await _userManager.CreateAsync(responsavel, "Pass@123");
+                var userResult = await _userManager.CreateAsync(responsavel);
                 if (userResult.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(responsavel, Roles.Fornecedor);

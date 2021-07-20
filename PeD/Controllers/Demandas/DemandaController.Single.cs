@@ -26,8 +26,6 @@ namespace PeD.Controllers.Demandas
 {
     public partial class DemandaController
     {
-        private const string patt = "(<[\\w|\\d]+(?:\\b[^>]*)?>\\s*|\\s*</[\\w|\\d]+>\\s*)";
-
         [HttpPost("Criar")]
         public ActionResult<Demanda> CriarDemanda([FromBody] string titulo)
         {
@@ -63,20 +61,14 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id}/EquipeValidacao")]
-        public ActionResult SetEquipeValidacao(int id, [FromBody] JObject data)
+        public ActionResult SetEquipeValidacao(int id, [FromBody] SuperiorRequest request)
         {
-            var superiorDireto = data.Value<string>("superiorDireto");
-            if (String.IsNullOrWhiteSpace(superiorDireto))
-            {
-                return BadRequest("Superior Direto não informado!");
-            }
-
             if (!DemandaService.DemandaExist(id))
             {
                 return NotFound();
             }
 
-            DemandaService.SetSuperiorDireto(id, superiorDireto);
+            DemandaService.SetSuperiorDireto(id, request.SuperiorDireto);
 
             return Ok();
         }
@@ -91,14 +83,8 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id}/Revisor")]
-        public ActionResult<Demanda> SetRevisor(int id, [FromBody] JObject data)
+        public ActionResult<Demanda> SetRevisor(int id, [FromBody] RevisorRequest request)
         {
-            var revisorId = data.Value<string>("revisorId");
-            if (String.IsNullOrWhiteSpace(revisorId))
-            {
-                return BadRequest("Rivisor não informado!");
-            }
-
             if (!DemandaService.DemandaExist(id))
             {
                 return NotFound();
@@ -108,7 +94,7 @@ namespace PeD.Controllers.Demandas
             {
                 try
                 {
-                    DemandaService.ProximaEtapa(id, this.UserId(), revisorId);
+                    DemandaService.ProximaEtapa(id, this.UserId(), request.RevisorId);
                 }
                 catch (DemandaException exception)
                 {

@@ -177,7 +177,7 @@ namespace PeD.Services
         }
 
         public async Task SendRecoverAccountEmail(string email, bool newAccount = false,
-            string subject = "Redefinição de Senha - Gerenciador P&D Taesa")
+            string subject = "Redefinição de Senha - Gerenciador PDI Taesa")
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) throw new Exception("Email não encontrado");
@@ -201,7 +201,7 @@ namespace PeD.Services
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             // Console.WriteLine(token);
             await SendGridService.Send(email,
-                "Você foi convidado para participar do Gestor P&D da Taesa como Fornecedor Cadastrado",
+                "Você foi convidado para participar do Gestor PDI da Taesa como Fornecedor Cadastrado",
                 "Email/FornecedorAccount",
                 new FornecedorAccount()
                 {

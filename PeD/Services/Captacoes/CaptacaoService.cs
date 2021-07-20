@@ -34,6 +34,30 @@ namespace PeD.Services.Captacoes
         private PropostaService _propostaService;
         private IMapper _mapper;
 
+        private Func<IQueryable<Captacao>, IQueryable<Captacao>> _queryCanceladas = q => q
+            .Include(c => c.Criador)
+            .Include(c => c.UsuarioSuprimento)
+            .Include(c => c.Propostas)
+            .Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada ||
+                        ((c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino <= DateTime.Today) ||
+                         c.Status >= Captacao.CaptacaoStatus.Encerrada) &&
+                        (c.Propostas.Count == 0 ||
+                         c.Propostas.All(p => !p.Finalizado || !p.Contrato.Finalizado)));
+
+        private Func<IQueryable<Captacao>, IQueryable<Captacao>> _queryEncerradas = q => q
+            .Include(c => c.Criador)
+            .Include(c => c.UsuarioSuprimento)
+            .Include(c => c.Propostas)
+            .ThenInclude(p => p.Fornecedor)
+            .Include(c => c.Propostas)
+            .ThenInclude(p => p.Contrato)
+            .Where(c => (c.Status >= Captacao.CaptacaoStatus.Encerrada || c.Termino < DateTime.Today)
+                        && c.Propostas.Any(p => p.Finalizado && p.Contrato.Finalizado)
+            );
+
+        private Func<IQueryable<Captacao>, IQueryable<Captacao>> _queryAbertas = q =>
+            q.Where(c => c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino > DateTime.Now);
+
         public CaptacaoService(IRepository<Captacao> repository, GestorDbContext context,
             SendGridService sendGridService, ILogger<CaptacaoService> logger, PropostaService propostaService,
             IMapper mapper) : base(repository)
@@ -59,6 +83,20 @@ namespace PeD.Services.Captacoes
         public string UserSuprimento(int id) => _context.Set<Captacao>().Where(c => c.Id == id)
             .Select(c => c.UsuarioSuprimentoId).FirstOrDefault();
 
+        public Dictionary<Captacao.CaptacaoStatus, int> GetCountByStatus()
+        {
+            var query = _context.Set<Captacao>().AsQueryable();
+            var d = new Dictionary<Captacao.CaptacaoStatus, int>();
+            d.Add(Captacao.CaptacaoStatus.Pendente,
+                query.Where(c => c.Status == Captacao.CaptacaoStatus.Pendente).Count());
+            d.Add(Captacao.CaptacaoStatus.Elaboracao,
+                query.Where(c => c.Status == Captacao.CaptacaoStatus.Elaboracao).Count());
+            d.Add(Captacao.CaptacaoStatus.Cancelada, _queryCanceladas(query).Count());
+            d.Add(Captacao.CaptacaoStatus.Encerrada, _queryEncerradas(query).Count());
+            d.Add(Captacao.CaptacaoStatus.Fornecedor, _queryAbertas(query).Count());
+            return d;
+        }
+
         public List<Captacao> GetCaptacoes(Captacao.CaptacaoStatus status)
         {
             return Filter(q => q
@@ -72,31 +110,12 @@ namespace PeD.Services.Captacoes
 
         public List<Captacao> GetCaptacoesFalhas()
         {
-            return Filter(q => q
-                    .Include(c => c.Criador)
-                    .Include(c => c.UsuarioSuprimento)
-                    .Include(c => c.Propostas)
-                    .Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada ||
-                                (c.Status >= Captacao.CaptacaoStatus.Encerrada &&
-                                 (c.Propostas.Count == 0 ||
-                                  c.Propostas.All(p => !p.Finalizado || !p.Contrato.Finalizado)))
-                    ))
-                .ToList();
+            return Filter(_queryCanceladas).ToList();
         }
 
         public List<Captacao> GetCaptacoesEncerradas()
         {
-            return Filter(q => q
-                    .Include(c => c.Criador)
-                    .Include(c => c.UsuarioSuprimento)
-                    .Include(c => c.Propostas)
-                    .ThenInclude(p => p.Fornecedor)
-                    .Include(c => c.Propostas)
-                    .ThenInclude(p => p.Contrato)
-                    .Where(c => (c.Status >= Captacao.CaptacaoStatus.Encerrada || c.Termino < DateTime.Today)
-                                && c.Propostas.Any(p => p.Finalizado && p.Contrato.Finalizado)
-                    ))
-                .ToList();
+            return Filter(_queryEncerradas).ToList();
         }
 
         public List<Captacao> GetCaptacoesSelecaoPendente()
@@ -214,7 +233,7 @@ namespace PeD.Services.Captacoes
             var contratoId = captacao.ContratoId.HasValue
                 ? captacao.ContratoId.Value
                 : throw new Exception("Contrato não definido");
-            
+
             fornecedores.ForEach(f =>
                 {
                     var proposta = new Proposta()
@@ -518,7 +537,7 @@ namespace PeD.Services.Captacoes
                 {
                     await _sendGridService
                         .Send(proposta.Responsavel.Email,
-                            "Você foi convidado para participar de um novo projeto para a área de P&D da Taesa",
+                            "Você foi convidado para participar de um novo projeto para a área de PDI da Taesa",
                             "Email/Captacao/ConviteFornecedor",
                             convite);
                 }

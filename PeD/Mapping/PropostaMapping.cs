@@ -58,7 +58,11 @@ namespace PeD.Mapping
 
             CreateMap<Etapa, EtapaDto>()
                 .ForMember(dest => dest.Produto, opt => opt.MapFrom(src => src.Produto.Titulo));
-            CreateMap<EtapaRequest, Etapa>();
+            CreateMap<EtapaRequest, Etapa>()
+                .ForMember(d => d.Meses, o => o.MapFrom(s =>
+                    new int[(s.MesFinal - s.MesInicio + 1)].Select((n, i) => s.MesInicio + i)
+                ));
+
 
             CreateMap<Escopo, PropostaEscopoDto>().ReverseMap();
             CreateMap<Meta, PropostaEscopoDto.MetaDto>().ReverseMap();

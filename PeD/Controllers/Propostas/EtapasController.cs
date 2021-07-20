@@ -37,6 +37,8 @@ namespace PeD.Controllers.Propostas
 
         protected void UpdateOrder()
         {
+            
+            
             var etapas = Service.Filter(q => q
                 .Include(p => p.Produto)
                 .OrderBy(e => e.Id)

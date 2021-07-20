@@ -64,20 +64,34 @@ namespace PeD.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = Roles.Administrador)]
         [HttpPost]
-        public ActionResult<Resultado> Post([FromBody] NewUserRequest user)
+        public async Task<ActionResult> Post([FromBody] NewUserRequest user)
         {
-            if (this.IsAdmin())
-                return _service.Incluir(mapper.Map<ApplicationUser>(user));
-            return Forbid();
+            try
+            {
+                await _service.Incluir(mapper.Map<ApplicationUser>(user));
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message, statusCode: StatusCodes.Status400BadRequest);
+            }
+
+            return Ok();
         }
 
         [HttpPost("{userId}/Avatar")]
         [RequestSizeLimit(5242880)] // 5MB
-        public async Task<IActionResult> UploadAvatar(IFormFile file, [FromRoute] string userId,
-            [FromServices] IConfiguration configuration)
+        public async Task<IActionResult> UploadAvatar(IFormFile file, [FromRoute] string userId)
         {
             await _service.UpdateAvatar(userId, file);
+            return Ok();
+        }
+
+        [HttpDelete("{userId}/Avatar")]
+        public async Task<IActionResult> RemoveAvatar([FromRoute] string userId)
+        {
+            await _service.UpdateAvatar(userId, null);
             return Ok();
         }
 

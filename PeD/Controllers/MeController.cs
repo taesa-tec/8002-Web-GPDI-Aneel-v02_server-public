@@ -49,7 +49,14 @@ namespace PeD.Controllers
         [RequestSizeLimit(5242880)] // 5MB
         public async Task<IActionResult> UploadAvatar(IFormFile file)
         {
-            await _service.UpdateAvatar(ControllerExtension.UserId(this), file);
+            await _service.UpdateAvatar(this.UserId(), file);
+            return Ok();
+        }
+
+        [HttpDelete("Avatar")]
+        public async Task<IActionResult> RemoveAvatar()
+        {
+            await _service.UpdateAvatar(this.UserId(), null);
             return Ok();
         }
     }

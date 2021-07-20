@@ -99,7 +99,7 @@ namespace PeD.Services
                         Role = Roles.Administrador,
                         EmpresaId = 1,
                         DataCadastro = DateTime.Now
-                    }, adminPass, Roles.Administrador);
+                    }, Roles.Administrador, adminPass).Wait();
             }
         }
     }
