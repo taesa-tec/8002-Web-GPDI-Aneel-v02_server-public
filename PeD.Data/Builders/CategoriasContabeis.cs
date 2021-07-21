@@ -25,7 +25,7 @@ namespace PeD.Data.Builders
                         {
                             Valor = "HH",
                             Nome =
-                                "Dedicação horária dos membros da equipe de gestão do Programa de P&D da Empresa, quadro efetivo."
+                                "Dedicação horária dos membros da equipe de gestão do Programa de PDI da Empresa, quadro efetivo."
                         }
                     }
                 },
@@ -39,13 +39,13 @@ namespace PeD.Data.Builders
                         {
                             Valor = "FG",
                             Nome =
-                                "Desenvolvimento de ferramenta para gestão do Programa de P&D da Empresa, excluindose aquisição de equipamentos."
+                                "Desenvolvimento de ferramenta para gestão do Programa de PDI da Empresa, excluindose aquisição de equipamentos."
                         },
                         new CategoriaContabilAtividade
                         {
                             Valor = "PP",
                             Nome =
-                                "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em P&D."
+                                "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em PDI."
                         }
                     }
                 },
@@ -58,7 +58,7 @@ namespace PeD.Data.Builders
                         new CategoriaContabilAtividade
                         {
                             Valor = "RP",
-                            Nome = "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução."
+                            Nome = "Divulgação de resultados de projetos de PDI, concluídos e/ou em execução."
                         }
                     }
                 },
@@ -78,18 +78,18 @@ namespace PeD.Data.Builders
                         {
                             Valor = "PP",
                             Nome =
-                                "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em P&D."
+                                "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em PDI."
                         },
                         new CategoriaContabilAtividade
                         {
                             Valor = "RP",
-                            Nome = "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução."
+                            Nome = "Divulgação de resultados de projetos de PDI, concluídos e/ou em execução."
                         },
                         new CategoriaContabilAtividade
                         {
                             Valor = "AP",
                             Nome =
-                                "Participação dos responsáveis técnicos pelos projetos de P&D nas avaliações presenciais convocadas pela ANEEL."
+                                "Participação dos responsáveis técnicos pelos projetos de PDI nas avaliações presenciais convocadas pela ANEEL."
                         }
                     }
                 },
@@ -130,7 +130,7 @@ namespace PeD.Data.Builders
                         new CategoriaContabilAtividade
                         {
                             Valor = "RP",
-                            Nome = "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução."
+                            Nome = "Divulgação de resultados de projetos de PDI, concluídos e/ou em execução."
                         },
                         new CategoriaContabilAtividade
                         {

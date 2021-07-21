@@ -21,6 +21,7 @@ using PeD.Views.Email.Captacao.Propostas;
 using TaesaCore.Extensions;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
+using Log = Serilog.Log;
 
 namespace PeD.Services.Captacoes
 {
@@ -373,22 +374,17 @@ namespace PeD.Services.Captacoes
 
         public Relatorio GetRelatorio(int propostaId)
         {
-            var dataAlteracao = _captacaoPropostas
-                .AsNoTracking()
-                .Where(p => p.Id == propostaId)
-                .Select(p => p.DataAlteracao)
-                .FirstOrDefault();
-            var relatorio = context.Set<Relatorio>().AsNoTracking()
-                .Include(r => r.File)
-                .FirstOrDefault(r => r.PropostaId == propostaId);
-            if (relatorio != null)
+            var proposta = _captacaoPropostas.Include(p => p.Relatorio)
+                .ThenInclude(r => r.File)
+                .FirstOrDefault(p => p.Id == propostaId);
+            if (proposta != null)
             {
-                if (relatorio.DataAlteracao < dataAlteracao)
+                if (proposta.Relatorio == null || proposta.Relatorio.DataAlteracao < proposta.DataAlteracao)
                 {
                     return UpdateRelatorio(propostaId);
                 }
 
-                return relatorio;
+                return proposta.Relatorio;
             }
 
             return null;

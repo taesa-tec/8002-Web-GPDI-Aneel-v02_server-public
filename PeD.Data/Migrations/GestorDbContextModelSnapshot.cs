@@ -552,28 +552,28 @@ namespace PeD.Data.Migrations
                         {
                             Id = 1,
                             CategoriaContabilId = 1,
-                            Nome = "Dedicação horária dos membros da equipe de gestão do Programa de P&D da Empresa, quadro efetivo.",
+                            Nome = "Dedicação horária dos membros da equipe de gestão do Programa de PDI da Empresa, quadro efetivo.",
                             Valor = "HH"
                         },
                         new
                         {
                             Id = 2,
                             CategoriaContabilId = 2,
-                            Nome = "Desenvolvimento de ferramenta para gestão do Programa de P&D da Empresa, excluindose aquisição de equipamentos.",
+                            Nome = "Desenvolvimento de ferramenta para gestão do Programa de PDI da Empresa, excluindose aquisição de equipamentos.",
                             Valor = "FG"
                         },
                         new
                         {
                             Id = 3,
                             CategoriaContabilId = 2,
-                            Nome = "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em P&D.",
+                            Nome = "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em PDI.",
                             Valor = "PP"
                         },
                         new
                         {
                             Id = 4,
                             CategoriaContabilId = 3,
-                            Nome = "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução.",
+                            Nome = "Divulgação de resultados de projetos de PDI, concluídos e/ou em execução.",
                             Valor = "RP"
                         },
                         new
@@ -587,21 +587,21 @@ namespace PeD.Data.Migrations
                         {
                             Id = 6,
                             CategoriaContabilId = 4,
-                            Nome = "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em P&D.",
+                            Nome = "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em PDI.",
                             Valor = "PP"
                         },
                         new
                         {
                             Id = 7,
                             CategoriaContabilId = 4,
-                            Nome = "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução.",
+                            Nome = "Divulgação de resultados de projetos de PDI, concluídos e/ou em execução.",
                             Valor = "RP"
                         },
                         new
                         {
                             Id = 8,
                             CategoriaContabilId = 4,
-                            Nome = "Participação dos responsáveis técnicos pelos projetos de P&D nas avaliações presenciais convocadas pela ANEEL.",
+                            Nome = "Participação dos responsáveis técnicos pelos projetos de PDI nas avaliações presenciais convocadas pela ANEEL.",
                             Valor = "AP"
                         },
                         new
@@ -629,7 +629,7 @@ namespace PeD.Data.Migrations
                         {
                             Id = 12,
                             CategoriaContabilId = 7,
-                            Nome = "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução.",
+                            Nome = "Divulgação de resultados de projetos de PDI, concluídos e/ou em execução.",
                             Valor = "RP"
                         },
                         new

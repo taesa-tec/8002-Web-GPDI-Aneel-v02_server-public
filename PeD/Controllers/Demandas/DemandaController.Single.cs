@@ -214,11 +214,22 @@ namespace PeD.Controllers.Demandas
         {
             if (DemandaService.DemandaExist(id))
             {
-                DemandaService.SalvarDemandaFormData(id, form, data).Wait();
-                var formName = DemandaService.GetForm(form).Title;
-                DemandaService.LogService.Incluir(this.UserId(), id,
-                    String.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");
-                return Ok();
+                try
+                {
+                    DemandaService.SalvarDemandaFormData(id, form, data).Wait();
+                    var formName = DemandaService.GetForm(form).Title;
+                    DemandaService.LogService.Incluir(this.UserId(), id,
+                        String.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");
+                    return Ok();
+                }
+                catch (DemandaException e)
+                {
+                    return Problem(e.Message, statusCode: StatusCodes.Status400BadRequest);
+                }
+                catch (Exception e)
+                {
+                    return Problem(e.Message);
+                }
             }
 
             return NotFound();

@@ -2704,19 +2704,19 @@ namespace PeD.Data.Migrations
                 columns: new[] { "Id", "CategoriaContabilId", "Nome", "Valor" },
                 values: new object[,]
                 {
-                    { 1, 1, "Dedicação horária dos membros da equipe de gestão do Programa de P&D da Empresa, quadro efetivo.", "HH" },
+                    { 1, 1, "Dedicação horária dos membros da equipe de gestão do Programa de PDI da Empresa, quadro efetivo.", "HH" },
                     { 13, 7, "Buscas de anterioridade no Instituto Nacional da Propriedade Industrial (INPI).", "BA" },
                     { 11, 7, "Participação dos membros da equipe de gestão em eventos sobre pesquisa, desenvolvimento e inovação relacionados ao setor elétrico e/ou em cursos de gestão tecnológica e da informação.", "EC" },
                     { 10, 6, "Contratação de auditoria contábil e financeira para os projetos concluídos.", "CA" },
                     { 9, 5, "Apoio à realização do CITENEL.", "AC" },
-                    { 8, 4, "Participação dos responsáveis técnicos pelos projetos de P&D nas avaliações presenciais convocadas pela ANEEL.", "AP" },
-                    { 12, 7, "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução.", "RP" },
-                    { 6, 4, "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em P&D.", "PP" },
+                    { 8, 4, "Participação dos responsáveis técnicos pelos projetos de PDI nas avaliações presenciais convocadas pela ANEEL.", "AP" },
+                    { 12, 7, "Divulgação de resultados de projetos de PDI, concluídos e/ou em execução.", "RP" },
+                    { 6, 4, "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em PDI.", "PP" },
                     { 5, 4, "Participação dos membros da equipe de gestão em eventos sobre pesquisa, desenvolvimento e inovação relacionados ao setor elétrico e/ou em cursos de gestão tecnológica e da informação.", "EC" },
-                    { 4, 3, "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução.", "RP" },
-                    { 3, 2, "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em P&D.", "PP" },
-                    { 2, 2, "Desenvolvimento de ferramenta para gestão do Programa de P&D da Empresa, excluindose aquisição de equipamentos.", "FG" },
-                    { 7, 4, "Divulgação de resultados de projetos de P&D, concluídos e/ou em execução.", "RP" }
+                    { 4, 3, "Divulgação de resultados de projetos de PDI, concluídos e/ou em execução.", "RP" },
+                    { 3, 2, "Prospecção tecnológica e demais atividades necessárias ao planejamento e à elaboração do plano estratégico de investimento em PDI.", "PP" },
+                    { 2, 2, "Desenvolvimento de ferramenta para gestão do Programa de PDI da Empresa, excluindose aquisição de equipamentos.", "FG" },
+                    { 7, 4, "Divulgação de resultados de projetos de PDI, concluídos e/ou em execução.", "RP" }
                 });
 
             migrationBuilder.InsertData(

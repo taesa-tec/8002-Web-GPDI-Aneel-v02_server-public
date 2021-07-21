@@ -814,7 +814,7 @@ namespace PeD.Services.Demandas
 
             _sendGridService.Send(demanda.SuperiorDireto.Email, titulo, body,
                 actionLabel: "Ver Demanda",
-                actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
+                actionUrl: $"{url}/demandas/{demanda.Id}").Wait();
         }
 
         public void NotificarReprovacao(Demanda demanda, ApplicationUser avaliador)
@@ -825,7 +825,7 @@ namespace PeD.Services.Demandas
             var body =
                 $"O usuário {avaliador.NomeCompleto} revisor da sua demanda, inseriu alguns comentários e solicitou alterações no projeto. Clique abaixo para mais detalhes e enviar novamentepara revisão";
             _sendGridService.Send(demanda.Criador.Email, titulo, body, actionLabel: "Ver Demanda",
-                actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
+                actionUrl: $"{url}/demandas/{demanda.Id}").Wait();
         }
 
         public void NotificarReprovacaoPermanente(Demanda demanda, ApplicationUser avaliador)
@@ -838,7 +838,7 @@ namespace PeD.Services.Demandas
                 $"O usuário {avaliador.NomeCompleto} revisor da sua demanda, reprovou e arquivou sua demanda . Clique abaixo para mais detalhes:";
             _sendGridService.Send(demanda.Criador.Email, titulo, body,
                 actionLabel: "Ver Demanda",
-                actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
+                actionUrl: $"{url}/demandas/{demanda.Id}").Wait();
         }
 
         public void NotificarRevisorPendente(Demanda demanda)
@@ -852,7 +852,7 @@ namespace PeD.Services.Demandas
 
             _sendGridService.Send(coordenador.Email, titulo, body,
                 actionLabel: "Ver Demanda",
-                actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
+                actionUrl: $"{url}/demandas/{demanda.Id}").Wait();
         }
 
         public void NotificarRevisor(Demanda demanda)
@@ -866,7 +866,7 @@ namespace PeD.Services.Demandas
 
             _sendGridService.Send(demanda.Revisor.Email, titulo, body,
                 actionLabel: "Ver Demanda",
-                actionUrl: $"{url}/gestor/demandas/{demanda.Id}").Wait();
+                actionUrl: $"{url}/demandas/{demanda.Id}").Wait();
         }
 
         public void NotificarAprovador(Demanda demanda, string avaliadorAnteriorId)
@@ -877,10 +877,10 @@ namespace PeD.Services.Demandas
             var titulo = $"Nova Demanda para Aprovação: \"{demanda.Titulo}\"";
             var body =
                 $"O usuário {avaliador.NomeCompleto} enviou a demanda \"{demanda.Titulo}\" para Aprovação. Clique abaixo para mais detalhes.";
-            //.SendMailBase(responsavel, titulo, body, ("Ver Demanda", $"/gestor/demandas/{demanda.Id}"));
+            //.SendMailBase(responsavel, titulo, body, ("Ver Demanda", $"/demandas/{demanda.Id}"));
             _sendGridService.Send(responsavel.Email, titulo, body,
                     actionLabel: "Ver Demanda",
-                    actionUrl: $"{url}/gestor/demandas/{demanda.Id}")
+                    actionUrl: $"{url}/demandas/{demanda.Id}")
                 .Wait();
         }
 
