@@ -25,9 +25,11 @@ namespace PeD.Controllers.Propostas
     [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class EtapasController : PropostaNodeBaseController<Etapa, EtapaRequest, EtapaDto>
     {
+        private GestorDbContext _context;
         public EtapasController(IService<Etapa> service, IMapper mapper, IAuthorizationService authorizationService,
-            PropostaService propostaService) : base(service, mapper, authorizationService, propostaService)
+            PropostaService propostaService, GestorDbContext context) : base(service, mapper, authorizationService, propostaService)
         {
+            _context = context;
         }
 
         protected override IQueryable<Etapa> Includes(IQueryable<Etapa> queryable)
@@ -70,6 +72,11 @@ namespace PeD.Controllers.Propostas
         [HttpDelete("{id:int}")]
         public override async Task<IActionResult> Delete(int id)
         {
+            var hasAlocacao = _context.Set<AlocacaoRh>().AsQueryable().Where(a => a.EtapaId == id).Any() ||
+                              _context.Set<AlocacaoRm>().AsQueryable().Where(a => a.EtapaId == id).Any();
+            if (hasAlocacao)
+                return Problem("Há alocações relacionadas a essa etapa",
+                    title: "Alteração não permitida", statusCode: StatusCodes.Status428PreconditionRequired);
             var result = await base.Delete(id);
             UpdateOrder();
             return result;
