@@ -194,6 +194,8 @@ namespace PeD.Services
         {
             if (await _userManager.FindByEmailAsync(user.Email) != null)
                 throw new Exception("Email já cadastrado!");
+            if (_context.Users.Any(u => u.Cpf == user.Cpf))
+                throw new Exception("Cpf já cadastrado!");
 
             user.UserName = user.Email;
 

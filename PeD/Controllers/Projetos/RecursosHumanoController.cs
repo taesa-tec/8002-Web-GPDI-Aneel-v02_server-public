@@ -83,13 +83,14 @@ namespace PeD.Controllers.Projetos
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            if (!_context.Set<RegistroFinanceiroInfo>().Any(r => r.RecursoHumanoId == id))
+            if (!_context.Set<RegistroFinanceiroInfo>().Any(r => r.RecursoHumanoId == id) &&
+                !_context.Set<AlocacaoRh>().Any(a => a.RecursoHumanoId == id))
             {
                 Service.Delete(id);
                 return Ok();
             }
 
-            return Problem("Não é possível excluir. Recurso atrelado a registros financeiros",
+            return Problem("Não é possível excluir. Recurso usado por registros financeiro e/ou orçamentos",
                 statusCode: StatusCodes.Status412PreconditionFailed);
         }
     }
