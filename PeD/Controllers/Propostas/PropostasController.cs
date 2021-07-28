@@ -399,7 +399,6 @@ namespace PeD.Controllers.Propostas
             if (!await HasAccess(proposta) || proposta.Captacao.Status != Captacao.CaptacaoStatus.Refinamento)
                 return Forbid();
             proposta.Participacao = StatusParticipacao.Cancelado;
-            proposta.Captacao.Status = Captacao.CaptacaoStatus.Cancelada;
             Service.Put(proposta);
             await Service.SendEmailRefinamentoCancelado(proposta);
             return Ok();

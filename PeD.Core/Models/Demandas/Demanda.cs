@@ -58,17 +58,22 @@ namespace PeD.Core.Models.Demandas
         public int? EspecificacaoTecnicaFileId { get; set; }
         public FileUpload EspecificacaoTecnicaFile { get; set; }
 
-        public void ProximaEtapa()
+        public void ValidarContinuidade()
         {
-            if (this.EtapaAtual > DemandaEtapa.Elaboracao && String.IsNullOrWhiteSpace(SuperiorDiretoId))
+            if (EtapaAtual > DemandaEtapa.Elaboracao && String.IsNullOrWhiteSpace(SuperiorDiretoId))
             {
                 throw new DemandaException("A demanda não tem superior direto definido");
             }
 
-            if (this.EtapaAtual >= DemandaEtapa.RevisorPendente && String.IsNullOrWhiteSpace(RevisorId))
+            if (EtapaAtual >= DemandaEtapa.RevisorPendente && String.IsNullOrWhiteSpace(RevisorId))
             {
                 throw new DemandaException("Não é possível avançar para a proxíma etapa sem revisor");
             }
+        }
+
+        public void ProximaEtapa()
+        {
+            ValidarContinuidade();
 
             if (this.EtapaAtual < DemandaEtapa.AprovacaoDiretor)
             {

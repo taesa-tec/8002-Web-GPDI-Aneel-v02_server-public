@@ -233,6 +233,7 @@ namespace PeD.Services.Demandas
             }
             catch (Exception)
             {
+                //ignore
             }
 
             if (demanda.EtapaAtual < DemandaEtapa.Captacao && demanda.Status == DemandaStatus.EmElaboracao)
@@ -402,14 +403,15 @@ namespace PeD.Services.Demandas
             var demanda = GetById(id);
             if (demanda != null && demanda.EtapaAtual != DemandaEtapa.Captacao)
             {
-                var especificacaoTecnicaForm = GetDemandaFormData(id, EspecificacaoTecnicaForm.Key);
-                var temaAneel =
-                    especificacaoTecnicaForm.Object.SelectToken(EspecificacaoTecnicaForm.TemaPath) as JObject;
-
+                
                 if (!demanda.EspecificacaoTecnicaFileId.HasValue)
                 {
                     throw new DemandaException("Especificação Técnica ausente");
                 }
+                var especificacaoTecnicaForm = GetDemandaFormData(id, EspecificacaoTecnicaForm.Key);
+                var temaAneel =
+                    especificacaoTecnicaForm?.Object.SelectToken(EspecificacaoTecnicaForm.TemaPath) as JObject ??
+                    throw new DemandaException("Especificação Técnica não configurada corretamente");
 
                 if (temaAneel == null)
                     throw new DemandaException("Tema Aneel ausente");
@@ -455,6 +457,7 @@ namespace PeD.Services.Demandas
                 demanda.EtapaAtual = DemandaEtapa.Captacao;
                 demanda.Status = DemandaStatus.Concluido;
                 demanda.CaptacaoDate = DateTime.UtcNow;
+                demanda.ValidarContinuidade();
                 _context.SaveChanges();
 
                 if (captacao.Id == 0)

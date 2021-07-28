@@ -415,9 +415,10 @@ namespace PeD.Services.Captacoes
             return _captacaoPropostas
                 .Include(p => p.Fornecedor)
                 .Include(p => p.Captacao)
-                .Include(p => p.Captacao)
                 .Where(proposta =>
                     proposta.Id == proposta.Captacao.PropostaSelecionadaId &&
+                    proposta.Participacao != StatusParticipacao.Cancelado &&
+                    proposta.Captacao.Status != Captacao.CaptacaoStatus.Cancelada &&
                     (
                         string.IsNullOrEmpty(userId) ||
                         asFornecedor && proposta.ResponsavelId == userId ||

@@ -12,6 +12,7 @@ using DiffPlex.Chunkers;
 using DiffPlex.DiffBuilder;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels;
 using PeD.Core.ApiModels.Demandas;
 using PeD.Core.Exceptions.Demandas;
@@ -21,6 +22,7 @@ using PeD.Core.Requests.Demanda;
 using PeD.Data;
 using PeD.Services;
 using PeD.Services.Demandas;
+using Log = Serilog.Log;
 
 namespace PeD.Controllers.Demandas
 {
@@ -121,9 +123,9 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id}/Etapa")]
-        public ActionResult<Demanda> SetEtapa(int id, [FromBody] JObject data)
+        public ActionResult<Demanda> SetEtapa(int id, [FromBody] StatusRequest data)
         {
-            var etapa = (DemandaEtapa) data.Value<int>("status");
+            var etapa = data.Status;
             try
             {
                 if (etapa < DemandaEtapa.Captacao)
@@ -134,7 +136,6 @@ namespace PeD.Controllers.Demandas
                 {
                     DemandaService.EnviarCaptacao(id, this.UserId());
                 }
-
 
                 return GetById(id);
             }
@@ -214,6 +215,12 @@ namespace PeD.Controllers.Demandas
         {
             if (DemandaService.DemandaExist(id))
             {
+                if (!DemandaService.UserCanAccess(id, this.UserId()))
+                    return Forbid();
+                var demanda = DemandaService.GetById(id);
+                context.Entry(demanda).State = EntityState.Detached;
+                if (demanda.SuperiorDiretoId == null)
+                    return BadRequest();
                 try
                 {
                     DemandaService.SalvarDemandaFormData(id, form, data).Wait();
@@ -302,7 +309,6 @@ namespace PeD.Controllers.Demandas
             });
         }
 
-        [AllowAnonymous]
         [HttpGet("{id:int}/Form/{form}/Debug")]
         public async Task<ActionResult<object>> GetDemandaTeste(int id, string form)
         {
@@ -315,7 +321,6 @@ namespace PeD.Controllers.Demandas
             return NotFound();
         }
 
-        [AllowAnonymous]
         [HttpGet("{id:int}/Form/{form}/DiffPlex/{version}")]
         public ActionResult TestDiffPlex(int id, string form, int version, [FromServices] IMapper mapper,
             [FromServices] IViewRenderService viewRenderService)
