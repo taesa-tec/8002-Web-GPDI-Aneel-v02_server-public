@@ -575,7 +575,8 @@ namespace PeD.Controllers.Captacoes
                 (
                     string.IsNullOrWhiteSpace(request.ResponsavelId) ||
                     !request.InicioProjeto.HasValue ||
-                    !request.EmpresaProponenteId.HasValue
+                    !request.EmpresaProponenteId.HasValue ||
+                    !request.Compartilhamento.HasValue
                 )
             )
             {
@@ -600,7 +601,7 @@ namespace PeD.Controllers.Captacoes
                 if (!request.InicioProjeto.HasValue) throw new Exception("Data de início não definida!");
                 var projeto = projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
                     request.EmpresaProponenteId.Value, request.NumeroProjeto,
-                    request.TituloCompleto, request.ResponsavelId, request.Compartilhamento,
+                    request.TituloCompleto, request.ResponsavelId, request.Compartilhamento.Value,
                     request.InicioProjeto.Value);
             }
 

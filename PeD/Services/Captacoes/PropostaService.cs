@@ -519,6 +519,8 @@ namespace PeD.Services.Captacoes
                 .Include(c => c.UsuarioRefinamento)
                 .Include(c => c.PropostaSelecionada)
                 .ThenInclude(p => p.Fornecedor)
+                .Include(c => c.PropostaSelecionada)
+                .ThenInclude(f => f.Responsavel)
                 .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
             var contrato = new ContratoRevisor()
             {
@@ -528,7 +530,7 @@ namespace PeD.Services.Captacoes
             };
             try
             {
-                await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
+                await _sendGridService.Send(captacao.PropostaSelecionada.Responsavel.Email,
                     $"Novo comentário sobre o contrato do projeto \"{captacao.Titulo}\"",
                     "Email/Captacao/Propostas/ContratoRevisor", contrato);
             }
