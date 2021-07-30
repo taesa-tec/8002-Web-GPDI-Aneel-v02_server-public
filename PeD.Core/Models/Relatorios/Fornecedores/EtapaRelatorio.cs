@@ -25,14 +25,14 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
 
         public static decimal CustoPorCategoria(List<AlocacaoInfo> list, string categoria)
         {
-            return list.Where(a => a.Categoria == categoria).Sum(i => i.Valor);
+            return list.Where(a => a.Categoria == categoria).Sum(i => i.Custo);
         }
 
         public static decimal CustoEntreEmpresas(List<AlocacaoInfo> list, int financiadoraId, int recebedoraId)
         {
             return list.Where(i =>
                     i.EmpresaFinanciadoraId == financiadoraId && i.EmpresaRecebedoraId == recebedoraId)
-                .Sum(x => x.Valor);
+                .Sum(x => x.Custo);
         }
 
         public static decimal CustoFinanciadora(List<AlocacaoInfo> list, int financiadoraId, bool interno = true)
@@ -40,7 +40,7 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
             return list.Where(i =>
                     i.EmpresaFinanciadoraId == financiadoraId &&
                     (interno || i.EmpresaRecebedoraId != financiadoraId))
-                .Sum(x => x.Valor);
+                .Sum(x => x.Custo);
         }
 
         public static decimal CustoFinanciadora(List<EtapaRelatorio> list, int financiadoraId, bool interno = true)
@@ -56,11 +56,11 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
         public List<int> Meses { get; set; }
         public short Ordem { get; set; }
 
-        public decimal CustoTotal(bool interno = true)
+        public decimal CustoTotal(bool incluirInterno = true)
         {
-            if (interno)
-                return Alocacoes.Sum(a => a.Valor);
-            return Alocacoes.Where(i => i.EmpresaFinanciadoraId != i.EmpresaRecebedoraId).Sum(a => a.Valor);
+            if (incluirInterno)
+                return Alocacoes.Sum(a => a.Custo);
+            return Alocacoes.Where(a=>a.EmpresaRecebedoraFuncao != Funcao.Cooperada).Sum(a => a.Custo);
         }
 
         public List<AlocacaoInfo> Alocacoes { get; set; }

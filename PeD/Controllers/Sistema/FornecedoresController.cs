@@ -87,6 +87,9 @@ namespace PeD.Controllers.Sistema
                 await _userService.Ativar(responsavel.Id);
             }
 
+            if (fornecedor.ResponsavelId != null && fornecedor.ResponsavelId != responsavel.Id)
+                await _userService.Desativar(fornecedor.ResponsavelId);
+
             fornecedor.ResponsavelId = responsavel.Id;
         }
 
@@ -169,7 +172,6 @@ namespace PeD.Controllers.Sistema
 
             if (model.TrocarResponsavel)
             {
-                _userService.Desativar(fornecedor.ResponsavelId).Wait();
                 UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
             }
 

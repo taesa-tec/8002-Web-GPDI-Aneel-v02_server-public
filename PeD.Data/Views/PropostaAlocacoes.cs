@@ -24,9 +24,9 @@ FROM PropostaRecursosHumanosAlocacao Alocacao
          INNER JOIN PropostaEtapas Etapas on Etapas.Id = Alocacao.EtapaId
          INNER JOIN PropostaRecursosHumanos RecursoHumano on RecursoHumano.Id = Alocacao.RecursoId
          INNER JOIN PropostaEmpresas Financiadora on Financiadora.Id = Alocacao.EmpresaFinanciadoraId
-         INNER JOIN Empresas FinanciadoraRef on FinanciadoraRef.Id = Financiadora.EmpresaRefId
+         LEFT JOIN Empresas FinanciadoraRef on FinanciadoraRef.Id = Financiadora.EmpresaRefId
          INNER JOIN PropostaEmpresas RecursoHumanoEmpresa on RecursoHumano.EmpresaId = RecursoHumanoEmpresa.Id
-         INNER JOIN Empresas RecursoHumanoEmpresaRef on RecursoHumanoEmpresaRef.Id = RecursoHumanoEmpresa.EmpresaRefId
+         LEFT JOIN Empresas RecursoHumanoEmpresaRef on RecursoHumanoEmpresaRef.Id = RecursoHumanoEmpresa.EmpresaRefId
          LEFT JOIN PropostasAlocacaoRhHorasMeses HorasMeses on Alocacao.Id = HorasMeses.AlocacaoRhId
 GROUP BY Alocacao.Id, Alocacao.PropostaId, Alocacao.EtapaId, Alocacao.EmpresaFinanciadoraId,
          Alocacao.Justificativa, Alocacao.RecursoId, RecursoHumano.EmpresaId, ValorHora, Financiadora.RazaoSocial,
@@ -55,9 +55,9 @@ FROM PropostaRecursosMateriaisAlocacao Alocacao
          INNER JOIN PropostaRecursosMateriais Recurso on Alocacao.RecursoId = Recurso.Id
          INNER JOIN CategoriasContabeis Categoria on Categoria.Id = Recurso.CategoriaContabilId
          INNER JOIN PropostaEmpresas Financiadora on Financiadora.Id = Alocacao.EmpresaFinanciadoraId
-         INNER JOIN Empresas FinanciadoraRef on FinanciadoraRef.Id = Financiadora.EmpresaRefId
+         LEFT JOIN Empresas FinanciadoraRef on FinanciadoraRef.Id = Financiadora.EmpresaRefId
          INNER JOIN PropostaEmpresas Recebedora on Recebedora.Id = Alocacao.EmpresaRecebedoraId
-         INNER JOIN Empresas RecebedoraRef on RecebedoraRef.Id = Recebedora.EmpresaRefId
+         LEFT JOIN Empresas RecebedoraRef on RecebedoraRef.Id = Recebedora.EmpresaRefId
          INNER JOIN PropostaEtapas Etapas on Etapas.Id = Alocacao.EtapaId
 ";
     }

@@ -121,6 +121,7 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Captacao).ThenInclude(c => c.SubTemas).ThenInclude(s => s.SubTema)
                 //
                 .Include(p => p.Etapas)
+                .ThenInclude(e => e.Produto)
                 // Produto
                 .Include("Produtos.ProdutoTipo")
                 .Include("Produtos.FaseCadeia")

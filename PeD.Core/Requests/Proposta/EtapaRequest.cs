@@ -23,10 +23,10 @@ namespace PeD.Core.Requests.Proposta
                     c.AddFailure("Duração mínima da etapa é de 3 meses");
                 }
 
-                if (r.MesFinal - r.MesInicio > 5)
-                {
-                    c.AddFailure("Duração máxima da etapa é de 6 meses");
-                }
+                // if (r.MesFinal - r.MesInicio > 5)
+                // {
+                //     c.AddFailure("Duração máxima da etapa é de 6 meses");
+                // }
             });
         }
     }

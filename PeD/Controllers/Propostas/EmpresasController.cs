@@ -49,7 +49,8 @@ namespace PeD.Controllers.Propostas
                 RazaoSocial = request.RazaoSocial,
                 UF = request.UF,
                 CNPJ = request.CNPJ,
-                Funcao = request.Funcao
+                Funcao = request.Funcao,
+                Codigo = request.Codigo
             };
             Service.Save(empresa);
             return Ok();
@@ -65,12 +66,11 @@ namespace PeD.Controllers.Propostas
             var empresa = Service.Get(request.Id);
             if (empresa.PropostaId == Proposta.Id)
             {
-                empresa.Id = request.Id;
-                empresa.PropostaId = Proposta.Id;
                 empresa.RazaoSocial = request.RazaoSocial;
                 empresa.UF = request.UF;
                 empresa.CNPJ = request.CNPJ;
                 empresa.Funcao = request.Funcao;
+                empresa.Codigo = request.Codigo;
                 Service.Save(empresa);
                 PropostaService.UpdatePropostaDataAlteracao(Proposta.Id);
                 return Ok();
