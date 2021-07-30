@@ -64,7 +64,7 @@ namespace PeD.Controllers.Propostas
 
             if (Proposta.Captacao.Status == Captacao.CaptacaoStatus.Refinamento &&
                 (Proposta.ContratoAprovacao != StatusAprovacao.Alteracao ||
-                 string.IsNullOrWhiteSpace(request.Alteracao)))
+                 string.IsNullOrWhiteSpace(request.Alteracao) && !request.Draft))
             {
                 return BadRequest();
             }
