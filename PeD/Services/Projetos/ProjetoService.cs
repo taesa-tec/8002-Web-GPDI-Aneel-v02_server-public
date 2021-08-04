@@ -154,23 +154,33 @@ namespace PeD.Services.Projetos
                 PlanoTrabalho = planoTrabalho,
                 Escopo = escopo,
                 SubTemas = captacao.SubTemas
-                    .Select(s => new ProjetoSubTema() {Outro = s.Outro, SubTemaId = s.SubTemaId})
+                    .Select(s => new ProjetoSubTema() { Outro = s.Outro, SubTemaId = s.SubTemaId })
                     .ToList()
             };
             Post(projeto);
-            _context.Add(new Core.Models.Projetos.Empresa()
+
+            if (!proposta.Empresas.Any(e => e.EmpresaRefId == proponente.Id))
             {
-                Codigo = proponente.Codigo,
-                Funcao = Funcao.Proponente,
-                RazaoSocial = proponente.Nome,
-                CNPJ = proponente.Cnpj,
-                UF = proponente.UF,
-                EmpresaRefId = proponente.Id,
-                ProjetoId = projeto.Id
+                _context.Add(new Core.Models.Projetos.Empresa()
+                {
+                    Codigo = proponente.Codigo,
+                    Funcao = Funcao.Proponente,
+                    RazaoSocial = proponente.Nome,
+                    CNPJ = proponente.Cnpj,
+                    UF = proponente.UF,
+                    EmpresaRefId = proponente.Id,
+                    ProjetoId = projeto.Id
+                });
+            }
+
+
+            var empresasCopy = CopyPropostaNodes<Core.Models.Projetos.Empresa>(projeto.Id, proposta.Empresas, e =>
+            {
+                if (e.EmpresaRefId == proponente.Id)
+                {
+                    e.Funcao = Funcao.Proponente;
+                }
             });
-
-
-            var empresasCopy = CopyPropostaNodes<Core.Models.Projetos.Empresa>(projeto.Id, proposta.Empresas);
             var produtosCopy = CopyPropostaNodes<Produto>(projeto.Id, proposta.Produtos, p =>
             {
                 p.ProdutoTipo = null;
@@ -256,15 +266,15 @@ namespace PeD.Services.Projetos
             // Financiadores
             var empresas = (new[]
                 {
-                    orcamentos.Select(o => new {Financiador = o.Financiadora, o.FinanciadoraId}),
-                    extratos.Select(o => new {Financiador = o.Financiadora, o.FinanciadoraId})
+                    orcamentos.Select(o => new { Financiador = o.Financiadora, o.FinanciadoraId }),
+                    extratos.Select(o => new { Financiador = o.Financiadora, o.FinanciadoraId })
                 }).SelectMany(i => i)
                 .GroupBy(e => e.FinanciadoraId)
                 .Select(e => e.First());
             var categorias = (new[]
                 {
-                    orcamentos.Select(o => new {o.CategoriaContabil, o.CategoriaContabilCodigo}),
-                    extratos.Select(o => new {o.CategoriaContabil, o.CategoriaContabilCodigo})
+                    orcamentos.Select(o => new { o.CategoriaContabil, o.CategoriaContabilCodigo }),
+                    extratos.Select(o => new { o.CategoriaContabil, o.CategoriaContabilCodigo })
                 }).SelectMany(i => i)
                 .GroupBy(e => e.CategoriaContabilCodigo)
                 .Select(e => e.First());
@@ -378,7 +388,7 @@ namespace PeD.Services.Projetos
             var relatorios = new List<RelatorioEtapa>();
             foreach (var etapa in etapas)
             {
-                var relatorio = etapa.Relatorio ?? new RelatorioEtapa() {ProjetoId = projetoId, EtapaId = etapa.Id};
+                var relatorio = etapa.Relatorio ?? new RelatorioEtapa() { ProjetoId = projetoId, EtapaId = etapa.Id };
                 if (relatorio.Id == 0)
                     _context.Add(relatorio);
                 relatorios.Add(relatorio);

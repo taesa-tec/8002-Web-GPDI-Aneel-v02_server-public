@@ -6,17 +6,6 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
 {
     public class EtapaRelatorio
     {
-        public static List<AlocacaoRecurso> AgruparPorCategoria(List<AlocacaoRecurso> list)
-        {
-            return list.GroupBy(a => a.CategoriaContabil)
-                .Select(i => new AlocacaoRecurso()
-                {
-                    CategoriaContabil = i.Key,
-                    Valor = i.Sum(a => a.Valor)
-                })
-                .ToList();
-        }
-
         public static Dictionary<int, List<AlocacaoInfo>> AgruparPorEmpresaRecebedora(List<AlocacaoInfo> list)
         {
             return list.GroupBy(i => i.EmpresaRecebedoraId)
@@ -65,13 +54,13 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
 
         public List<AlocacaoInfo> Alocacoes { get; set; }
 
-        public decimal AlocacoesInternasSum => AlocacoesInternas.Sum(a => a.Valor);
+        public decimal AlocacoesInternasSum => AlocacoesInternas.Sum(a => a.Custo);
 
         public List<AlocacaoInfo> AlocacoesInternas
         {
             get
             {
-                return Alocacoes.Where(c => c.EmpresaFinanciadoraId == c.EmpresaRecebedoraId)
+                return Alocacoes.Where(c => c.EmpresaFinanciadoraFuncao == Funcao.Cooperada && c.EmpresaRecebedoraFuncao == Funcao.Cooperada)
                     .ToList();
             }
         }

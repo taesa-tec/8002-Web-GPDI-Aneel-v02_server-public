@@ -641,15 +641,14 @@ namespace PeD.Controllers.Captacoes
         public ActionResult DownloadFormalizacao(int id)
         {
             var captacao = Service.Filter(q => q
-                .Include(c => c.ArquivoRiscos)
+                .Include(c => c.ArquivoFormalizacao)
                 .Where(c => c.Status >= Captacao.CaptacaoStatus.AnaliseRisco &&
                             c.Id == id
                 )).FirstOrDefault();
             if (captacao is null)
                 return NotFound();
-            var file = captacao.ArquivoRiscos;
-            return PhysicalFile(file.Path, file.ContentType,
-                $"{captacao.Titulo}-riscos.pdf");
+            var file = captacao.ArquivoFormalizacao;
+            return PhysicalFile(file.Path, file.ContentType, file.FileName);
         }
 
         #endregion

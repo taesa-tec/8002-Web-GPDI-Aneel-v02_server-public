@@ -53,6 +53,7 @@ namespace PeD.Mapping
                 .ForMember(c => c.ExecucaoResponsavel,
                     opt => opt.MapFrom(src => src.UsuarioExecucao.NomeCompleto))
                 .ForMember(c => c.AprovacaoResponsavel, opt => opt.MapFrom(src => src.UsuarioAprovacao.NomeCompleto))
+                .ForMember(c => c.Filename, o => o.MapFrom(s => s.ArquivoFormalizacao.FileName))
                 ;
 
             CreateMap<CaptacaoArquivo, CaptacaoArquivoDto>()

@@ -8,5 +8,6 @@ namespace PeD.Core.ApiModels.Captacao
         public string Fornecedor { get; set; }
         public string ExecucaoResponsavel { get; set; }
         public string AprovacaoResponsavel { get; set; }
+        public string Filename { get; set; }
     }
 }

@@ -205,7 +205,7 @@ namespace PeD.Services.Captacoes
             #region Fornecedores
 
             var fornecedores = fornecedoresIds.Select(fid => new CaptacaoFornecedor
-                {CaptacaoId = id, FornecedorId = fid});
+                { CaptacaoId = id, FornecedorId = fid });
 
             var captacaoFornecedors = _captacaoFornecedors.Where(f => f.CaptacaoId == id).ToList();
             _captacaoFornecedors.RemoveRange(captacaoFornecedors);
@@ -490,6 +490,7 @@ namespace PeD.Services.Captacoes
                 .ThenInclude(p => p.Fornecedor)
                 .Include(c => c.UsuarioAprovacao)
                 .Include(c => c.UsuarioExecucao)
+                .Include(c => c.ArquivoFormalizacao)
                 .ToList();
         }
 
