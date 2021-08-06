@@ -311,11 +311,16 @@ namespace PeD.Services.Projetos
             geraRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
             geraRange.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
 
+            var abaCounter = new Dictionary<string, int>();
             foreach (var extrato in extratos)
             {
                 var tableCat = _xlsxService.DataTableFrom(extrato.Categorias);
                 var tableRegistros = _xlsxService.DataTableFrom(extrato.Categorias.SelectMany(c => c.Registros));
-                var aba = doc.AddWorksheet(extrato.Nome);
+
+
+                var abaN = abaCounter.ContainsKey(extrato.Nome) ? abaCounter[extrato.Nome] + 1 : 1;
+                abaCounter[extrato.Nome] = abaN;
+                var aba = doc.AddWorksheet(extrato.Nome + (abaN > 1 ? $" ({abaN})" : ""));
                 var header = aba.Cell("A1");
                 header.SetValue(extrato.Nome);
                 header.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
