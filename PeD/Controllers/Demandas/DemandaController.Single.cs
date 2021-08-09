@@ -92,11 +92,11 @@ namespace PeD.Controllers.Demandas
                 return NotFound();
             }
 
-            if (sistemaService.GetEquipePeD().Coordenador == this.UserId())
+            if (this.IsAdmin() || sistemaService.GetEquipePeD().Coordenador == this.UserId())
             {
                 try
                 {
-                    DemandaService.ProximaEtapa(id, this.UserId(), request.RevisorId);
+                    DemandaService.ProximaEtapa(id, this.UserId(), request.RevisorId, this.IsAdmin());
                 }
                 catch (DemandaException exception)
                 {
@@ -112,7 +112,7 @@ namespace PeD.Controllers.Demandas
         [HttpPut("{id}/ProximaEtapa")]
         public ActionResult<Demanda> AlterarStatusDemanda(int id, [FromBody] DemandaEtapaRequest request)
         {
-            DemandaService.ProximaEtapa(id, this.UserId());
+            DemandaService.ProximaEtapa(id, this.UserId(), asAdmin: this.IsAdmin());
 
             if (!string.IsNullOrWhiteSpace(request.Comentario))
             {

@@ -88,13 +88,13 @@ namespace PeD.Services.Demandas
 
             DemandaProgressCheck = new Dictionary<DemandaEtapa, CanDemandaProgress>
             {
-                {DemandaEtapa.Elaboracao, ElaboracaoProgress},
-                {DemandaEtapa.PreAprovacao, PreAprovacaoProgress},
-                {DemandaEtapa.RevisorPendente, AprovacaoCoordenadorProgress},
-                {DemandaEtapa.AprovacaoRevisor, AprovacaoRevisorProgress},
-                {DemandaEtapa.AprovacaoCoordenador, AprovacaoCoordenadorProgress},
-                {DemandaEtapa.AprovacaoGerente, AprovacaoGerenteProgress},
-                {DemandaEtapa.AprovacaoDiretor, AprovacaoDiretorProgress},
+                { DemandaEtapa.Elaboracao, ElaboracaoProgress },
+                { DemandaEtapa.PreAprovacao, PreAprovacaoProgress },
+                { DemandaEtapa.RevisorPendente, AprovacaoCoordenadorProgress },
+                { DemandaEtapa.AprovacaoRevisor, AprovacaoRevisorProgress },
+                { DemandaEtapa.AprovacaoCoordenador, AprovacaoCoordenadorProgress },
+                { DemandaEtapa.AprovacaoGerente, AprovacaoGerenteProgress },
+                { DemandaEtapa.AprovacaoDiretor, AprovacaoDiretorProgress },
             };
         }
 
@@ -249,7 +249,7 @@ namespace PeD.Services.Demandas
             }
         }
 
-        public void ProximaEtapa(int id, string userId, string revisorId = null)
+        public void ProximaEtapa(int id, string userId, string revisorId = null, bool asAdmin = false)
         {
             var demanda = GetById(id);
 
@@ -261,20 +261,21 @@ namespace PeD.Services.Demandas
                     demanda.RevisorId = revisorId;
                 }
 
-                if (GetResponsavelAtual(demanda) == userId)
+                var responsavelId = GetResponsavelAtual(demanda);
+                if (responsavelId == userId || asAdmin)
                 {
                     demanda.ProximaEtapa();
                     _context.SaveChanges();
-                    NotificarResponsavel(demanda, userId);
+                    NotificarResponsavel(demanda, responsavelId);
                     var user = _context.Users.Find(userId);
                     if (demanda.Status == DemandaStatus.Aprovada)
                     {
-                        LogService.Incluir(userId, demanda.Id, "Aprovação de demanda",
+                        LogService.Incluir(responsavelId, demanda.Id, "Aprovação de demanda",
                             string.Format("O usuário {0} aprovou a demanda", user.NomeCompleto));
                     }
                     else
                     {
-                        LogService.Incluir(userId, demanda.Id, "Avanço de Etapa",
+                        LogService.Incluir(responsavelId, demanda.Id, "Avanço de Etapa",
                             string.Format(" {0} alterou a etapa da demanda para \"{1}\"", user.NomeCompleto,
                                 demanda.EtapaDesc));
                     }
@@ -295,14 +296,14 @@ namespace PeD.Services.Demandas
             }
         }
 
-        public void SetSuperiorDireto(int id, string SuperiorDiretoId)
+        public void SetSuperiorDireto(int id, string superiorDiretoId)
         {
             if (DemandaExist(id))
             {
                 var demanda = GetById(id);
-                demanda.SuperiorDiretoId = SuperiorDiretoId;
+                demanda.SuperiorDiretoId = superiorDiretoId;
                 _context.SaveChanges();
-                var user = _context.Users.Find(SuperiorDiretoId);
+                var user = _context.Users.Find(superiorDiretoId);
                 LogService.Incluir(demanda.CriadorId, demanda.Id, "Definiu Superior Direto",
                     String.Format(" {0} definiu o usuário {1} como superior direto", demanda.Criador.NomeCompleto,
                         user.NomeCompleto));
@@ -403,11 +404,11 @@ namespace PeD.Services.Demandas
             var demanda = GetById(id);
             if (demanda != null && demanda.EtapaAtual != DemandaEtapa.Captacao)
             {
-                
                 if (!demanda.EspecificacaoTecnicaFileId.HasValue)
                 {
                     throw new DemandaException("Especificação Técnica ausente");
                 }
+
                 var especificacaoTecnicaForm = GetDemandaFormData(id, EspecificacaoTecnicaForm.Key);
                 var temaAneel =
                     especificacaoTecnicaForm?.Object.SelectToken(EspecificacaoTecnicaForm.TemaPath) as JObject ??
