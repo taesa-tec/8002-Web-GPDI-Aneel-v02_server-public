@@ -184,7 +184,7 @@ namespace PeD.Controllers.Projetos
                 ProdutoId = request.ProdutoId,
                 DescricaoAtividades = request.Descricao,
                 Meses = etapaMeses,
-                Ordem = (short) ordem
+                Ordem = (short)ordem
             };
             Context.Add(etapa);
             Context.Update(projeto);
@@ -238,7 +238,7 @@ namespace PeD.Controllers.Projetos
                     StatusCodes.Status422UnprocessableEntity);
             }
 
-            if (!upload.FileName.EndsWith(".xml"))
+            if (!upload.FileName.EndsWith(".xml", true, null))
             {
                 return BadRequest("É necessário enviar um arquivo xml");
             }
