@@ -30,7 +30,8 @@
     hr{margin-top: 1rem; margin-bottom: 1rem;}
     table{width: 100%;border: 1px solid #000;border-collapse: collapse;margin-bottom: 1.5rem;}
     table th{background: #acbfe2;}   
-    td, th{padding: 0.5rem;}
+    td, th{padding: 0;}
+    table table td, th{padding: .5rem;}
     img {
           width: 99% !important;
           height: auto !important;
@@ -47,6 +48,8 @@
         }
     .inner{padding-left: 2rem;}
     .underline{text-decoration: underline;}
+    h2{margin: .75rem 0;}
+    body > table > tr{page-break-inside:  avoid}
 </style>
 </head>
 <body>
@@ -60,7 +63,7 @@
         <table style="border: none;">
             <tr>
                 <td>
-                    <h1 style="text-align: center">Plano de Trabalho de Projeto de Pesquisa e Desenvolvimento</h1>
+                    <h1 style="text-align: center" class="underline">Plano de Trabalho de Projeto de Pesquisa e Desenvolvimento</h1>
                     <p>
                         A(s) Empresa(s) Executora(s) Parceira(s), deverão garantir, neste Plano de Trabalho que o Projeto de
                         Pesquisa e Desenvolvimento, proposto em questão é de fato original, aplicável no setor elétrico,
