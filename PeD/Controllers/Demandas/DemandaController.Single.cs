@@ -256,7 +256,6 @@ namespace PeD.Controllers.Demandas
             return PhysicalFile(file.Path, "application/pdf", file.FileName);
         }
 
-        [AllowAnonymous]
         [HttpGet("{id:int}/Form/{form}/History")]
         public ActionResult GetDemandaHistorico(int id, string form, [FromServices] IMapper mapper)
         {
@@ -265,7 +264,6 @@ namespace PeD.Controllers.Demandas
             return Ok(historico);
         }
 
-        [AllowAnonymous]
         [HttpGet("{id:int}/Form/{form}/Diff/{historyId}")]
         public async Task<ActionResult> GetDemandaHistoricoDiff(int id, string form, int historyId,
             [FromServices] IViewRenderService viewRenderService)
