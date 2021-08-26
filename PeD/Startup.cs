@@ -149,7 +149,7 @@ namespace PeD
                     var path = Regex.Replace(description.RelativePath, @"^api\/|\/\{.+?\}", "");
                     // Log.Information("{P1} => {P2}", description.RelativePath, path);
                     path = path.Replace("/", " => ");
-                    return new[] {path};
+                    return new[] { path };
                 };
                 //c.EnableAnnotations();
             });
@@ -225,7 +225,7 @@ namespace PeD
             }
             else
             {
-                // app.UseHttpsRedirection();
+                app.UseHttpsRedirection();
                 app.UseHsts();
             }
 
