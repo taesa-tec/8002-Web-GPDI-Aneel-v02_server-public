@@ -238,7 +238,7 @@ namespace PeD.Controllers.Projetos
                     StatusCodes.Status422UnprocessableEntity);
             }
 
-            if (!upload.FileName.EndsWith(".xml", true, null))
+            if (!upload.FileName.ToLower().EndsWith(".xml", true, null))
             {
                 return BadRequest("É necessário enviar um arquivo xml");
             }

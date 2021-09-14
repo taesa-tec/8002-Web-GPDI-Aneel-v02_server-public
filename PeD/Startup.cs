@@ -303,8 +303,7 @@ namespace PeD
                 services.AddDbContext<GestorDbContext>(options =>
                     {
                         options.UseSqlServer(connectionString);
-                        options.EnableSensitiveDataLogging();
-                        ;
+                        //options.EnableSensitiveDataLogging();
                     }
                 );
             }

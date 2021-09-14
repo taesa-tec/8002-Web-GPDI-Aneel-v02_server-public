@@ -9,5 +9,8 @@ namespace PeD.Core.ApiModels.Captacao
         public string Proposta { get; set; }
         public string Responsavel { get; set; }
         public DateTime DataAlvo { get; set; }
+
+        public int? ArquivoComprobatorioId { get; set; }
+        public string ArquivoComprobatorio { get; set; }
     }
 }

@@ -144,6 +144,7 @@ namespace PeD.Services.Captacoes
                     .Include(c => c.Propostas)
                     .ThenInclude(p => p.Fornecedor)
                     .Include(c => c.UsuarioRefinamento)
+                    .Include(c => c.ArquivoComprobatorio)
                     .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada && c.PropostaSelecionadaId != null))
                 .ToList();
         }

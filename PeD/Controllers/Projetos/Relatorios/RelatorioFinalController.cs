@@ -62,6 +62,12 @@ namespace PeD.Controllers.Projetos.Relatorios
             var relatorio = Service.Filter(q => q.Where(r => r.ProjetoId == Projeto.Id)).FirstOrDefault();
             if (relatorio is null || file.Count == 0 || file.Count > 1)
                 return BadRequest();
+
+            if (!file[0].FileName.ToLower().EndsWith(".pdf", true, null))
+            {
+                return BadRequest("É necessário enviar um arquivo pdf");
+            }
+
             var fileupload = await arquivoService.SaveFile(file.FirstOrDefault());
             relatorio.RelatorioArquivoId = fileupload.Id;
             Service.Put(relatorio);
@@ -75,6 +81,11 @@ namespace PeD.Controllers.Projetos.Relatorios
             var relatorio = Service.Filter(q => q.Where(r => r.ProjetoId == Projeto.Id)).FirstOrDefault();
             if (relatorio is null || file.Count == 0 || file.Count > 1)
                 return BadRequest();
+            if (!file[0].FileName.ToLower().EndsWith(".pdf", true, null))
+            {
+                return BadRequest("É necessário enviar um arquivo pdf");
+            }
+
             var fileupload = await arquivoService.SaveFile(file.FirstOrDefault());
             relatorio.AuditoriaRelatorioArquivoId = fileupload.Id;
             Service.Put(relatorio);

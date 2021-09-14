@@ -138,7 +138,7 @@ namespace PeD.Controllers.Captacoes
 
             var detalhes = Mapper.Map<CaptacaoDetalhesDto>(captacao);
             detalhes.EspecificacaoTecnicaUrl = _urlHelper.Link("DemandaPdf",
-                new {id = captacao.DemandaId, form = "especificacao-tecnica"});
+                new { id = captacao.DemandaId, form = "especificacao-tecnica" });
 
             return Ok(detalhes);
         }
@@ -151,12 +151,12 @@ namespace PeD.Controllers.Captacoes
             var captacao = Service.Get(request.Id);
             if (captacao.Status == Captacao.CaptacaoStatus.Elaboracao && captacao.EnvioCaptacao != null)
             {
-                return BadRequest(new {error = "Captação já está em elaboração"});
+                return BadRequest(new { error = "Captação já está em elaboração" });
             }
 
             if (!contratoService.Exist(request.ContratoId))
             {
-                return BadRequest(new {error = "Contrato sugerido não existe ou foi removido"});
+                return BadRequest(new { error = "Contrato sugerido não existe ou foi removido" });
             }
 
             captacao.Observacoes = request.Observacoes;
@@ -238,7 +238,7 @@ namespace PeD.Controllers.Captacoes
 
         [Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("SelecaoFinalizada")]
-        public ActionResult<List<CaptacaoDto>> GetSelecaoFinalizada()
+        public ActionResult<List<CaptacaoSelecaoFinalizadaDto>> GetSelecaoFinalizada()
         {
             //Service.Paged()
             var captacoes = Service.GetCaptacoesSelecaoFinalizada();
@@ -349,6 +349,26 @@ namespace PeD.Controllers.Captacoes
             }
 
             return DownloadContrato(id, captacao.PropostaSelecionadaId.Value, propostaService);
+        }
+
+        [Authorize(Policy = Policies.IsUserPeD)]
+        [HttpGet("{id}/PropostaSelecionada/ArquivoComprobatorio")]
+        public ActionResult DownloadArquivoComprobatorioPropostaSelecionada(int id,
+            [FromServices] PropostaService propostaService)
+        {
+            var captacao = Service.Filter(q => q
+                .Include(c => c.ArquivoComprobatorio)
+                .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada &&
+                            //c.UsuarioSuprimentoId == this.UserId() &&
+                            c.Id == id
+                )).FirstOrDefault();
+            if (captacao == null || captacao.PropostaSelecionadaId == null)
+            {
+                return NotFound();
+            }
+
+            var file = captacao.ArquivoComprobatorio;
+            return PhysicalFile(file.Path, file.ContentType, file.FileName);
         }
 
         [Authorize(Policy = Policies.IsUserPeD)]
