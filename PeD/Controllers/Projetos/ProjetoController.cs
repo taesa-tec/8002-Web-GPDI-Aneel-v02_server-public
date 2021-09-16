@@ -312,7 +312,6 @@ namespace PeD.Controllers.Projetos
             }
             catch (Exception e)
             {
-                Log.Error(e, "Error:{Error}", e.Message);
                 return Problem(e.Message);
             }
         }
