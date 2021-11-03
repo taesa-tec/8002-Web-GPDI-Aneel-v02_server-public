@@ -32,7 +32,6 @@ namespace PeD
                             UpdateDb(db);
                         }
                     }
-
                     host.Run();
                 }
             }

@@ -9,28 +9,11 @@
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "api/projetos",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_ENVIRONMENT_T": "Test"
-      }
-    },
-    "IIS Express (Stage)": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "api/projetos",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Stage"
-      }
-    },
-    "APIGestor": {
+    "PED": {
       "commandName": "Project",
       "launchBrowser": false,
-      "launchUrl": "api/",
-      "applicationUrl": "http://localhost:8081",
+      "launchUrl": "http://localhost:5000",
+      "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

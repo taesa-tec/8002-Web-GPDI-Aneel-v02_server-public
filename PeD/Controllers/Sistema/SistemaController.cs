@@ -1,14 +1,49 @@
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PeD.Core.Models;
 using PeD.Core.Models.Catalogos;
+using PeD.Core.Requests;
+using PeD.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
 
 namespace PeD.Controllers.Sistema
 {
+    [Route("api/Sistema")]
+    [ApiController]
+    public class SistemaController : ControllerBase
+    {
+        private InstallService InstallService { get; }
+
+
+        public SistemaController(InstallService installService)
+        {
+            InstallService = installService;
+        }
+
+        [HttpGet("Status")]
+        public ActionResult GetStatus()
+        {
+            return Ok(new
+            {
+                InstallService.Installed
+            });
+        }
+
+        [HttpPost("Install")]
+        public async Task<ActionResult> Install(InstallRequest request)
+        {
+            if (InstallService.Installed)
+                return NotFound();
+            await InstallService.Install(request);
+
+            return Ok();
+        }
+    }
+
     [SwaggerTag("Empresas")]
     [Route("api/Empresas")]
     [ApiController]

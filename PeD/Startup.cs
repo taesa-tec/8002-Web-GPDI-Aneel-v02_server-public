@@ -14,10 +14,12 @@ using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using AutoMapper;
+using DocumentFormat.OpenXml.InkML;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -57,14 +59,15 @@ namespace PeD
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<InstallService>();
             ConfigureSpa(services);
             try
             {
                 ConfigureDatabaseConnection(services);
                 ConfigureAuth(services);
                 ConfigureEmail(services);
+                services.AddSingleton<InstallService>();
                 services.AddTransient<IStartupFilter, IdentityInitializer>();
-                services.AddSingleton<IdentityInitializer>();
             }
             catch (Exception e)
             {
@@ -207,9 +210,19 @@ namespace PeD
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-            //app.UseMiddleware<Installer>();
+            #region Define Cultura Padrão
+
+            var cultureInfo = new CultureInfo("pt-BR");
+            cultureInfo.NumberFormat.CurrencySymbol = "R$";
+            ValidatorOptions.Global.LanguageManager.Culture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+            CultureInfo.CurrentUICulture = cultureInfo;
+
+            #endregion
+
+            #region Pasta Storage
+
             var storagePath = Configuration.GetValue<string>("StoragePath");
             if (!string.IsNullOrWhiteSpace(storagePath) && Directory.Exists(storagePath))
             {
@@ -218,6 +231,34 @@ namespace PeD
                     Directory.CreateDirectory(Path.Combine(storagePath, "avatar"));
                 }
             }
+
+            #endregion
+
+            #region GlobalExceptionHandler
+
+            app.UseGlobalExceptionHandler(configuration =>
+            {
+                configuration.ContentType = "application/json";
+                configuration.ResponseBody((exception, httpContext) =>
+                {
+                    return JsonConvert.SerializeObject(new
+                    {
+                        title = "Erro interno do servidor",
+                        status = 500
+                    });
+                });
+                configuration.Map<DemandaException>()
+                    .ToStatusCode(HttpStatusCode.UnprocessableEntity);
+            });
+
+            #endregion
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
+                await next();
+            });
+
 
             if (env.IsDevelopment())
             {
@@ -230,68 +271,41 @@ namespace PeD
             }
 
 
-            #region GlobalExceptionHandler
-
-            //*
-            app.UseGlobalExceptionHandler(configuration =>
-            {
-                configuration.ContentType = "application/json";
-                configuration.ResponseBody((exception, httpContext) =>
-                {
-                    httpContext.Response.Headers["Access-Control-Allow-Origin"] = "*";
-                    return JsonConvert.SerializeObject(new
-                    {
-                        exception.Source,
-                        exception.Message,
-                        title = exception.Message,
-                        detail = exception.Source,
-                        status = 500
-                    });
-                });
-                configuration.Map<DemandaException>()
-                    .ToStatusCode(HttpStatusCode.UnprocessableEntity);
-            });
-            // */
-
-            #endregion
-
-            // Define Cultura Padrão
-            var cultureInfo = new CultureInfo("pt-BR");
-            cultureInfo.NumberFormat.CurrencySymbol = "R$";
-            ValidatorOptions.Global.LanguageManager.Culture = cultureInfo;
-            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-            CultureInfo.CurrentUICulture = cultureInfo;
-            // Criação de estruturas, usuários e permissões
-            // na base do ASP.NET Identity Core (caso ainda não
-            // existam)
-
-
-            // Ativando middlewares para uso do Swagger
+            app.UseStaticFiles();
 
             #region Swagger
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            var swaggerEnable = Configuration.GetValue<bool>("SwaggerEnable");
+            if (swaggerEnable)
             {
-                c.SwaggerEndpoint("/swagger/v2/swagger.json", "API V2");
-                c.DocExpansion(DocExpansion.None);
-                c.ShowExtensions();
-                c.EnableFilter();
-                c.EnableDeepLinking();
-                c.EnableValidator();
-            });
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v2/swagger.json", "API V2");
+                    c.DocExpansion(DocExpansion.None);
+                    c.ShowExtensions();
+                    c.EnableFilter();
+                    c.EnableDeepLinking();
+                    c.EnableValidator();
+                });
+            }
 
             #endregion
 
-            app.UseCors("CorsPolicy");
 
             app.UseRouting();
+            app.UseCors("CorsPolicy");
+
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
+                await next();
+            });
+            app.UseSpaStaticFiles();
             app.UseSpa(spa => { });
         }
 
