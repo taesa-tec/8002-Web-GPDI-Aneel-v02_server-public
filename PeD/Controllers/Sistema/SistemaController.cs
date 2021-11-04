@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -38,9 +39,15 @@ namespace PeD.Controllers.Sistema
         {
             if (InstallService.Installed)
                 return NotFound();
-            await InstallService.Install(request);
-
-            return Ok();
+            try
+            {
+                await InstallService.Install(request);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Ocorreu um erro ao criar o usuário administrativo");
+            }
         }
     }
 

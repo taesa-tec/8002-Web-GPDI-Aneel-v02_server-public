@@ -27,7 +27,6 @@ namespace PeD.Services
 
         public void Initialize()
         {
-            _logger.LogInformation("PreInstall");
             installService.PreInstall().Wait();
         }
     }

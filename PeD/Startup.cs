@@ -18,6 +18,7 @@ using DocumentFormat.OpenXml.InkML;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -272,6 +273,7 @@ namespace PeD
 
 
             app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             #region Swagger
 
@@ -305,8 +307,11 @@ namespace PeD
                 context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
                 await next();
             });
-            app.UseSpaStaticFiles();
-            app.UseSpa(spa => { });
+
+            app.UseWhen(context => context.Request.Method == "GET", appBranch =>
+            {
+                appBranch.UseSpa(spa => { });
+            });
         }
 
         private void ConfigureDatabaseConnection(IServiceCollection services)
