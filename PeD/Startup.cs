@@ -20,7 +20,6 @@ using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -61,6 +60,7 @@ namespace PeD
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<InstallService>();
+
             ConfigureSpa(services);
             try
             {
@@ -103,7 +103,7 @@ namespace PeD
             });
 
             //services.AddMvc();
-
+            services.AddDistributedMemoryCache();
 
             #region Swagger
 
@@ -301,6 +301,7 @@ namespace PeD
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<TokenMiddleware>();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.Use(async (context, next) =>
             {
@@ -308,10 +309,7 @@ namespace PeD
                 await next();
             });
 
-            app.UseWhen(context => context.Request.Method == "GET", appBranch =>
-            {
-                appBranch.UseSpa(spa => { });
-            });
+            app.UseWhen(context => context.Request.Method == "GET", appBranch => { appBranch.UseSpa(spa => { }); });
         }
 
         private void ConfigureDatabaseConnection(IServiceCollection services)

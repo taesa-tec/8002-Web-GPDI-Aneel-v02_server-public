@@ -13,6 +13,7 @@ using TaesaCore.Interfaces;
 
 namespace PeD.Controllers.Sistema
 {
+    [Authorize]
     [Route("api/Sistema")]
     [ApiController]
     public class SistemaController : ControllerBase
@@ -25,6 +26,7 @@ namespace PeD.Controllers.Sistema
             InstallService = installService;
         }
 
+        [AllowAnonymous]
         [HttpGet("Status")]
         public ActionResult GetStatus()
         {
@@ -34,6 +36,7 @@ namespace PeD.Controllers.Sistema
             });
         }
 
+        [AllowAnonymous]
         [HttpPost("Install")]
         public async Task<ActionResult> Install(InstallRequest request)
         {
@@ -54,7 +57,6 @@ namespace PeD.Controllers.Sistema
     [SwaggerTag("Empresas")]
     [Route("api/Empresas")]
     [ApiController]
-    [Authorize("Bearer")]
     public class EmpresasController : ControllerCrudBase<Empresa>
     {
         public EmpresasController(IService<Empresa> service, IMapper mapper) : base(service, mapper)
@@ -65,7 +67,6 @@ namespace PeD.Controllers.Sistema
     [SwaggerTag("Estados")]
     [Route("api/Estados")]
     [ApiController]
-    [Authorize("Bearer")]
     public class EstadosController : ControllerCrudBase<Estado>
     {
         public EstadosController(IService<Estado> service, IMapper mapper) : base(service, mapper)
@@ -76,7 +77,6 @@ namespace PeD.Controllers.Sistema
     [SwaggerTag("Paises")]
     [Route("api/Paises")]
     [ApiController]
-    [Authorize("Bearer")]
     public class PaisesController : ControllerCrudBase<Pais>
     {
         public PaisesController(IService<Pais> service, IMapper mapper) : base(service, mapper)
