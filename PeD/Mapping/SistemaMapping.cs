@@ -31,6 +31,7 @@ namespace PeD.Mapping
                 .ForMember(i => i.HasContent, opt => opt.MapFrom(
                     src => !string.IsNullOrWhiteSpace(src.Conteudo)
                 ));
+            CreateMap<FileUpload, FileUploadDto>();
         }
     }
 }

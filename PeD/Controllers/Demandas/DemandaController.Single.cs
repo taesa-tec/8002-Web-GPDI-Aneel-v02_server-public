@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -17,21 +16,20 @@ using PeD.Core.ApiModels;
 using PeD.Core.ApiModels.Demandas;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models.Demandas;
-using PeD.Core.Models.Demandas.Forms;
 using PeD.Core.Requests.Demanda;
 using PeD.Data;
 using PeD.Services;
 using PeD.Services.Demandas;
-using Log = Serilog.Log;
 
 namespace PeD.Controllers.Demandas
 {
     public partial class DemandaController
     {
         [HttpPost("Criar")]
-        public ActionResult<Demanda> CriarDemanda([FromBody] string titulo)
+        public ActionResult<DemandaDto> CriarDemanda([FromBody] string titulo)
         {
-            return DemandaService.CriarDemanda(titulo, this.UserId());
+            var demanda = DemandaService.CriarDemanda(titulo, this.UserId());
+            return _mapper.Map<DemandaDto>(demanda);
         }
 
         [HttpHead("{id:int}")]
@@ -48,10 +46,14 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<Demanda> GetById(int id)
+        public ActionResult<DemandaDto> GetById(int id)
         {
             if (this.IsAdmin() || DemandaService.UserCanAccess(id, this.UserId()))
-                return DemandaService.GetById(id);
+            {
+                var demanda = DemandaService.GetById(id);
+                return _mapper.Map<DemandaDto>(demanda);
+            }
+
             return NotFound();
         }
 
@@ -85,7 +87,7 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id}/Revisor")]
-        public ActionResult<Demanda> SetRevisor(int id, [FromBody] RevisorRequest request)
+        public ActionResult<DemandaDto> SetRevisor(int id, [FromBody] RevisorRequest request)
         {
             if (!DemandaService.DemandaExist(id))
             {
@@ -110,7 +112,7 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id}/ProximaEtapa")]
-        public ActionResult<Demanda> AlterarStatusDemanda(int id, [FromBody] DemandaEtapaRequest request)
+        public ActionResult<DemandaDto> AlterarStatusDemanda(int id, [FromBody] DemandaEtapaRequest request)
         {
             DemandaService.ProximaEtapa(id, this.UserId(), asAdmin: this.IsAdmin());
 
@@ -123,7 +125,7 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id}/Etapa")]
-        public ActionResult<Demanda> SetEtapa(int id, [FromBody] StatusRequest data)
+        public ActionResult<DemandaDto> SetEtapa(int id, [FromBody] StatusRequest data)
         {
             var etapa = data.Status;
             try
@@ -146,7 +148,7 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id:int}/Reiniciar")]
-        public ActionResult<Demanda> Reiniciar(int id, [FromBody] DemandaReprovacao request)
+        public ActionResult<DemandaDto> Reiniciar(int id, [FromBody] DemandaReprovacao request)
         {
             if (!DemandaService.DemandaExist(id))
                 return NotFound();
@@ -166,7 +168,7 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpPut("{id:int}/ReprovarPermanente")]
-        public ActionResult<Demanda> Finalizar(int id, [FromBody] DemandaReprovacao request)
+        public ActionResult<DemandaDto> Finalizar(int id, [FromBody] DemandaReprovacao request)
         {
             if (!DemandaService.DemandaExist(id))
                 return NotFound();
@@ -181,9 +183,10 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpGet("{id:int}/File/")]
-        public ActionResult<object> GetDemandaFiles(int id)
+        public ActionResult<List<DemandaFileDto>> GetDemandaFiles(int id)
         {
-            return DemandaService.GetDemandaFiles(id);
+            var files = DemandaService.GetDemandaFiles(id);
+            return _mapper.Map<List<DemandaFileDto>>(files);
         }
 
         [HttpGet("{id:int}/File/{file_id:int}")]
@@ -360,11 +363,12 @@ namespace PeD.Controllers.Demandas
 
 
         [HttpGet("{id:int}/Logs")]
-        public ActionResult<List<DemandaLog>> GetDemandaLog(int id)
+        public ActionResult<List<DemandaLogDto>> GetDemandaLog(int id)
         {
             if (this.IsAdmin() || DemandaService.UserCanAccess(id, this.UserId()))
             {
-                return DemandaService.GetDemandaLogs(id);
+                var logs = DemandaService.GetDemandaLogs(id);
+                return _mapper.Map<List<DemandaLogDto>>(logs);
             }
 
             return Forbid();

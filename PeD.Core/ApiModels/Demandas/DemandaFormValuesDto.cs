@@ -13,6 +13,6 @@ namespace PeD.Core.ApiModels.Demandas
         public int Revisao { get; set; }
         public DateTime LastUpdate { get; set; }
         public JObject Data { get; set; }
-        public List<DemandaFormFile> Files { get; set; }
+        public List<DemandaFormFileDto> Files { get; set; }
     }
 }

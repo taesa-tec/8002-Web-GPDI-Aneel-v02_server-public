@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using System.Linq;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PeD.Core.ApiModels;
 using PeD.Core.Models;
 using PeD.Data;
 
@@ -17,25 +20,31 @@ namespace PeD.Controllers
     [Authorize("Bearer")]
     public class FileController : FileBaseController<FileUpload>
     {
-        public FileController(GestorDbContext context, IConfiguration configuration) : base(context, configuration)
+        private IMapper _mapper;
+
+        public FileController(GestorDbContext context, IConfiguration configuration, IMapper mapper) : base(context,
+            configuration)
         {
+            _mapper = mapper;
         }
 
 
         [HttpGet]
-        public ActionResult<List<FileUpload>> GetFiles()
+        public async Task<ActionResult<List<FileUploadDto>>> GetFiles()
         {
-            return context
+            var files = await context
                 .Files
                 .Where(file => file.UserId == this.UserId())
-                .ToList();
+                .ToListAsync();
+            return _mapper.Map<List<FileUploadDto>>(files);
         }
 
         [HttpPost]
         [RequestSizeLimit(1073741824)]
-        public async Task<ActionResult<List<FileUpload>>> Upload()
+        public async Task<ActionResult<List<FileUploadDto>>> Upload()
         {
-            return await base.Upload();
+            var file = await base.Upload();
+            return _mapper.Map<List<FileUploadDto>>(file);
         }
 
         [HttpDelete("{id}")]

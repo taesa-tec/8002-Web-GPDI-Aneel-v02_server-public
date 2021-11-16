@@ -20,6 +20,9 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.Data, opt => opt.MapFrom(src => src.Object));
             CreateMap<DemandaComentario, DemandaComentarioDto>()
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.NomeCompleto));
+            CreateMap<DemandaFile, DemandaFileDto>();
+            CreateMap<DemandaLog, DemandaLogDto>();
+            CreateMap<DemandaFormFile, DemandaFormFileDto>();
         }
     }
 }

@@ -21,4 +21,22 @@ namespace PeD.Core.ApiModels.Demandas
         public DateTime? CaptacaoDate { get; set; }
         public List<DemandaComentarioDto> Comentarios { get; set; }
     }
+
+    public class DemandaFileDto : FileUploadDto
+    {
+    }
+
+    public class DemandaFormFileDto
+    {
+        public int Id { get; set; }
+        public int DemandaFormId { get; set; }
+        public int FileId { get; set; }
+        public DemandaFileDto File { get; set; }
+    }
+
+    public class DemandaLogDto : LogDto
+    {
+        public int DemandaId { get; set; }
+        public DemandaDto Demanda { get; set; }
+    }
 }

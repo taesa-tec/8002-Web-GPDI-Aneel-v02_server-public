@@ -21,6 +21,7 @@ namespace PeD.Core.Models
             if (Valor != null)
                 this.Type = Valor.GetType().FullName;
         }
+
         public LogItem(string Titulo, object Valor, string Type)
         {
             this.Titulo = Titulo;
@@ -34,32 +35,30 @@ namespace PeD.Core.Models
 
             if (Entity != null)
             {
-                var props = Entity.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                var props = Entity.GetType()
+                    .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
                 foreach (var property in props)
                 {
                     object oldValue = null;
-                    var logger = (Attributes.LoggerAttribute)property.GetCustomAttributes(typeof(Attributes.LoggerAttribute), false).FirstOrDefault();
+                    var logger = (Attributes.LoggerAttribute)property
+                        .GetCustomAttributes(typeof(Attributes.LoggerAttribute), false).FirstOrDefault();
 
                     if (logger != null)
                     {
-
                         var propertyValue = property.GetValue(Entity);
 
                         if (EntityOld != null)
                         {
                             oldValue = property.GetValue(EntityOld);
-
                         }
 
                         if (propertyValue != null && !propertyValue.Equals(oldValue))
                         {
-
                             var type = propertyValue.GetType();
 
                             if (type.GetInterfaces().Any(t => t == typeof(IEnumerable)) && type.IsGenericType)
                             {
-
                                 foreach (var item in propertyValue as IEnumerable)
                                 {
                                     var _logItems = LogItem.GerarItems(item);
@@ -71,11 +70,12 @@ namespace PeD.Core.Models
                             }
                             else
                             {
-                                var showValue = logger.hasValueFrom ? Entity.getPropValue(logger.ValueFrom) : propertyValue;
+                                var showValue = logger.hasValueFrom
+                                    ? Entity.getPropValue(logger.ValueFrom)
+                                    : propertyValue;
                                 var showName = logger.Name != null ? logger.Name : property.Name;
                                 logItems.Add(new LogItem(showName, showValue));
                             }
-
                         }
                     }
                 }
@@ -97,14 +97,21 @@ namespace PeD.Core.Models
 
             foreach (String part in nameParts)
             {
-                if (obj == null) { return null; }
+                if (obj == null)
+                {
+                    return null;
+                }
 
                 Type type = obj.GetType();
                 PropertyInfo info = type.GetProperty(part);
-                if (info == null) { return null; }
+                if (info == null)
+                {
+                    return null;
+                }
 
                 obj = info.GetValue(obj, null);
             }
+
             return obj;
         }
     }

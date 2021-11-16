@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using PeD.Core.ApiModels.Captacao;
 using PeD.Core.Models.Captacoes;
 using PeD.Data;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,9 +21,12 @@ namespace PeD.Controllers.Captacoes
     [Authorize("Bearer")]
     public class CaptacaoArquivoController : FileBaseController<CaptacaoArquivo>
     {
-        public CaptacaoArquivoController(GestorDbContext context, IConfiguration configuration) : base(
+        private IMapper _mapper;
+
+        public CaptacaoArquivoController(GestorDbContext context, IConfiguration configuration, IMapper mapper) : base(
             context, configuration)
         {
+            _mapper = mapper;
         }
 
         [HttpGet("{id}/Arquivos/{fileId}", Name = "DownloadCaptacaoFile")]
@@ -69,23 +74,25 @@ namespace PeD.Controllers.Captacoes
         }
 
         [HttpGet("{id}/Arquivos")]
-        public ActionResult<List<CaptacaoArquivo>> GetFiles(int id)
+        public ActionResult<List<CaptacaoArquivoDto>> GetFiles(int id)
         {
-            return context
+            var arquivos = context
                 .Set<CaptacaoArquivo>()
                 .Where(file => file.CaptacaoId == id)
                 .ToList();
+            return _mapper.Map<List<CaptacaoArquivoDto>>(arquivos);
         }
 
         [HttpPost("{id}/Arquivos")]
         [RequestSizeLimit(1073741824)]
-        public async Task<ActionResult<List<CaptacaoArquivo>>> Upload(int id)
+        public async Task<ActionResult<List<CaptacaoArquivoDto>>> Upload(int id)
         {
-            return await base.Upload(file =>
+            var arquivos = await base.Upload(file =>
             {
                 file.CaptacaoId = id;
                 return file;
             });
+            return _mapper.Map<List<CaptacaoArquivoDto>>(arquivos);
         }
 
 

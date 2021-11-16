@@ -14,11 +14,9 @@ using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using AutoMapper;
-using DocumentFormat.OpenXml.InkML;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
@@ -59,8 +57,6 @@ namespace PeD
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<InstallService>();
-
             ConfigureSpa(services);
             try
             {
@@ -284,7 +280,7 @@ namespace PeD
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v2/swagger.json", "API V2");
-                    c.DocExpansion(DocExpansion.None);
+                    c.DocExpansion(DocExpansion.Full);
                     c.ShowExtensions();
                     c.EnableFilter();
                     c.EnableDeepLinking();

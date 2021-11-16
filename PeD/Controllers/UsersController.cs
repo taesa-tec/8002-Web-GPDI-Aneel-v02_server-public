@@ -25,7 +25,7 @@ namespace PeD.Controllers
     public class UsersController : ControllerBase
     {
         private UserService _service;
-        private IMapper mapper;
+        private IMapper _mapper;
         private IConfiguration Configuration;
         private string StoragePath;
         private string AvatarPath;
@@ -36,7 +36,7 @@ namespace PeD.Controllers
             IWebHostEnvironment env)
         {
             _service = service;
-            this.mapper = mapper;
+            this._mapper = mapper;
             Configuration = configuration;
             this.env = env;
             StoragePath = Configuration.GetValue<string>("StoragePath");
@@ -47,7 +47,7 @@ namespace PeD.Controllers
         public IEnumerable<ApplicationUserDto> Get()
         {
             //return _service.ListarTodos();
-            return mapper.Map<IEnumerable<ApplicationUserDto>>(_service.ListarTodos());
+            return _mapper.Map<IEnumerable<ApplicationUserDto>>(_service.ListarTodos());
         }
 
         [HttpGet("{id}")]
@@ -58,7 +58,7 @@ namespace PeD.Controllers
             if (User != null)
             {
                 User.Roles = userManager.GetRolesAsync(User).Result.ToList();
-                return mapper.Map<ApplicationUserDto>(User);
+                return _mapper.Map<ApplicationUserDto>(User);
             }
 
             return NotFound();
@@ -70,7 +70,7 @@ namespace PeD.Controllers
         {
             try
             {
-                await _service.Incluir(mapper.Map<ApplicationUser>(user));
+                await _service.Incluir(_mapper.Map<ApplicationUser>(user));
             }
             catch (Exception e)
             {
@@ -109,10 +109,14 @@ namespace PeD.Controllers
         }
 
         [HttpPut]
-        public ActionResult<Resultado> Edit([FromBody] ApplicationUser User)
+        public ActionResult<Resultado> Edit([FromBody] EditUserRequest user)
         {
-            if (this.IsAdmin())
-                return _service.Atualizar(User);
+            if (this.IsAdmin() && user.Id != this.UserId())
+            {
+                _service.Atualizar(_mapper.Map<ApplicationUser>(user));
+                return Ok();
+            }
+
             return Forbid();
         }
 
@@ -130,7 +134,7 @@ namespace PeD.Controllers
             [FromServices] UserManager<ApplicationUser> userManager)
         {
             var users = userManager.GetUsersInRoleAsync(role).Result.ToList();
-            return mapper.Map<List<ApplicationUserDto>>(users);
+            return _mapper.Map<List<ApplicationUserDto>>(users);
         }
     }
 }

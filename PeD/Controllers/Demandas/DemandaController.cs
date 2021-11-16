@@ -20,6 +20,7 @@ namespace PeD.Controllers.Demandas
     public partial class DemandaController : ControllerServiceBase<Demanda>
     {
         SistemaService sistemaService;
+        private IMapper _mapper;
         private GestorDbContext context;
         protected DemandaService DemandaService { get; }
 
@@ -33,6 +34,7 @@ namespace PeD.Controllers.Demandas
             demandaService, mapper)
         {
             DemandaService = demandaService;
+            _mapper = mapper;
             this.sistemaService = sistemaService;
             this.context = context;
         }

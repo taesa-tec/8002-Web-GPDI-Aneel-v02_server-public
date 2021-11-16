@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using PeD.Authorizations;
+using PeD.Core.ApiModels.Demandas;
 using PeD.Core.Models.Demandas;
 using PeD.Data;
 
@@ -19,9 +21,13 @@ namespace PeD.Controllers.Demandas
     [Authorize(Policy = Policies.IsColaborador)]
     public class DemandaFileController : FileBaseController<DemandaFile>
     {
-        public DemandaFileController(GestorDbContext context, IConfiguration configuration) : base(context,
+        private IMapper _mapper;
+
+        public DemandaFileController(GestorDbContext context, IConfiguration configuration, IMapper mapper) : base(
+            context,
             configuration)
         {
+            _mapper = mapper;
         }
 
         [HttpDelete("{id}/Files/{fileId}")]
@@ -50,23 +56,25 @@ namespace PeD.Controllers.Demandas
         }
 
         [HttpGet("{id}/Files")]
-        public ActionResult<List<DemandaFile>> GetFiles(int id)
+        public ActionResult<List<DemandaFileDto>> GetFiles(int id)
         {
-            return context
+            var files = context
                 .DemandaFiles
                 .Where(file => file.DemandaId == id)
                 .ToList();
+            return _mapper.Map<List<DemandaFileDto>>(files);
         }
 
         [HttpPost("{id}/Files")]
         [RequestSizeLimit(1073741824)]
-        public async Task<ActionResult<List<DemandaFile>>> Upload(int id)
+        public async Task<ActionResult<List<DemandaFileDto>>> Upload(int id)
         {
-            return await base.Upload(file =>
+            var files = await base.Upload(file =>
             {
                 file.DemandaId = id;
                 return file;
             });
+            return _mapper.Map<List<DemandaFileDto>>(files);
         }
 
         protected override DemandaFile FromFormFile(IFormFile file, string filename)

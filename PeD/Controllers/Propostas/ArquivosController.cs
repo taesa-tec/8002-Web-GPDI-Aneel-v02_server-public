@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PeD.Authorizations;
+using PeD.Core.ApiModels;
 using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
@@ -22,18 +24,21 @@ namespace PeD.Controllers.Propostas
     [Route("api/Propostas/{propostaId:guid}/[controller]")]
     public class ArquivosController : FileBaseController<FileUpload>
     {
+        private IMapper _mapper;
         private PropostaService _propostaService;
         private IAuthorizationService authorizationService;
 
         public ArquivosController(GestorDbContext context, IConfiguration configuration,
-            PropostaService propostaService, IAuthorizationService authorizationService) : base(context, configuration)
+            PropostaService propostaService, IAuthorizationService authorizationService, IMapper mapper) : base(context,
+            configuration)
         {
             _propostaService = propostaService;
             this.authorizationService = authorizationService;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<FileUpload>>> GetFiles([FromRoute] Guid propostaId)
+        public async Task<ActionResult<List<FileUploadDto>>> GetFiles([FromRoute] Guid propostaId)
         {
             var proposta = _propostaService.GetProposta(propostaId);
             if (proposta == null)
@@ -42,12 +47,13 @@ namespace PeD.Controllers.Propostas
             if (!authResult.Succeeded)
                 return Forbid();
 
-            return context
+            var files = context
                 .Set<PropostaArquivo>()
                 .Include(p => p.Arquivo)
                 .Where(p => p.PropostaId == proposta.Id)
                 .Select(p => p.Arquivo)
                 .ToList();
+            return _mapper.Map<List<FileUploadDto>>(files);
         }
 
         [AllowAnonymous]
@@ -75,7 +81,7 @@ namespace PeD.Controllers.Propostas
         [Authorize(Roles = Roles.Fornecedor)]
         [HttpPost]
         [RequestSizeLimit(1073741824)]
-        public async Task<ActionResult<List<FileUpload>>> Upload([FromRoute] Guid propostaId)
+        public async Task<ActionResult<List<FileUploadDto>>> Upload([FromRoute] Guid propostaId)
         {
             var proposta = _propostaService.GetProposta(propostaId);
             if (proposta == null)
@@ -85,10 +91,10 @@ namespace PeD.Controllers.Propostas
                 return Forbid();
 
             var files = await base.Upload();
-            var propostaFiles = files.Select(f => new PropostaArquivo() {ArquivoId = f.Id, PropostaId = proposta.Id});
+            var propostaFiles = files.Select(f => new PropostaArquivo() { ArquivoId = f.Id, PropostaId = proposta.Id });
             context.Set<PropostaArquivo>().AddRange(propostaFiles);
             context.SaveChanges();
-            return files;
+            return _mapper.Map<List<FileUploadDto>>(files);
         }
 
         [HttpDelete("{id}")]
