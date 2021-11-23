@@ -98,7 +98,7 @@ namespace PeD
                     .WithExposedHeaders("Content-Disposition"));
             });
 
-            //services.AddMvc();
+            services.AddMvcCore().AddRazorViewEngine();
             services.AddDistributedMemoryCache();
 
             #region Swagger
@@ -156,7 +156,7 @@ namespace PeD
 
             #endregion
 
-            services.AddRazorPages();
+            services.AddScoped<IViewRenderService, ViewRenderService>();
 
             #region Serviços
 

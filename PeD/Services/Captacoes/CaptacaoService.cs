@@ -39,7 +39,7 @@ namespace PeD.Services.Captacoes
             .Include(c => c.UsuarioSuprimento)
             .Include(c => c.Propostas)
             .Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada ||
-                        ((c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino <= DateTime.Today) ||
+                        ((c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino <= DateTime.Today - TimeSpan.FromDays(1)) ||
                          c.Status >= Captacao.CaptacaoStatus.Encerrada) &&
                         (c.Propostas.Count == 0 ||
                          c.Propostas.All(p => !p.Finalizado || !p.Contrato.Finalizado)));

@@ -5,6 +5,7 @@
         <Title>PeD</Title>
         <Authors>Loja Interativa</Authors>
         <AssemblyVersion>2.8</AssemblyVersion>
+        <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
     </PropertyGroup>
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -73,6 +74,16 @@
         <_ContentIncludedByDefault Remove="wwwroot\MailTemplates\mail-cadastro.html" />
         <_ContentIncludedByDefault Remove="wwwroot\MailTemplates\pdf.html" />
         <_ContentIncludedByDefault Remove="wwwroot\MailTemplates\redefinir-senha.html" />
+        <_ContentIncludedByDefault Remove="wwwroot\uploads\2021\1\22\637469233736167216-0" />
+        <_ContentIncludedByDefault Remove="wwwroot\uploads\2021\1\22\637469305713326125-0" />
+        <_ContentIncludedByDefault Remove="wwwroot\uploads\2021\1\22\637469305885674082-0" />
+        <_ContentIncludedByDefault Remove="wwwroot\uploads\2021\2\19\637493406471910097-0" />
+        <_ContentIncludedByDefault Remove="wwwroot\uploads\2021\2\19\637493431578322401-0" />
+        <_ContentIncludedByDefault Remove="wwwroot\uploads\2021\2\24\637497576044073554-0" />
+        <_ContentIncludedByDefault Remove="wwwroot\uploads\2021\3\2\637503034488286853-0" />
+        <_ContentIncludedByDefault Remove="wwwroot\uploads\2021\3\2\637503034892346349-0" />
+        <_ContentIncludedByDefault Remove="wwwroot\uploads\2021\3\3\637503902323202057-0" />
+        <_ContentIncludedByDefault Remove="wwwroot\uploads\demandas\1\especificacao-tecnica\demanda-1-especificacao-tecnica.pdf" />
     </ItemGroup>
     <ItemGroup>
         <Content Remove="logs\**" />
@@ -88,6 +99,18 @@
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </Content>
         <Content Update="wwwroot\index.html">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\Assets\default_avatar.jpg">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\Assets\email-header.jpg">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\Assets\email-header.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\Assets\gerar-senha.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
