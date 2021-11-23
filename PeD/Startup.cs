@@ -280,7 +280,7 @@ namespace PeD
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v2/swagger.json", "API V2");
-                    c.DocExpansion(DocExpansion.Full);
+                    c.DocExpansion(DocExpansion.List);
                     c.ShowExtensions();
                     c.EnableFilter();
                     c.EnableDeepLinking();

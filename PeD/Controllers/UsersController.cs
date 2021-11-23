@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using PeD.Authorizations;
 using PeD.Core.ApiModels;
 using PeD.Core.Extensions;
 using PeD.Core.Models;
@@ -22,6 +23,7 @@ namespace PeD.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize("Bearer")]
+    [Authorize(Policy = Policies.IsAdmin)]
     public class UsersController : ControllerBase
     {
         private UserService _service;
@@ -107,6 +109,7 @@ namespace PeD.Controllers
 
             return PhysicalFile(filename, "image/jpg");
         }
+
 
         [HttpPut]
         public ActionResult<Resultado> Edit([FromBody] EditUserRequest user)

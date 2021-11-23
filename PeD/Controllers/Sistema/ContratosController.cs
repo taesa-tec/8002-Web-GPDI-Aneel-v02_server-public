@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PeD.Authorizations;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Services.Captacoes;
@@ -25,6 +26,24 @@ namespace PeD.Controllers.Sistema
         public ActionResult GetShortCodes()
         {
             return Ok(ContratoService.GetShortcodesDescriptions());
+        }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Post(Contrato model)
+        {
+            return base.Post(model);
+        }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Put(Contrato model)
+        {
+            return base.Put(model);
+        }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Delete(int id)
+        {
+            return base.Delete(id);
         }
     }
 }

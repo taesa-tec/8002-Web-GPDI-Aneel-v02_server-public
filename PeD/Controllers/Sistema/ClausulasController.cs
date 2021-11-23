@@ -3,6 +3,7 @@ using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Sistema;
 using PeD.Core.Models;
 using PeD.Data;
@@ -28,6 +29,7 @@ namespace PeD.Controllers.Sistema
             return Service.Get().OrderBy(c => c.Ordem).ToList();
         }
 
+        [Authorize(Policy = Policies.IsAdmin)]
         [HttpPost]
         public ActionResult Save(List<ClausulaDto> clausulas, [FromServices] GestorDbContext context)
         {

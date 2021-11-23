@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PeD.Authorizations;
 using PeD.Core.Extensions;
 using PeD.Core.Models;
 using PeD.Core.Models.Catalogos;
@@ -86,6 +87,24 @@ namespace PeD.Controllers.Sistema
 
             return base.Get();
         }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Post(Empresa model)
+        {
+            return base.Post(model);
+        }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Put(Empresa model)
+        {
+            return base.Put(model);
+        }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Delete(int id)
+        {
+            return base.Delete(id);
+        }
     }
 
     [SwaggerTag("Estados")]
@@ -96,6 +115,24 @@ namespace PeD.Controllers.Sistema
         public EstadosController(IService<Estado> service, IMapper mapper) : base(service, mapper)
         {
         }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Post(Estado model)
+        {
+            return base.Post(model);
+        }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Put(Estado model)
+        {
+            return base.Put(model);
+        }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Delete(int id)
+        {
+            return base.Delete(id);
+        }
     }
 
     [SwaggerTag("Paises")]
@@ -105,6 +142,24 @@ namespace PeD.Controllers.Sistema
     {
         public PaisesController(IService<Pais> service, IMapper mapper) : base(service, mapper)
         {
+        }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Post(Pais model)
+        {
+            return base.Post(model);
+        }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Put(Pais model)
+        {
+            return base.Put(model);
+        }
+
+        [Authorize(Policy = Policies.IsAdmin)]
+        public override IActionResult Delete(int id)
+        {
+            return base.Delete(id);
         }
     }
 }

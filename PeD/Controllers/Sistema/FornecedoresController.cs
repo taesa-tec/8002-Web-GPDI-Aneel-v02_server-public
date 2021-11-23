@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeD.Auth;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.Models;
 using PeD.Core.Requests.Sistema.Fornecedores;
@@ -63,7 +64,7 @@ namespace PeD.Controllers.Sistema
                     Role = Roles.Fornecedor,
                     RazaoSocial = fornecedor.Nome,
                     Status = true,
-                    EmpresaId = fornecedor.Id == 0 ? (int?) null : fornecedor.Id
+                    EmpresaId = fornecedor.Id == 0 ? (int?)null : fornecedor.Id
                 };
 
                 var userResult = await _userManager.CreateAsync(responsavel);
@@ -141,6 +142,7 @@ namespace PeD.Controllers.Sistema
             return Mapper.Map<List<FornecedorDto>>(Service.Filter(q => q.Include(f => f.Responsavel)).ToList());
         }
 
+        [Authorize(Policy = Policies.IsAdmin)]
         [HttpPost]
         public override IActionResult Post(FornecedorCreateRequest model)
         {
@@ -160,6 +162,7 @@ namespace PeD.Controllers.Sistema
             return Ok(fornecedor);
         }
 
+        [Authorize(Policy = Policies.IsAdmin)]
         [HttpPut]
         public override IActionResult Put(FornecedorEditRequest model)
         {

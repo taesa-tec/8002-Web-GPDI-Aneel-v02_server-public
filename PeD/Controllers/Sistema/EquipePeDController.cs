@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using PeD.Authorizations;
 using PeD.Core;
 using PeD.Services.Sistema;
 
@@ -23,6 +24,7 @@ namespace PeD.Controllers.Sistema
             return sistemaService.GetEquipePedUsers();
         }
 
+        [Authorize(Policy = Policies.IsAdmin)]
         [HttpPut]
         public ActionResult SetEquipePeD(EquipePeD equipePeD)
         {
