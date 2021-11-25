@@ -471,8 +471,8 @@ namespace PeD.Services.Demandas
                 var user = _context.Users.Find(userId);
 
 
-                LogService.Incluir(userId, id, "Demanda para capacitação",
-                    String.Format("O usuário {0} enviou demanda para a capacitação", user.NomeCompleto));
+                LogService.Incluir(userId, id, "Demanda para captação",
+                    String.Format("O usuário {0} enviou a demanda para a captação", user.NomeCompleto));
             }
         }
 
