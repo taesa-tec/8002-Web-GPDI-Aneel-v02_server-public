@@ -62,21 +62,21 @@ namespace PeD.Controllers.Captacoes
         [HttpGet("Abertas")]
         public ActionResult GetCaptacoesEmElaboracao()
         {
-            var captacoes = service.GetCaptacoesPorSuprimento(this.UserId(), Captacao.CaptacaoStatus.Fornecedor);
+            var captacoes = service.GetCaptacoesPorSuprimentoAberta(this.UserId());
             return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
         }
 
         [HttpGet("Finalizadas")]
         public ActionResult GetCaptacoesFinalizadas()
         {
-            var captacoes = service.GetCaptacoesPorSuprimento(this.UserId(), Captacao.CaptacaoStatus.Encerrada);
+            var captacoes = service.GetCaptacoesPorSuprimentoFinalizada(this.UserId());
             return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
         }
 
         [HttpGet("Canceladas")]
         public ActionResult GetCaptacoesCanceladas()
         {
-            var captacoes = service.GetCaptacoesPorSuprimento(this.UserId(), Captacao.CaptacaoStatus.Cancelada);
+            var captacoes = service.GetCaptacoesPorSuprimentoCanceladas(this.UserId());
             return Ok(Mapper.Map<List<CaptacaoElaboracaoDto>>(captacoes));
         }
 
@@ -100,7 +100,7 @@ namespace PeD.Controllers.Captacoes
 
             var detalhes = Mapper.Map<CaptacaoDetalhesDto>(captacao);
             detalhes.EspecificacaoTecnicaUrl = _urlHelper.Link("DemandaPdf",
-                new {id = captacao.DemandaId, form = "especificacao-tecnica"});
+                new { id = captacao.DemandaId, form = "especificacao-tecnica" });
 
             return Ok(detalhes);
         }
@@ -248,7 +248,7 @@ namespace PeD.Controllers.Captacoes
             if (service.UserSuprimento(id) == this.UserId())
             {
                 var captacao = service.Get(id);
-                if (captacao is {IsPropostasOpen: true})
+                if (captacao is { IsPropostasOpen: true })
                 {
                     var propostas = service.GetProposta(propostaId);
                     return Mapper.Map<PropostaDto>(propostas);
@@ -272,7 +272,7 @@ namespace PeD.Controllers.Captacoes
             }
 
             var captacao = service.Get(id);
-            if (captacao is {IsPropostasOpen: true})
+            if (captacao is { IsPropostasOpen: true })
             {
                 var relatorio = serviceProposta.GetRelatorio(propostaId);
                 if (relatorio != null)

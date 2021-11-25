@@ -34,29 +34,41 @@ namespace PeD.Services.Captacoes
         private PropostaService _propostaService;
         private IMapper _mapper;
 
-        private Func<IQueryable<Captacao>, IQueryable<Captacao>> _queryCanceladas = q => q
-            .Include(c => c.Criador)
-            .Include(c => c.UsuarioSuprimento)
-            .Include(c => c.Propostas)
-            .Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada ||
-                        ((c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino <= DateTime.Today - TimeSpan.FromDays(1)) ||
-                         c.Status >= Captacao.CaptacaoStatus.Encerrada) &&
-                        (c.Propostas.Count == 0 ||
-                         c.Propostas.All(p => !p.Finalizado || !p.Contrato.Finalizado)));
+        private Func<IQueryable<Captacao>, IQueryable<Captacao>> _queryCanceladas = q =>
+        {
+            var maxDate = DateTime.Today.Subtract(TimeSpan.FromDays(1));
+            return q
+                .Include(c => c.Criador)
+                .Include(c => c.UsuarioSuprimento)
+                .Include(c => c.Propostas)
+                .Where(c => c.Status == Captacao.CaptacaoStatus.Cancelada ||
+                            (c.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                             c.Termino <= maxDate ||
+                             c.Status >= Captacao.CaptacaoStatus.Encerrada) &&
+                            (c.Propostas.Count == 0 ||
+                             c.Propostas.All(p => !p.Finalizado || !p.Contrato.Finalizado)));
+        };
 
-        private Func<IQueryable<Captacao>, IQueryable<Captacao>> _queryEncerradas = q => q
-            .Include(c => c.Criador)
-            .Include(c => c.UsuarioSuprimento)
-            .Include(c => c.Propostas)
-            .ThenInclude(p => p.Fornecedor)
-            .Include(c => c.Propostas)
-            .ThenInclude(p => p.Contrato)
-            .Where(c => (c.Status >= Captacao.CaptacaoStatus.Encerrada || c.Termino < DateTime.Today)
-                        && c.Propostas.Any(p => p.Finalizado && p.Contrato.Finalizado)
-            );
+        private Func<IQueryable<Captacao>, IQueryable<Captacao>> _queryEncerradas = q =>
+        {
+            var maxDate = DateTime.Today.Subtract(TimeSpan.FromDays(1));
+            return q
+                .Include(c => c.Criador)
+                .Include(c => c.UsuarioSuprimento)
+                .Include(c => c.Propostas)
+                .ThenInclude(p => p.Fornecedor)
+                .Include(c => c.Propostas)
+                .ThenInclude(p => p.Contrato)
+                .Where(c => (c.Status >= Captacao.CaptacaoStatus.Encerrada || c.Termino <= maxDate)
+                            && c.Propostas.Any(p => p.Finalizado && p.Contrato.Finalizado)
+                );
+        };
 
         private Func<IQueryable<Captacao>, IQueryable<Captacao>> _queryAbertas = q =>
-            q.Where(c => c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino > DateTime.Now);
+        {
+            var maxDate = DateTime.Now.Subtract(TimeSpan.FromDays(1));
+            return q.Where(c => c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino > maxDate);
+        };
 
         public CaptacaoService(IRepository<Captacao> repository, GestorDbContext context,
             SendGridService sendGridService, ILogger<CaptacaoService> logger, PropostaService propostaService,
@@ -179,6 +191,51 @@ namespace PeD.Services.Captacoes
             return captacoesQuery
                 .Include(c => c.UsuarioSuprimento)
                 .ToList();
+        }
+
+        public List<Captacao> GetCaptacoesPorSuprimentoCanceladas(string userId)
+        {
+            var maxDate = DateTime.Today.Subtract(TimeSpan.FromDays(1));
+            return Filter(q => q
+                    .Include(c => c.Criador)
+                    .Include(c => c.UsuarioSuprimento)
+                    .Include(c => c.Propostas)
+                    .Where(c => c.UsuarioSuprimentoId == userId &&
+                                (c.Status == Captacao.CaptacaoStatus.Cancelada ||
+                                 (c.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                                  c.Termino <= maxDate ||
+                                  c.Status >= Captacao.CaptacaoStatus.Encerrada) &&
+                                 (c.Propostas.Count == 0 ||
+                                  c.Propostas.All(p =>
+                                      !p.Finalizado || !p.Contrato.Finalizado)))))
+                .ToList();
+        }
+
+        public List<Captacao> GetCaptacoesPorSuprimentoFinalizada(string userId)
+        {
+            var maxDate = DateTime.Today.Subtract(TimeSpan.FromDays(1));
+            return Filter(q => q
+                .Include(c => c.Criador)
+                .Include(c => c.UsuarioSuprimento)
+                .Include(c => c.Propostas)
+                .ThenInclude(p => p.Fornecedor)
+                .Include(c => c.Propostas)
+                .ThenInclude(p => p.Contrato)
+                .Where(c => c.UsuarioSuprimentoId == userId && (c.Status >= Captacao.CaptacaoStatus.Encerrada ||
+                                                                c.Termino <= maxDate)
+                                                            && c.Propostas.Any(p =>
+                                                                p.Finalizado && p.Contrato.Finalizado)
+                )).ToList();
+        }
+
+        public List<Captacao> GetCaptacoesPorSuprimentoAberta(string userId)
+        {
+            var maxDate = DateTime.Today.Subtract(TimeSpan.FromDays(1));
+            return Filter(q => q
+                .Include(c => c.UsuarioSuprimento)
+                .Where(c =>
+                    userId == c.UsuarioSuprimentoId && c.Status == Captacao.CaptacaoStatus.Fornecedor &&
+                    c.Termino > maxDate)).ToList();
         }
 
         public async Task ConfigurarCaptacao(int id, DateTime termino, string consideracoes,

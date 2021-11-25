@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.ApiModels.Propostas;
@@ -97,12 +99,11 @@ namespace PeD.Controllers.Captacoes
         [HttpGet("Abertas")]
         public ActionResult<List<CaptacaoInfo>> GetAbertas()
         {
+            var maxDate = DateTime.Today.Subtract(TimeSpan.FromDays(1));
             //Service.Paged()
             var captacoes =
                 _serviceInfo.Filter(q =>
-                    q.Where(c =>
-                        c.Status == Captacao.CaptacaoStatus.Fornecedor &&
-                        c.Termino > DateTime.Today));
+                    q.Where(c => c.Status == Captacao.CaptacaoStatus.Fornecedor && c.Termino > maxDate));
             // var mapped = Mapper.Map<List<CaptacaoDto>>(captacoes);
             return Ok(captacoes);
         }
@@ -214,11 +215,21 @@ namespace PeD.Controllers.Captacoes
             }
         }
 
-        [ResponseCache(Duration = 600)]
         [HttpGet("Counts")]
-        public ActionResult Contagem()
+        public ActionResult Contagem([FromServices] IDistributedCache cache)
         {
-            return Ok(Service.GetCountByStatus());
+            var contagemCache = cache.GetString("CaptacaoContagem");
+            if (string.IsNullOrEmpty(contagemCache))
+            {
+                var contagem = Service.GetCountByStatus();
+                contagemCache = JsonConvert.SerializeObject(contagem);
+                cache.SetString("CaptacaoContagem", contagemCache, new DistributedCacheEntryOptions()
+                {
+                    AbsoluteExpiration = DateTimeOffset.Now + TimeSpan.FromMinutes(1)
+                });
+            }
+
+            return Ok(JsonConvert.DeserializeObject(contagemCache));
         }
 
         #endregion

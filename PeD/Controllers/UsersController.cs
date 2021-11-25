@@ -23,7 +23,7 @@ namespace PeD.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize("Bearer")]
-    [Authorize(Policy = Policies.IsAdmin)]
+    [Authorize(Policy = Policies.IsUserPeD)]
     public class UsersController : ControllerBase
     {
         private UserService _service;
@@ -51,6 +51,7 @@ namespace PeD.Controllers
             //return _service.ListarTodos();
             return _mapper.Map<IEnumerable<ApplicationUserDto>>(_service.ListarTodos());
         }
+
 
         [HttpGet("{id}")]
         public ActionResult<ApplicationUserDto> Get(string id, [FromServices] UserManager<ApplicationUser> userManager)
