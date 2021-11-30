@@ -248,6 +248,12 @@ namespace PeD.Services.Captacoes
             }
 
             var captacao = Get(id);
+
+            if (_captacaoFornecedors.Any(cf => cf.CaptacaoId == id) || captacao.Termino != null)
+            {
+                throw new CaptacaoException("Captação já foi configurada");
+            }
+
             captacao.Termino = termino;
             captacao.Consideracoes = consideracoes;
             captacao.ContratoId = contratoId;

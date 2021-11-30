@@ -123,11 +123,11 @@ namespace PeD.Controllers.Captacoes
             }
             catch (CaptacaoException e)
             {
-                return Problem(e.Message, null, StatusCodes.Status409Conflict);
+                return Problem(e.Message, statusCode: StatusCodes.Status409Conflict);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return Problem(e.Message);
+                return Problem("Erro interno do servidor");
             }
 
             return Ok();

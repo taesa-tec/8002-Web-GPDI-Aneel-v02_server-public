@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
 using PeD.Core.Models.Fornecedores;
@@ -35,6 +36,13 @@ namespace PeD.Controllers.Projetos
         private new ProjetoService Service;
         protected GestorDbContext Context;
 
+        private IQueryable<Projeto> _projetoQuery(IQueryable<Projeto> q)
+        {
+            var isGestor = this.IsAdmin() || User.IsInRole(Roles.User);
+            return q.Include(p => p.Fornecedor)
+                .Where(p => isGestor || p.Fornecedor.ResponsavelId == this.UserId());
+        }
+
         public ProjetoController(ProjetoService service, IMapper mapper, GestorDbContext context) : base(service,
             mapper)
         {
@@ -42,14 +50,16 @@ namespace PeD.Controllers.Projetos
             Context = context;
         }
 
+        private bool CanAccess(int id)
+        {
+            return Service.Filter(q =>
+                _projetoQuery(q).Where(p => p.Id == id)).Any();
+        }
+
         protected IList<Projeto> GetProjetosStatus(Status status)
         {
-            var isGestor = this.IsAdmin() || User.IsInRole(Roles.User);
-            return Service.Filter(q => q
-                .Include(p => p.Fornecedor)
-                .Where(p => p.Status == status &&
-                            (isGestor || p.Fornecedor.ResponsavelId == this.UserId())
-                ));
+            return Service.Filter(q => _projetoQuery(q)
+                .Where(p => p.Status == status));
         }
 
         [HttpGet("EmExecucao")]
@@ -70,7 +80,8 @@ namespace PeD.Controllers.Projetos
         public ActionResult Get(int id)
         {
             var projeto = Service.Filter(q =>
-                q.Include(p => p.Proponente)
+                _projetoQuery(q)
+                    .Include(p => p.Proponente)
                     .Include(p => p.Fornecedor)
                     .Where(p => p.Id == id)).FirstOrDefault();
             if (projeto == null)
@@ -82,7 +93,8 @@ namespace PeD.Controllers.Projetos
         [HttpPut("{id:int}/Status")]
         public ActionResult UpdateStatus(int id, [FromBody] ProjetoStatusRequest request)
         {
-            var projeto = Service.Get(id);
+            var projeto = Service.Filter(q => _projetoQuery(q)
+                .Where(p => p.Id == id)).FirstOrDefault();
             if (projeto == null)
                 return NotFound();
             if (projeto.Status == request.Status)
@@ -102,7 +114,7 @@ namespace PeD.Controllers.Projetos
         public ActionResult GetPlanoTrabalho(int id)
         {
             var projeto = Service.Filter(q =>
-                q.Include(p => p.PlanoTrabalhoFile)
+                _projetoQuery(q).Include(p => p.PlanoTrabalhoFile)
                     .Where(p => p.Id == id)).FirstOrDefault();
             if (projeto == null)
                 return NotFound();
@@ -115,7 +127,7 @@ namespace PeD.Controllers.Projetos
         public ActionResult GetContrato(int id)
         {
             var projeto = Service.Filter(q =>
-                q.Include(p => p.Contrato)
+                _projetoQuery(q).Include(p => p.Contrato)
                     .Where(p => p.Id == id)).FirstOrDefault();
             if (projeto == null)
                 return NotFound();
@@ -128,7 +140,7 @@ namespace PeD.Controllers.Projetos
         public ActionResult GetEspecificacaoTecnica(int id)
         {
             var projeto = Service.Filter(q =>
-                q.Include(p => p.EspecificacaoTecnicaFile)
+                _projetoQuery(q).Include(p => p.EspecificacaoTecnicaFile)
                     .Where(p => p.Id == id)).FirstOrDefault();
             if (projeto == null)
                 return NotFound();
@@ -140,13 +152,23 @@ namespace PeD.Controllers.Projetos
         [HttpGet("{id:int}/Empresas")]
         public ActionResult Empresas(int id, [FromServices] IService<Core.Models.Empresa> empresasService)
         {
-            var empresas = Context.Set<Empresa>().AsQueryable().Where(c => c.ProjetoId == id).ToList();
-            return Ok(empresas);
+            if (CanAccess(id))
+            {
+                var empresas = Context.Set<Empresa>().AsQueryable().Where(c => c.ProjetoId == id).ToList();
+                return Ok(empresas);
+            }
+
+            return NotFound();
         }
 
         [HttpGet("{id:int}/Produtos")]
         public ActionResult Produtos(int id)
         {
+            if (!CanAccess(id))
+            {
+                return NotFound();
+            }
+
             var produtos = Context.Set<Produto>()
                 .Where(p => p.ProjetoId == id)
                 .ToList();
@@ -154,6 +176,7 @@ namespace PeD.Controllers.Projetos
             return Ok(Mapper.Map<List<ProjetoProdutoDto>>(produtos));
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPost("{id:int}/Prorrogacao")]
         public ActionResult Prorrogacao(int id, ProrrogacaoRequest request)
         {
@@ -195,6 +218,11 @@ namespace PeD.Controllers.Projetos
         [HttpGet("{projetoId}/ExtratoFinanceiro/Xlsx")]
         public ActionResult GetXlsx([FromRoute] int projetoId)
         {
+            if (!CanAccess(projetoId))
+            {
+                return NotFound();
+            }
+
             var xls = Service.XlsExtrato(projetoId);
             var stream = new MemoryStream();
             xls.SaveAs(stream);
@@ -208,6 +236,11 @@ namespace PeD.Controllers.Projetos
         [HttpGet("{id:int}/LogsDuto")]
         public ActionResult GetLogsDuto(int id, [FromServices] IService<ProjetoXml> service)
         {
+            if (!CanAccess(id))
+            {
+                return NotFound();
+            }
+
             var logs = service.Filter(q => q
                 .Include(l => l.File)
                 .Where(l => l.ProjetoId == id && l.Tipo == BaseXml.XmlTipo.DUTO));
@@ -217,6 +250,11 @@ namespace PeD.Controllers.Projetos
         [HttpGet("{id:int}/Xml/{xmlId:int}")]
         public ActionResult GetLogDuto(int id, int xmlId, [FromServices] IService<ProjetoXml> service)
         {
+            if (!CanAccess(id))
+            {
+                return NotFound();
+            }
+
             var log = service.Filter(q => q
                 .Include(l => l.File)
                 .Where(l => l.ProjetoId == id && l.Id == xmlId)).FirstOrDefault();
@@ -231,6 +269,11 @@ namespace PeD.Controllers.Projetos
             [FromServices] ArquivoService arquivoService,
             [FromServices] IService<ProjetoXml> serviceXml)
         {
+            if (!CanAccess(id))
+            {
+                return NotFound();
+            }
+
             var upload = Request.Form.Files.FirstOrDefault();
             if (upload is null)
             {
@@ -269,6 +312,11 @@ namespace PeD.Controllers.Projetos
         [HttpGet("{id:int}/Xmls")]
         public ActionResult GetXmls(int id, [FromServices] IService<ProjetoXml> service)
         {
+            if (!CanAccess(id))
+            {
+                return NotFound();
+            }
+
             var logs = service.Filter(q => q
                 .Include(l => l.File)
                 .Where(l => l.ProjetoId == id && l.Tipo != BaseXml.XmlTipo.DUTO));
@@ -282,6 +330,11 @@ namespace PeD.Controllers.Projetos
         [HttpPost("{id:int}/GerarXML/Prorrogacao")]
         public ActionResult GerarXmlProrrogacao(int id, [FromBody] XmlRequest request)
         {
+            if (!CanAccess(id))
+            {
+                return NotFound();
+            }
+
             var projeto = Service.Get(id);
             if (projeto is null)
                 return NotFound();
@@ -300,6 +353,11 @@ namespace PeD.Controllers.Projetos
         public ActionResult GerarXmlFinalProjeto(int id, [FromBody] XmlRequest request,
             [FromServices] RelatorioFinalService service)
         {
+            if (!CanAccess(id))
+            {
+                return NotFound();
+            }
+
             var projeto = Service.Get(id);
             if (projeto is null)
                 return NotFound();
@@ -320,6 +378,11 @@ namespace PeD.Controllers.Projetos
         public ActionResult GerarXmlAuditoria(int id, [FromBody] XmlRequest request,
             [FromServices] RelatorioAuditoriaService service)
         {
+            if (!CanAccess(id))
+            {
+                return NotFound();
+            }
+
             var projeto = Service.Get(id);
             if (projeto is null)
                 return NotFound();
