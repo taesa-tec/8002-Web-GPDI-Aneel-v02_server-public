@@ -6,6 +6,7 @@ using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using Microsoft.Extensions.Configuration;
 using PeD.Core.Models;
 
 namespace PeD.Services
@@ -13,10 +14,12 @@ namespace PeD.Services
     public class PdfService
     {
         private ArquivoService _arquivoService;
+        private IConfiguration _configuration;
 
-        public PdfService(ArquivoService arquivoService)
+        public PdfService(ArquivoService arquivoService, IConfiguration configuration)
         {
             _arquivoService = arquivoService;
+            _configuration = configuration;
         }
 
         public static void AddPagesToPdf(string filename, int x, int y)
@@ -52,11 +55,13 @@ namespace PeD.Services
 
         public FileUpload HtmlToPdf(string content, string name)
         {
-            var file = Path.GetTempFileName();
-            var stream = new FileStream(file, FileMode.Create);
+            var storagePath = _configuration.GetValue<string>("StoragePath");
+            var file = Path.Combine(storagePath, "temp", Path.GetRandomFileName());
+            var stream = File.Create(file);
             HtmlConverter.ConvertToPdf(content, stream);
             stream.Close();
             var arquivo = _arquivoService.FromPath(file, "application/pdf", $"{name}.pdf");
+            File.Delete(file);
             return arquivo;
         }
     }

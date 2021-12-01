@@ -227,6 +227,10 @@ namespace PeD
                 {
                     Directory.CreateDirectory(Path.Combine(storagePath, "avatar"));
                 }
+                if (!Directory.Exists(Path.Combine(storagePath, "temp")))
+                {
+                    Directory.CreateDirectory(Path.Combine(storagePath, "temp"));
+                }
             }
 
             #endregion

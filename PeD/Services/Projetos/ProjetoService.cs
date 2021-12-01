@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using AutoMapper;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
@@ -48,11 +49,13 @@ namespace PeD.Services.Projetos
         private XlsxService _xlsxService;
         private IMapper Mapper;
         private ProjetoPeDService _projetoPeDService;
+        private IConfiguration _configuration;
 
         public ProjetoService(IRepository<Projeto> repository,
             PropostaService propostaService,
             GestorDbContext context,
-            IMapper mapper, ArquivoService arquivoService, XlsxService xlsxService, ProjetoPeDService projetoPeDService)
+            IMapper mapper, ArquivoService arquivoService, XlsxService xlsxService, ProjetoPeDService projetoPeDService,
+            IConfiguration configuration)
             : base(repository)
         {
             _propostaService = propostaService;
@@ -61,6 +64,7 @@ namespace PeD.Services.Projetos
             _arquivoService = arquivoService;
             _xlsxService = xlsxService;
             _projetoPeDService = projetoPeDService;
+            _configuration = configuration;
         }
 
         #region Proposta para Projeto
@@ -359,7 +363,8 @@ namespace PeD.Services.Projetos
             var document = xml.ToXml();
             //filename =  APLPED + Codigo Empresa _ Tipo _ Numero _ Versao
             var filename = $"APLPED{projeto.Proponente.Valor}_{xml.Tipo.ToString()}_{projeto.Numero}_{versao}.XML";
-            var tempFileName = Path.GetTempFileName();
+            var storagePath = _configuration.GetValue<string>("StoragePath");
+            var tempFileName = Path.Combine(storagePath, "temp", Path.GetRandomFileName());
             document.Save(tempFileName);
 
             string[] lines = File.ReadAllLines(tempFileName, System.Text.Encoding.GetEncoding("ISO-8859-1"));
@@ -380,6 +385,7 @@ namespace PeD.Services.Projetos
             _context.Add(projetoFile);
             _context.SaveChanges();
             projetoFile.File = file;
+            File.Delete(tempFileName);
             return projetoFile;
         }
 
