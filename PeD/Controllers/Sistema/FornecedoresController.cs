@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,9 @@ using PeD.Auth;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.Models;
+using PeD.Core.Models.Fornecedores;
 using PeD.Core.Requests.Sistema.Fornecedores;
+using PeD.Data;
 using PeD.Services;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
@@ -34,20 +37,23 @@ namespace PeD.Controllers.Sistema
         private UserService _userService;
         private PropostaService _propostaService;
         protected AccessManager AccessManager;
+        private GestorDbContext _context;
 
         public FornecedoresController(IService<Core.Models.Fornecedores.Fornecedor> service, IMapper mapper,
             UserManager<ApplicationUser> userManager, AccessManager accessManager, UserService userService,
-            PropostaService propostaService) : base(
+            PropostaService propostaService, GestorDbContext context) : base(
             service, mapper)
         {
             _userManager = userManager;
             AccessManager = accessManager;
             _userService = userService;
             _propostaService = propostaService;
+            _context = context;
         }
 
 
-        protected async Task UpdateResponsavelFornecedor(Core.Models.Fornecedores.Fornecedor fornecedor, string email,
+        protected async Task<bool> UpdateResponsavelFornecedor(Core.Models.Fornecedores.Fornecedor fornecedor,
+            string email,
             string nome)
         {
             var responsavel = _userManager.FindByEmailAsync(email).Result;
@@ -92,6 +98,7 @@ namespace PeD.Controllers.Sistema
                 await _userService.Desativar(fornecedor.ResponsavelId);
 
             fornecedor.ResponsavelId = responsavel.Id;
+            return true;
         }
 
         protected void UpdateResponsavelPropostaFornecedor(Core.Models.Fornecedores.Fornecedor fornecedor)
@@ -146,7 +153,7 @@ namespace PeD.Controllers.Sistema
         [HttpPost]
         public override IActionResult Post(FornecedorCreateRequest model)
         {
-            var fornecedor = new Core.Models.Fornecedores.Fornecedor()
+            var fornecedor = new Fornecedor()
             {
                 Ativo = true,
                 Nome = model.Nome,
@@ -154,6 +161,14 @@ namespace PeD.Controllers.Sistema
                 UF = model.Uf,
                 Categoria = Empresa.CategoriaEmpresa.Fornecedor,
             };
+
+            var responsavel = _userManager.FindByEmailAsync(model.ResponsavelEmail).Result;
+            if (responsavel != null && (responsavel.Role != Roles.Fornecedor ||
+                                        _context.Set<Fornecedor>()
+                                            .Any(f => f.ResponsavelId == responsavel.Id)))
+            {
+                return Problem("O responsável não pode ser cadastrado", statusCode: StatusCodes.Status400BadRequest);
+            }
 
             Service.Post(fornecedor);
             UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
@@ -175,6 +190,15 @@ namespace PeD.Controllers.Sistema
 
             if (model.TrocarResponsavel)
             {
+                var responsavel = _userManager.FindByEmailAsync(model.ResponsavelEmail).Result;
+                if (responsavel != null && (responsavel.Role != Roles.Fornecedor ||
+                                            _context.Set<Fornecedor>()
+                                                .Any(f => f.ResponsavelId == responsavel.Id)))
+                {
+                    return Problem("O responsável não pode ser cadastrado",
+                        statusCode: StatusCodes.Status400BadRequest);
+                }
+
                 UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
             }
 
