@@ -145,6 +145,9 @@ namespace PeD.Core.Models.Demandas.Forms
                 }
                 catch (Exception)
                 {
+                    // ignored
+                    // Caso ocorra um erro na renderização de um campo específico (por ter uma estrutura diferente da
+                    // anterior, por exemplo), não podemos impendir a renderização dos compos seguintes
                 }
             }
 

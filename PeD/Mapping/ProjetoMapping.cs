@@ -56,7 +56,6 @@ namespace PeD.Mapping
             CreateMap<AlocacaoRm,
                     Core.Models.Projetos.RecursoMaterial.AlocacaoRm>().IncludeBase<PropostaNode, ProjetoNode>()
                 .ForMember(dest => dest.RecursoMaterialId, opt => opt.MapFrom(src => src.RecursoId));
-            ;
             CreateMap<Core.Models.Propostas.Escopo, Core.Models.Projetos.Escopo>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
             CreateMap<Core.Models.Propostas.PlanoTrabalho, Core.Models.Projetos.PlanoTrabalho>()
@@ -78,7 +77,6 @@ namespace PeD.Mapping
             CreateMap<RecursoHumano, RecursoHumanoDto>()
                 .ForMember(dest => dest.Empresa, opt =>
                     opt.MapFrom(src => src.Empresa.Nome));
-            ;
             CreateMap<RecursoMaterial, RecursoMaterialDto>()
                 .ForMember(dest => dest.CategoriaContabil, opt =>
                     opt.MapFrom(src => src.CategoriaContabil.Nome));

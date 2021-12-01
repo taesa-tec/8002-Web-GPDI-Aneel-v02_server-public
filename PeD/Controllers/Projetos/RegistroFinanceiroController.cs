@@ -206,7 +206,6 @@ namespace PeD.Controllers.Projetos
 
                 registro.ComprovanteId = _context.Set<RegistroFinanceiro>().Where(r => r.Id == registroId)
                     .Select(r => r.ComprovanteId).FirstOrDefault();
-                ;
                 _context.Update(registro);
                 _context.SaveChanges();
 
