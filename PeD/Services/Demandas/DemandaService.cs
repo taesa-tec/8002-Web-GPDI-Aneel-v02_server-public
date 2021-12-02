@@ -650,11 +650,10 @@ namespace PeD.Services.Demandas
         public FieldRendered RenderDocument(int id, string form)
         {
             var field = GetForm(form);
-            field.RenderHandler = SanitizerFieldRender;
-
             var data = GetDemandaFormData(id, form);
             if (data != null && field != null)
             {
+                field.RenderHandler = SanitizerFieldRender;
                 return field.Render(data.Object);
             }
 
