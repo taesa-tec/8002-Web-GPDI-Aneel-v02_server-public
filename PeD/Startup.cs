@@ -88,10 +88,9 @@ namespace PeD
 
             services.AddCors(options =>
             {
+                var origins = Configuration.GetSection("CorsOrigins")?.Get<string[]>() ?? Array.Empty<string>();
                 options.AddPolicy("CorsPolicy", builder => builder
-                    .WithOrigins("http://localhost:4200", "http://localhost:4201",
-                        "http://ped.clientes.lojainterativa.com"
-                    )
+                    .WithOrigins(origins)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()
@@ -227,6 +226,7 @@ namespace PeD
                 {
                     Directory.CreateDirectory(Path.Combine(storagePath, "avatar"));
                 }
+
                 if (!Directory.Exists(Path.Combine(storagePath, "temp")))
                 {
                     Directory.CreateDirectory(Path.Combine(storagePath, "temp"));

@@ -31,6 +31,7 @@ cp ./PeD/appsettings.example.json ./PeD/appsettings.json
 3) `StoragePath` é a pasta onde os arquivos gerados pelo sistema deverão ser salvos  (Obs.: Somente caminho absoluto).
 4) `ApiKey` do Sendgrid para o disparo de emails.
 5) `Url` do sistema.
+6) `CorsOrigin` Urls que podem fazer requisições
 
 ---
 
