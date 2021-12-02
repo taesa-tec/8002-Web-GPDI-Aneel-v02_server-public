@@ -10,13 +10,13 @@ namespace PeD.Core.Models
         public const string Fornecedor = "Fornecedor";
         public const string Colaborador = "Colaborador";
 
-        protected static List<string> _allRoles = new List<string>()
+        protected static List<string> _allRoles = new List<string>
         {
-            Roles.Administrador,
-            Roles.User,
-            Roles.Colaborador,
-            Roles.Suprimento,
-            Roles.Fornecedor
+            Administrador,
+            User,
+            Colaborador,
+            Suprimento,
+            Fornecedor
         };
 
         public static List<string> AllRoles => _allRoles;

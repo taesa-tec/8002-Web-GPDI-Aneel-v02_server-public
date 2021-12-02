@@ -1,10 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PeD.Core.Models;
@@ -67,7 +64,7 @@ namespace PeD.Services
                 return;
 
             Installed = true;
-            var result = await _userManager.CreateAsync(new ApplicationUser()
+            var result = await _userManager.CreateAsync(new ApplicationUser
             {
                 Cargo = request.Cargo,
                 Email = request.Email,

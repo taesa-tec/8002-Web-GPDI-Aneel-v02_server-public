@@ -2,10 +2,7 @@ using System.Linq;
 using AutoMapper;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.ApiModels.Fornecedores;
-using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models.Captacoes;
-using PeD.Core.Models.Propostas;
-using PeD.Views.Email.Captacao;
 using Contrato = PeD.Core.Models.Contrato;
 using ContratoDto = PeD.Core.ApiModels.Captacao.ContratoDto;
 

@@ -6,7 +6,7 @@ namespace PeD.Data.Builders
 {
     public static class ItemAjuda
     {
-        private static List<string> _data = new List<string>()
+        private static List<string> _data = new List<string>
         {
             "alocacao-recurso-humano",
             "alocacao-recurso-humano-etapa",
@@ -67,7 +67,7 @@ namespace PeD.Data.Builders
         public static void Config(this EntityTypeBuilder<Core.Models.Sistema.ItemAjuda> builder)
         {
             builder.HasIndex(i => i.Codigo).IsUnique();
-            builder.HasData(_data.OrderBy(i => i).Select((c, i) => new Core.Models.Sistema.ItemAjuda()
+            builder.HasData(_data.OrderBy(i => i).Select((c, i) => new Core.Models.Sistema.ItemAjuda
             {
                 Id = i + 1,
                 Codigo = c,

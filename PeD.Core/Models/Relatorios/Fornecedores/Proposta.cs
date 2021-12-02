@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Catalogos;
 using PeD.Core.Models.Fornecedores;

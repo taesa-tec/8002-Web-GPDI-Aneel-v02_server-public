@@ -7,7 +7,6 @@ using PeD.Core;
 using PeD.Views.Email;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using Serilog;
 
 namespace PeD.Services
 {
@@ -38,10 +37,10 @@ namespace PeD.Services
         public async Task Send(string to, string subject, string content, string title = null,
             string actionLabel = null, string actionUrl = null)
         {
-            await Send(new List<string> {to}, subject, content, title, actionLabel, actionUrl);
+            await Send(new[] { to }, subject, content, title, actionLabel, actionUrl);
         }
 
-        public async Task Send(IEnumerable<string> tos, string subject, string content, string title = null,
+        public async Task Send(string[] tos, string subject, string content, string title = null,
             string actionLabel = null, string actionUrl = null)
         {
             try
@@ -54,7 +53,7 @@ namespace PeD.Services
                 title ??= subject;
                 await Send(tos, subject, "Email/SimpleMail",
                     new SimpleMail()
-                        {Titulo = title, Conteudo = content, ActionLabel = actionLabel, ActionUrl = actionUrl});
+                        { Titulo = title, Conteudo = content, ActionLabel = actionLabel, ActionUrl = actionUrl });
             }
             catch (Exception e)
             {
@@ -62,7 +61,7 @@ namespace PeD.Services
             }
         }
 
-        public async Task Send<T>(IEnumerable<string> tos, string subject, string viewName, T model) where T : class
+        public async Task Send<T>(string[] tos, string subject, string viewName, T model) where T : class
         {
             try
             {
@@ -94,7 +93,7 @@ namespace PeD.Services
 
         public async Task Send<T>(string to, string subject, string viewName, T model) where T : class
         {
-            await Send(new List<string>() {to}, subject, viewName, model);
+            await Send(new[] { to }, subject, viewName, model);
         }
     }
 }

@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace PeD.Core.Models.Projetos
 {
     public class RegistroFinanceiroRm : RegistroFinanceiro

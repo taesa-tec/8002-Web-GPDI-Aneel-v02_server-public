@@ -29,7 +29,6 @@ namespace PeD.Controllers.Projetos
     public class RegistroFinanceiroController : ControllerServiceBase<Projeto>
     {
         private new ProjetoService Service;
-        private IService<Core.Models.Empresa> _serviceEmpresa;
         private GestorDbContext _context;
 
         public RegistroFinanceiroController(ProjetoService service, IMapper mapper,
@@ -38,7 +37,6 @@ namespace PeD.Controllers.Projetos
             base(service, mapper)
         {
             Service = service;
-            _serviceEmpresa = serviceEmpresa;
             _context = context;
         }
 
@@ -277,7 +275,7 @@ namespace PeD.Controllers.Projetos
                 .FirstOrDefault(r => r.Id == registroId && r.ProjetoId == id);
             if (pre is null)
                 return NotFound();
-            if (this.IsGestor() || (pre.AuthorId == this.UserId() && pre.Status == StatusRegistro.Pendente))
+            if (this.IsGestor() || pre.AuthorId == this.UserId() && pre.Status == StatusRegistro.Pendente)
             {
                 _context.RemoveRange(pre.Observacoes);
                 _context.Remove(pre);
@@ -353,12 +351,10 @@ namespace PeD.Controllers.Projetos
                     .FirstOrDefault(r => r.Id == registroId && (this.IsGestor() || r.AuthorId == this.UserId()));
                 return Ok(Mapper.Map<RegistroFinanceiroDto>(rh));
             }
-            else
-            {
-                var rm = _context.Set<RegistroFinanceiroRm>().FirstOrDefault(r =>
-                    r.Id == registroId && (this.IsGestor() || r.AuthorId == this.UserId()));
-                return Ok(Mapper.Map<RegistroFinanceiroDto>(rm));
-            }
+
+            var rm = _context.Set<RegistroFinanceiroRm>().FirstOrDefault(r =>
+                r.Id == registroId && (this.IsGestor() || r.AuthorId == this.UserId()));
+            return Ok(Mapper.Map<RegistroFinanceiroDto>(rm));
         }
 
         [HttpGet("{registroId:int}/Info")]

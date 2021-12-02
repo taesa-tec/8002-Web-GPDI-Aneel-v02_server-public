@@ -13,7 +13,7 @@ namespace PeD.Core.Models.Propostas
     }
 
     [Table("PropostaRecursosMateriaisAlocacao")]
-    public class AlocacaoRm : Propostas.Alocacao
+    public class AlocacaoRm : Alocacao
     {
         public int RecursoId { get; set; }
         public RecursoMaterial Recurso { get; set; }

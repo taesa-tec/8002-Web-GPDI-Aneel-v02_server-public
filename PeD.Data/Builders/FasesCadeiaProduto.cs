@@ -129,10 +129,10 @@ namespace PeD.Data.Builders
 
         public static EntityTypeBuilder<FaseCadeiaProduto> Seed(this EntityTypeBuilder<FaseCadeiaProduto> builder)
         {
-            var fases = GetFases().Select(f => new FaseCadeiaProduto()
+            var fases = GetFases().Select(f => new FaseCadeiaProduto
             {
                 Id = f.Id,
-                Nome = f.Nome,
+                Nome = f.Nome
             });
             builder.HasData(fases);
             return builder;

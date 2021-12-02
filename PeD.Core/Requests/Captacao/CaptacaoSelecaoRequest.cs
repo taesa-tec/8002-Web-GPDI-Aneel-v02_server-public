@@ -1,5 +1,4 @@
 using System;
-using FluentValidation;
 
 namespace PeD.Core.Requests.Captacao
 {

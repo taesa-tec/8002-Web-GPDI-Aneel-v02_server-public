@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
@@ -48,7 +47,7 @@ namespace PeD.Controllers.Projetos
         {
             var recurso = Service.Filter(q => q
                 .Include(r => r.Empresa)
-                .Where(q => q.ProjetoId == projetoId && q.Id == id)
+                .Where(r => r.ProjetoId == projetoId && r.Id == id)
             ).FirstOrDefault();
             if (recurso == null)
             {
@@ -70,7 +69,8 @@ namespace PeD.Controllers.Projetos
                 Service.Put(recurso);
                 return Ok();
             }
-            else if (Request.Method == "POST")
+
+            if (Request.Method == "POST")
             {
                 Service.Post(recurso);
                 return Ok();

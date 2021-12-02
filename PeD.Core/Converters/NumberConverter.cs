@@ -38,7 +38,7 @@ namespace PeD.Core.Converters
 
         public override bool CanConvert(Type objectType)
         {
-            return (new[] {typeof(int), typeof(decimal), typeof(short), typeof(float)}).Any(t => t == objectType);
+            return new[] {typeof(int), typeof(decimal), typeof(short), typeof(float)}.Any(t => t == objectType);
         }
     }
 }

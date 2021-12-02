@@ -19,7 +19,7 @@ namespace PeD.Core.Models
             this.Titulo = Titulo;
             this.Valor = Valor;
             if (Valor != null)
-                this.Type = Valor.GetType().FullName;
+                Type = Valor.GetType().FullName;
         }
 
         public LogItem(string Titulo, object Valor, string Type)
@@ -36,7 +36,7 @@ namespace PeD.Core.Models
             if (Entity != null)
             {
                 var props = Entity.GetType()
-                    .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                    .GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
                 foreach (var property in props)
                 {
@@ -44,38 +44,37 @@ namespace PeD.Core.Models
                     var logger = (Attributes.LoggerAttribute)property
                         .GetCustomAttributes(typeof(Attributes.LoggerAttribute), false).FirstOrDefault();
 
-                    if (logger != null)
+                    if (logger is null)
+                        continue;
+                    var propertyValue = property.GetValue(Entity);
+
+                    if (EntityOld != null)
                     {
-                        var propertyValue = property.GetValue(Entity);
+                        oldValue = property.GetValue(EntityOld);
+                    }
 
-                        if (EntityOld != null)
+                    if (propertyValue != null && !propertyValue.Equals(oldValue))
+                    {
+                        var type = propertyValue.GetType();
+
+                        if (type.GetInterfaces().Any(t => t == typeof(IEnumerable)) && type.IsGenericType)
                         {
-                            oldValue = property.GetValue(EntityOld);
-                        }
-
-                        if (propertyValue != null && !propertyValue.Equals(oldValue))
-                        {
-                            var type = propertyValue.GetType();
-
-                            if (type.GetInterfaces().Any(t => t == typeof(IEnumerable)) && type.IsGenericType)
+                            foreach (var item in (IEnumerable)propertyValue)
                             {
-                                foreach (var item in propertyValue as IEnumerable)
+                                var tempLogItens = GerarItems(item);
+                                if (tempLogItens.Count > 0)
                                 {
-                                    var _logItems = LogItem.GerarItems(item);
-                                    if (_logItems.Count > 0)
-                                    {
-                                        logItems.AddRange(_logItems);
-                                    }
+                                    logItems.AddRange(tempLogItens);
                                 }
                             }
-                            else
-                            {
-                                var showValue = logger.hasValueFrom
-                                    ? Entity.getPropValue(logger.ValueFrom)
-                                    : propertyValue;
-                                var showName = logger.Name != null ? logger.Name : property.Name;
-                                logItems.Add(new LogItem(showName, showValue));
-                            }
+                        }
+                        else
+                        {
+                            var showValue = logger.hasValueFrom
+                                ? Entity.GetPropValue(logger.ValueFrom)
+                                : propertyValue;
+                            var showName = logger.Name ?? property.Name;
+                            logItems.Add(new LogItem(showName, showValue));
                         }
                     }
                 }
@@ -85,25 +84,25 @@ namespace PeD.Core.Models
         }
     }
 
-    static class ExtensionObject
+    internal static class ExtensionObject
     {
-        public static object getPropValue(this Object obj, string propName)
+        public static object GetPropValue(this object obj, string propName)
         {
-            string[] nameParts = propName.Split('.');
+            var nameParts = propName.Split('.');
             if (nameParts.Length == 1)
             {
-                return obj.GetType().GetProperty(propName).GetValue(obj, null);
+                return obj.GetType().GetProperty(propName)?.GetValue(obj, null);
             }
 
-            foreach (String part in nameParts)
+            foreach (var part in nameParts)
             {
                 if (obj == null)
                 {
                     return null;
                 }
 
-                Type type = obj.GetType();
-                PropertyInfo info = type.GetProperty(part);
+                var type = obj.GetType();
+                var info = type.GetProperty(part);
                 if (info == null)
                 {
                     return null;

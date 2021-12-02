@@ -1,5 +1,4 @@
 using System;
-using PeD.Core.Models.Propostas;
 
 namespace PeD.Core.ApiModels.Propostas
 {

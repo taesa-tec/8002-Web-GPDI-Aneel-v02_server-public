@@ -2,15 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using PeD.Core.Models;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Resultados;
-using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD;
 using PeD.Data;
 using DestRecursosEmp = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.DestRecursosEmp;
 using DestRecursosExec = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.DestRecursosExec;
-using Empresa = PeD.Core.Models.Empresa;
 using PD_Recursos = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.PD_Recursos;
 using RecursoEmpresa = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.RecursoEmpresa;
 using RecursoParceira = PeD.Core.Models.Projetos.Xml.RelatorioFinalPeD.RecursoParceira;
@@ -39,7 +36,7 @@ namespace PeD.Services.Projetos.Xml
                 PD_EquipeExec = PD_EquipeExec(projeto, registros), // Projeto RegistosFinaneceiroInfo
                 PD_Etapas = PD_Etapas(projetoId), // RelatorioEtapa
                 PD_Recursos = PD_Recursos(projetoId), // RegistroFinanceiroInfo
-                PD_Resultados = PD_Resultados(projetoId),
+                PD_Resultados = PD_Resultados(projetoId)
             };
         }
 
@@ -79,7 +76,7 @@ namespace PeD.Services.Projetos.Xml
                 .Include(r => r.Empresa)
                 .Where(r => r.ProjetoId == projeto.Id && rhIds.Contains(r.Id))
                 .ToList()
-                .Where(r => r.Empresa is {Funcao: Funcao.Cooperada})
+                .Where(r => r.Empresa is { Funcao: Funcao.Cooperada })
                 .GroupBy(r => r.Empresa.Codigo);
 
 
@@ -112,7 +109,7 @@ namespace PeD.Services.Projetos.Xml
 
         protected string MesMbEqEmp(IEnumerable<RegistroFinanceiroInfo> registros, DateTime inicio)
         {
-            Func<DateTime, int> mesesDiff = (fim) =>
+            Func<DateTime, int> mesesDiff = fim =>
                 1 + (fim.Year - inicio.Year) * 12 + fim.Month - inicio.Month;
             var meses = registros.OrderBy(rf => rf.MesReferencia).Select(rf => mesesDiff(rf.MesReferencia));
             return string.Join(',', meses);
@@ -236,7 +233,7 @@ namespace PeD.Services.Projetos.Xml
                     {
                         NomeItem = i.Recurso,
                         JustificaItem = i.FuncaoEtapa,
-                        QtdeItem = (int) i.QuantidadeHoras,
+                        QtdeItem = (int)i.QuantidadeHoras,
                         ValorIndItem = i.Valor,
                         TipoItem = i.IsNacional.HasValue && i.IsNacional.Value,
                         ItemLabE = i.EquipaLaboratorioExistente.HasValue && i.EquipaLaboratorioExistente.Value,
@@ -278,7 +275,7 @@ namespace PeD.Services.Projetos.Xml
                 {
                     TipoCP = cp.Tipo.ToString(),
                     ConclusaoCP = cp.IsConcluido,
-                    DataCP = cp.DataConclusao.HasValue ? cp.DataConclusao.Value : throw new Exception("Data de conclusão da capacitação não informada"),
+                    DataCP = cp.DataConclusao ?? throw new Exception("Data de conclusão da capacitação não informada"),
                     DocMmbEqCP = cp.Recurso.Documento,
                     CNPJInstCP = cp.CnpjInstituicao,
                     AreaCP = cp.AreaPesquisa,
@@ -294,7 +291,7 @@ namespace PeD.Services.Projetos.Xml
             {
                 PD_ResultadosCT_PC = PD_ResultadosCT_PC(projetoId),
                 PD_ResultadosCT_IE = PD_ResultadosCT_IE(projetoId),
-                PD_ResultadosCT_PI = PD_ResultadosCT_PI(projetoId),
+                PD_ResultadosCT_PI = PD_ResultadosCT_PI(projetoId)
             };
         }
 
@@ -316,7 +313,7 @@ namespace PeD.Services.Projetos.Xml
                     PaisCT_PC = pc.Pais.Nome,
                     CidadeCT_PC = pc.Cidade,
                     TituloCT_PC = pc.TituloTrabalho,
-                    ArquivoPDF = pc.ArquivoTrabalhoOrigem?.FileName,
+                    ArquivoPDF = pc.ArquivoTrabalhoOrigem?.FileName
                 }).ToList()
             };
         }

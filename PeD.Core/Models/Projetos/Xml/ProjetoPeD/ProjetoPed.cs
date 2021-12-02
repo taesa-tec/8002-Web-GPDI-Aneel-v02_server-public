@@ -157,7 +157,6 @@ namespace PeD.Core.Models.Projetos.Xml.ProjetoPeD
     public class CustoCatContabilEmp
     {
         public string CatContabil { get; set; }
-        private string _custoEmp { get; set; }
 
         [JsonConverter(typeof(NumberConverter), "{0:N2}")]
         public decimal CustoEmp { get; set; }

@@ -21,7 +21,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
 using Empresa = PeD.Core.Models.Propostas.Empresa;
-using Log = Serilog.Log;
 
 namespace PeD.Controllers.Propostas
 {

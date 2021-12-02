@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ namespace PeD.Controllers
         {
             get
             {
-                string folderName = String.Format("{0}/{1}/{2}", DateTime.Today.Year, DateTime.Today.Month,
+                var folderName = string.Format("{0}/{1}/{2}", DateTime.Today.Year, DateTime.Today.Month,
                     DateTime.Today.Day);
                 return Path.Combine(StoragePath, folderName);
             }
@@ -47,9 +46,9 @@ namespace PeD.Controllers
         [NonAction]
         public virtual async Task<List<T>> Upload(Func<T, T> func = null)
         {
-            List<IFormFile> files = Request.Form.Files.ToList();
+            var files = Request.Form.Files.ToList();
 
-            long size = files.Sum(f => f.Length);
+            // long size = files.Sum(f => f.Length);
 
             var fileUploads = new List<T>();
 
@@ -61,7 +60,7 @@ namespace PeD.Controllers
 
             foreach (var file in files)
             {
-                var filename = Path.Combine(ActualPath, String.Format("{0}-{1}", start, o));
+                var filename = Path.Combine(ActualPath, string.Format("{0}-{1}", start, o));
 
 
                 if (file.Length > 0)

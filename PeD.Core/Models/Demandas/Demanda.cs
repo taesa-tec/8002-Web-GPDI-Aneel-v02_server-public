@@ -29,7 +29,7 @@ namespace PeD.Core.Models.Demandas
 
     public class Demanda : BaseEntity
     {
-        protected static Dictionary<DemandaEtapa, string> _etapaDesc = new Dictionary<DemandaEtapa, string>()
+        protected static Dictionary<DemandaEtapa, string> _etapaDesc = new Dictionary<DemandaEtapa, string>
         {
             {DemandaEtapa.Elaboracao, "Elaboração"},
             {DemandaEtapa.PreAprovacao, "Pre-Aprovação"},
@@ -60,12 +60,12 @@ namespace PeD.Core.Models.Demandas
 
         public void ValidarContinuidade()
         {
-            if (EtapaAtual > DemandaEtapa.Elaboracao && String.IsNullOrWhiteSpace(SuperiorDiretoId))
+            if (EtapaAtual > DemandaEtapa.Elaboracao && string.IsNullOrWhiteSpace(SuperiorDiretoId))
             {
                 throw new DemandaException("A demanda não tem superior direto definido");
             }
 
-            if (EtapaAtual >= DemandaEtapa.RevisorPendente && String.IsNullOrWhiteSpace(RevisorId))
+            if (EtapaAtual >= DemandaEtapa.RevisorPendente && string.IsNullOrWhiteSpace(RevisorId))
             {
                 throw new DemandaException("Não é possível avançar para a proxíma etapa sem revisor");
             }
@@ -75,15 +75,15 @@ namespace PeD.Core.Models.Demandas
         {
             ValidarContinuidade();
 
-            if (this.EtapaAtual < DemandaEtapa.AprovacaoDiretor)
+            if (EtapaAtual < DemandaEtapa.AprovacaoDiretor)
             {
-                this.EtapaAtual++;
-                if (this.EtapaAtual == DemandaEtapa.RevisorPendente && !String.IsNullOrWhiteSpace(RevisorId))
+                EtapaAtual++;
+                if (EtapaAtual == DemandaEtapa.RevisorPendente && !string.IsNullOrWhiteSpace(RevisorId))
                 {
-                    this.EtapaAtual++;
+                    EtapaAtual++;
                 }
 
-                this.Status = DemandaStatus.EmElaboracao;
+                Status = DemandaStatus.EmElaboracao;
             }
             else
             {
@@ -93,10 +93,10 @@ namespace PeD.Core.Models.Demandas
 
         public void EtapaAnterior()
         {
-            if (this.EtapaAtual > DemandaEtapa.Elaboracao)
+            if (EtapaAtual > DemandaEtapa.Elaboracao)
             {
-                this.EtapaAtual--;
-                this.Status = DemandaStatus.EmElaboracao;
+                EtapaAtual--;
+                Status = DemandaStatus.EmElaboracao;
             }
         }
 
@@ -113,28 +113,28 @@ namespace PeD.Core.Models.Demandas
 
         public void ReprovarReiniciar()
         {
-            this.EtapaAtual = DemandaEtapa.Elaboracao;
-            this.Status = DemandaStatus.Reprovada;
+            EtapaAtual = DemandaEtapa.Elaboracao;
+            Status = DemandaStatus.Reprovada;
         }
 
         public void ReprovarPermanente()
         {
-            this.Status = DemandaStatus.ReprovadaPermanente;
+            Status = DemandaStatus.ReprovadaPermanente;
         }
 
         public string EtapaStatusText
         {
-            get { return Enum.GetName(typeof(DemandaStatus), this.Status); }
+            get { return Enum.GetName(typeof(DemandaStatus), Status); }
         }
 
         public string EtapaAtualText
         {
-            get { return Enum.GetName(typeof(DemandaEtapa), this.EtapaAtual); }
+            get { return Enum.GetName(typeof(DemandaEtapa), EtapaAtual); }
         }
 
         public string EtapaDesc
         {
-            get { return Demanda._etapaDesc[EtapaAtual]; }
+            get { return _etapaDesc[EtapaAtual]; }
         }
     }
 }

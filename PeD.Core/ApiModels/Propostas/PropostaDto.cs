@@ -33,7 +33,6 @@ namespace PeD.Core.ApiModels.Propostas
         public string ContratoAprovacao { get; set; }
 
         public List<CaptacaoArquivoDto> Arquivos { get; set; }
-        // public List<SugestaoClausula> SugestaoClausulas { get; set; }
     }
 
     public abstract class PropostaNodeDto : BaseEntity

@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using PeD.Core.Attributes;
 using TaesaCore.Models;
 
 namespace PeD.Core.Models.Catalogos

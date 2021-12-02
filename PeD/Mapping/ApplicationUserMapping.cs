@@ -1,4 +1,3 @@
-using System;
 using AutoMapper;
 using PeD.Core.ApiModels;
 using PeD.Core.Models;
@@ -16,10 +15,10 @@ namespace PeD.Mapping
 
             CreateMap<NewUserRequest, ApplicationUser>()
                 .ForMember(dest => dest.EmpresaId, opt =>
-                    opt.MapFrom(src => src.EmpresaId == 0 ? (int?) null : src.EmpresaId));
+                    opt.MapFrom(src => src.EmpresaId == 0 ? null : src.EmpresaId));
             CreateMap<EditUserRequest, ApplicationUser>()
                 .ForMember(dest => dest.EmpresaId, opt =>
-                    opt.MapFrom(src => src.EmpresaId == 0 ? (int?) null : src.EmpresaId));
+                    opt.MapFrom(src => src.EmpresaId == 0 ? null : src.EmpresaId));
         }
     }
 }

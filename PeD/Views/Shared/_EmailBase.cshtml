@@ -48,7 +48,7 @@
                         <center>
                             <h3 style="color:@EmailConfig.PrimaryColor; font-weight: 500; font-size: 24px;">
                                 <font face="Roboto, Arial, sans-serif" color="@EmailConfig.PrimaryColor">
-                                    @RenderSection("Header", required: false)
+                                    @RenderSection("Header", false)
                                 </font>
                             </h3>
                         </center>
@@ -75,7 +75,7 @@
                         <td width="48">&nbsp;</td>
                         <td>
                             <center>
-                                @RenderSection("Action", required: false)
+                                @RenderSection("Action", false)
                             </center>
                         </td>
                         <td width="48">&nbsp;</td>

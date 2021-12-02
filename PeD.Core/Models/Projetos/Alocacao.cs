@@ -12,6 +12,6 @@ namespace PeD.Core.Models.Projetos
         public Empresa EmpresaFinanciadora { get; set; }
 
         public string Justificativa { get; set; }
-        [NotMapped] public virtual decimal Custo { get; }
+        [NotMapped] public virtual decimal Custo { get; set; }
     }
 }

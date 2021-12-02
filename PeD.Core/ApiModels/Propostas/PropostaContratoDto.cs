@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using PeD.Core.ApiModels.Fornecedores;
-using PeD.Core.Models.Propostas;
-using TaesaCore.Models;
 
 namespace PeD.Core.ApiModels.Propostas
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +9,6 @@ using PeD.Data.Views;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
-using BindingFlags = System.Reflection.BindingFlags;
 
 namespace PeD
 {

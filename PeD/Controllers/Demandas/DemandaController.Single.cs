@@ -205,12 +205,7 @@ namespace PeD.Controllers.Demandas
         public ActionResult<DemandaFormValuesDto> GetDemandaFormValue(int id, string form)
         {
             var data = DemandaService.GetDemandaFormData(id, form);
-            if (data != null)
-            {
-                return Mapper.Map<DemandaFormValuesDto>(data);
-            }
-
-            return null;
+            return data != null ? Mapper.Map<DemandaFormValuesDto>(data) : null;
         }
 
         [HttpPut("{id}/Form/{form}")]
@@ -229,7 +224,7 @@ namespace PeD.Controllers.Demandas
                     DemandaService.SalvarDemandaFormData(id, form, data).Wait();
                     var formName = DemandaService.GetForm(form).Title;
                     DemandaService.LogService.Incluir(this.UserId(), id,
-                        String.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");
+                        string.Format("Atualizou Dados do formulário {0}", formName), data, "demanda-form");
                     return Ok();
                 }
                 catch (DemandaException e)
@@ -247,7 +242,7 @@ namespace PeD.Controllers.Demandas
 
         [HttpGet("{id:int}/EspecificacaoTecnica/Pdf", Name = "DemandaPdf")]
         [HttpGet("{id:int}/Form/especificacao-tecnica/Pdf")]
-        public ActionResult GetDemandaPdf(int id, [FromServices] GestorDbContext context)
+        public ActionResult GetDemandaPdf(int id)
         {
             var demanda = DemandaService.Get(id);
             if (demanda.EspecificacaoTecnicaFileId is null)
@@ -306,7 +301,7 @@ namespace PeD.Controllers.Demandas
             {
                 revisaoAtual = demandaForm.Revisao,
                 lastUpdate = demandaForm.LastUpdate,
-                html = from, //bodyNew.InnerHtml,
+                html = from //bodyNew.InnerHtml,
             });
         }
 

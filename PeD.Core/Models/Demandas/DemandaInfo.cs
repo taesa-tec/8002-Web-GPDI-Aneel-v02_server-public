@@ -1,5 +1,3 @@
-using PeD.Core.Models.Captacoes;
-
 namespace PeD.Core.Models.Demandas
 {
     public class DemandaInfo

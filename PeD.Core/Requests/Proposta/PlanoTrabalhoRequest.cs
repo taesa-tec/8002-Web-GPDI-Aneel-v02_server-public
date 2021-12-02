@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace PeD.Core.Requests.Proposta
 {
     public class PlanoTrabalhoRequest

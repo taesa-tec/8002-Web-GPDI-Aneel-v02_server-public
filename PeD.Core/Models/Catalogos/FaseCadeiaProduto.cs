@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using TaesaCore.Models;
 
 namespace PeD.Core.Models.Catalogos
 {

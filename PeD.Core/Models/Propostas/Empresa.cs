@@ -5,7 +5,7 @@ namespace PeD.Core.Models.Propostas
     public enum Funcao
     {
         Executora,
-        Cooperada,
+        Cooperada
     }
 
     [Table("PropostaEmpresas")]

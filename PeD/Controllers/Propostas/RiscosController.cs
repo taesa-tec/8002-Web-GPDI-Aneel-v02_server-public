@@ -2,7 +2,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PeD.Core.ApiModels.Propostas;
-using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Requests.Proposta;
 using PeD.Services.Captacoes;

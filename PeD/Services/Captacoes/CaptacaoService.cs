@@ -3,20 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using ClosedXML.Excel.CalcEngine.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PeD.Core.Exceptions.Captacoes;
-using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Fornecedores;
-using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Views.Email.Captacao;
 using PeD.Views.Email.Captacao.Propostas;
 using TaesaCore.Interfaces;
-using TaesaCore.Models;
 using TaesaCore.Services;
 using Empresa = PeD.Core.Models.Propostas.Empresa;
 using Funcao = PeD.Core.Models.Propostas.Funcao;
@@ -31,8 +27,6 @@ namespace PeD.Services.Captacoes
         private DbSet<CaptacaoArquivo> _captacaoArquivos;
         private DbSet<CaptacaoFornecedor> _captacaoFornecedors;
         private DbSet<Proposta> _captacaoPropostas;
-        private PropostaService _propostaService;
-        private IMapper _mapper;
 
         private Func<IQueryable<Captacao>, IQueryable<Captacao>> _queryCanceladas = q =>
         {
@@ -77,8 +71,6 @@ namespace PeD.Services.Captacoes
             _context = context;
             _sendGridService = sendGridService;
             _logger = logger;
-            _propostaService = propostaService;
-            _mapper = mapper;
             _captacaoArquivos = context.Set<CaptacaoArquivo>();
             _captacaoFornecedors = context.Set<CaptacaoFornecedor>();
             _captacaoPropostas = context.Set<Proposta>();
@@ -416,7 +408,7 @@ namespace PeD.Services.Captacoes
                 .Include(p => p.Contrato)
                 .Include(p => p.Captacao)
                 .Where(cp => cp.CaptacaoId == captacaoId && cp.Participacao != StatusParticipacao.Rejeitado &&
-                             (!cp.Finalizado || (cp.Contrato != null && !cp.Contrato.Finalizado))
+                             (!cp.Finalizado || cp.Contrato != null && !cp.Contrato.Finalizado)
                 )
                 .ToList();
         }
@@ -641,10 +633,10 @@ namespace PeD.Services.Captacoes
 
         public async Task SendEmailCancelamento(Captacao captacao, List<Fornecedor> fornecedores)
         {
-            var emails = fornecedores.Select(f => f.Responsavel.Email);
+            var emails = fornecedores.Select(f => f.Responsavel.Email).ToArray();
             var cancelamento = new CancelamentoCaptacao()
             {
-                Projeto = captacao.Titulo,
+                Projeto = captacao.Titulo
             };
             await _sendGridService.Send(emails,
                 $"A equipe de Suprimentos cancelou o processo de captação de propostas do projeto \"{captacao.Titulo}\".",

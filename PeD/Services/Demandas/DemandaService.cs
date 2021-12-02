@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using iText.Html2pdf;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -49,14 +47,12 @@ namespace PeD.Services.Demandas
 
         private IService<Captacao> _serviceCaptacao;
         private IViewRenderService _viewRender;
-        private IWebHostEnvironment _hostingEnvironment;
         protected Dictionary<DemandaEtapa, CanDemandaProgress> DemandaProgressCheck;
         public readonly DemandaLogService LogService;
         private IConfiguration Configuration;
         SistemaService sistemaService;
         GestorDbContext _context;
         private SendGridService _sendGridService;
-        private ArquivoService _arquivoService;
         private PdfService _pdfService;
 
         #endregion
@@ -75,13 +71,11 @@ namespace PeD.Services.Demandas
         {
             _context = context;
 
-            _hostingEnvironment = hostingEnvironment;
             this.sistemaService = sistemaService;
             _viewRender = viewRender;
             _serviceCaptacao = serviceCaptacao;
             Configuration = configuration;
             _sendGridService = sendGridService;
-            _arquivoService = arquivoService;
             _pdfService = pdfService;
             LogService = logService;
 
@@ -94,7 +88,7 @@ namespace PeD.Services.Demandas
                 { DemandaEtapa.AprovacaoRevisor, AprovacaoRevisorProgress },
                 { DemandaEtapa.AprovacaoCoordenador, AprovacaoCoordenadorProgress },
                 { DemandaEtapa.AprovacaoGerente, AprovacaoGerenteProgress },
-                { DemandaEtapa.AprovacaoDiretor, AprovacaoDiretorProgress },
+                { DemandaEtapa.AprovacaoDiretor, AprovacaoDiretorProgress }
             };
         }
 
@@ -124,8 +118,8 @@ namespace PeD.Services.Demandas
                 if (sistemaService.GetEquipePeD().CargosChavesIds.Contains(userId))
                     return true;
                 var demanda = _context.Demandas.Find(id);
-                return (demanda.CriadorId == userId || demanda.SuperiorDiretoId == userId ||
-                        demanda.RevisorId == userId);
+                return demanda.CriadorId == userId || demanda.SuperiorDiretoId == userId ||
+                       demanda.RevisorId == userId;
             }
 
             return false;
@@ -194,16 +188,18 @@ namespace PeD.Services.Demandas
 
         public Demanda CriarDemanda(string titulo, string userId)
         {
-            var demanda = new Demanda();
-            demanda.Titulo = titulo;
-            demanda.CriadorId = userId;
-            demanda.EtapaAtual = DemandaEtapa.Elaboracao;
-            demanda.Status = DemandaStatus.EmElaboracao;
+            var demanda = new Demanda
+            {
+                Titulo = titulo,
+                CriadorId = userId,
+                EtapaAtual = DemandaEtapa.Elaboracao,
+                Status = DemandaStatus.EmElaboracao
+            };
             _context.Demandas.Add(demanda);
             _context.SaveChanges();
             demanda = GetById(demanda.Id);
             LogService.Incluir(userId, demanda.Id, "Criou Demanda",
-                String.Format(" {0} criou demanda \"{1}\"", demanda.Criador.NomeCompleto, demanda.Titulo));
+                string.Format(" {0} criou demanda \"{1}\"", demanda.Criador.NomeCompleto, demanda.Titulo));
             return demanda;
         }
 
@@ -239,13 +235,13 @@ namespace PeD.Services.Demandas
             if (demanda.EtapaAtual < DemandaEtapa.Captacao && demanda.Status == DemandaStatus.EmElaboracao)
             {
                 LogService.Incluir(userId, demanda.Id, "Alterou Etapa",
-                    String.Format(" {0} alterou a etapa da demanda para \"{1}\"", user.NomeCompleto,
+                    string.Format(" {0} alterou a etapa da demanda para \"{1}\"", user.NomeCompleto,
                         demanda.EtapaDesc));
             }
             else if (demanda.EtapaAtual == DemandaEtapa.AprovacaoDiretor && demanda.Status == DemandaStatus.Concluido)
             {
                 LogService.Incluir(userId, demanda.Id, "Aprovou a etapa",
-                    String.Format(" {0} aprovou a demanda.", user.NomeCompleto));
+                    string.Format(" {0} aprovou a demanda.", user.NomeCompleto));
             }
         }
 
@@ -305,7 +301,7 @@ namespace PeD.Services.Demandas
                 _context.SaveChanges();
                 var user = _context.Users.Find(superiorDiretoId);
                 LogService.Incluir(demanda.CriadorId, demanda.Id, "Definiu Superior Direto",
-                    String.Format(" {0} definiu o usuário {1} como superior direto", demanda.Criador.NomeCompleto,
+                    string.Format(" {0} definiu o usuário {1} como superior direto", demanda.Criador.NomeCompleto,
                         user.NomeCompleto));
                 return;
             }
@@ -315,12 +311,7 @@ namespace PeD.Services.Demandas
 
         public string GetSuperiorDireto(int id)
         {
-            if (DemandaExist(id))
-            {
-                return GetById(id).SuperiorDiretoId;
-            }
-
-            return null;
+            return DemandaExist(id) ? GetById(id).SuperiorDiretoId : null;
         }
 
         public void ReprovarReiniciar(int id, string userId)
@@ -341,7 +332,7 @@ namespace PeD.Services.Demandas
                     NotificarReprovacao(demanda, _context.Users.Find(userId));
                     var user = _context.Users.Find(userId);
                     LogService.Incluir(userId, id, "Reiniciou a demanda",
-                        String.Format("O usuário {0} reiniciou a demanda", user.NomeCompleto));
+                        string.Format("O usuário {0} reiniciou a demanda", user.NomeCompleto));
                 }
                 else
                 {
@@ -368,7 +359,7 @@ namespace PeD.Services.Demandas
                     NotificarReprovacaoPermanente(demanda, _context.Users.Find(userId));
                     var user = _context.Users.Find(userId);
                     LogService.Incluir(userId, id, "Arquivou a demanda",
-                        String.Format("O usuário {0} reprovou e arquivou a demanda", user.NomeCompleto));
+                        string.Format("O usuário {0} reprovou e arquivou a demanda", user.NomeCompleto));
                 }
                 else
                 {
@@ -382,7 +373,7 @@ namespace PeD.Services.Demandas
             var demanda = GetById(id);
             if (demanda != null)
             {
-                demanda.Comentarios = demanda.Comentarios != null ? demanda.Comentarios : new List<DemandaComentario>();
+                demanda.Comentarios = demanda.Comentarios ?? new List<DemandaComentario>();
                 demanda.Comentarios.Add(comentario);
                 _context.SaveChanges();
             }
@@ -422,7 +413,7 @@ namespace PeD.Services.Demandas
                 var subtemas = temaAneel.GetValue("subTemas") as JArray;
                 var captacaoSubTema = subtemas?.Select(t =>
                 {
-                    var subtema = (t as JObject);
+                    var subtema = t as JObject;
                     if (subtema != null && subtema.TryGetValue("catalogSubTemaId", out var subtemaId))
                     {
                         try
@@ -472,7 +463,7 @@ namespace PeD.Services.Demandas
 
 
                 LogService.Incluir(userId, id, "Demanda para captação",
-                    String.Format("O usuário {0} enviou a demanda para a captação", user.NomeCompleto));
+                    string.Format("O usuário {0} enviou a demanda para a captação", user.NomeCompleto));
             }
         }
 
@@ -675,7 +666,7 @@ namespace PeD.Services.Demandas
                 FormValuesId = demandaFormView.DemandaFormValues.Id,
                 Content = html,
                 Revisao = demandaFormView.DemandaFormValues.Revisao,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.Now
             };
             _context.DemandaFormHistoricos.Add(historico);
             _context.SaveChanges();
@@ -701,20 +692,20 @@ namespace PeD.Services.Demandas
         protected void UpdatePdf(string filename)
         {
             var filetmp = filename + ".tmp";
-            PdfDocument pdfDoc = new PdfDocument(new PdfReader(filename), new PdfWriter(filetmp));
-            Document doc = new Document(pdfDoc);
+            var pdfDoc = new PdfDocument(new PdfReader(filename), new PdfWriter(filetmp));
+            var doc = new Document(pdfDoc);
             //var font = PdfFontFactory.CreateFont(Path.Combine(_hostingEnvironment.WebRootPath, "Assets/fonts/Roboto-Regular.ttf"));
             //doc.SetFont(font);
-            for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++)
+            for (var i = 1; i <= pdfDoc.GetNumberOfPages(); i++)
             {
-                float width = pdfDoc.GetPage(i).GetPageSize().GetWidth();
-                float height = pdfDoc.GetPage(i).GetPageSize().GetTop();
-                float bottom = pdfDoc.GetPage(i).GetPageSize().GetBottom();
+                var width = pdfDoc.GetPage(i).GetPageSize().GetWidth();
+                var height = pdfDoc.GetPage(i).GetPageSize().GetTop();
+                // float bottom = pdfDoc.GetPage(i).GetPageSize().GetBottom();
+                //
+                // float x = pdfDoc.GetPage(i).GetPageSize().GetWidth() / 2;
+                // float y = pdfDoc.GetPage(i).GetPageSize().GetBottom() + 20;
 
-                float x = pdfDoc.GetPage(i).GetPageSize().GetWidth() / 2;
-                float y = pdfDoc.GetPage(i).GetPageSize().GetBottom() + 20;
-
-                Paragraph pages = new Paragraph(String.Format("Folha {0} de {1}", i, pdfDoc.GetNumberOfPages()))
+                var pages = new Paragraph(string.Format("Folha {0} de {1}", i, pdfDoc.GetNumberOfPages()))
                     .SetFontSize(12)
                     .SetFontColor(ColorConstants.BLACK);
                 doc.ShowTextAligned(pages, width - 120, height - 90, i, TextAlignment.CENTER, VerticalAlignment.BOTTOM,
@@ -741,9 +732,9 @@ namespace PeD.Services.Demandas
                 if (catalogTema != null)
                 {
                     fieldRendered.Value = catalogTema.Nome;
-                    if (!String.IsNullOrWhiteSpace(outroDesc))
+                    if (!string.IsNullOrWhiteSpace(outroDesc))
                     {
-                        fieldRendered.Value = String.Concat(catalogTema.Nome, ": ", outroDesc);
+                        fieldRendered.Value = string.Concat(catalogTema.Nome, ": ", outroDesc);
                     }
                 }
 
@@ -759,9 +750,9 @@ namespace PeD.Services.Demandas
                     if (catalogSubTema != null)
                     {
                         var item = new FieldRendered("Sub Tema", catalogSubTema.Nome);
-                        if (!String.IsNullOrWhiteSpace(subOutroDesc))
+                        if (!string.IsNullOrWhiteSpace(subOutroDesc))
                         {
-                            item.Value = String.Concat(catalogSubTema.Nome, ": ", subOutroDesc);
+                            item.Value = string.Concat(catalogSubTema.Nome, ": ", subOutroDesc);
                         }
 
                         subtemasList.Add(item);
@@ -905,7 +896,7 @@ namespace PeD.Services.Demandas
         public static IQueryable<Demanda> ByUser(this IQueryable<Demanda> dbSet, string userId)
         {
             return dbSet.Where(demanda =>
-                String.IsNullOrWhiteSpace(userId) || demanda.CriadorId == userId ||
+                string.IsNullOrWhiteSpace(userId) || demanda.CriadorId == userId ||
                 demanda.SuperiorDiretoId == userId || demanda.RevisorId == userId);
         }
     }

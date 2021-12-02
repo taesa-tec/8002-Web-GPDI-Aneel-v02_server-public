@@ -12,7 +12,7 @@ namespace PeD.Core.Models.Propostas
         Aceito = 1,
         Rejeitado = 2,
         Concluido = 3,
-        Cancelado = 4,
+        Cancelado = 4
     }
 
 

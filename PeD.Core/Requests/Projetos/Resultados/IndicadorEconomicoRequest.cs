@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using PeD.Core.Models.Projetos;
 using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Projetos.Resultados

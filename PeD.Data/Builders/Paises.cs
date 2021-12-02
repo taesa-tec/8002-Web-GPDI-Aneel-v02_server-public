@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PeD.Core.Models;
 using PeD.Core.Models.Catalogos;
 
 namespace PeD.Data.Builders
@@ -15,7 +14,7 @@ namespace PeD.Data.Builders
 
         public static EntityTypeBuilder<Pais> Seed(this EntityTypeBuilder<Pais> builder)
         {
-            var paises = new List<Pais>()
+            var paises = new List<Pais>
             {
                 new Pais {Nome = "Açores"},
                 new Pais {Nome = "Acrotiri e Deceleia"},

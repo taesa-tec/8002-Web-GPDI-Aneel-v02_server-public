@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using PeD.Core.Models;
 
 namespace PeD.Core.ApiModels.Propostas
 {

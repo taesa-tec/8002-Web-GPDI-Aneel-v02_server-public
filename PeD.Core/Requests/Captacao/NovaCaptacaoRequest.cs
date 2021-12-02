@@ -5,7 +5,7 @@ namespace PeD.Core.Requests.Captacao
 {
     public class NovaCaptacaoRequest
     {
-        class Validator : AbstractValidator<NovaCaptacaoRequest>
+        public class Validator : AbstractValidator<NovaCaptacaoRequest>
         {
             public Validator()
             {

@@ -22,7 +22,6 @@ using PeD.Data;
 using PeD.Services;
 using PeD.Services.Captacoes;
 using PeD.Services.Projetos;
-using PeD.Views.Email.Captacao;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
@@ -630,7 +629,8 @@ namespace PeD.Controllers.Captacoes
             {
                 if (!request.EmpresaProponenteId.HasValue) throw new Exception("Empresa Proponente não definida!");
                 if (!request.InicioProjeto.HasValue) throw new Exception("Data de início não definida!");
-                var projeto = projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
+                //var projeto = 
+                    projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
                     request.EmpresaProponenteId.Value, request.NumeroProjeto,
                     request.TituloCompleto, request.ResponsavelId, request.Compartilhamento.Value,
                     request.InicioProjeto.Value);

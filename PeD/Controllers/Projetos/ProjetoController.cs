@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
-using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Requests.Projetos;
@@ -192,7 +191,7 @@ namespace PeD.Controllers.Projetos
             var newDateFinal = request.Data;
             var mesesTotal = 1 + (dateFinal.Year - dateInicio.Year) * 12 + dateFinal.Month - dateInicio.Month;
             var etapaMesesTotal = (newDateFinal.Year - dateFinal.Year) * 12 + newDateFinal.Month - dateFinal.Month;
-            for (int i = 1; i <= etapaMesesTotal; i++)
+            for (var i = 1; i <= etapaMesesTotal; i++)
             {
                 etapaMeses.Add(mesesTotal + i);
             }

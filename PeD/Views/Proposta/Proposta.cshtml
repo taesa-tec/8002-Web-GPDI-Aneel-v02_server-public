@@ -412,7 +412,7 @@
         {
             var recebedoras = EtapaRelatorio.AgruparPorEmpresaRecebedora(etapa.AlocacoesExternas);
             var custoInterno = etapa.AlocacoesInternasSum;
-            var rowspan = 5 + (custoInterno > 0 ? 3 : 0) + (recebedoras.Count * 3);
+            var rowspan = 5 + (custoInterno > 0 ? 3 : 0) + recebedoras.Count * 3;
             <table border="1" style="page-break-inside: avoid">
                 <tr>
                     <th rowspan="@rowspan" style="width: 10%">
@@ -461,10 +461,10 @@
                     </tr>
                 }
                 <!-- Custo Externo -->
-                @foreach (var custos in recebedoras)
+                @foreach (var (_, value) in recebedoras)
                 {
                     <tr>
-                        <th colspan="7">Valor do custo que a TAESA pagará a @custos.Value.FirstOrDefault()?.EmpresaRecebedora nesta etapa: @custos.Value.Sum(i => i.Valor).ToString("C")</th>
+                        <th colspan="7">Valor do custo que a TAESA pagará a @value.FirstOrDefault()?.EmpresaRecebedora nesta etapa: @value.Sum(i => i.Valor).ToString("C")</th>
                     </tr>
                     <tr>
                         <th width="14%">RH</th>
@@ -476,12 +476,12 @@
                         <th >Taxa Adm.</th>
                     </tr>
                     <tr>
-                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "RH").ToString("C")</td>
-                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "MP").ToString("C")</td>
-                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "MC").ToString("C")</td>
-                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "VD").ToString("C")</td>
-                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "ST").ToString("C")</td>
-                        <td>@EtapaRelatorio.CustoPorCategoria(custos.Value, "OU").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(value, "RH").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(value, "MP").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(value, "MC").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(value, "VD").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(value, "ST").ToString("C")</td>
+                        <td>@EtapaRelatorio.CustoPorCategoria(value, "OU").ToString("C")</td>
                         <td>0%</td>
                     </tr>
                 }

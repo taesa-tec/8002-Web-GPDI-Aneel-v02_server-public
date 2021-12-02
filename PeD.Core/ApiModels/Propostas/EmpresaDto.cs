@@ -1,5 +1,3 @@
-using TaesaCore.Models;
-
 namespace PeD.Core.ApiModels.Propostas
 {
     public class EmpresaDto : PropostaNodeDto

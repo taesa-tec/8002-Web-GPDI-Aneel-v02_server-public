@@ -35,17 +35,17 @@ namespace PeD.Mapping
             CreateMap<PropostaNode, ProjetoNode>()
                 .ForMember(p => p.Id, opt => opt.MapFrom(s => 0));
 
-            CreateMap<Core.Models.Propostas.Empresa, Core.Models.Projetos.Empresa>()
+            CreateMap<Core.Models.Propostas.Empresa, Empresa>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
-            CreateMap<Core.Models.Propostas.Produto, Core.Models.Projetos.Produto>()
+            CreateMap<Core.Models.Propostas.Produto, Produto>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
-            CreateMap<Core.Models.Propostas.Etapa, Core.Models.Projetos.Etapa>()
+            CreateMap<Core.Models.Propostas.Etapa, Etapa>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
             CreateMap<Core.Models.Propostas.Risco, Core.Models.Projetos.Risco>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
-            CreateMap<Core.Models.Propostas.RecursoHumano, Core.Models.Projetos.RecursoHumano>()
+            CreateMap<Core.Models.Propostas.RecursoHumano, RecursoHumano>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
-            CreateMap<Core.Models.Propostas.RecursoMaterial, Core.Models.Projetos.RecursoMaterial>()
+            CreateMap<Core.Models.Propostas.RecursoMaterial, RecursoMaterial>()
                 .IncludeBase<PropostaNode, ProjetoNode>();
             CreateMap<AlocacaoRhHorasMes, Core.Models.Projetos.AlocacaoRhHorasMes>()
                 .ForMember(d => d.AlocacaoRhId, o => o.MapFrom(s => 0));
@@ -71,7 +71,7 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.Fornecedor, opt =>
                     opt.MapFrom(src => src.Fornecedor.Nome))
                 .ForMember(dest => dest.Tema,
-                    opt => opt.MapFrom(src => src.TemaId.HasValue ? (src.Tema.Nome ?? "") : src.TemaOutro))
+                    opt => opt.MapFrom(src => src.TemaId.HasValue ? src.Tema.Nome ?? "" : src.TemaOutro))
                 ;
             CreateMap<Etapa, EtapaDto>().ForMember(e => e.Produto, o => o.MapFrom(s => s.Produto.Titulo));
             CreateMap<RecursoHumano, RecursoHumanoDto>()

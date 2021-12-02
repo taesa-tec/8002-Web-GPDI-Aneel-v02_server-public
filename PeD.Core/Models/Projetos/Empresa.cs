@@ -6,7 +6,7 @@ namespace PeD.Core.Models.Projetos
     {
         Proponente,
         Executora, // Empresas cadastradas pelo fornecedor
-        Cooperada, // Empresa Taesa
+        Cooperada // Empresa Taesa
     }
 
     [Table("ProjetoEmpresas")]

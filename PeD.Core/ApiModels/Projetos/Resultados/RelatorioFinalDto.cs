@@ -1,5 +1,3 @@
-using PeD.Core.Models;
-
 namespace PeD.Core.ApiModels.Projetos.Resultados
 {
     public class RelatorioFinalDto : ProjetoNodeDto

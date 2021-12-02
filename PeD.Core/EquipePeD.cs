@@ -12,7 +12,7 @@ namespace PeD.Core
 
         public List<string> CargosChavesIds
         {
-            get { return new List<string>() {Diretor, Gerente, Coordenador}; }
+            get { return new List<string> {Diretor, Gerente, Coordenador}; }
         }
     }
 }

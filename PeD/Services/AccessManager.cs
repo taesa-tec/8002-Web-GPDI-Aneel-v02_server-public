@@ -6,7 +6,6 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using PeD.Auth;
@@ -48,7 +47,7 @@ namespace PeD.Services
 
         public bool ValidateCredentials(Login user)
         {
-            if (user != null && !String.IsNullOrWhiteSpace(user.Email))
+            if (user != null && !string.IsNullOrWhiteSpace(user.Email))
             {
                 // Verifica a existência do usuário nas tabelas do
                 // ASP.NET Core Identity
@@ -89,7 +88,7 @@ namespace PeD.Services
 
             userIdentity.Roles = roles;
 
-            ClaimsIdentity identity = new ClaimsIdentity(
+            var identity = new ClaimsIdentity(
                 new GenericIdentity(user.Email, "Login"),
                 new[]
                 {
@@ -101,9 +100,9 @@ namespace PeD.Services
                 }.Concat(roles.Select(r => new Claim(ClaimTypes.Role, r)))
             );
 
-            DateTime dataCriacao = DateTime.Now;
-            DateTime dataExpiracao = dataCriacao +
-                                     TimeSpan.FromSeconds(_tokenConfigurations.Seconds);
+            var dataCriacao = DateTime.Now;
+            var dataExpiracao = dataCriacao +
+                                TimeSpan.FromSeconds(_tokenConfigurations.Seconds);
 
             var handler = new JwtSecurityTokenHandler();
             var securityToken = handler.CreateToken(new SecurityTokenDescriptor
@@ -126,7 +125,7 @@ namespace PeD.Services
 
         public bool RecuperarSenha(Login user)
         {
-            if (String.IsNullOrWhiteSpace(user.Email))
+            if (string.IsNullOrWhiteSpace(user.Email))
             {
                 throw new Exception("Preencha o E-mail do Usuário");
             }
@@ -145,12 +144,12 @@ namespace PeD.Services
 
         public bool NovaSenha(User user)
         {
-            if (String.IsNullOrWhiteSpace(user.Email))
+            if (string.IsNullOrWhiteSpace(user.Email))
             {
                 throw new Exception("Preencha o E-mail do Usuário");
             }
 
-            if (String.IsNullOrWhiteSpace(user.NewPassword))
+            if (string.IsNullOrWhiteSpace(user.NewPassword))
             {
                 throw new Exception("Preencha a nova senha do Usuário");
             }

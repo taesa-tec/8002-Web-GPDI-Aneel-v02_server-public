@@ -11,9 +11,9 @@ namespace PeD.Core.Models.Projetos.Xml.Interesse
 
         public Interesse(string codProjeto, bool interesse)
         {
-            PD_InteresseProjeto = new PD_InteresseProjeto()
+            PD_InteresseProjeto = new PD_InteresseProjeto
             {
-                Projeto = new Projeto()
+                Projeto = new Projeto
                 {
                     Interesse = interesse,
                     CodProjeto = codProjeto

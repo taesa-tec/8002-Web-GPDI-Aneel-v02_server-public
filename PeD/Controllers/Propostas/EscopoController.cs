@@ -10,7 +10,6 @@ using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
-using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
 
 namespace PeD.Controllers.Propostas

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Runtime.Serialization;
 using PeD.Core.Attributes;
 using PeD.Core.Models.Projetos;
 
@@ -16,7 +14,7 @@ namespace PeD.Core.ApiModels.Projetos
         public abstract decimal Previsto { get; }
         public abstract decimal Realizado { get; }
 
-        [XlxsColumn("Desvio")] public decimal Desvio => Previsto > 0 ? ((Realizado / Previsto) - 1) * 100m : 0;
+        [XlxsColumn("Desvio")] public decimal Desvio => Previsto > 0 ? (Realizado / Previsto - 1) * 100m : 0;
 
         public IEnumerable<TO> Orcamento { get; set; }
         public IEnumerable<TE> Registros { get; set; }
@@ -35,7 +33,7 @@ namespace PeD.Core.ApiModels.Projetos
         public int Codigo { get; set; }
         public decimal Previsto => Categorias.Sum(ec => ec.Previsto);
         public decimal Realizado => Categorias.Sum(ec => ec.Realizado);
-        public decimal Desvio => Previsto > 0 ? ((Realizado / Previsto) - 1) * 100m : 0;
+        public decimal Desvio => Previsto > 0 ? (Realizado / Previsto - 1) * 100m : 0;
         public IEnumerable<ExtratoFinanceiroGroupRefpDto> Categorias { get; set; }
     }
 }

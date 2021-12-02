@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using FluentValidation;
 using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Proposta

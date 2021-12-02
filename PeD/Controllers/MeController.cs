@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PeD.Core.ApiModels;
 using PeD.Core.Extensions;
-using PeD.Core.Models;
 using PeD.Core.Requests.Users;
 using PeD.Services;
 
@@ -39,10 +38,7 @@ namespace PeD.Controllers
             me.Cpf = request.Cpf;
             me.NomeCompleto = request.NomeCompleto;
             var resultado = _service.Atualizar(me);
-            if (resultado.Sucesso)
-                return GetMe();
-
-            return BadRequest(resultado);
+            return resultado.Sucesso ? GetMe() : BadRequest(resultado);
         }
 
         [HttpPost("Avatar")]

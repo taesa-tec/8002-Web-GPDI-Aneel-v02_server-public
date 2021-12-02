@@ -30,7 +30,7 @@ namespace PeD.Core.Models.Projetos
 
         public override decimal Custo
         {
-            get { return (HorasMeses is null) ? 0 : HorasMeses.Sum(i => i.Horas) * (RecursoHumano?.ValorHora ?? 0); }
+            get { return HorasMeses is null ? 0 : HorasMeses.Sum(i => i.Horas) * (RecursoHumano?.ValorHora ?? 0); }
         }
     }
 

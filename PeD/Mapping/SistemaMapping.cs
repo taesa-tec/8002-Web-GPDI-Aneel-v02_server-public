@@ -4,8 +4,6 @@ using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.ApiModels.Sistema;
 using PeD.Core.Models;
-using PeD.Core.Models.Fornecedores;
-using PeD.Core.Models.Propostas;
 using PeD.Core.Models.Sistema;
 using PeD.Core.Requests.Sistema.Fornecedores;
 using TaesaCore.Models;

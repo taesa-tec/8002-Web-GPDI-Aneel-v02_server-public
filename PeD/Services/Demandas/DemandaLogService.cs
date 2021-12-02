@@ -11,24 +11,18 @@ using PeD.Services.Sistema;
 
 namespace PeD.Services.Demandas
 {
-
     public class DemandaLogService
     {
         GestorDbContext context;
-        IAuthorizationService authorization;
-        IWebHostEnvironment hostingEnvironment;
-        SistemaService sistemaService;
+
         public DemandaLogService(
             GestorDbContext context,
             IAuthorizationService authorization,
             IWebHostEnvironment hostingEnvironment,
             SistemaService sistemaService
-            )
+        )
         {
             this.context = context;
-            this.authorization = authorization;
-            this.hostingEnvironment = hostingEnvironment;
-            this.sistemaService = sistemaService;
         }
 
         public IEnumerable<DemandaLog> ListarTodos(int demandaId, Acoes? acao, string user, int pag, int size)
@@ -42,11 +36,13 @@ namespace PeD.Services.Demandas
                 Logs = Logs
                     .Where(p => p.Acao == (Acoes)acao);
             }
+
             if (user != null)
             {
                 Logs = Logs
                     .Where(p => p.UserId == user);
             }
+
             return Logs;
         }
 
@@ -72,7 +68,8 @@ namespace PeD.Services.Demandas
                 UserId = userId,
                 Data = new LogData()
                 {
-                    statusNovo = new List<LogItem>(){
+                    statusNovo = new List<LogItem>()
+                    {
                         logitem
                     }
                 }
@@ -81,6 +78,7 @@ namespace PeD.Services.Demandas
 
             return Incluir(log);
         }
+
         public DemandaLog Incluir(string userId, int DemandaId, LogData data)
         {
             var log = new DemandaLog()
@@ -93,6 +91,5 @@ namespace PeD.Services.Demandas
 
             return Incluir(log);
         }
-
     }
 }

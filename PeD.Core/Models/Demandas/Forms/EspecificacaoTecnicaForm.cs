@@ -53,9 +53,6 @@ namespace PeD.Core.Models.Demandas.Forms
             AddRichText("obrigações-proponente", "OBRIGAÇÕES DO PROPONENTE E/OU CONTRATADO");
             //5
             AddRichText("informacoes-gerais", "INFORMAÇÕES GERAIS");
-            //AddRichText("analise-selecao-proposta", "OBRIGAÇÕES DO PROPONENTE E/OU CONTRATADO");
-            // escopoFornecimento.Add(resultadosEsperados);
-            // escopoFornecimento.Add(new RichTextField("", ""));
         }
     }
 }

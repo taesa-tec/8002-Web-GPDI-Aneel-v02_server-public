@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PeD.Services.Captacoes;
 
-namespace PeD.HostedServices
+namespace PeD.BackgroundServices
 {
     public class PropostasServices : BackgroundService
     {
@@ -40,7 +40,7 @@ namespace PeD.HostedServices
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e.Message);
+                    _logger.LogError("{Error}", e.Message);
                 }
 
                 await Task.Delay(TimeSpan.FromHours(1), stoppingToken);

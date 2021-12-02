@@ -2,7 +2,7 @@ using System;
 
 namespace PeD.Core.Attributes
 {
-    [System.AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class XlxsColumnAttribute : Attribute
     {
         public string Name { get; set; }

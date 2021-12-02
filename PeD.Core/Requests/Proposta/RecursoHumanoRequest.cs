@@ -1,4 +1,3 @@
-using PeD.Core.ApiModels.Propostas;
 using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Proposta

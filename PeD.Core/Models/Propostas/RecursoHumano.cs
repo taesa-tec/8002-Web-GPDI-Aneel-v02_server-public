@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using FluentValidation;
 
 namespace PeD.Core.Models.Propostas
 {
@@ -23,7 +22,7 @@ namespace PeD.Core.Models.Propostas
     }
 
     [Table("PropostaRecursosHumanosAlocacao")]
-    public class AlocacaoRh : Propostas.Alocacao
+    public class AlocacaoRh : Alocacao
     {
         public int RecursoId { get; set; }
         public RecursoHumano Recurso { get; set; }
@@ -32,7 +31,7 @@ namespace PeD.Core.Models.Propostas
 
         public override decimal Valor
         {
-            get { return (HorasMeses is null) ? 0 : HorasMeses.Sum(i => i.Horas) * (Recurso?.ValorHora ?? 0); }
+            get { return HorasMeses is null ? 0 : HorasMeses.Sum(i => i.Horas) * (Recurso?.ValorHora ?? 0); }
         }
     }
 

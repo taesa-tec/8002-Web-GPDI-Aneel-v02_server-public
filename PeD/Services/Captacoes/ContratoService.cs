@@ -85,7 +85,7 @@ namespace PeD.Services.Captacoes
                             return 0.ToString("C");
                         }
                     }
-                },
+                }
             };
 
         public static List<List<string>> GetShortcodesDescriptions()

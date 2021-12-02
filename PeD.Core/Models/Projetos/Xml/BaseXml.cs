@@ -50,15 +50,15 @@ namespace PeD.Core.Models.Projetos.Xml
                 throw new NullReferenceException();
 
             Attributes.Add("Tipo", Tipo.ToString());
-            foreach (var keyValue in Attributes)
+            foreach (var (key, value) in Attributes)
             {
-                xDoc.Root.SetAttributeValue(keyValue.Key, keyValue.Value);
+                xDoc.Root.SetAttributeValue(key, value);
             }
 
             if (RemoveEmptys)
             {
                 xDoc.Descendants()
-                    .Where(xElement => xElement.IsEmpty || String.IsNullOrWhiteSpace(xElement.Value))
+                    .Where(xElement => xElement.IsEmpty || string.IsNullOrWhiteSpace(xElement.Value))
                     .Remove();
             }
 

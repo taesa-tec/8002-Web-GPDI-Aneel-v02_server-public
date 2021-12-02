@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TaesaCore.Models;
 
 namespace PeD.Core.ApiModels.Propostas

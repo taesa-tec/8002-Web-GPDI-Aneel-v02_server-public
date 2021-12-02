@@ -24,7 +24,7 @@ namespace PeD.Core.Models.Propostas
             return Parent?.Titulo;
         }
 
-        public PropostaContratoRevisao ToRevisao() => new PropostaContratoRevisao()
+        public PropostaContratoRevisao ToRevisao() => new PropostaContratoRevisao
         {
             Conteudo = Conteudo,
             ParentId = Id,

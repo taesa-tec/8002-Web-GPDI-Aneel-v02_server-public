@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using PeD.Data;
 using AutoMapper;
-using iText.Html2pdf;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Captacao;
-using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Exceptions.Captacoes;
 using PeD.Core.Models.Captacoes;
@@ -35,14 +32,12 @@ namespace PeD.Controllers.Captacoes
     {
         private IUrlHelper _urlHelper;
         private CaptacaoService service;
-        private GestorDbContext _context;
 
         public SuprimentoController(CaptacaoService service, IMapper mapper, IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor, GestorDbContext context) : base(service, mapper)
         {
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             this.service = service;
-            _context = context;
         }
 
         [HttpGet("")]
@@ -253,10 +248,8 @@ namespace PeD.Controllers.Captacoes
                     var propostas = service.GetProposta(propostaId);
                     return Mapper.Map<PropostaDto>(propostas);
                 }
-                else
-                {
-                    return NotFound();
-                }
+
+                return NotFound();
             }
 
             return Forbid();

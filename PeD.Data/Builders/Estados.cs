@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PeD.Core.Models;
 using PeD.Core.Models.Catalogos;
 
 namespace PeD.Data.Builders
@@ -15,7 +14,7 @@ namespace PeD.Data.Builders
 
         public static EntityTypeBuilder<Estado> Seed(this EntityTypeBuilder<Estado> builder)
         {
-            var estados = new List<Estado>()
+            var estados = new List<Estado>
             {
                 new Estado {Nome = "ACRE", Valor = "AC"},
                 new Estado {Nome = "ALAGOAS", Valor = "AL"},

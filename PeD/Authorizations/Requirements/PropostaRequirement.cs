@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using PeD.Core.Models.Propostas;
 
 namespace PeD.Authorizations.Requirements
 {

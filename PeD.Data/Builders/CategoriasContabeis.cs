@@ -164,7 +164,7 @@ namespace PeD.Data.Builders
 
         public static EntityTypeBuilder<CategoriaContabil> Seed(this EntityTypeBuilder<CategoriaContabil> builder)
         {
-            var categorias = GetCategorias().Select(c => new CategoriaContabil()
+            var categorias = GetCategorias().Select(c => new CategoriaContabil
             {
                 Id = c.Id,
                 Nome = c.Nome,

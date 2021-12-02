@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
-using PeD.Core.ApiModels.Captacao;
 using PeD.Core.Converters;
-using PeD.Core.Models.Projetos;
 using TaesaCore.Models;
 
 namespace PeD.Core.ApiModels.Projetos

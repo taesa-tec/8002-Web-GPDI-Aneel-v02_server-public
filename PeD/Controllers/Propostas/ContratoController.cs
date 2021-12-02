@@ -132,7 +132,7 @@ namespace PeD.Controllers.Propostas
 
             PropostaService.UpdatePropostaDataAlteracao(contratoProposta.PropostaId);
 
-            return Ok(new {Id = contratoProposta.Id, Comentario = Mapper.Map<ComentarioDto>(comentario)});
+            return Ok(new { contratoProposta.Id, Comentario = Mapper.Map<ComentarioDto>(comentario) });
         }
 
         [HttpGet("Revisoes")]

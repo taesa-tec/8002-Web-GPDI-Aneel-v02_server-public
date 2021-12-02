@@ -20,10 +20,6 @@ namespace PeD.Core.Models
 
     public class FileUpload : BaseEntity, IFileUpload
     {
-        public FileUpload()
-        {
-        }
-
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
 

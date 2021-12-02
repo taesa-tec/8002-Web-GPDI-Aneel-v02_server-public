@@ -22,8 +22,8 @@ namespace PeD.Core.Models.Demandas.Forms
         {
             this.Title = Title;
             this.Value = Value;
-            this.Type = "";
-            this.Children = new List<FieldRendered>();
+            Type = "";
+            Children = new List<FieldRendered>();
         }
 
         public HtmlNode ToHtml()
@@ -44,7 +44,7 @@ namespace PeD.Core.Models.Demandas.Forms
             {
                 var children = HtmlNode.CreateNode("<div></div>");
                 children.AddClass("field-item-children");
-                foreach (FieldRendered field in Children)
+                foreach (var field in Children)
                 {
                     children.AppendChild(field.ToHtml());
                 }
@@ -77,7 +77,7 @@ namespace PeD.Core.Models.Demandas.Forms
 
         public string FieldType
         {
-            get { return Enum.GetName(typeof(Type), this._FieldType); }
+            get { return Enum.GetName(typeof(Type), _FieldType); }
         }
 
         public Dictionary<string, string> Options { get; set; }
@@ -90,47 +90,37 @@ namespace PeD.Core.Models.Demandas.Forms
 
         protected FieldRendered RenderForm(JToken data)
         {
-            var fieldRendered = new FieldRendered(this.Title, "");
-            fieldRendered.Type = this.FieldType;
+            var fieldRendered = new FieldRendered(Title, "")
+            {
+                Type = FieldType
+            };
             return fieldRendered;
         }
 
         protected FieldRendered RenderText(JObject data)
         {
-            string Value = String.Empty;
-            try
+            var value = string.Empty;
+            if (data.TryGetValue("value", out var token))
             {
-                if (data.TryGetValue("value", out JToken token))
-                {
-                    Value = token.Value<object>().ToString();
-                }
-            }
-            catch (System.Exception)
-            {
-                throw;
+                value = token.Value<object>().ToString();
             }
 
-
-            var fieldRendered = new FieldRendered(IsArray ? this.ItemTitle : this.Title, Value);
-            fieldRendered.Type = this.FieldType;
+            var fieldRendered = new FieldRendered(IsArray ? ItemTitle : Title, value)
+            {
+                Type = FieldType
+            };
             return fieldRendered;
         }
 
         public virtual FieldRendered Render(JObject data)
         {
-            FieldRendered fieldRendered;
-
-            switch (this.FieldType)
+            var fieldRendered = FieldType switch
             {
-                case "Form":
-                    fieldRendered = RenderForm(data);
-                    break;
-                default:
-                    fieldRendered = RenderText(data);
-                    break;
-            }
+                "Form" => RenderForm(data),
+                _ => RenderText(data)
+            };
 
-            fieldRendered.Type = this.FieldType;
+            fieldRendered.Type = FieldType;
             FieldRenderSanitizer(this, data, ref fieldRendered);
             return fieldRendered;
         }
@@ -159,47 +149,49 @@ namespace PeD.Core.Models.Demandas.Forms
 
         public virtual FieldRendered Render(JArray data)
         {
-            var fieldRendered = new FieldRendered(this.Title, "");
+            var fieldRendered = new FieldRendered(Title, "");
             fieldRendered.Children.AddRange(data.Children().Select(child => Render(child as JObject)));
-            fieldRendered.Type = this.FieldType;
+            fieldRendered.Type = FieldType;
             return fieldRendered;
         }
 
-        public Field(string Key, string Title, Type FieldType = Type.Empty, bool IsArray = false)
+        public Field(string key, string title, Type fieldType = Type.Empty, bool isArray = false)
         {
-            this.Key = Key;
-            this.Title = Title;
-            ItemTitle = Title;
-            this._FieldType = FieldType;
-            this.Placeholder = "";
-            this.IsArray = IsArray;
+            Key = key;
+            Title = title;
+            ItemTitle = title;
+            _FieldType = fieldType;
+            Placeholder = "";
+            IsArray = isArray;
         }
 
 
-        public static Field Form(string Key, string Title)
+        public static Field Form(string key, string title)
         {
-            return new FieldList(Key, Title, Type.Form);
+            return new FieldList(key, title, Type.Form);
         }
 
-        public static Field Text(string Key, string Title)
+        public static Field Text(string key, string title)
         {
-            return new Field(Key, Title, Type.Text);
+            return new Field(key, title, Type.Text);
         }
 
-        public static Field RichText(string Key, string Title)
+        public static Field RichText(string key, string title)
         {
-            return new Field(Key, Title, Type.RichText);
+            return new Field(key, title, Type.RichText);
         }
 
-        public static Field Date(string Key, string Title)
+        public static Field Date(string key, string title)
         {
-            return new Field(Key, Title, Type.Date);
+            return new Field(key, title, Type.Date);
         }
 
-        public static Field OptionsField(string Key, string Title, Dictionary<string, string> Options)
+        public static Field OptionsField(string key, string title, Dictionary<string, string> options)
         {
-            var field = new Field(Key, Title, Type.Options);
-            field.Options = Options;
+            var field = new Field(key, title, Type.Options)
+            {
+                Options = options
+            };
             return field;
         }
     }
@@ -209,11 +201,11 @@ namespace PeD.Core.Models.Demandas.Forms
         public List<Field> Children { get; set; }
         public bool HasFixedSize { get; set; }
 
-        public FieldList(string Key, string Title, Type FieldType = Type.Empty, bool HasFixedSize = true) : base(Key,
-            Title, FieldType)
+        public FieldList(string key, string title, Type fieldType = Type.Empty, bool hasFixedSize = true) : base(key,
+            title, fieldType)
         {
             Children = new List<Field>();
-            this.HasFixedSize = HasFixedSize;
+            HasFixedSize = hasFixedSize;
         }
 
         public override FieldRendered Render(JObject data)
@@ -221,13 +213,12 @@ namespace PeD.Core.Models.Demandas.Forms
             var fieldRendered = base.Render(data);
             try
             {
-                //FieldRendered fieldRendered = new FieldRendered(this.Title, "");
                 var children = data.Value<JObject>("children");
                 if (children != null)
                 {
                     Children.ForEach(field =>
                     {
-                        if (children.TryGetValue(field.Key, out JToken child))
+                        if (children.TryGetValue(field.Key, out var child))
                         {
                             if (field.IsArray)
                             {
@@ -256,58 +247,58 @@ namespace PeD.Core.Models.Demandas.Forms
         public Field Add(Field field)
         {
             field.Parent = this;
-            this.Children.Add(field);
+            Children.Add(field);
             return field;
         }
 
-        public Field AddText(string Key, string Title, string Placeholder = "")
+        public Field AddText(string key, string title, string placeholder = "")
         {
-            var field = Field.Text(Key, Title);
-            field.Placeholder = Placeholder;
+            var field = Text(key, title);
+            field.Placeholder = placeholder;
             return Add(field);
         }
 
-        public Field AddTextList(string Key, string Title, string Placeholder = "")
+        public Field AddTextList(string key, string title, string placeholder = "")
         {
-            var field = AddText(Key, Title, Placeholder);
+            var field = AddText(key, title, placeholder);
             field.IsArray = true;
             return field;
         }
 
-        public Field AddRichText(string Key, string Title, string Placeholder = "")
+        public Field AddRichText(string key, string title, string placeholder = "")
         {
-            var field = Field.RichText(Key, Title);
-            field.Placeholder = Placeholder;
+            var field = RichText(key, title);
+            field.Placeholder = placeholder;
             return Add(field);
         }
 
-        public Field AddRichTextList(string Key, string Title, string Placeholder = "")
+        public Field AddRichTextList(string key, string title, string placeholder = "")
         {
-            var field = AddRichText(Key, Title, Placeholder);
+            var field = AddRichText(key, title, placeholder);
             field.IsArray = true;
             return field;
         }
 
-        public Field AddEmpty(string Key, string Title)
+        public Field AddEmpty(string key, string title)
         {
-            var field = new Field(Key, Title, Type.Empty);
+            var field = new Field(key, title, Type.Empty);
             return Add(field);
         }
 
-        public FieldList AddFieldList(string Key, string Title, Type Type = Type.Empty, bool HasFixedSize = true)
+        public FieldList AddFieldList(string key, string title, Type type, bool hasFixedSize = true)
         {
-            var field = new FieldList(Key, Title, Type, HasFixedSize);
+            var field = new FieldList(key, title, type, hasFixedSize);
             return Add(field) as FieldList;
         }
 
-        public FieldList AddFieldList(string Key, string Title, bool HasFixedSize = true)
+        public FieldList AddFieldList(string key, string title, bool hasFixedSize)
         {
-            return AddFieldList(Key, Title, Type.Empty, HasFixedSize);
+            return AddFieldList(key, title, Type.Empty, hasFixedSize);
         }
 
-        public FieldList AddFieldList(string Key, string Title)
+        public FieldList AddFieldList(string key, string title)
         {
-            return AddFieldList(Key, Title, Type.Empty);
+            return AddFieldList(key, title, Type.Empty);
         }
 
         #endregion

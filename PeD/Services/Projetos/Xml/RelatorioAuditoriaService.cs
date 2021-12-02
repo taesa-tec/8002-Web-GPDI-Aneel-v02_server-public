@@ -29,7 +29,7 @@ namespace PeD.Services.Projetos.Xml
         protected PD_RelAuditoriaPED PD_RelAuditoriaPED(int projetoId)
         {
             var projeto = _context.Set<Projeto>().FirstOrDefault(p => p.Id == projetoId) ??
-                          throw new Exception($"Projeto não encontrado!");
+                          throw new Exception("Projeto não encontrado!");
 
             var relatorio = _context.Set<RelatorioFinal>()
                 .Include(r => r.AuditoriaRelatorioArquivo)

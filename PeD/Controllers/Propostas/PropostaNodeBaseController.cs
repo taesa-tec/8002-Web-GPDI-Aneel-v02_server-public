@@ -40,7 +40,7 @@ namespace PeD.Controllers.Propostas
             get
             {
                 if (_proposta == null && Request.RouteValues.ContainsKey("propostaId") &&
-                    Guid.TryParse(Request.RouteValues["propostaId"].ToString(), out Guid guid))
+                    Guid.TryParse(Request.RouteValues["propostaId"].ToString(), out var guid))
                 {
                     _proposta = PropostaService.GetProposta(guid);
                 }

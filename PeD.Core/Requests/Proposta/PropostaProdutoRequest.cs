@@ -1,4 +1,3 @@
-using System;
 using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Proposta

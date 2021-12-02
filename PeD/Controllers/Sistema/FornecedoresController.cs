@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PeD.Auth;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.Models;
@@ -29,7 +26,7 @@ namespace PeD.Controllers.Sistema
     [Route("api/Sistema/Fornecedores")]
     [ApiController]
     [Authorize("Bearer")]
-    public class FornecedoresController : ControllerCrudBase<Core.Models.Fornecedores.Fornecedor, FornecedorDto,
+    public class FornecedoresController : ControllerCrudBase<Fornecedor, FornecedorDto,
         FornecedorCreateRequest,
         FornecedorEditRequest>
     {
@@ -39,7 +36,7 @@ namespace PeD.Controllers.Sistema
         protected AccessManager AccessManager;
         private GestorDbContext _context;
 
-        public FornecedoresController(IService<Core.Models.Fornecedores.Fornecedor> service, IMapper mapper,
+        public FornecedoresController(IService<Fornecedor> service, IMapper mapper,
             UserManager<ApplicationUser> userManager, AccessManager accessManager, UserService userService,
             PropostaService propostaService, GestorDbContext context) : base(
             service, mapper)
@@ -52,7 +49,7 @@ namespace PeD.Controllers.Sistema
         }
 
 
-        protected async Task<bool> UpdateResponsavelFornecedor(Core.Models.Fornecedores.Fornecedor fornecedor,
+        protected async Task<bool> UpdateResponsavelFornecedor(Fornecedor fornecedor,
             string email,
             string nome)
         {
@@ -101,7 +98,7 @@ namespace PeD.Controllers.Sistema
             return true;
         }
 
-        protected void UpdateResponsavelPropostaFornecedor(Core.Models.Fornecedores.Fornecedor fornecedor)
+        protected void UpdateResponsavelPropostaFornecedor(Fornecedor fornecedor)
         {
             var propostas = _propostaService.Filter(q =>
                 q.Where(p => p.FornecedorId == fornecedor.Id && p.ResponsavelId != fornecedor.ResponsavelId));
@@ -118,7 +115,7 @@ namespace PeD.Controllers.Sistema
         }
 
 
-        protected async Task DesativarFonecedor(Core.Models.Fornecedores.Fornecedor fornecedor)
+        protected async Task DesativarFonecedor(Fornecedor fornecedor)
         {
             fornecedor.Ativo = false;
             if (fornecedor.ResponsavelId != null)
@@ -129,7 +126,7 @@ namespace PeD.Controllers.Sistema
             Service.Put(fornecedor);
         }
 
-        protected async Task AtivarFonecedor(Core.Models.Fornecedores.Fornecedor fornecedor)
+        protected async Task AtivarFonecedor(Fornecedor fornecedor)
         {
             fornecedor.Ativo = true;
             await _userService.Ativar(fornecedor.ResponsavelId);
@@ -159,7 +156,7 @@ namespace PeD.Controllers.Sistema
                 Nome = model.Nome,
                 Cnpj = model.Cnpj,
                 UF = model.Uf,
-                Categoria = Empresa.CategoriaEmpresa.Fornecedor,
+                Categoria = Empresa.CategoriaEmpresa.Fornecedor
             };
 
             var responsavel = _userManager.FindByEmailAsync(model.ResponsavelEmail).Result;

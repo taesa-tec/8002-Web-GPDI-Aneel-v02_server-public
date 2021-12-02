@@ -11,20 +11,20 @@ namespace PeD.Core.Models
         [Column(TypeName = "varchar(max)")]
         public string Value { get; set; }
 
-        public void setValue(object Value)
+        public void SetValue(object value)
         {
-            this.Value = JsonConvert.SerializeObject(Value);
+            Value = JsonConvert.SerializeObject(value);
         }
 
         public T ToObject<T>()
         {
             try
             {
-                return JsonConvert.DeserializeObject<T>(this.Value);
+                return JsonConvert.DeserializeObject<T>(Value);
             }
             catch (System.Exception)
             {
-                return default(T);
+                return default;
             }
         }
 

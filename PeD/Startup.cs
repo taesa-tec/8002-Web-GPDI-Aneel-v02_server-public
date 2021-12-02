@@ -23,11 +23,11 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using PeD.Auth;
 using PeD.Authorizations;
+using PeD.BackgroundServices;
 using PeD.Core;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
 using PeD.Data;
-using PeD.HostedServices;
 using PeD.Middlewares;
 using PeD.Services;
 using PeD.Services.Captacoes;
@@ -105,11 +105,11 @@ namespace PeD
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v2",
-                    new OpenApiInfo()
+                    new OpenApiInfo
                     {
                         Title = "Taesa - Gestor PDI",
                         Version = "2.8",
-                        Description = "API REST criada com o ASP.NET Core 3.1 para comunição com o Gestor PDI",
+                        Description = "API REST criada com o ASP.NET Core 3.1 para comunição com o Gestor PDI"
                     });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -121,7 +121,7 @@ namespace PeD
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer"
                 });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
@@ -133,7 +133,7 @@ namespace PeD
                             },
                             Scheme = "oauth2",
                             Name = "Bearer",
-                            In = ParameterLocation.Header,
+                            In = ParameterLocation.Header
                         },
                         new List<string>()
                     }
@@ -208,8 +208,13 @@ namespace PeD
         {
             #region Define Cultura Padrão
 
-            var cultureInfo = new CultureInfo("pt-BR");
-            cultureInfo.NumberFormat.CurrencySymbol = "R$";
+            var cultureInfo = new CultureInfo("pt-BR")
+            {
+                NumberFormat =
+                {
+                    CurrencySymbol = "R$"
+                }
+            };
             ValidatorOptions.Global.LanguageManager.Culture = cultureInfo;
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
@@ -340,8 +345,7 @@ namespace PeD
         private void ConfigureEmail(IServiceCollection services)
         {
             var sendgrid = Configuration.GetSection("SendGrid");
-            var emailConfig = new EmailConfig()
-            {
+            var emailConfig = new EmailConfig{
                 ApiKey = sendgrid.GetValue<string>("ApiKey"),
                 SenderEmail = sendgrid.GetValue<string>("SenderEmail"),
                 SenderName = sendgrid.GetValue<string>("SenderName"),

@@ -33,7 +33,7 @@ namespace PeD.Controllers.Sistema
         [HttpPost]
         public ActionResult Save(List<ClausulaDto> clausulas, [FromServices] GestorDbContext context)
         {
-            int o = 0;
+            var o = 0;
             var ids = clausulas.Where(c => c.Id > 0).Select(c => c.Id);
             var excluidas = context.Set<Clausula>().Where(c => !ids.Contains(c.Id)).ToList();
             context.RemoveRange(excluidas);

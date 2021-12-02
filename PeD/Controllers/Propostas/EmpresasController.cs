@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -13,7 +11,6 @@ using PeD.Core.Requests.Proposta;
 using PeD.Data;
 using PeD.Services.Captacoes;
 using Swashbuckle.AspNetCore.Annotations;
-using TaesaCore.Interfaces;
 using Empresa = PeD.Core.Models.Propostas.Empresa;
 
 namespace PeD.Controllers.Propostas

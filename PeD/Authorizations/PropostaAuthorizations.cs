@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using PeD.Authorizations.Handlers;
 using PeD.Authorizations.Requirements;
-using PeD.Core.Models.Propostas;
 
 namespace PeD.Authorizations
 {

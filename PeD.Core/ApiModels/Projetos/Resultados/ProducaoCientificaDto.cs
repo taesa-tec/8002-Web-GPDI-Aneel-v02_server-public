@@ -1,6 +1,4 @@
 using System;
-using PeD.Core.Models;
-using PeD.Core.Models.Catalogos;
 
 namespace PeD.Core.ApiModels.Projetos.Resultados
 {

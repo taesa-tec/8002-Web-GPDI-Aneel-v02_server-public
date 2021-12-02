@@ -41,12 +41,9 @@ namespace PeD.Core.Models.Demandas
 
         public JObject ToJObject()
         {
-            if (Data != null)
-            {
-                return JsonConvert.DeserializeObject<JObject>(Data);
-            }
-
-            return JsonConvert.DeserializeObject<JObject>("{}");
+            return Data != null
+                ? JsonConvert.DeserializeObject<JObject>(Data)
+                : JsonConvert.DeserializeObject<JObject>("{}");
         }
 
         public void SetValue(object Value)

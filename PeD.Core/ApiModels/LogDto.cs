@@ -20,10 +20,10 @@ namespace PeD.Core.ApiModels
         {
             get
             {
-                LogData data = new LogData();
+                var data = new LogData();
                 try
                 {
-                    data.StatusAnterior = JsonConvert.DeserializeObject<List<LogItem>>(this.StatusAnterior);
+                    data.StatusAnterior = JsonConvert.DeserializeObject<List<LogItem>>(StatusAnterior);
                 }
                 catch (Exception)
                 {
@@ -32,7 +32,7 @@ namespace PeD.Core.ApiModels
 
                 try
                 {
-                    data.StatusNovo = JsonConvert.DeserializeObject<List<LogItem>>(this.StatusNovo);
+                    data.StatusNovo = JsonConvert.DeserializeObject<List<LogItem>>(StatusNovo);
                 }
                 catch (Exception)
                 {

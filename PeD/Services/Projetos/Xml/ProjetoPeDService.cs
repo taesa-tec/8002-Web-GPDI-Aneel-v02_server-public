@@ -134,7 +134,7 @@ namespace PeD.Services.Projetos.Xml
                 NomeMbEqEmp = r.NomeCompleto,
                 CpfMbEqEmp = r.Documento,
                 FuncaoMbEqEmp = r.Funcao,
-                TitulacaoMbEqEmp = r.Titulacao,
+                TitulacaoMbEqEmp = r.Titulacao
             }).ToList();
         }
 
@@ -146,7 +146,7 @@ namespace PeD.Services.Projetos.Xml
                 BRMbEqExec = r.Nacionalidade == "Brasileiro",
                 DocMbEqExec = r.Documento,
                 TitulacaoMbEqExec = r.Titulacao,
-                FuncaoMbEqExec = r.Funcao,
+                FuncaoMbEqExec = r.Funcao
             }).ToList();
         }
 

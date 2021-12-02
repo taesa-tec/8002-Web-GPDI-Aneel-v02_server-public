@@ -7,12 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using PeD.Auth;
 using PeD.Core.ApiModels;
 using PeD.Core.Models;
-using PeD.Core.Models.Catalogos;
 using PeD.Data;
-using TaesaCore.Extensions;
 
 namespace PeD.Services
 {
@@ -39,7 +36,7 @@ namespace PeD.Services
 
         public ApplicationUser Obter(string userId)
         {
-            if (!String.IsNullOrWhiteSpace(userId))
+            if (!string.IsNullOrWhiteSpace(userId))
             {
                 var user = _context.Users
                     .Where(p => p.Id == userId).Include("Empresa").FirstOrDefault();
@@ -82,8 +79,10 @@ namespace PeD.Services
 
         public Resultado Atualizar(ApplicationUser dadosUser)
         {
-            var resultado = new Resultado();
-            resultado.Acao = "Atualização de User";
+            var resultado = new Resultado()
+            {
+                Acao = "Atualização de User"
+            };
 
             var user = _context.Users
                 .Where(u => u.Id == dadosUser.Id)
@@ -101,16 +100,14 @@ namespace PeD.Services
                 _userManager.AddToRoleAsync(user, dadosUser.Role).Wait();
 
                 user.Status = dadosUser.Status;
-                user.NomeCompleto = dadosUser.NomeCompleto == null ? user.NomeCompleto : dadosUser.NomeCompleto;
+                user.NomeCompleto = dadosUser.NomeCompleto ?? user.NomeCompleto;
                 user.EmpresaId = dadosUser.EmpresaId == 0
                     ? null
                     : dadosUser.EmpresaId;
-                user.RazaoSocial = dadosUser.RazaoSocial == null ? user.RazaoSocial : dadosUser.RazaoSocial;
-
-
+                user.RazaoSocial = dadosUser.RazaoSocial ?? user.RazaoSocial;
                 user.Role = dadosUser.Role == null ? user.Role : dadosUser.Role;
-                user.Cpf = dadosUser.Cpf == null ? user.Cpf : dadosUser.Cpf;
-                user.Cargo = dadosUser.Cargo == null ? user.Cargo : dadosUser.Cargo;
+                user.Cpf = dadosUser.Cpf ?? user.Cpf;
+                user.Cargo = dadosUser.Cargo ?? user.Cargo;
                 user.DataAtualizacao = DateTime.Now;
                 _context.SaveChanges();
             }
@@ -120,11 +117,11 @@ namespace PeD.Services
 
         public Resultado Excluir(string userId)
         {
-            Resultado resultado = new Resultado();
+            var resultado = new Resultado();
             resultado.Acao = "Exclusão de User";
 
-            ApplicationUser User = Obter(userId);
-            if (User == null)
+            var user = Obter(userId);
+            if (user == null)
             {
                 resultado.Inconsistencias.Add(
                     "User não encontrado");
@@ -132,63 +129,12 @@ namespace PeD.Services
             else
             {
                 //_context.FotoPerfil.RemoveRange(_context.FotoPerfil.Where(t => t.UserId == userId));
-                _context.Users.Remove(User);
+                _context.Users.Remove(user);
                 _context.SaveChanges();
             }
 
             return resultado;
         }
-
-        private Resultado DadosValidos(ApplicationUser User)
-        {
-            var resultado = new Resultado();
-            if (User == null)
-            {
-                resultado.Inconsistencias.Add(
-                    "Preencha os Dados do User");
-            }
-            else
-            {
-                if (String.IsNullOrWhiteSpace(User.Email))
-                {
-                    resultado.Inconsistencias.Add(
-                        "Preencha o E-mail do Usuário");
-                }
-
-                if (String.IsNullOrWhiteSpace(User.NomeCompleto))
-                {
-                    resultado.Inconsistencias.Add(
-                        "Preencha o Nome Completo do Usuário");
-                }
-
-                if (String.IsNullOrWhiteSpace(User.Role))
-                {
-                    resultado.Inconsistencias.Add(
-                        "Preencha a Role do usuário");
-                }
-                else
-                {
-                    if (!Roles.AllRoles.Contains(User.Role))
-                    {
-                        resultado.Inconsistencias.Add(
-                            "Role do usuário não identificada.");
-                    }
-                }
-
-                if (User.EmpresaId > 0)
-                {
-                    var Empresa = _context.Empresas.Where(
-                        e => e.Id == User.EmpresaId).FirstOrDefault();
-                    if (Empresa == null)
-                    {
-                        resultado.Inconsistencias.Add("Empresa não encontrada");
-                    }
-                }
-            }
-
-            return resultado;
-        }
-
 
         public async Task CreateUser(ApplicationUser user, string initialRole = null, string password = null)
         {
@@ -204,7 +150,7 @@ namespace PeD.Services
                 : await _userManager.CreateAsync(user);
 
             if (result.Succeeded &&
-                !String.IsNullOrWhiteSpace(initialRole))
+                !string.IsNullOrWhiteSpace(initialRole))
             {
                 _userManager.AddToRoleAsync(user, initialRole).Wait();
             }

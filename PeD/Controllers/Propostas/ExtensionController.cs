@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using PeD.Auth;
 using PeD.Authorizations;
 using PeD.Core.Models.Propostas;
 using TaesaCore.Models;

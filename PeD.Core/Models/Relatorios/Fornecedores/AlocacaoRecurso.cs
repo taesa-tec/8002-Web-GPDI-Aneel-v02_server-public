@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using PeD.Core.Models.Propostas;
 
 namespace PeD.Core.Models.Relatorios.Fornecedores

@@ -27,10 +27,10 @@ namespace PeD.Core.Models
         {
             get
             {
-                LogData data = new LogData();
+                var data = new LogData();
                 try
                 {
-                    data.statusAnterior = JsonConvert.DeserializeObject<List<LogItem>>(this.StatusAnterior);
+                    data.statusAnterior = JsonConvert.DeserializeObject<List<LogItem>>(StatusAnterior);
                 }
                 catch (Exception)
                 {
@@ -38,7 +38,7 @@ namespace PeD.Core.Models
                 }
                 try
                 {
-                    data.statusNovo = JsonConvert.DeserializeObject<List<LogItem>>(this.StatusNovo);
+                    data.statusNovo = JsonConvert.DeserializeObject<List<LogItem>>(StatusNovo);
                 }
                 catch (Exception)
                 {

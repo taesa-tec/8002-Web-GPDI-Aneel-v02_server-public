@@ -10,8 +10,8 @@ namespace PeD.Services
 
         public BaseService(GestorDbContext context, IAuthorizationService authorizationService)
         {
-            this.authorization = authorizationService;
-            this._context = context;
+            authorization = authorizationService;
+            _context = context;
         }
     }
 }

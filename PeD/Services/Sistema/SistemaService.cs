@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using PeD.Core;
@@ -24,24 +23,18 @@ namespace PeD.Services.Sistema
             var option = context.SystemOptions.FirstOrDefault(opt => opt.Key == name);
             if (option == null)
             {
-                option = new SystemOption();
-                option.Key = name;
+                option = new SystemOption() { Key = name };
                 context.Add(option);
             }
 
-            option.setValue(value);
+            option.SetValue(value);
             context.SaveChanges();
         }
 
         public T GetOption<T>(string name)
         {
             var option = context.SystemOptions.FirstOrDefault(opt => opt.Key == name);
-            if (option != null)
-            {
-                return option.ToObject<T>();
-            }
-
-            return default(T);
+            return option != null ? option.ToObject<T>() : default;
         }
 
         public EquipePeD GetEquipePeD()
@@ -80,7 +73,7 @@ namespace PeD.Services.Sistema
             SetOption("equipe-ped-diretor", diretorId);
             SetOption("equipe-ped-gerente", gerenteId);
             SetOption("equipe-ped-coordenador", coordenadorId);
-            SistemaService.EquipePeD = null;
+            EquipePeD = null;
         }
 
         public void SetEquipePeD(EquipePeD equipePeD)

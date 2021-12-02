@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using PeD.Core.Converters;
-using PeD.Core.Models;
-using PeD.Core.Models.Projetos;
 using TaesaCore.Models;
 
 namespace PeD.Core.ApiModels.Projetos

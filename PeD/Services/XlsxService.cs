@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using ClosedXML.Excel;
 using PeD.Core.Attributes;
 
@@ -23,7 +21,7 @@ namespace PeD.Services
 
         public DataTable DataTableFrom(Type t)
         {
-            return DataTableFrom(t, out var c);
+            return DataTableFrom(t, out _);
         }
 
         public DataTable DataTableFrom(Type t, out PropertyInfo[] cols)

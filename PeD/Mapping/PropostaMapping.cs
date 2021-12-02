@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using PeD.Core.ApiModels.Propostas;
@@ -60,7 +59,7 @@ namespace PeD.Mapping
                 .ForMember(dest => dest.Produto, opt => opt.MapFrom(src => src.Produto.Titulo));
             CreateMap<EtapaRequest, Etapa>()
                 .ForMember(d => d.Meses, o => o.MapFrom(s =>
-                    new int[(s.MesFinal - s.MesInicio + 1)].Select((n, i) => s.MesInicio + i)
+                    new int[s.MesFinal - s.MesInicio + 1].Select((n, i) => s.MesInicio + i)
                 ));
 
 

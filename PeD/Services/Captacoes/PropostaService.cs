@@ -1,27 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using FluentValidation;
-using iText.Html2pdf;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
-using PeD.Core.Models.Fornecedores;
-using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Propostas;
 using PeD.Core.Validators;
 using PeD.Data;
 using PeD.Views.Email.Captacao.Propostas;
-using TaesaCore.Extensions;
 using TaesaCore.Interfaces;
 using TaesaCore.Services;
-using Log = Serilog.Log;
 
 namespace PeD.Services.Captacoes
 {
@@ -34,7 +27,6 @@ namespace PeD.Services.Captacoes
         private GestorDbContext context;
         private SendGridService _sendGridService;
         private UserService _userService;
-        private ArquivoService _arquivoService;
         private PdfService _pdfService;
 
         public PropostaService(IRepository<Proposta> repository, GestorDbContext context, IMapper mapper,
@@ -48,7 +40,6 @@ namespace PeD.Services.Captacoes
             _sendGridService = sendGridService;
             _userService = userService;
             _logger = logger;
-            _arquivoService = arquivoService;
             _pdfService = pdfService;
             _captacaoPropostas = context.Set<Proposta>();
         }
@@ -177,7 +168,7 @@ namespace PeD.Services.Captacoes
                 {
                     PropostaId = proposta.Id,
                     Parent = proposta.Captacao.Contrato,
-                    ParentId = (int) proposta.Captacao?.ContratoId,
+                    ParentId = (int) proposta.Captacao?.ContratoId
                 };
 
             return null;
@@ -200,7 +191,7 @@ namespace PeD.Services.Captacoes
                 {
                     PropostaId = proposta.Id,
                     Parent = proposta.Captacao.Contrato,
-                    ParentId = (int) proposta.Captacao?.ContratoId,
+                    ParentId = (int) proposta.Captacao?.ContratoId
                 };
 
             return null;
@@ -231,7 +222,7 @@ namespace PeD.Services.Captacoes
                 {
                     PropostaId = proposta.Id,
                     Parent = proposta.Captacao.Contrato,
-                    ParentId = (int) proposta.Captacao?.ContratoId,
+                    ParentId = (int) proposta.Captacao?.ContratoId
                 };
             return null;
         }
@@ -338,7 +329,7 @@ namespace PeD.Services.Captacoes
             modelView.Etapas.ForEach(e => { e.Alocacoes = alocacoes.Where(a => a.EtapaId == e.Id).ToList(); });
             proposta = context.Set<Proposta>().FirstOrDefault(p => p.Id == propostaId);
 
-            var validacao = (new PropostaValidator()).Validate(modelView);
+            var validacao = new PropostaValidator().Validate(modelView);
             var content = renderService.RenderToStringAsync("Proposta/Proposta", modelView).Result;
             var relatorio = context.Set<Relatorio>().Where(r => r.PropostaId == propostaId).FirstOrDefault() ??
                             new Relatorio()
@@ -443,7 +434,7 @@ namespace PeD.Services.Captacoes
         public async Task SendEmailFinalizado(Proposta proposta)
         {
             var pf = _mapper.Map<PropostaFinalizada>(proposta);
-            var suprimentoUsers = _userService.GetInRole("Suprimento").Select(u => u.Email);
+            var suprimentoUsers = _userService.GetInRole("Suprimento").Select(u => u.Email).ToArray();
             var subject = pf.Cancelada
                 ? $"O fornecedor “{pf.Fornecedor}” cancelou sua participação no projeto"
                 : $"O fornecedor “{pf.Fornecedor}” finalizou com sucesso a sua participação no projeto";
@@ -589,7 +580,7 @@ namespace PeD.Services.Captacoes
                 .FirstOrDefault(c => c.Id == proposta.CaptacaoId) ?? throw new NullReferenceException();
             var message = new IdentificacaoRiscos()
             {
-                Captacao = captacao,
+                Captacao = captacao
             };
             await _sendGridService.Send(captacao.UsuarioRefinamento.Email,
                 "Existe um novo projeto preparado para Identificação de Riscos",

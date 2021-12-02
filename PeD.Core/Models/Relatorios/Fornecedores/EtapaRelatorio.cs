@@ -47,9 +47,9 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
 
         public decimal CustoTotal(bool incluirInterno = true)
         {
-            if (incluirInterno)
-                return Alocacoes.Sum(a => a.Custo);
-            return Alocacoes.Where(a=>a.EmpresaRecebedoraFuncao != Funcao.Cooperada).Sum(a => a.Custo);
+            return incluirInterno
+                ? Alocacoes.Sum(a => a.Custo)
+                : Alocacoes.Where(a => a.EmpresaRecebedoraFuncao != Funcao.Cooperada).Sum(a => a.Custo);
         }
 
         public List<AlocacaoInfo> Alocacoes { get; set; }
@@ -60,7 +60,9 @@ namespace PeD.Core.Models.Relatorios.Fornecedores
         {
             get
             {
-                return Alocacoes.Where(c => c.EmpresaFinanciadoraFuncao == Funcao.Cooperada && c.EmpresaRecebedoraFuncao == Funcao.Cooperada)
+                return Alocacoes.Where(c =>
+                        c.EmpresaFinanciadoraFuncao == Funcao.Cooperada &&
+                        c.EmpresaRecebedoraFuncao == Funcao.Cooperada)
                     .ToList();
             }
         }

@@ -9,11 +9,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using PeD.Authorizations;
 using PeD.Core.ApiModels;
-using PeD.Core.Extensions;
 using PeD.Core.Models;
 using PeD.Core.Requests.Users;
 using PeD.Services;
@@ -28,8 +26,6 @@ namespace PeD.Controllers
     {
         private UserService _service;
         private IMapper _mapper;
-        private IConfiguration Configuration;
-        private string StoragePath;
         private string AvatarPath;
         private IWebHostEnvironment env;
 
@@ -38,11 +34,10 @@ namespace PeD.Controllers
             IWebHostEnvironment env)
         {
             _service = service;
-            this._mapper = mapper;
-            Configuration = configuration;
+            _mapper = mapper;
             this.env = env;
-            StoragePath = Configuration.GetValue<string>("StoragePath");
-            AvatarPath = Path.Combine(StoragePath, "avatar");
+            var storagePath = configuration.GetValue<string>("StoragePath");
+            AvatarPath = Path.Combine(storagePath, "avatar");
         }
 
         [HttpGet]
@@ -56,12 +51,12 @@ namespace PeD.Controllers
         [HttpGet("{id}")]
         public ActionResult<ApplicationUserDto> Get(string id, [FromServices] UserManager<ApplicationUser> userManager)
         {
-            var User = _service.Obter(id);
+            var user = _service.Obter(id);
 
-            if (User != null)
+            if (user != null)
             {
-                User.Roles = userManager.GetRolesAsync(User).Result.ToList();
-                return _mapper.Map<ApplicationUserDto>(User);
+                user.Roles = userManager.GetRolesAsync(user).Result.ToList();
+                return _mapper.Map<ApplicationUserDto>(user);
             }
 
             return NotFound();

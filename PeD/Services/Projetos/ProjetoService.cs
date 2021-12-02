@@ -1,23 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using AutoMapper;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PeD.Core.ApiModels.Projetos;
-using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Models.Projetos.Xml;
 using PeD.Core.Models.Projetos.Xml.InicioExecucao;
 using PeD.Core.Models.Projetos.Xml.Interesse;
-using PeD.Core.Models.Projetos.Xml.ProjetoPeD;
 using PeD.Core.Models.Propostas;
 using PeD.Data;
 using PeD.Services.Captacoes;
@@ -29,7 +25,6 @@ using AlocacaoRh = PeD.Core.Models.Projetos.AlocacaoRh;
 using Empresa = PeD.Core.Models.Empresa;
 using Escopo = PeD.Core.Models.Projetos.Escopo;
 using Funcao = PeD.Core.Models.Projetos.Funcao;
-using Log = Serilog.Log;
 using Meta = PeD.Core.Models.Projetos.Meta;
 using Orcamento = PeD.Core.Models.Projetos.Orcamento;
 using PlanoTrabalho = PeD.Core.Models.Projetos.PlanoTrabalho;
@@ -268,18 +263,18 @@ namespace PeD.Services.Projetos
             //Realizado
             var extratos = GetRegistrosFinanceiros(projetoId, StatusRegistro.Aprovado);
             // Financiadores
-            var empresas = (new[]
+            var empresas = new[]
                 {
                     orcamentos.Select(o => new { Financiador = o.Financiadora, o.FinanciadoraId }),
                     extratos.Select(o => new { Financiador = o.Financiadora, o.FinanciadoraId })
-                }).SelectMany(i => i)
+                }.SelectMany(i => i)
                 .GroupBy(e => e.FinanciadoraId)
                 .Select(e => e.First());
-            var categorias = (new[]
+            var categorias = new[]
                 {
                     orcamentos.Select(o => new { o.CategoriaContabil, o.CategoriaContabilCodigo }),
                     extratos.Select(o => new { o.CategoriaContabil, o.CategoriaContabilCodigo })
-                }).SelectMany(i => i)
+                }.SelectMany(i => i)
                 .GroupBy(e => e.CategoriaContabilCodigo)
                 .Select(e => e.First());
 
@@ -367,7 +362,7 @@ namespace PeD.Services.Projetos
             var tempFileName = Path.Combine(storagePath, "temp", Path.GetRandomFileName());
             document.Save(tempFileName);
 
-            string[] lines = File.ReadAllLines(tempFileName, System.Text.Encoding.GetEncoding("ISO-8859-1"));
+            var lines = File.ReadAllLines(tempFileName, System.Text.Encoding.GetEncoding("ISO-8859-1"));
 
             lines[0] = Regex.Replace(lines[0], "encoding=\"iso-8859-1\"", "encoding=\"ISO8859-1\"");
 

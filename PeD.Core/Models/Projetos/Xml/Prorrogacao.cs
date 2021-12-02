@@ -6,7 +6,7 @@ namespace PeD.Core.Models.Projetos.Xml
     {
         public Prorrogacao(string codigo, int duracao)
         {
-            PD_PrazoExecProjeto = new PrazoProjeto()
+            PD_PrazoExecProjeto = new PrazoProjeto
             {
                 Projeto = new Projeto(codigo, duracao)
             };

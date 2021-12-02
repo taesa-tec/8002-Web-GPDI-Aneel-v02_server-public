@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
@@ -85,10 +82,10 @@ namespace PeD.Data
                 fk.DeleteBehavior = DeleteBehavior.Restrict;
 
 
-            modelBuilder.Entity<Demanda>(_d => { _d.Property(d => d.CreatedAt).HasDefaultValueSql("getdate()"); });
-            modelBuilder.Entity<DemandaComentario>(_dc =>
+            modelBuilder.Entity<Demanda>(dmd => { dmd.Property(d => d.CreatedAt).HasDefaultValueSql("getdate()"); });
+            modelBuilder.Entity<DemandaComentario>(dmdc =>
             {
-                _dc.Property(dc => dc.CreatedAt).HasDefaultValueSql("getdate()");
+                dmdc.Property(dc => dc.CreatedAt).HasDefaultValueSql("getdate()");
             });
             CommonContext(modelBuilder);
             CaptacaoContext(modelBuilder);
@@ -149,13 +146,13 @@ namespace PeD.Data
         {
             #region Proposta
 
-            builder.Entity<Proposta>(_builder =>
+            builder.Entity<Proposta>(builderProposta =>
             {
-                _builder.HasIndex(p => new {p.CaptacaoId, p.FornecedorId}).IsUnique();
-                _builder.HasOne(p => p.Relatorio);
-                _builder.HasOne(p => p.Contrato).WithOne(c => c.Proposta);
-                _builder.Property(p => p.Guid).HasDefaultValueSql("NEWID()");
-                _builder.ToTable("Propostas");
+                builderProposta.HasIndex(p => new {p.CaptacaoId, p.FornecedorId}).IsUnique();
+                builderProposta.HasOne(p => p.Relatorio);
+                builderProposta.HasOne(p => p.Contrato).WithOne(c => c.Proposta);
+                builderProposta.Property(p => p.Guid).HasDefaultValueSql("NEWID()");
+                builderProposta.ToTable("Propostas");
             });
             builder.Entity<PropostaArquivo>(b =>
             {
@@ -164,12 +161,12 @@ namespace PeD.Data
             });
 
 
-            builder.Entity<Relatorio>(builder =>
+            builder.Entity<Relatorio>(builderRelatorio =>
             {
-                builder.HasOne(r => r.Proposta)
+                builderRelatorio.HasOne(r => r.Proposta)
                     .WithMany(p => p.HistoricoRelatorios)
                     .HasForeignKey(r => r.PropostaId);
-                builder.Property(r => r.Validacao).HasConversion(
+                builderRelatorio.Property(r => r.Validacao).HasConversion(
                     validacao => JsonConvert.SerializeObject(validacao),
                     validacao => JsonConvert.DeserializeObject<ValidationResult>(validacao));
             });
@@ -310,12 +307,12 @@ namespace PeD.Data
             });
             builder.Entity<Core.Models.Projetos.AlocacaoRh>(b =>
             {
-                b.HasMany(b => b.HorasMeses).WithOne().HasForeignKey(a => a.AlocacaoRhId);
+                b.HasMany(a => a.HorasMeses).WithOne().HasForeignKey(a => a.AlocacaoRhId);
                 b.HasOne(a => a.RecursoHumano).WithMany().OnDelete(DeleteBehavior.NoAction);
             });
             builder.Entity<AlocacaoRhHorasMes>(b =>
             {
-                b.HasKey(b => new {b.AlocacaoRhId, b.Mes});
+                b.HasKey(a => new {a.AlocacaoRhId, a.Mes});
                 b.ToTable("ProjetosAlocacaoRhHorasMeses");
             });
             builder.Entity<Core.Models.Projetos.RecursoMaterial.AlocacaoRm>(b =>

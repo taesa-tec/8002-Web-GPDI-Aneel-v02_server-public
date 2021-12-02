@@ -1,8 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using PeD.Core.Models;
-using PeD.Core.Models.Catalogos;
-using PeD.Core.Models.Projetos;
 using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Projetos.Resultados

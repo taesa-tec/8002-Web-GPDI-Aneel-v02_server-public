@@ -10,9 +10,9 @@ namespace PeD.Core.Models.Projetos.Xml.InicioExecucao
     {
         public InicioExecucao(string codProjeto, DateTime inicio, string compartilhamento)
         {
-            PD_InicioExecProjeto = new PD_InicioExecProjeto()
+            PD_InicioExecProjeto = new PD_InicioExecProjeto
             {
-                Projeto = new Projeto()
+                Projeto = new Projeto
                 {
                     CodProjeto = codProjeto,
                     DataIniProjeto = inicio,

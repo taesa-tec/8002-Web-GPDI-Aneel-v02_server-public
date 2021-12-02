@@ -44,10 +44,7 @@ namespace PeD.Services
                 name = string.Concat(name, $"({version})");
             }
 
-            if (string.IsNullOrWhiteSpace(ext))
-                return name;
-
-            return string.Concat(name, ".", ext);
+            return string.IsNullOrWhiteSpace(ext) ? name : string.Concat(name, ".", ext);
         }
 
         protected string NewFileName()
@@ -93,7 +90,7 @@ namespace PeD.Services
                 var arquivo = new FileUpload()
                 {
                     ContentType = file.ContentType,
-                    Name = file.Name, 
+                    Name = file.Name,
                     FileName = file.FileName,
                     Size = file.Length,
                     CreatedAt = DateTime.Now
@@ -119,7 +116,7 @@ namespace PeD.Services
 
         public async Task<FileUpload> SaveFile(IFormFile file)
         {
-            var files = await SaveFiles(new List<IFormFile>() {file});
+            var files = await SaveFiles(new List<IFormFile>() { file });
             return files.FirstOrDefault();
         }
 
