@@ -32,6 +32,7 @@ cp ./PeD/appsettings.example.json ./PeD/appsettings.json
 4) `ApiKey` do Sendgrid para o disparo de emails.
 5) `Url` do sistema.
 6) `CorsOrigin` Urls que podem fazer requisições
+7) `AllowedExtensionFiles` Extensões de arquivos pertimidas para upload
 
 ---
 
@@ -46,6 +47,7 @@ Ou
 ```bash
 dotnet run
 ```
+
 > Acesse a [aplicação](http://localhost:5000) e crie o usuário administrador
 
 ![image](readme/criar-admin.png)
@@ -57,7 +59,6 @@ dotnet run
 ```bash
 dotnet publish -c Release
 ```
-
 
 ## Built With
 

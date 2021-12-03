@@ -9,6 +9,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using PeD.Authorizations;
 using PeD.Core.ApiModels;
@@ -82,8 +83,14 @@ namespace PeD.Controllers
         [RequestSizeLimit(5242880)] // 5MB
         public async Task<IActionResult> UploadAvatar(IFormFile file, [FromRoute] string userId)
         {
-            await _service.UpdateAvatar(userId, file);
-            return Ok();
+            var exts = new[] { "png", "jpg", "gif", "jpeg" };
+            if (exts.Any(ext => file.FileName.EndsWith($".{ext}")))
+            {
+                await _service.UpdateAvatar(userId, file);
+                return Ok();
+            }
+
+            return BadRequest();
         }
 
         [HttpDelete("{userId}/Avatar")]

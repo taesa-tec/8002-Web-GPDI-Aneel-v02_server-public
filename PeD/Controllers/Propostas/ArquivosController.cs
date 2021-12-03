@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PeD.Authorizations;
 using PeD.Core.ApiModels;
+using PeD.Core.Exceptions;
 using PeD.Core.Models;
 using PeD.Core.Models.Propostas;
 using PeD.Data;

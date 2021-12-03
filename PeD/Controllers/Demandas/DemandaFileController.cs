@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Demandas;
+using PeD.Core.Exceptions;
 using PeD.Core.Models.Demandas;
 using PeD.Data;
 
@@ -21,12 +23,15 @@ namespace PeD.Controllers.Demandas
     public class DemandaFileController : FileBaseController<DemandaFile>
     {
         private IMapper _mapper;
+        private ILogger<DemandaFileController> _logger;
 
-        public DemandaFileController(GestorDbContext context, IConfiguration configuration, IMapper mapper) : base(
+        public DemandaFileController(GestorDbContext context, IConfiguration configuration, IMapper mapper,
+            ILogger<DemandaFileController> logger) : base(
             context,
             configuration)
         {
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpDelete("{id}/Files/{fileId}")]

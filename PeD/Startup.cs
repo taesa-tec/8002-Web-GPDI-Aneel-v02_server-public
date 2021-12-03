@@ -13,10 +13,12 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using GlobalExceptionHandler.WebApi;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
@@ -25,6 +27,7 @@ using PeD.Auth;
 using PeD.Authorizations;
 using PeD.BackgroundServices;
 using PeD.Core;
+using PeD.Core.Exceptions;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
 using PeD.Data;
@@ -54,6 +57,14 @@ namespace PeD
         }
 
         public IConfiguration Configuration { get; }
+
+        protected async Task OnError(HttpContext context, int statusCode, string messageError)
+        {
+            context.Response.StatusCode = statusCode;
+            context.Response.Headers["Content-Type"] = "application/json; charset=utf-8";
+            await context.Response.WriteAsync(
+                JsonConvert.SerializeObject(new { Error = messageError }));
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -240,24 +251,6 @@ namespace PeD
 
             #endregion
 
-            #region GlobalExceptionHandler
-
-            app.UseGlobalExceptionHandler(configuration =>
-            {
-                configuration.ContentType = "application/json";
-                configuration.ResponseBody((exception, httpContext) =>
-                {
-                    return JsonConvert.SerializeObject(new
-                    {
-                        title = "Erro interno do servidor",
-                        status = 500
-                    });
-                });
-                configuration.Map<DemandaException>()
-                    .ToStatusCode(HttpStatusCode.UnprocessableEntity);
-            });
-
-            #endregion
 
             app.Use(async (context, next) =>
             {
@@ -303,6 +296,22 @@ namespace PeD
             app.UseRouting();
             app.UseCors("CorsPolicy");
 
+            app.Use(async (context, next) =>
+            {
+                try
+                {
+                    await next();
+                }
+                catch (FileNotAllowedException)
+                {
+                    await OnError(context, StatusCodes.Status406NotAcceptable, "Extensão de arquivo não permitida!");
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Erro interno no servidor!");
+                    await OnError(context, StatusCodes.Status500InternalServerError, "Erro interno no servidor!");
+                }
+            });
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -345,7 +354,8 @@ namespace PeD
         private void ConfigureEmail(IServiceCollection services)
         {
             var sendgrid = Configuration.GetSection("SendGrid");
-            var emailConfig = new EmailConfig{
+            var emailConfig = new EmailConfig
+            {
                 ApiKey = sendgrid.GetValue<string>("ApiKey"),
                 SenderEmail = sendgrid.GetValue<string>("SenderEmail"),
                 SenderName = sendgrid.GetValue<string>("SenderName"),

@@ -3,17 +3,12 @@ using PeD.Core.ApiModels.Demandas;
 
 namespace PeD.Core.ApiModels
 {
-    public class FileUploadDto
+    public class FileUploadDto : BaseEntityDto
     {
         public string UserId { get; set; }
         public ApplicationUserDto User { get; set; }
 
         public long Size { get; set; }
-
-        /// <summary>
-        /// Name file form
-        /// </summary>
-        public string Name { get; set; }
 
         /// <summary>
         /// Real filename

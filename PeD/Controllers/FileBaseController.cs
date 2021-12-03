@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using PeD.Core.Exceptions;
 using PeD.Core.Models;
 using PeD.Data;
 
@@ -16,6 +17,7 @@ namespace PeD.Controllers
         protected GestorDbContext context;
         protected IConfiguration Configuration;
         protected readonly string StoragePath;
+        public string[] AllowedFiles { get; set; }
 
         protected string ActualPath
         {
@@ -32,6 +34,7 @@ namespace PeD.Controllers
             this.context = context;
             Configuration = configuration;
             StoragePath = Configuration.GetValue<string>("StoragePath");
+            AllowedFiles = Configuration.GetSection("AllowedExtensionFiles").Get<string[]>();
         }
 
         protected void CreateActualPath()
@@ -47,6 +50,11 @@ namespace PeD.Controllers
         public virtual async Task<List<T>> Upload(Func<T, T> func = null)
         {
             var files = Request.Form.Files.ToList();
+
+            if (!files.All(file => AllowedFiles.Any(ext => file.FileName.EndsWith($".{ext}"))))
+            {
+                throw new FileNotAllowedException();
+            }
 
             // long size = files.Sum(f => f.Length);
 
