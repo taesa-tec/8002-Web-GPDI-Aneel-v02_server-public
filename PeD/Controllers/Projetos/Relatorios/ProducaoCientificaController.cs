@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using PeD.Core.ApiModels.Projetos.Resultados;
 using PeD.Core.Models.Projetos.Resultados;
 using PeD.Core.Requests.Projetos.Resultados;
+using PeD.Data;
 using PeD.Services;
 using PeD.Services.Projetos;
 using TaesaCore.Interfaces;
@@ -22,8 +23,9 @@ namespace PeD.Controllers.Projetos.Relatorios
         ProducaoCientificaDto>
     {
         public ProducaoCientificaController(IService<ProducaoCientifica> service, IMapper mapper,
-            IAuthorizationService authorizationService, ProjetoService projetoService) : base(service, mapper,
-            authorizationService, projetoService)
+            IAuthorizationService authorizationService, ProjetoService projetoService, GestorDbContext context) : base(
+            service, mapper,
+            authorizationService, projetoService, context)
         {
         }
 

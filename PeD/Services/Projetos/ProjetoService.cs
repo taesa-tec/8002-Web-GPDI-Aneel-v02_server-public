@@ -112,13 +112,11 @@ namespace PeD.Services.Projetos
 
             if (relatorio is null || !relatorio.FileId.HasValue)
             {
-                // @todo gerar documento se não houver
                 throw new Exception("Plano de trabalho não encontrado");
             }
 
             if (contrato is null || !contrato.FileId.HasValue)
             {
-                // @todo gerar documento se não houver
                 throw new Exception("Contrato não encontrado");
             }
 

@@ -18,14 +18,12 @@ namespace PeD.Controllers.Projetos.Relatorios
     public class PropriedadeIntelectualController : ProjetoNodeBaseController<PropriedadeIntelectual,
         PropriedadeIntelectualRequest, PropriedadeIntelectualDto>
     {
-        private GestorDbContext _context;
 
         public PropriedadeIntelectualController(IService<PropriedadeIntelectual> service, IMapper mapper,
             IAuthorizationService authorizationService, ProjetoService projetoService, GestorDbContext context) : base(
             service, mapper,
-            authorizationService, projetoService)
+            authorizationService, projetoService, context)
         {
-            _context = context;
         }
 
         protected override IQueryable<PropriedadeIntelectual> Includes(IQueryable<PropriedadeIntelectual> queryable)
@@ -39,16 +37,16 @@ namespace PeD.Controllers.Projetos.Relatorios
 
         protected override void BeforePut(PropriedadeIntelectual actual, PropriedadeIntelectual @new)
         {
-            var depositantes = _context.Set<PropriedadeIntelectualDepositante>()
+            var depositantes = Context.Set<PropriedadeIntelectualDepositante>()
                 .Where(p => p.PropriedadeId == actual.Id).ToList();
-            var invetores = _context.Set<PropriedadeIntelectualInventor>()
+            var invetores = Context.Set<PropriedadeIntelectualInventor>()
                 .Where(p => p.PropriedadeId == actual.Id).ToList();
-            _context.RemoveRange(depositantes);
-            _context.RemoveRange(invetores);
-            _context.SaveChanges();
-            _context.AddRange(@new.Depositantes);
-            _context.AddRange(@new.Inventores);
-            _context.SaveChanges();
+            Context.RemoveRange(depositantes);
+            Context.RemoveRange(invetores);
+            Context.SaveChanges();
+            Context.AddRange(@new.Depositantes);
+            Context.AddRange(@new.Inventores);
+            Context.SaveChanges();
         }
     }
 }

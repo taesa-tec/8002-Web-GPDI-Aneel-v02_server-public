@@ -13,7 +13,6 @@ using PeD.Data;
 
 namespace PeD.Services
 {
-    //@todo Refatorar os metodos que retornam Resultado
     public class UserService
     {
         private GestorDbContext _context;

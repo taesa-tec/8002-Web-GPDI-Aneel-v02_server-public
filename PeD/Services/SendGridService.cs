@@ -57,7 +57,7 @@ namespace PeD.Services
             }
             catch (Exception e)
             {
-                Logger.LogError("Erro no disparo de email: {Message}", e.Message);
+                Logger.LogError("Erro ao enviar o email: {Message}", e.Message);
             }
         }
 
@@ -71,7 +71,6 @@ namespace PeD.Services
                 }
 
                 var viewContent = await ViewRender.RenderToStringAsync(viewName, model);
-                //var message = MailHelper.CreateSingleEmail(from, new EmailAddress(to), subject, "", viewContent);
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(From,
                     tos.Select(to => new EmailAddress(to)).ToList(),
                     subject, "", viewContent);
@@ -86,7 +85,7 @@ namespace PeD.Services
             }
             catch (Exception e)
             {
-                Logger.LogError("Erro no disparo de email: {Error}", e.Message);
+                Logger.LogError("Erro no disparo de email: {Error}.", e.Message);
                 Logger.LogError("StackError: {Error}", e.StackTrace);
             }
         }

@@ -5,7 +5,10 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PeD.Core.Models;
+using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Projetos;
+using PeD.Data;
 using PeD.Services.Projetos;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
@@ -23,12 +26,15 @@ namespace PeD.Controllers.Projetos
     {
         protected ProjetoService ProjetoService;
         public readonly IAuthorizationService AuthorizationService;
+        protected GestorDbContext Context;
 
         public ProjetoNodeBaseController(IService<T> service, IMapper mapper,
-            IAuthorizationService authorizationService, ProjetoService projetoService) : base(service, mapper)
+            IAuthorizationService authorizationService, ProjetoService projetoService, GestorDbContext context) : base(
+            service, mapper)
         {
             AuthorizationService = authorizationService;
             ProjetoService = projetoService;
+            Context = context;
         }
 
         private Projeto _projeto;
@@ -47,12 +53,21 @@ namespace PeD.Controllers.Projetos
             }
         }
 
-#pragma warning disable 1998
         protected async Task<bool> HasAccess(bool edit = false)
-#pragma warning restore 1998
         {
-            //@todo Verificar Acesso
-            return true;
+            if (User.IsInRole(Roles.Administrador) || this.UserId() == Projeto.ResponsavelId)
+            {
+                return true;
+            }
+
+            if (User.IsInRole(Roles.Fornecedor))
+            {
+                return await Context.Set<Fornecedor>()
+                    .AnyAsync(f =>
+                        f.ResponsavelId == this.UserId() && f.Id == Projeto.FornecedorId); //Projeto.FornecedorId
+            }
+
+            return false;
         }
     }
 
@@ -64,8 +79,9 @@ namespace PeD.Controllers.Projetos
         where T : ProjetoNode where TRequest : BaseEntity
     {
         public ProjetoNodeBaseController(IService<T> service, IMapper mapper,
-            IAuthorizationService authorizationService, ProjetoService projetoService) : base(service, mapper,
-            authorizationService, projetoService)
+            IAuthorizationService authorizationService, ProjetoService projetoService, GestorDbContext context) :
+            base(service, mapper,
+                authorizationService, projetoService, context)
         {
         }
 

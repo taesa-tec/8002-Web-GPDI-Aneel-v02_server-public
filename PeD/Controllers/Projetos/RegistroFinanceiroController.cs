@@ -50,7 +50,6 @@ namespace PeD.Controllers.Projetos
             return Ok(extrato);
         }
 
-        // [ResponseCache(Duration = 30)]//  @todo Criar lógica para armazenar as ultimas alterações do projeto 
         [HttpGet("Criar")]
         public ActionResult GetCriar([FromRoute] int id)
         {

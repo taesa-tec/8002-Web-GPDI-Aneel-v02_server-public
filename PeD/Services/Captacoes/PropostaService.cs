@@ -230,7 +230,6 @@ namespace PeD.Services.Captacoes
         public string PrintContrato(int propostaId)
         {
             var contrato = GetContratoFull(propostaId);
-            _logger.LogInformation("Total de produtos {Total}", contrato.Proposta.Produtos.Count);
             var contratoDto = _mapper.Map<PropostaContratoDto>(contrato);
             return renderService.RenderToStringAsync("Proposta/Contrato", contratoDto).Result;
         }

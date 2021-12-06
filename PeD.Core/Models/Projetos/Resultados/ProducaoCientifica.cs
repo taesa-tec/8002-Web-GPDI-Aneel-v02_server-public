@@ -19,7 +19,7 @@ namespace PeD.Core.Models.Projetos.Resultados
         public bool ConfirmacaoPublicacao { get; set; }
         [MaxLength(50)] public string NomeEventoPublicacao { get; set; }
 
-        [MaxLength(50)] // @todo verificar se é somente 50 caracteres
+        [MaxLength(50)]
         public string LinkPublicacao { get; set; }
 
         public int PaisId { get; set; }
