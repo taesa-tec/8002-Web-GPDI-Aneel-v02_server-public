@@ -127,7 +127,7 @@ namespace PeD.Services
         {
             if (string.IsNullOrWhiteSpace(user.Email))
             {
-                throw new Exception("Preencha o E-mail do Usuário");
+                return false;
             }
 
             try
@@ -144,14 +144,9 @@ namespace PeD.Services
 
         public bool NovaSenha(User user)
         {
-            if (string.IsNullOrWhiteSpace(user.Email))
+            if (string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.NewPassword))
             {
-                throw new Exception("Preencha o E-mail do Usuário");
-            }
-
-            if (string.IsNullOrWhiteSpace(user.NewPassword))
-            {
-                throw new Exception("Preencha a nova senha do Usuário");
+                return false;
             }
 
             var User = _userManager.Users
@@ -159,17 +154,14 @@ namespace PeD.Services
                 .FirstOrDefault();
             if (User == null)
             {
-                throw new Exception("usuário não localizado");
+                return false;
             }
 
             var token = Encoding.ASCII.GetString(Convert.FromBase64String(user.ResetToken));
             var result = _userManager.ResetPasswordAsync(User, token, user.NewPassword).Result;
             if (result.Errors.Count() > 0)
             {
-                foreach (var error in result.Errors)
-                {
-                    throw new Exception(error.Description);
-                }
+                return false;
             }
 
             return true;
@@ -193,12 +185,9 @@ namespace PeD.Services
         public async Task SendNewFornecedorAccountEmail(string email, Fornecedor fornecedor)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null) throw new Exception("Email não encontrado");
-
-            if (fornecedor == null) throw new Exception("Email não encontrado");
+            if (user == null || fornecedor == null) return;
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            // Console.WriteLine(token);
             await SendGridService.Send(email,
                 "Você foi convidado para participar do Gestor PDI da Taesa como Fornecedor Cadastrado",
                 "Email/FornecedorAccount",

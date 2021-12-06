@@ -619,7 +619,7 @@ namespace PeD.Controllers.Captacoes
             }
 
             if (captacao.PropostaSelecionadaId == null)
-                return Problem("Sem proposta selecionada");
+                return Problem("Sem proposta selecionada", statusCode: StatusCodes.Status428PreconditionRequired);
 
             if (request.Aprovado)
             {
@@ -632,13 +632,24 @@ namespace PeD.Controllers.Captacoes
 
             if (request.Aprovado)
             {
-                if (!request.EmpresaProponenteId.HasValue) throw new Exception("Empresa Proponente não definida!");
-                if (!request.InicioProjeto.HasValue) throw new Exception("Data de início não definida!");
-                //var projeto = 
-                projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
-                    request.EmpresaProponenteId.Value, request.NumeroProjeto,
-                    request.TituloCompleto, request.ResponsavelId, request.Compartilhamento.Value,
-                    request.InicioProjeto.Value);
+                if (!request.EmpresaProponenteId.HasValue)
+                    return Problem("Empresa Proponente não definida!",
+                        statusCode: StatusCodes.Status428PreconditionRequired);
+                if (!request.InicioProjeto.HasValue)
+                    return Problem("Data de início não definida!",
+                        statusCode: StatusCodes.Status428PreconditionRequired);
+                try
+                {
+                    projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
+                        request.EmpresaProponenteId.Value, request.NumeroProjeto,
+                        request.TituloCompleto, request.ResponsavelId, request.Compartilhamento.Value,
+                        request.InicioProjeto.Value);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError("Erro na formalização do projeto: {Error}", e.Message);
+                    return Problem("Erro na formalização do projeto");
+                }
             }
 
             return Ok();

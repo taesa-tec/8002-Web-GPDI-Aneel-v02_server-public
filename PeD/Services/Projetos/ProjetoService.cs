@@ -102,7 +102,6 @@ namespace PeD.Services.Projetos
 
             if (captacao is null)
             {
-                // @todo disparar um email se isso acontecer, captaçõa não pode mais ser excluida nesse ponto
                 throw new Exception("Captacao não encontrada");
             }
 

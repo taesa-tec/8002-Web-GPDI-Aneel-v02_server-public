@@ -168,7 +168,7 @@ namespace PeD.Services.Captacoes
                 {
                     PropostaId = proposta.Id,
                     Parent = proposta.Captacao.Contrato,
-                    ParentId = (int) proposta.Captacao?.ContratoId
+                    ParentId = (int)proposta.Captacao?.ContratoId
                 };
 
             return null;
@@ -191,7 +191,7 @@ namespace PeD.Services.Captacoes
                 {
                     PropostaId = proposta.Id,
                     Parent = proposta.Captacao.Contrato,
-                    ParentId = (int) proposta.Captacao?.ContratoId
+                    ParentId = (int)proposta.Captacao?.ContratoId
                 };
 
             return null;
@@ -222,7 +222,7 @@ namespace PeD.Services.Captacoes
                 {
                     PropostaId = proposta.Id,
                     Parent = proposta.Captacao.Contrato,
-                    ParentId = (int) proposta.Captacao?.ContratoId
+                    ParentId = (int)proposta.Captacao?.ContratoId
                 };
             return null;
         }
@@ -384,12 +384,19 @@ namespace PeD.Services.Captacoes
 
         public FileUpload SaveRelatorioPdf(Relatorio relatorio)
         {
-            if (relatorio != null)
+            try
             {
-                var arquivo = _pdfService.HtmlToPdf(relatorio.Content,
-                    $"relatorio-{relatorio.PropostaId}-{relatorio.DataAlteracao}");
-                PdfService.AddPagesToPdf(arquivo.Path, 500, 820);
-                return arquivo;
+                if (relatorio != null)
+                {
+                    var arquivo = _pdfService.HtmlToPdf(relatorio.Content,
+                        $"relatorio-{relatorio.PropostaId}-{relatorio.DataAlteracao}");
+                    PdfService.AddPagesToPdf(arquivo.Path, 500, 820);
+                    return arquivo;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Erro ao salvar relatório: {Error}", e.Message);
             }
 
             return null;

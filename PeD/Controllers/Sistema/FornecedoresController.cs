@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Fornecedores;
 using PeD.Core.Models;
@@ -35,10 +36,11 @@ namespace PeD.Controllers.Sistema
         private PropostaService _propostaService;
         protected AccessManager AccessManager;
         private GestorDbContext _context;
+        private ILogger<FornecedoresController> _logger;
 
         public FornecedoresController(IService<Fornecedor> service, IMapper mapper,
             UserManager<ApplicationUser> userManager, AccessManager accessManager, UserService userService,
-            PropostaService propostaService, GestorDbContext context) : base(
+            PropostaService propostaService, GestorDbContext context, ILogger<FornecedoresController> logger) : base(
             service, mapper)
         {
             _userManager = userManager;
@@ -46,6 +48,7 @@ namespace PeD.Controllers.Sistema
             _userService = userService;
             _propostaService = propostaService;
             _context = context;
+            _logger = logger;
         }
 
 
@@ -168,8 +171,17 @@ namespace PeD.Controllers.Sistema
             }
 
             Service.Post(fornecedor);
-            UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
-            Service.Put(fornecedor);
+            try
+            {
+                UpdateResponsavelFornecedor(fornecedor, model.ResponsavelEmail, model.ResponsavelNome).Wait();
+                Service.Put(fornecedor);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Não foi possível atualizar o responsável:{Error}", e.Message);
+                return Problem("Não foi possível atualizar o responsável");
+            }
+
 
             return Ok(fornecedor);
         }
