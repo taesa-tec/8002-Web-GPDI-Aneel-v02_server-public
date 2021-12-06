@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Demandas;
 using PeD.Core.Models.Demandas;
@@ -22,6 +23,7 @@ namespace PeD.Controllers.Demandas
         SistemaService sistemaService;
         private IMapper _mapper;
         private GestorDbContext context;
+        private ILogger<DemandaController> _logger;
         protected DemandaService DemandaService { get; }
 
         protected List<FieldList> _forms = new List<FieldList>()
@@ -30,13 +32,14 @@ namespace PeD.Controllers.Demandas
         };
 
         public DemandaController(DemandaService demandaService, IMapper mapper, SistemaService sistemaService,
-            GestorDbContext context) : base(
+            GestorDbContext context, ILogger<DemandaController> logger) : base(
             demandaService, mapper)
         {
             DemandaService = demandaService;
             _mapper = mapper;
             this.sistemaService = sistemaService;
             this.context = context;
+            _logger = logger;
         }
 
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using PeD.Authorizations;
 using PeD.Core.ApiModels;
 using PeD.Core.Exceptions;
@@ -28,14 +29,17 @@ namespace PeD.Controllers.Propostas
         private IMapper _mapper;
         private PropostaService _propostaService;
         private IAuthorizationService authorizationService;
+        private ILogger<ArquivosController> _logger;
 
         public ArquivosController(GestorDbContext context, IConfiguration configuration,
-            PropostaService propostaService, IAuthorizationService authorizationService, IMapper mapper) : base(context,
+            PropostaService propostaService, IAuthorizationService authorizationService, IMapper mapper,
+            ILogger<ArquivosController> logger) : base(context,
             configuration)
         {
             _propostaService = propostaService;
             this.authorizationService = authorizationService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -122,13 +126,8 @@ namespace PeD.Controllers.Propostas
             }
             catch (Exception e)
             {
-                return BadRequest(new
-                {
-                    e.Message,
-                    e.StackTrace,
-                    file.Arquivo.FileName,
-                    file.Arquivo.Path
-                });
+                _logger.LogError("Erro ao remover arquivo: {Error}", e.Message);
+                return BadRequest("Erro ao remover arquivo");
             }
 
             return Ok();

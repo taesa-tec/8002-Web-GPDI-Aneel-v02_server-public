@@ -220,9 +220,8 @@ namespace PeD.Services
                     stream.Close();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e.Message);
                 if (File.Exists(fullname + ".old"))
                 {
                     File.Move(fullname + ".old", fullname);

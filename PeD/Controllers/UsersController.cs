@@ -9,8 +9,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using PeD.Authorizations;
 using PeD.Core.ApiModels;
 using PeD.Core.Models;
@@ -29,14 +29,15 @@ namespace PeD.Controllers
         private IMapper _mapper;
         private string AvatarPath;
         private IWebHostEnvironment env;
-
+        private ILogger<UsersController> _logger;
 
         public UsersController(UserService service, IMapper mapper, IConfiguration configuration,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env, ILogger<UsersController> logger)
         {
             _service = service;
             _mapper = mapper;
             this.env = env;
+            _logger = logger;
             var storagePath = configuration.GetValue<string>("StoragePath");
             AvatarPath = Path.Combine(storagePath, "avatar");
         }
@@ -73,7 +74,8 @@ namespace PeD.Controllers
             }
             catch (Exception e)
             {
-                return Problem(e.Message, statusCode: StatusCodes.Status400BadRequest);
+                _logger.LogError("Erro ao criar usuário: {Error}", e.Message);
+                return Problem("Erro ao criar usuário", statusCode: StatusCodes.Status400BadRequest);
             }
 
             return Ok();

@@ -12,6 +12,7 @@ using DiffPlex.DiffBuilder;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PeD.Core.ApiModels;
 using PeD.Core.ApiModels.Demandas;
 using PeD.Core.Exceptions.Demandas;
@@ -102,7 +103,13 @@ namespace PeD.Controllers.Demandas
                 }
                 catch (DemandaException exception)
                 {
+                    // DemandaException não expoem o funcionamento da aplicação
                     return BadRequest(exception);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError("Erro na configuração do revisor da demanda: {Error}", e.Message);
+                    return Problem();
                 }
 
                 return GetById(id);
@@ -143,7 +150,8 @@ namespace PeD.Controllers.Demandas
             }
             catch (Exception e)
             {
-                return Problem(e.Message, null, StatusCodes.Status409Conflict);
+                _logger.LogError("Erro na configuração da etapa da demanda: {Error}", e.Message);
+                return Problem("Erro na configuração da etapa da demanda", statusCode: StatusCodes.Status409Conflict);
             }
         }
 
@@ -229,11 +237,13 @@ namespace PeD.Controllers.Demandas
                 }
                 catch (DemandaException e)
                 {
+                    // DemandaException não expoem o funcionamento da aplicação
                     return Problem(e.Message, statusCode: StatusCodes.Status400BadRequest);
                 }
                 catch (Exception e)
                 {
-                    return Problem(e.Message);
+                    _logger.LogError("Erro ao salvar formulário da demanda: {Error}", e.Message);
+                    return Problem("Erro ao salvar formulário");
                 }
             }
 

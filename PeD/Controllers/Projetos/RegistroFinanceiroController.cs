@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
@@ -30,14 +31,16 @@ namespace PeD.Controllers.Projetos
     {
         private new ProjetoService Service;
         private GestorDbContext _context;
+        private ILogger<RegistroFinanceiroController> _logger;
 
         public RegistroFinanceiroController(ProjetoService service, IMapper mapper,
             IService<Core.Models.Empresa> serviceEmpresa,
-            GestorDbContext context) :
+            GestorDbContext context, ILogger<RegistroFinanceiroController> logger) :
             base(service, mapper)
         {
             Service = service;
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet("Extrato")]
@@ -135,8 +138,8 @@ namespace PeD.Controllers.Projetos
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return Problem(e.Message);
+                _logger.LogError("Erro na criação do registro: {Error}", e.Message);
+                return Problem("Erro na criação do registro");
             }
         }
 
@@ -168,8 +171,8 @@ namespace PeD.Controllers.Projetos
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return Problem(e.Message);
+                _logger.LogError("Erro na criação do registro: {Error}", e.Message);
+                return Problem("Erro na criação do registro");
             }
         }
 
@@ -216,14 +219,12 @@ namespace PeD.Controllers.Projetos
                 };
                 _context.Add(obs);
                 _context.SaveChanges();
-
-
                 return Ok(Mapper.Map<RegistroFinanceiroDto>(registro));
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return Problem(e.Message);
+                _logger.LogError("Erro na atualização do registro: {Error}", e.Message);
+                return Problem("Erro na atualização do registro");
             }
         }
 
@@ -263,8 +264,8 @@ namespace PeD.Controllers.Projetos
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return Problem(e.Message);
+                _logger.LogError("Erro na atualização do registro: {Error}", e.Message);
+                return Problem("Erro na atualização do registro");
             }
         }
 
@@ -314,7 +315,8 @@ namespace PeD.Controllers.Projetos
             }
             catch (Exception e)
             {
-                return Problem(e.Message);
+                _logger.LogError("Erro na atualização do registro: {Error}", e.Message);
+                return Problem("Erro na atualização do registro");
             }
         }
 

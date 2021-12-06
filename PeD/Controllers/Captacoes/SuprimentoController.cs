@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.ApiModels.Propostas;
@@ -32,12 +33,15 @@ namespace PeD.Controllers.Captacoes
     {
         private IUrlHelper _urlHelper;
         private CaptacaoService service;
+        private ILogger<SuprimentoController> _logger;
 
         public SuprimentoController(CaptacaoService service, IMapper mapper, IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor, GestorDbContext context) : base(service, mapper)
+            IActionContextAccessor actionContextAccessor, GestorDbContext context, ILogger<SuprimentoController> logger)
+            : base(service, mapper)
         {
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             this.service = service;
+            _logger = logger;
         }
 
         [HttpGet("")]
@@ -118,6 +122,7 @@ namespace PeD.Controllers.Captacoes
             }
             catch (CaptacaoException e)
             {
+                // CaptacaoException não exibe mensagem do funcionamento interno
                 return Problem(e.Message, statusCode: StatusCodes.Status409Conflict);
             }
             catch (Exception)
@@ -148,7 +153,8 @@ namespace PeD.Controllers.Captacoes
             }
             catch (Exception e)
             {
-                return Problem(e.Message);
+                _logger.LogError("Erro ao estender captação:{Error}", e.Message);
+                return Problem("Erro interno do servidor");
             }
 
             return Ok();

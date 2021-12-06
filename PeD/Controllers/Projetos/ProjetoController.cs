@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
@@ -34,6 +35,7 @@ namespace PeD.Controllers.Projetos
     {
         private new ProjetoService Service;
         protected GestorDbContext Context;
+        private ILogger<ProjetoController> _logger;
 
         private IQueryable<Projeto> _projetoQuery(IQueryable<Projeto> q)
         {
@@ -42,11 +44,13 @@ namespace PeD.Controllers.Projetos
                 .Where(p => isGestor || p.Fornecedor.ResponsavelId == this.UserId());
         }
 
-        public ProjetoController(ProjetoService service, IMapper mapper, GestorDbContext context) : base(service,
+        public ProjetoController(ProjetoService service, IMapper mapper, GestorDbContext context,
+            ILogger<ProjetoController> logger) : base(service,
             mapper)
         {
             Service = service;
             Context = context;
+            _logger = logger;
         }
 
         private bool CanAccess(int id)
@@ -300,7 +304,8 @@ namespace PeD.Controllers.Projetos
             }
             catch (Exception e)
             {
-                return Problem(e.Message);
+                _logger.LogError("Erro na geração do xml:{Error}", e.Message);
+                return Problem("Erro na geração do xml");
             }
         }
 
@@ -344,7 +349,8 @@ namespace PeD.Controllers.Projetos
             }
             catch (Exception e)
             {
-                return Problem(e.Message);
+                _logger.LogError("Erro na geração do xml: {Error}", e.Message);
+                return Problem("Erro na geração do xml");
             }
         }
 
@@ -369,7 +375,8 @@ namespace PeD.Controllers.Projetos
             }
             catch (Exception e)
             {
-                return Problem(e.Message);
+                _logger.LogError("Erro na geração do xml: {Error}", e.Message);
+                return Problem("Erro na geração do xml");
             }
         }
 
@@ -393,8 +400,8 @@ namespace PeD.Controllers.Projetos
             }
             catch (Exception e)
             {
-                Log.Error(e, "Error:{Error}", e.Message);
-                return Problem(e.Message);
+                _logger.LogError("Erro na geração do xml: {Error}", e.Message);
+                return Problem("Erro na geração do xml");
             }
         }
 

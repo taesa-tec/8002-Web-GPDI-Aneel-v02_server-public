@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Captacao;
@@ -39,15 +40,17 @@ namespace PeD.Controllers.Captacoes
         private IUrlHelper _urlHelper;
         private IService<CaptacaoInfo> _serviceInfo;
         private new CaptacaoService Service;
+        private ILogger<CaptacaoController> _logger;
 
         public CaptacaoController(CaptacaoService service, IMapper mapper, UserManager<ApplicationUser> userManager,
             IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor,
-            IService<CaptacaoInfo> serviceInfo)
+            IService<CaptacaoInfo> serviceInfo, ILogger<CaptacaoController> logger)
             : base(service, mapper)
         {
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _userManager = userManager;
             _serviceInfo = serviceInfo;
+            _logger = logger;
             Service = service;
         }
 
@@ -196,7 +199,8 @@ namespace PeD.Controllers.Captacoes
             }
             catch (Exception e)
             {
-                return Problem(e.Message);
+                _logger.LogError("Erro ao cancelar Captação: {Error}", e.Message);
+                return Problem("Error ao cancelar a captação");
             }
         }
 
@@ -210,7 +214,8 @@ namespace PeD.Controllers.Captacoes
             }
             catch (Exception e)
             {
-                return Problem(e.Message);
+                _logger.LogError("Error ao alterar prazo: {Error}", e.Message);
+                return Problem("Error ao alterar prazo");
             }
         }
 
@@ -630,7 +635,7 @@ namespace PeD.Controllers.Captacoes
                 if (!request.EmpresaProponenteId.HasValue) throw new Exception("Empresa Proponente não definida!");
                 if (!request.InicioProjeto.HasValue) throw new Exception("Data de início não definida!");
                 //var projeto = 
-                    projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
+                projetoService.ParseProposta(captacao.PropostaSelecionadaId.Value,
                     request.EmpresaProponenteId.Value, request.NumeroProjeto,
                     request.TituloCompleto, request.ResponsavelId, request.Compartilhamento.Value,
                     request.InicioProjeto.Value);

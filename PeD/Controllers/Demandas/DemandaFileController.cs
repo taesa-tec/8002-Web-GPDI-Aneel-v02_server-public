@@ -47,13 +47,8 @@ namespace PeD.Controllers.Demandas
             }
             catch (Exception e)
             {
-                return BadRequest(new
-                {
-                    e.Message,
-                    e.StackTrace,
-                    file.Name,
-                    file.Path
-                });
+                _logger.LogError("Erro ao remover arquivo da demanda: {Error}", e.Message);
+                return BadRequest("Erro ao remover arquivo");
             }
 
             return Ok();

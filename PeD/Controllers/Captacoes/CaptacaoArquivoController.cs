@@ -58,15 +58,10 @@ namespace PeD.Controllers.Captacoes
                 context.SaveChanges();
                 System.IO.File.Delete(file.Path);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return BadRequest(new
-                {
-                    e.Message,
-                    e.StackTrace,
-                    file.FileName,
-                    file.Path
-                });
+                return Problem("Não foi possível excluir o arquivo",
+                    statusCode: StatusCodes.Status500InternalServerError);
             }
 
             return Ok();
