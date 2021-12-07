@@ -390,81 +390,83 @@ namespace PeD.Services.Demandas
             });
         }
 
+        public IEnumerable<CaptacaoSubTema> CaptacaoSubTemasFromJArray(JArray jArray)
+        {
+            return jArray.Select(t =>
+            {
+                var subtema = t as JObject;
+                if (subtema != null && subtema.TryGetValue("catalogSubTemaId", out var subtemaId))
+                {
+                    try
+                    {
+                        return new CaptacaoSubTema()
+                        {
+                            SubTemaId = subtemaId.Value<int>(),
+                            Outro = subtema.GetValue("outroDesc")?.Value<string>() ?? ""
+                        };
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
+                }
+
+                return null;
+            }).Where(s => s != null);
+        }
+
         public void EnviarCaptacao(int id, string userId)
         {
             var demanda = GetById(id);
-            if (demanda != null && demanda.EtapaAtual != DemandaEtapa.Captacao)
+            if (demanda is null || demanda.EtapaAtual == DemandaEtapa.Captacao)
+                return;
+
+            if (!demanda.EspecificacaoTecnicaFileId.HasValue)
             {
-                if (!demanda.EspecificacaoTecnicaFileId.HasValue)
-                {
-                    throw new DemandaException("Especificação Técnica ausente");
-                }
-
-                var especificacaoTecnicaForm = GetDemandaFormData(id, EspecificacaoTecnicaForm.Key);
-                var temaAneel =
-                    especificacaoTecnicaForm?.Object.SelectToken(EspecificacaoTecnicaForm.TemaPath) as JObject ??
-                    throw new DemandaException("Especificação Técnica não configurada corretamente");
-
-                if (temaAneel == null)
-                    throw new DemandaException("Tema Aneel ausente");
-
-                var temaId = temaAneel.GetValue("catalogTemaId")?.Value<int?>();
-                var temaOutro = temaAneel.GetValue("outroDesc")?.Value<string>();
-                var subtemas = temaAneel.GetValue("subTemas") as JArray;
-                var captacaoSubTema = subtemas?.Select(t =>
-                {
-                    var subtema = t as JObject;
-                    if (subtema != null && subtema.TryGetValue("catalogSubTemaId", out var subtemaId))
-                    {
-                        try
-                        {
-                            return new CaptacaoSubTema()
-                            {
-                                SubTemaId = subtemaId.Value<int>(),
-                                Outro = subtema.GetValue("outroDesc")?.Value<string>() ?? ""
-                            };
-                        }
-                        catch (Exception)
-                        {
-                            return null;
-                        }
-                    }
-
-                    return null;
-                }).Where(s => s != null);
-
-                var prevCaptcao = _context.Set<Captacao>().FirstOrDefault(c => c.DemandaId == id);
-
-                var captacao = prevCaptcao ?? new Captacao
-                {
-                    DemandaId = id,
-                    CriadorId = demanda.CriadorId,
-                    TemaId = temaId,
-                    TemaOutro = temaOutro,
-                    Titulo = demanda.Titulo,
-                    Status = Captacao.CaptacaoStatus.Pendente,
-                    SubTemas = captacaoSubTema?.ToList() ?? new List<CaptacaoSubTema>()
-                };
-                captacao.EspecificacaoTecnicaFileId = demanda.EspecificacaoTecnicaFileId.Value;
-                demanda.EtapaAtual = DemandaEtapa.Captacao;
-                demanda.Status = DemandaStatus.Concluido;
-                demanda.CaptacaoDate = DateTime.UtcNow;
-                demanda.ValidarContinuidade();
-                _context.SaveChanges();
-
-                if (captacao.Id == 0)
-                    _serviceCaptacao.Post(captacao);
-                else
-                {
-                    _serviceCaptacao.Put(captacao);
-                }
-
-                var user = _context.Users.Find(userId);
-
-
-                LogService.Incluir(userId, id, "Demanda para captação",
-                    string.Format("O usuário {0} enviou a demanda para a captação", user.NomeCompleto));
+                throw new DemandaException("Especificação Técnica ausente");
             }
+
+            var especificacaoTecnicaForm = GetDemandaFormData(id, EspecificacaoTecnicaForm.Key);
+            var temaAneel =
+                especificacaoTecnicaForm?.Object.SelectToken(EspecificacaoTecnicaForm.TemaPath) as JObject ??
+                throw new DemandaException("Especificação Técnica não configurada corretamente");
+
+            if (temaAneel == null)
+                throw new DemandaException("Tema Aneel ausente");
+
+            var temaId = temaAneel.GetValue("catalogTemaId")?.Value<int?>();
+            var temaOutro = temaAneel.GetValue("outroDesc")?.Value<string>();
+            var subtemas = temaAneel.GetValue("subTemas") as JArray;
+            var captacaoSubTemas = CaptacaoSubTemasFromJArray(subtemas);
+            var prevCaptcao = _context.Set<Captacao>().FirstOrDefault(c => c.DemandaId == id);
+            var captacao = prevCaptcao ?? new Captacao
+            {
+                DemandaId = id,
+                CriadorId = demanda.CriadorId,
+                TemaId = temaId,
+                TemaOutro = temaOutro,
+                Titulo = demanda.Titulo,
+                Status = Captacao.CaptacaoStatus.Pendente,
+                SubTemas = captacaoSubTemas?.ToList() ?? new List<CaptacaoSubTema>()
+            };
+            captacao.EspecificacaoTecnicaFileId = demanda.EspecificacaoTecnicaFileId.Value;
+            demanda.EtapaAtual = DemandaEtapa.Captacao;
+            demanda.Status = DemandaStatus.Concluido;
+            demanda.CaptacaoDate = DateTime.UtcNow;
+            demanda.ValidarContinuidade();
+            _context.SaveChanges();
+
+            if (captacao.Id == 0)
+                _serviceCaptacao.Post(captacao);
+            else
+            {
+                _serviceCaptacao.Put(captacao);
+            }
+
+            var user = _context.Users.Find(userId);
+
+            LogService.Incluir(userId, id, "Demanda para captação",
+                string.Format("O usuário {0} enviou a demanda para a captação", user.NomeCompleto));
         }
 
         #endregion
