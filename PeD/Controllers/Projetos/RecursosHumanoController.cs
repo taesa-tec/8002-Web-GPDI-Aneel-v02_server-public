@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -7,12 +8,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Projetos;
+using PeD.Core.Models;
+using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Requests.Projetos;
 using PeD.Data;
 using Swashbuckle.AspNetCore.Annotations;
 using TaesaCore.Controllers;
 using TaesaCore.Interfaces;
+using Empresa = PeD.Core.Models.Projetos.Empresa;
 
 namespace PeD.Controllers.Projetos
 {
@@ -31,10 +35,32 @@ namespace PeD.Controllers.Projetos
             _context = context;
         }
 
+        protected async Task<bool> HasAccess(int projetoId)
+        {
+            var projeto = _context.Set<Projeto>().Find(projetoId);
+            if (User.IsInRole(Roles.Administrador) || this.UserId() == projeto.ResponsavelId)
+            {
+                return true;
+            }
+
+            if (User.IsInRole(Roles.Fornecedor))
+            {
+                return await _context.Set<Fornecedor>()
+                    .AnyAsync(f =>
+                        f.ResponsavelId == this.UserId() && f.Id == projeto.FornecedorId); //Projeto.FornecedorId
+            }
+
+            return false;
+        }
 
         [HttpGet]
-        public ActionResult Get([FromRoute] int projetoId)
+        public async Task<ActionResult> Get([FromRoute] int projetoId)
         {
+            if (!await HasAccess(projetoId))
+            {
+                return Forbid();
+            }
+
             var recursos = Service.Filter(q => q
                 .Include(r => r.Empresa)
                 .Where(qw => qw.ProjetoId == projetoId)
@@ -43,8 +69,13 @@ namespace PeD.Controllers.Projetos
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult Get([FromRoute] int projetoId, int id)
+        public async Task<ActionResult> Get([FromRoute] int projetoId, int id)
         {
+            if (!await HasAccess(projetoId))
+            {
+                return Forbid();
+            }
+
             var recurso = Service.Filter(q => q
                 .Include(r => r.Empresa)
                 .Where(r => r.ProjetoId == projetoId && r.Id == id)
@@ -60,8 +91,15 @@ namespace PeD.Controllers.Projetos
         [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPut]
         [HttpPost]
-        public ActionResult Post([FromRoute] int projetoId, [FromBody] RecursoHumanoRequest request)
+        public async Task<ActionResult> Post([FromRoute] int projetoId, [FromBody] RecursoHumanoRequest request)
         {
+            if (!await HasAccess(projetoId) ||
+                !await _context.Set<Empresa>().AnyAsync(e => e.ProjetoId == projetoId && e.Id == request.EmpresaId))
+            {
+                return Forbid();
+            }
+
+
             var recurso = Mapper.Map<RecursoHumano>(request);
             recurso.ProjetoId = projetoId;
             if (recurso.Id > 0 && Request.Method == "PUT")
@@ -81,8 +119,13 @@ namespace PeD.Controllers.Projetos
 
         [Authorize(Policy = Policies.IsUserPeD)]
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id, [FromRoute] int projetoId)
         {
+            if (!await HasAccess(projetoId))
+            {
+                return Forbid();
+            }
+
             if (!_context.Set<RegistroFinanceiroInfo>().Any(r => r.RecursoHumanoId == id) &&
                 !_context.Set<AlocacaoRh>().Any(a => a.RecursoHumanoId == id))
             {

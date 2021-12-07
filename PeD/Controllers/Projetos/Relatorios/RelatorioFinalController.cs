@@ -23,7 +23,8 @@ namespace PeD.Controllers.Projetos.Relatorios
         RelatorioFinalController : ProjetoNodeBaseController<RelatorioFinal>
     {
         public RelatorioFinalController(IService<RelatorioFinal> service, IMapper mapper,
-            IAuthorizationService authorizationService, ProjetoService projetoService, GestorDbContext context) : base(service, mapper,
+            IAuthorizationService authorizationService, ProjetoService projetoService, GestorDbContext context) : base(
+            service, mapper,
             authorizationService, projetoService, context)
         {
         }
@@ -37,8 +38,10 @@ namespace PeD.Controllers.Projetos.Relatorios
 
         [HttpPost]
         [HttpPut]
-        public ActionResult Edit(RelatorioFinalRequest request)
+        public async Task<ActionResult> Edit(RelatorioFinalRequest request)
         {
+            if (!await HasAccess(true))
+                return Forbid();
             var prevRelatorio = Service.Filter(q => q.AsNoTracking().Where(r => r.ProjetoId == Projeto.Id))
                 .FirstOrDefault();
             var relatorio = Mapper.Map<RelatorioFinal>(request);

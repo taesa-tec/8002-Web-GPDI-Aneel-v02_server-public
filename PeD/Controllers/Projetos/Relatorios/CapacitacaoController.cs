@@ -37,6 +37,8 @@ namespace PeD.Controllers.Projetos.Relatorios
         public async Task<ActionResult> UploadRelatorio(int id, List<IFormFile> file,
             [FromServices] ArquivoService arquivoService)
         {
+            if (!await HasAccess(true))
+                return Forbid();
             var capacitacao = Service.Filter(q => q.Where(r => r.ProjetoId == Projeto.Id && r.Id == id))
                 .FirstOrDefault();
             if (capacitacao is null || file.Count == 0 || file.Count > 1)
@@ -48,8 +50,11 @@ namespace PeD.Controllers.Projetos.Relatorios
         }
 
         [HttpGet("{id:int}/Arquivos/Origem")]
-        public ActionResult GetRelatorioPdf(int id)
+        public async Task<ActionResult> GetRelatorioPdf(int id)
         {
+            if (!await HasAccess())
+                return Forbid();
+            
             var capacitacao = Service
                 .Filter(q =>
                     q.Include(e => e.ArquivoTrabalhoOrigem).Where(r => r.ProjetoId == Projeto.Id && r.Id == id))

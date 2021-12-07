@@ -41,16 +41,18 @@ namespace PeD.Controllers.Captacoes
         private IService<CaptacaoInfo> _serviceInfo;
         private new CaptacaoService Service;
         private ILogger<CaptacaoController> _logger;
+        private UserService _userService;
 
         public CaptacaoController(CaptacaoService service, IMapper mapper, UserManager<ApplicationUser> userManager,
             IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccessor,
-            IService<CaptacaoInfo> serviceInfo, ILogger<CaptacaoController> logger)
+            IService<CaptacaoInfo> serviceInfo, ILogger<CaptacaoController> logger, UserService userService)
             : base(service, mapper)
         {
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
             _userManager = userManager;
             _serviceInfo = serviceInfo;
             _logger = logger;
+            _userService = userService;
             Service = service;
         }
 

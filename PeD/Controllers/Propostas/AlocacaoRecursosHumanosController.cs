@@ -48,9 +48,13 @@ namespace PeD.Controllers.Propostas
             var recurso = _context.Set<RecursoHumano>().Include(r => r.Empresa)
                 .FirstOrDefault(r => r.Id == request.RecursoId);
             var empresa = _context.Set<Empresa>().FirstOrDefault(e => e.Id == request.EmpresaFinanciadoraId);
-            if (recurso != null && recurso.Empresa.Funcao == Funcao.Cooperada && empresa is {Funcao: Funcao.Executora})
+            if (recurso != null && recurso.Empresa.Funcao == Funcao.Cooperada &&
+                empresa is { Funcao: Funcao.Executora })
                 return ValidationProblem(
                     "Não é permitido um co-executor/executor destinar recursos a uma empresa Proponente/Cooperada");
+
+            if (!_context.Set<Empresa>().Any(e => e.Id == request.EmpresaFinanciadoraId && e.PropostaId == Proposta.Id))
+                return ValidationProblem("Empresa Inválida");
             return null;
         }
 

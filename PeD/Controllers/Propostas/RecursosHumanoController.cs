@@ -32,15 +32,25 @@ namespace PeD.Controllers.Propostas
             _context = context;
         }
 
+        protected override ActionResult Validate(RecursoHumanoRequest request)
+        {
+            if (!_context.Set<Empresa>().Any(e => e.Id == request.EmpresaId && e.PropostaId == Proposta.Id))
+            {
+                return ValidationProblem("Empresa Inválida");
+            }
+
+            return null;
+        }
+
         protected override IQueryable<RecursoHumano> Includes(IQueryable<RecursoHumano> queryable)
         {
-            return queryable
-                    .Include(r => r.Empresa)
-                ;
+            return queryable.Include(r => r.Empresa);
         }
 
         public override async Task<IActionResult> Delete(int id)
         {
+            if (!await HasAccess(true))
+                return Forbid();
             if (_context.Set<AlocacaoRh>().AsQueryable().Any(a => a.RecursoId == id))
             {
                 return Problem("Não é possível apagar um recurso já alocado", null, StatusCodes.Status409Conflict);

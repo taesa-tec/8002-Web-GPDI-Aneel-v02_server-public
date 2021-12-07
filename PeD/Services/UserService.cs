@@ -242,5 +242,10 @@ namespace PeD.Services
                 .Include("Empresa")
                 .ToList();
         }
+
+        public async Task<bool> IsUserInRole(string userId, params string[] roles)
+        {
+            return await _context.Users.AnyAsync(u => u.Id == userId && roles.Contains(u.Role));
+        }
     }
 }

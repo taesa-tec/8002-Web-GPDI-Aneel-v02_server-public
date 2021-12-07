@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Projetos;
 using PeD.Core.Models;
+using PeD.Core.Models.Fornecedores;
 using PeD.Core.Models.Projetos;
 using PeD.Core.Requests.Projetos;
 using PeD.Data;
@@ -43,16 +44,39 @@ namespace PeD.Controllers.Projetos
             _logger = logger;
         }
 
-        [HttpGet("Extrato")]
-        public ActionResult GetExtrato(int id)
+        protected async Task<bool> HasAccess(int projetoId)
         {
+            var projeto = _context.Set<Projeto>().Find(projetoId);
+            if (User.IsInRole(Roles.Administrador) || this.UserId() == projeto.ResponsavelId)
+            {
+                return true;
+            }
+
+            if (User.IsInRole(Roles.Fornecedor))
+            {
+                return await _context.Set<Fornecedor>()
+                    .AnyAsync(f =>
+                        f.ResponsavelId == this.UserId() && f.Id == projeto.FornecedorId); //Projeto.FornecedorId
+            }
+
+            return false;
+        }
+
+        [HttpGet("Extrato")]
+        public async Task<ActionResult> GetExtrato(int id)
+        {
+            if (!await HasAccess(id))
+                return Forbid();
+
             var extrato = Service.GetExtrato(id);
             return Ok(extrato);
         }
 
         [HttpGet("Criar")]
-        public ActionResult GetCriar([FromRoute] int id)
+        public async Task<ActionResult> GetCriar([FromRoute] int id)
         {
+            if (!await HasAccess(id))
+                return Forbid();
             var colaboradores = Mapper.Map<List<RecursoHumanoDto>>(Service.NodeList<RecursoHumano>(id));
             var recursos = Mapper.Map<List<RecursoMaterialDto>>(Service.NodeList<RecursoMaterial>(id));
             var etapas = Mapper.Map<List<EtapaDto>>(Service.NodeList<Etapa>(id));
@@ -105,8 +129,12 @@ namespace PeD.Controllers.Projetos
         #region Criar Registro
 
         [HttpPost("RecursoHumano")]
-        public ActionResult CriarRh([FromRoute] int id, RegistroRhRequest request)
+        public async Task<ActionResult> CriarRh([FromRoute] int id, RegistroRhRequest request)
         {
+            if (!await HasAccess(id) ||
+                !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id))
+                return Forbid();
+
             try
             {
                 var valorhora = _context.Set<RecursoHumano>()
@@ -143,8 +171,12 @@ namespace PeD.Controllers.Projetos
         }
 
         [HttpPost("RecursoMaterial")]
-        public ActionResult CriarRm([FromRoute] int id, RegistroRmRequest request)
+        public async Task<ActionResult> CriarRm([FromRoute] int id, RegistroRmRequest request)
         {
+            if (!await HasAccess(id) ||
+                !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id) ||
+                !_context.Set<Empresa>().Any(e => e.Id == request.RecebedoraId && e.ProjetoId == id))
+                return Forbid();
             try
             {
                 var registro = Mapper.Map<RegistroFinanceiroRm>(request);
@@ -180,10 +212,17 @@ namespace PeD.Controllers.Projetos
         #region Editar Registro
 
         [HttpPut("RecursoHumano/{registroId:int}")]
-        public ActionResult EditarRh([FromRoute] int id, [FromRoute] int registroId, RegistroRhRequest request)
+        public async Task<ActionResult> EditarRh([FromRoute] int id, [FromRoute] int registroId,
+            RegistroRhRequest request)
         {
+            if (!await HasAccess(id) ||
+                !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id))
+                return Forbid();
             if (string.IsNullOrWhiteSpace(request.ObservacaoInterna))
+            {
                 return BadRequest();
+            }
+
             try
             {
                 var pre = _context.Set<RegistroFinanceiroRh>().AsNoTracking().FirstOrDefault(r =>
@@ -228,8 +267,14 @@ namespace PeD.Controllers.Projetos
         }
 
         [HttpPut("RecursoMaterial/{registroId:int}")]
-        public ActionResult EditarRm([FromRoute] int id, [FromRoute] int registroId, RegistroRmRequest request)
+        public async Task<ActionResult> EditarRm([FromRoute] int id, [FromRoute] int registroId,
+            RegistroRmRequest request)
         {
+            if (!await HasAccess(id) ||
+                !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id) ||
+                !_context.Set<Empresa>().Any(e => e.Id == request.RecebedoraId && e.ProjetoId == id)
+            )
+                return Forbid();
             if (string.IsNullOrWhiteSpace(request.ObservacaoInterna))
                 return BadRequest();
             try
@@ -269,8 +314,10 @@ namespace PeD.Controllers.Projetos
         }
 
         [HttpDelete("{registroId:int}")]
-        public ActionResult Remover([FromRoute] int id, [FromRoute] int registroId)
+        public async Task<ActionResult> Remover([FromRoute] int id, [FromRoute] int registroId)
         {
+            if (!await HasAccess(id))
+                return Forbid();
             var pre = _context.Set<RegistroFinanceiro>().Include(r => r.Observacoes).AsNoTracking()
                 .FirstOrDefault(r => r.Id == registroId && r.ProjetoId == id);
             if (pre is null)
@@ -320,13 +367,16 @@ namespace PeD.Controllers.Projetos
         }
 
         [HttpGet("{registroId:int}/Comprovante")]
-        public ActionResult DownloadComprovante(int registroId,
+        public async Task<ActionResult> DownloadComprovante(int registroId,
             [FromServices] ArquivoService arquivoService)
         {
             var registro = _context.Set<RegistroFinanceiro>().Include(r => r.Comprovante)
                 .FirstOrDefault(r => r.Id == registroId);
             if (registro is null)
                 return NotFound();
+
+            if (!await HasAccess(registro.ProjetoId))
+                return Forbid();
 
             var file = registro.Comprovante;
             return PhysicalFile(file.Path, file.ContentType, file.FileName);
@@ -337,11 +387,13 @@ namespace PeD.Controllers.Projetos
         #region Obter
 
         [HttpGet("{registroId:int}")]
-        public ActionResult Get(int registroId)
+        public async Task<ActionResult> Get(int registroId)
         {
             var registro = _context.Set<RegistroFinanceiro>().FirstOrDefault(r => r.Id == registroId);
             if (registro == null)
                 return NotFound();
+            if (!await HasAccess(registro.ProjetoId))
+                return Forbid();
             if (registro.Tipo == "RegistroFinanceiroRh")
             {
                 var rh = _context.Set<RegistroFinanceiroRh>()
@@ -359,13 +411,15 @@ namespace PeD.Controllers.Projetos
         }
 
         [HttpGet("{registroId:int}/Info")]
-        public ActionResult GetInfo(int registroId)
+        public async Task<ActionResult> GetInfo(int registroId)
         {
             var registro = _context.Set<RegistroFinanceiroInfo>().FirstOrDefault(r =>
                 r.Id == registroId && (this.IsGestor() || r.AuthorId == this.UserId()));
 
             if (registro == null)
                 return NotFound();
+            if (!await HasAccess(registro.ProjetoId))
+                return Forbid();
             return Ok(Mapper.Map<RegistroFinanceiroInfoDto>(registro));
         }
 
@@ -389,13 +443,16 @@ namespace PeD.Controllers.Projetos
 
         [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPost("{registroId:int}/Aprovar")]
-        public ActionResult AprovarRegistroFinanceiro(int registroId)
+        public async Task<ActionResult> AprovarRegistroFinanceiro(int registroId)
         {
             var registro = _context.Set<RegistroFinanceiro>().FirstOrDefault(r => r.Id == registroId);
             if (registro is null)
             {
                 return NotFound();
             }
+
+            if (!await HasAccess(registro.ProjetoId))
+                return Forbid();
 
             registro.Status = StatusRegistro.Aprovado;
             _context.Update(registro);
@@ -405,7 +462,8 @@ namespace PeD.Controllers.Projetos
 
         [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPost("{registroId:int}/Reprovar")]
-        public ActionResult ReprovarRegistroFinanceiro(int registroId, [FromBody] RegistroAprovacaoRequest request)
+        public async Task<ActionResult> ReprovarRegistroFinanceiro(int registroId,
+            [FromBody] RegistroAprovacaoRequest request)
         {
             var registro = _context.Set<RegistroFinanceiro>().FirstOrDefault(r => r.Id == registroId);
             if (registro is null)
@@ -413,6 +471,8 @@ namespace PeD.Controllers.Projetos
                 return NotFound();
             }
 
+            if (!await HasAccess(registro.ProjetoId))
+                return Forbid();
             if (string.IsNullOrWhiteSpace(request.Observacao))
             {
                 return BadRequest("Observação não pode ser vazia");

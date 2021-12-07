@@ -32,10 +32,11 @@ namespace PeD.Controllers.Projetos.Relatorios
                 .OrderBy(e => e.Etapa.Ordem);
         }
 
-#pragma warning disable 1998
+
         public override async Task<IActionResult> Post(RelatorioEtapaRequest request)
-#pragma warning restore 1998
         {
+            if (!await HasAccess(true))
+                return Forbid();
             var etapa = Service.Get(request.Id);
             if (etapa is null || etapa.ProjetoId != Projeto.Id)
                 return NotFound();
