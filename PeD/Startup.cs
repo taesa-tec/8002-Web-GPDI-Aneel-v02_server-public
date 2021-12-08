@@ -195,6 +195,12 @@ namespace PeD
                 .AddEntityFrameworkStores<GestorDbContext>()
                 .AddDefaultTokenProviders()
                 .AddErrorDescriber<PortugueseIdentityErrorDescriber>();
+            services.Configure<IdentityOptions>(opt =>
+            {
+                opt.Lockout.MaxFailedAccessAttempts = Configuration.GetValue<int>("MaxFailedAccessAttempts");
+                opt.Lockout.DefaultLockoutTimeSpan =
+                    TimeSpan.FromMinutes(Configuration.GetValue<int>("LockoutTimeSpan"));
+            });
 
             services.AddScoped<IViewRenderService, ViewRenderService>();
             services.AddScoped<DbContext, GestorDbContext>();

@@ -33,6 +33,8 @@ cp ./PeD/appsettings.example.json ./PeD/appsettings.json
 5) `Url` do sistema.
 6) `CorsOrigin` Urls que podem fazer requisições
 7) `AllowedExtensionFiles` Extensões de arquivos pertimidas para upload
+8) `MaxFailedAccessAttempts` Máximo de tentativas de login
+9) `LockoutTimeSpan` Minutos que um usuário fica impedido de fazer login caso erre a senha varias vezes seguidas
 
 ---
 

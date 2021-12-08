@@ -45,7 +45,7 @@ namespace PeD.Services
             GestorDbContext = gestorDbContext;
         }
 
-        public bool ValidateCredentials(Login user)
+        public async Task<bool> ValidateCredentials(Login user)
         {
             if (user != null && !string.IsNullOrWhiteSpace(user.Email))
             {
@@ -56,8 +56,8 @@ namespace PeD.Services
                 if (userIdentity != null)
                 {
                     // Efetua o login com base no Id do usuário e sua senha
-                    var resultadoLogin = _signInManager.CheckPasswordSignInAsync(userIdentity, user.Password, false)
-                        .Result;
+                    var resultadoLogin =
+                        await _signInManager.CheckPasswordSignInAsync(userIdentity, user.Password, true);
                     if (resultadoLogin.Succeeded)
                     {
                         return userIdentity.Status;

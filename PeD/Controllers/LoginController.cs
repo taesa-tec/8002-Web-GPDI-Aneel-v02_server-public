@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,12 +22,12 @@ namespace PeD.Controllers
     {
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult<Token> Post(
+        public async Task<ActionResult<Token>> Post(
             [FromBody] Login user,
             [FromServices] AccessManager accessManager,
             [FromServices] IDistributedCache cache)
         {
-            if (accessManager.ValidateCredentials(user))
+            if (await accessManager.ValidateCredentials(user))
             {
                 var token = accessManager.GenerateToken(user);
                 cache.Set(token.AccessToken,
@@ -60,7 +61,6 @@ namespace PeD.Controllers
         {
             accessManager.RecuperarSenha(user);
             return Ok();
-
         }
 
         [HttpPost("nova-senha")]
