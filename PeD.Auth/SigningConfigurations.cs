@@ -21,8 +21,8 @@ namespace PeD.Auth
 
         public SigningConfigurations(string basehash)
         {
-            var md5Hash = MD5.Create();
-            var data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(basehash));
+            var sha256Hash = SHA256.Create();
+            var data = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(basehash));
             Key = new SymmetricSecurityKey(data);
             SigningCredentials = new SigningCredentials(Key, SecurityAlgorithms.HmacSha256);
         }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Propostas;
+using PeD.Core.Extensions;
 using PeD.Core.Models;
 using PeD.Core.Models.Captacoes;
 using PeD.Core.Models.Propostas;
@@ -72,8 +73,8 @@ namespace PeD.Controllers.Propostas
             ContratoComentario comentario = null;
 
             var contratoProposta = PropostaService.GetContrato(propostaId);
-            var hash = contratoProposta.Conteudo?.ToMD5() ?? "";
-            var hasChanges = !hash.Equals(request.Conteudo.ToMD5());
+            var hash = contratoProposta.Conteudo?.ToSHA256() ?? "";
+            var hasChanges = !hash.Equals(request.Conteudo.ToSHA256());
 
             contratoProposta.Finalizado = contratoProposta.Finalizado || !request.Draft;
             if (request.Draft)

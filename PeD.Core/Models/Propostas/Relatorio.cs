@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using FluentValidation.Results;
+using PeD.Core.Extensions;
 using TaesaCore.Extensions;
 
 namespace PeD.Core.Models.Propostas
@@ -10,7 +11,7 @@ namespace PeD.Core.Models.Propostas
     {
         public string Content { get; set; }
 
-        public string Hash => Content.Trim().ToMD5();
+        public string Hash => Content.Trim().ToSHA256();
 
         public DateTime DataAlteracao { get; set; }
 
