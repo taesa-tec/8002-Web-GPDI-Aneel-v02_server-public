@@ -61,7 +61,6 @@ namespace PeD.Controllers.Propostas
             return _mapper.Map<List<FileUploadDto>>(files);
         }
 
-        [AllowAnonymous]
         [HttpGet("{arquivoId:int}")]
         public async Task<ActionResult> GetFile([FromRoute] Guid propostaId, [FromRoute] int arquivoId)
         {
