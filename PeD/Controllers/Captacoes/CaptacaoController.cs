@@ -148,6 +148,7 @@ namespace PeD.Controllers.Captacoes
             return Ok(detalhes);
         }
 
+        [Authorize(Policy = Policies.IsUserTaesa)]
         [HttpPost("NovaCaptacao")]
         public async Task<ActionResult> NovaCaptacao(NovaCaptacaoRequest request,
             [FromServices] GestorDbContext context,
@@ -191,9 +192,12 @@ namespace PeD.Controllers.Captacoes
             return Ok();
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPut("Cancelar")]
         public async Task<ActionResult> Cancelar(BaseEntity request)
         {
+            if (!Service.Exist(request.Id))
+                return NotFound();
             try
             {
                 await Service.CancelarCaptacao(request.Id);
@@ -206,6 +210,7 @@ namespace PeD.Controllers.Captacoes
             }
         }
 
+        [Authorize(Policy = Policies.IsUserPeD)]
         [HttpPut("AlterarPrazo")]
         public async Task<ActionResult> AlterarPrazo(CaptacaoPrazoRequest request)
         {
@@ -449,7 +454,6 @@ namespace PeD.Controllers.Captacoes
 
         #region 2.4
 
-        //[Authorize(Policy = Policies.IsUserPeD)]
         [HttpGet("Refinamento")]
         public ActionResult GetPropostasRefinamento()
         {

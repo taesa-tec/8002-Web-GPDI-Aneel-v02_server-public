@@ -35,17 +35,17 @@ namespace PeD.Controllers.Captacoes
         }
 
         [HttpGet("{id}")]
+        [HttpGet("{id}/Detalhes")]
         public ActionResult<PropostaDto> GetProposta(int id)
         {
             var proposta = service.GetProposta(id);
-            return Mapper.Map<PropostaDto>(proposta);
+            if (this.IsAdmin() || proposta.Fornecedor.ResponsavelId == this.UserId())
+            {
+                return Mapper.Map<PropostaDto>(proposta);
+            }
+
+            return Forbid();
         }
 
-        [HttpGet("{id}/Detalhes")]
-        public ActionResult<PropostaDto> GetPropostaDetalhes(int id)
-        {
-            var proposta = service.GetProposta(id);
-            return Mapper.Map<PropostaDto>(proposta);
-        }
     }
 }

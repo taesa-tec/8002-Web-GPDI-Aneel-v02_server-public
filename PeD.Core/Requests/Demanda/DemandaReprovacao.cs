@@ -1,3 +1,4 @@
+
 namespace PeD.Core.Requests.Demanda
 {
     public class DemandaReprovacao

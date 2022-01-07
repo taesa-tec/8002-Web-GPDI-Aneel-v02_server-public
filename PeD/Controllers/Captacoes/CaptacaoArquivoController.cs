@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using PeD.Authorizations;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.Models.Captacoes;
 using PeD.Data;
@@ -18,6 +19,7 @@ namespace PeD.Controllers.Captacoes
     [Route("api/Captacoes")]
     [ApiController]
     [Authorize("Bearer")]
+    [Authorize(Policy = Policies.IsUserPeD)]
     public class CaptacaoArquivoController : FileBaseController<CaptacaoArquivo>
     {
         private IMapper _mapper;
@@ -47,6 +49,7 @@ namespace PeD.Controllers.Captacoes
             return NotFound();
         }
 
+        
         [HttpDelete("{id}/Arquivos/{fileId}")]
         public IActionResult RemoveFile(int id, int fileId)
         {
