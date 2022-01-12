@@ -14,6 +14,7 @@ using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AspNetCoreRateLimit;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -68,6 +69,12 @@ namespace PeD
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+            services.AddMemoryCache();
+            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+            services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
+            services.AddInMemoryRateLimiting();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             ConfigureSpa(services);
             try
             {
@@ -257,6 +264,7 @@ namespace PeD
 
             #endregion
 
+            app.UseIpRateLimiting();
 
             app.Use(async (context, next) =>
             {

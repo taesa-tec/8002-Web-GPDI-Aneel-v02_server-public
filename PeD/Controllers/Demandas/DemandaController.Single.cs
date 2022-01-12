@@ -29,6 +29,10 @@ namespace PeD.Controllers.Demandas
         [HttpPost("Criar")]
         public ActionResult<DemandaDto> CriarDemanda([FromBody] string titulo)
         {
+            if (string.IsNullOrWhiteSpace(titulo))
+            {
+                return BadRequest();
+            }
             var demanda = DemandaService.CriarDemanda(titulo, this.UserId());
             return _mapper.Map<DemandaDto>(demanda);
         }
@@ -181,11 +185,12 @@ namespace PeD.Controllers.Demandas
             if (!DemandaService.DemandaExist(id))
                 return NotFound();
 
-            var motivo = request.Motivo;
-
-
+            if (string.IsNullOrWhiteSpace(request.Motivo))
+            {
+                return BadRequest();
+            }
             DemandaService.ReprovarPermanente(id, this.UserId());
-            DemandaService.AddComentario(id, motivo, this.UserId());
+            DemandaService.AddComentario(id, request.Motivo, this.UserId());
 
             return GetById(id);
         }
