@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using PeD.Core;
+using PeD.Core.ApiModels;
 using PeD.Core.Models;
 using PeD.Data;
 
@@ -11,11 +14,13 @@ namespace PeD.Services.Sistema
         protected static EquipePeD EquipePeD { get; set; }
         protected GestorDbContext context;
         protected UserManager<ApplicationUser> _userManager;
+        private IMapper _mapper;
 
-        public SistemaService(GestorDbContext context, UserManager<ApplicationUser> userManager)
+        public SistemaService(GestorDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             this.context = context;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         public void SetOption(string name, object value)
@@ -61,10 +66,11 @@ namespace PeD.Services.Sistema
             var equipe = GetEquipePeD();
             return new
             {
-                Diretor = context.Users.FirstOrDefault(u => u.Id == equipe.Diretor),
-                Gerente = context.Users.FirstOrDefault(u => u.Id == equipe.Gerente),
-                Coordenador = context.Users.FirstOrDefault(u => u.Id == equipe.Coordenador),
-                Outros = context.Users.Where(u => equipe.Outros.Contains(u.Id))
+                Diretor = _mapper.Map<ApplicationUserDto>(context.Users.FirstOrDefault(u => u.Id == equipe.Diretor)),
+                Gerente = _mapper.Map<ApplicationUserDto>(context.Users.FirstOrDefault(u => u.Id == equipe.Gerente)),
+                Coordenador =
+                    _mapper.Map<ApplicationUserDto>(context.Users.FirstOrDefault(u => u.Id == equipe.Coordenador)),
+                Outros = _mapper.Map<List<ApplicationUserDto>>(context.Users.Where(u => equipe.Outros.Contains(u.Id)))
             };
         }
 
