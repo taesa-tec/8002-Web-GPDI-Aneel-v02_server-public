@@ -136,6 +136,7 @@ namespace PeD.Controllers.Sistema
             Service.Put(fornecedor);
         }
 
+        [Authorize(Policy = Policies.IsUserTaesa)]
         public override ActionResult<FornecedorDto> Get(int id)
         {
             if (!Service.Exist(id))
@@ -144,6 +145,7 @@ namespace PeD.Controllers.Sistema
             return Mapper.Map<FornecedorDto>(fornecedor);
         }
 
+        [Authorize(Policy = Policies.IsUserTaesa)]
         public override ActionResult<List<FornecedorDto>> Get()
         {
             return Mapper.Map<List<FornecedorDto>>(Service.Filter(q => q.Include(f => f.Responsavel)).ToList());
