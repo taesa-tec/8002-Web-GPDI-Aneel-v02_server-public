@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MimeDetective;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Demandas;
 using PeD.Core.Exceptions;
@@ -26,9 +27,8 @@ namespace PeD.Controllers.Demandas
         private ILogger<DemandaFileController> _logger;
 
         public DemandaFileController(GestorDbContext context, IConfiguration configuration, IMapper mapper,
-            ILogger<DemandaFileController> logger) : base(
-            context,
-            configuration)
+            ILogger<DemandaFileController> logger, ContentInspector contentInspector) : base(
+            context, configuration, contentInspector)
         {
             _mapper = mapper;
             _logger = logger;

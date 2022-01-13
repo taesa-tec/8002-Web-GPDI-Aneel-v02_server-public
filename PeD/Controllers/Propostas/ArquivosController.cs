@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MimeDetective;
 using PeD.Authorizations;
 using PeD.Core.ApiModels;
 using PeD.Core.Exceptions;
@@ -31,10 +32,10 @@ namespace PeD.Controllers.Propostas
         private IAuthorizationService authorizationService;
         private ILogger<ArquivosController> _logger;
 
-        public ArquivosController(GestorDbContext context, IConfiguration configuration,
+        public ArquivosController(ContentInspector contentInspector, GestorDbContext context, IConfiguration configuration,
             PropostaService propostaService, IAuthorizationService authorizationService, IMapper mapper,
             ILogger<ArquivosController> logger) : base(context,
-            configuration)
+            configuration, contentInspector)
         {
             _propostaService = propostaService;
             this.authorizationService = authorizationService;

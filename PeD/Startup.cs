@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -23,6 +24,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MimeDetective;
+using MimeDetective.Definitions;
+using MimeDetective.Definitions.Licensing;
+using MimeDetective.Storage;
 using Newtonsoft.Json;
 using PeD.Auth;
 using PeD.Authorizations;
@@ -75,6 +80,23 @@ namespace PeD
             services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
             services.AddInMemoryRateLimiting();
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            services.AddSingleton(provider =>
+            {
+                var allDefintions = new ExhaustiveBuilder()
+                {
+                    UsageType = UsageType.PersonalNonCommercial
+                }.Build();
+                var allowedFiles = Configuration.GetSection("AllowedExtensionFiles").Get<string[]>()
+                    .ToImmutableHashSet(StringComparer.InvariantCultureIgnoreCase);
+                var scopedDefinitions = allDefintions
+                        .ScopeExtensions(allowedFiles)
+                        .TrimMeta() //If you don't care about the meta information (definition author, creation date, etc)
+                        .TrimDescription() //If you don't care about the description
+                        // .TrimMimeType() //If you don't care about the mime type
+                        .ToImmutableArray()
+                    ;
+                return new ContentInspectorBuilder() { Definitions = scopedDefinitions }.Build();
+            });
             ConfigureSpa(services);
             try
             {

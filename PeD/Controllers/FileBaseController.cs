@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using MimeDetective;
 using PeD.Core.Exceptions;
 using PeD.Core.Models;
 using PeD.Data;
@@ -17,6 +18,7 @@ namespace PeD.Controllers
         protected GestorDbContext context;
         protected IConfiguration Configuration;
         protected readonly string StoragePath;
+        private ContentInspector _contentInspector;
         public string[] AllowedFiles { get; set; }
 
         protected string ActualPath
@@ -29,10 +31,12 @@ namespace PeD.Controllers
             }
         }
 
-        public FileBaseController(GestorDbContext context, IConfiguration configuration)
+        public FileBaseController(GestorDbContext context, IConfiguration configuration,
+            ContentInspector contentInspector)
         {
             this.context = context;
             Configuration = configuration;
+            _contentInspector = contentInspector;
             StoragePath = Configuration.GetValue<string>("StoragePath");
             AllowedFiles = Configuration.GetSection("AllowedExtensionFiles").Get<string[]>();
         }
@@ -50,6 +54,24 @@ namespace PeD.Controllers
         public virtual async Task<List<T>> Upload(Func<T, T> func = null)
         {
             var files = Request.Form.Files.ToList();
+            
+            if (!files.All(file => AllowedFiles.Any(ext => file.FileName.EndsWith($".{ext}"))))
+            {
+                throw new FileNotAllowedException();
+            }
+            
+            foreach (var file in files)
+            {
+                var stream = file.OpenReadStream();
+                var result = _contentInspector.Inspect(ContentReader.Default.ReadFromStream(stream));
+                var mimeType = result.ByMimeType();
+                if (mimeType.IsEmpty)
+                {
+                    throw new FileNotAllowedException();
+                }
+                
+            }
+
 
             if (!files.All(file => AllowedFiles.Any(ext => file.FileName.EndsWith($".{ext}"))))
             {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using MimeDetective;
 using PeD.Authorizations;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.Models.Captacoes;
@@ -24,8 +25,8 @@ namespace PeD.Controllers.Captacoes
     {
         private IMapper _mapper;
 
-        public CaptacaoArquivoController(GestorDbContext context, IConfiguration configuration, IMapper mapper) : base(
-            context, configuration)
+        public CaptacaoArquivoController(ContentInspector contentInspector, GestorDbContext context, IConfiguration configuration, IMapper mapper) : base(
+            context, configuration, contentInspector)
         {
             _mapper = mapper;
         }

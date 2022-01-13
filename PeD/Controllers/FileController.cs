@@ -8,6 +8,7 @@ using System.Linq;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MimeDetective;
 using PeD.Core.ApiModels;
 using PeD.Core.Models;
 using PeD.Data;
@@ -21,8 +22,9 @@ namespace PeD.Controllers
     {
         private IMapper _mapper;
 
-        public FileController(GestorDbContext context, IConfiguration configuration, IMapper mapper) : base(context,
-            configuration)
+        public FileController(GestorDbContext context, IConfiguration configuration, IMapper mapper,
+            ContentInspector contentInspector)
+            : base(context, configuration, contentInspector)
         {
             _mapper = mapper;
         }
