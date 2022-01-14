@@ -1,4 +1,5 @@
 using System;
+using FluentValidation;
 using PeD.Core.Models.Projetos;
 
 namespace PeD.Core.Requests.Captacao
@@ -13,5 +14,13 @@ namespace PeD.Core.Requests.Captacao
         public string TituloCompleto { get; set; }
         public DateTime? InicioProjeto { get; set; }
         public TipoCompartilhamento? Compartilhamento { get; set; }
+    }
+
+    public class CaptacaoFormalizacaoRequestValidator : AbstractValidator<CaptacaoFormalizacaoRequest>
+    {
+        public CaptacaoFormalizacaoRequestValidator()
+        {
+            RuleFor(request => request.TituloCompleto).NotEmpty();
+        }
     }
 }

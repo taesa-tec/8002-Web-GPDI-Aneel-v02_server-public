@@ -34,9 +34,21 @@ namespace PeD.Controllers.Propostas
 
         protected override ActionResult Validate(AlocacaoRecursoMaterialRequest request)
         {
+            if (!_context.Set<Etapa>().Any(e => e.PropostaId == Proposta.Id && e.Id == request.EtapaId))
+            {
+                return ValidationProblem("Etapa não encontrada");
+            }
+
+            if (_context.Set<RecursoMaterial>()
+                .Any(r => r.Id == request.RecursoId && r.PropostaId == Proposta.Id))
+            {
+                return ValidationProblem("Recurso não encontrado");
+            }
+
             if (!_context.Set<Empresa>()
                     .Any(e => e.Id == request.EmpresaFinanciadoraId && e.PropostaId == Proposta.Id) ||
-                !_context.Set<Empresa>().Any(e => e.Id == request.EmpresaRecebedoraId && e.PropostaId == Proposta.Id))
+                !_context.Set<Empresa>()
+                    .Any(e => e.Id == request.EmpresaRecebedoraId && e.PropostaId == Proposta.Id))
                 return ValidationProblem("Empresa Inválida");
             return null;
         }

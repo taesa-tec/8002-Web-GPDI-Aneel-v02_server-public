@@ -131,9 +131,13 @@ namespace PeD.Controllers.Projetos
         [HttpPost("RecursoHumano")]
         public async Task<ActionResult> CriarRh([FromRoute] int id, RegistroRhRequest request)
         {
-            if (!await HasAccess(id) ||
-                !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id))
+            if (!await HasAccess(id))
                 return Forbid();
+
+            if (!_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id) ||
+                !_context.Set<Etapa>().Any(e => e.Id == request.EtapaId && e.ProjetoId == id) ||
+                !_context.Set<RecursoHumano>().Any(e => e.Id == request.RecursoHumanoId && e.ProjetoId == id))
+                return BadRequest();
 
             try
             {
@@ -215,13 +219,14 @@ namespace PeD.Controllers.Projetos
         public async Task<ActionResult> EditarRh([FromRoute] int id, [FromRoute] int registroId,
             RegistroRhRequest request)
         {
-            if (!await HasAccess(id) ||
-                !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id))
+            if (!await HasAccess(id))
                 return Forbid();
-            if (string.IsNullOrWhiteSpace(request.ObservacaoInterna))
-            {
+
+            if (string.IsNullOrWhiteSpace(request.ObservacaoInterna) ||
+                !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id) ||
+                !_context.Set<Etapa>().Any(e => e.Id == request.EtapaId && e.ProjetoId == id) ||
+                !_context.Set<RecursoHumano>().Any(e => e.Id == request.RecursoHumanoId && e.ProjetoId == id))
                 return BadRequest();
-            }
 
             try
             {
@@ -270,12 +275,15 @@ namespace PeD.Controllers.Projetos
         public async Task<ActionResult> EditarRm([FromRoute] int id, [FromRoute] int registroId,
             RegistroRmRequest request)
         {
-            if (!await HasAccess(id) ||
-                !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id) ||
-                !_context.Set<Empresa>().Any(e => e.Id == request.RecebedoraId && e.ProjetoId == id)
-            )
+            if (!await HasAccess(id))
                 return Forbid();
-            if (string.IsNullOrWhiteSpace(request.ObservacaoInterna))
+            
+            if (string.IsNullOrWhiteSpace(request.ObservacaoInterna) ||
+                !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id) ||
+                !_context.Set<Empresa>().Any(e => e.Id == request.RecebedoraId && e.ProjetoId == id) ||
+                !_context.Set<Etapa>().Any(e => e.Id == request.EtapaId && e.ProjetoId == id) ||
+                !_context.Set<RecursoMaterial>().Any(e => e.Id == request.RecursoMaterialId && e.ProjetoId == id)
+               )
                 return BadRequest();
             try
             {

@@ -45,9 +45,15 @@ namespace PeD.Controllers.Propostas
 
         protected override ActionResult Validate(AlocacaoRecursoHumanoRequest request)
         {
+            if (!_context.Set<Etapa>().Any(e => e.PropostaId == Proposta.Id && e.Id == request.EtapaId))
+            {
+                return ValidationProblem("Etapa não encontrada");
+            }
+
             var recurso = _context.Set<RecursoHumano>().Include(r => r.Empresa)
-                .FirstOrDefault(r => r.Id == request.RecursoId);
-            var empresa = _context.Set<Empresa>().FirstOrDefault(e => e.Id == request.EmpresaFinanciadoraId);
+                .FirstOrDefault(r => r.Id == request.RecursoId && r.PropostaId == Proposta.Id);
+            var empresa = _context.Set<Empresa>()
+                .FirstOrDefault(e => e.Id == request.EmpresaFinanciadoraId && e.PropostaId == Proposta.Id);
             if (recurso != null && recurso.Empresa.Funcao == Funcao.Cooperada &&
                 empresa is { Funcao: Funcao.Executora })
                 return ValidationProblem(

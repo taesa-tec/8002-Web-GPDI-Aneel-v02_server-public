@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FluentValidation;
 using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Captacao
@@ -27,5 +28,14 @@ namespace PeD.Core.Requests.Captacao
         /// Ids dos fornecedores que serão convidados
         /// </summary>
         public List<int> Fornecedores { get; set; }
+    }
+
+    public class ConfiguracaoRequestValidator : AbstractValidator<ConfiguracaoRequest>
+    {
+        public ConfiguracaoRequestValidator()
+        {
+            RuleFor(request => request.Fornecedores.Count).GreaterThan(0);
+            RuleFor(request => request.ContratoId).GreaterThan(0);
+        }
     }
 }
