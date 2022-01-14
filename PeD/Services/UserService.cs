@@ -59,21 +59,14 @@ namespace PeD.Services
             return Users;
         }
 
-        public async Task Incluir(ApplicationUser dadosUser)
+        public async Task<bool> Incluir(ApplicationUser dadosUser)
         {
             dadosUser.Id = Guid.NewGuid().ToString();
             dadosUser.EmailConfirmed = true;
             dadosUser.DataCadastro = DateTime.Now;
             await CreateUser(dadosUser, dadosUser.Role);
-            try
-            {
-                accessManager.SendRecoverAccountEmail(dadosUser.Email, true,
-                    "Seja bem-vindo ao Gerenciador PDI Taesa").Wait(10000);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
+            return await accessManager.SendRecoverAccountEmail(dadosUser.Email, true,
+                "Seja bem-vindo ao Gerenciador PDI Taesa");
         }
 
         public Resultado Atualizar(ApplicationUser dadosUser)

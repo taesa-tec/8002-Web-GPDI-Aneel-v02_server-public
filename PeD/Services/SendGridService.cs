@@ -34,41 +34,26 @@ namespace PeD.Services
             }
         }
 
-        public async Task Send(string to, string subject, string content, string title = null,
+        public async Task<bool> Send(string to, string subject, string content, string title = null,
             string actionLabel = null, string actionUrl = null)
         {
-            await Send(new[] { to }, subject, content, title, actionLabel, actionUrl);
+            return await Send(new[] { to }, subject, content, title, actionLabel, actionUrl);
         }
 
-        public async Task Send(string[] tos, string subject, string content, string title = null,
+        public async Task<bool> Send(string[] tos, string subject, string content, string title = null,
             string actionLabel = null, string actionUrl = null)
+        {
+            title ??= subject;
+            return await Send(tos, subject, "Email/SimpleMail",
+                new SimpleMail()
+                    { Titulo = title, Conteudo = content, ActionLabel = actionLabel, ActionUrl = actionUrl });
+        }
+
+        public async Task<bool> Send<T>(string[] tos, string subject, string viewName, T model) where T : class
         {
             try
             {
-                if (Client == null)
-                {
-                    throw new NullReferenceException();
-                }
-
-                title ??= subject;
-                await Send(tos, subject, "Email/SimpleMail",
-                    new SimpleMail()
-                        { Titulo = title, Conteudo = content, ActionLabel = actionLabel, ActionUrl = actionUrl });
-            }
-            catch (Exception e)
-            {
-                Logger.LogError("Erro ao enviar o email: {Message}", e.Message);
-            }
-        }
-
-        public async Task Send<T>(string[] tos, string subject, string viewName, T model) where T : class
-        {
-            try
-            {
-                if (Client == null)
-                {
-                    throw new NullReferenceException();
-                }
+                if (Client == null) { throw new NullReferenceException(); }
 
                 var viewContent = await ViewRender.RenderToStringAsync(viewName, model);
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(From,
@@ -82,17 +67,19 @@ namespace PeD.Services
                 }
 
                 await Client.SendEmailAsync(message);
+                return true;
             }
             catch (Exception e)
             {
                 Logger.LogError("Erro no disparo de email: {Error}.", e.Message);
                 Logger.LogError("StackError: {Error}", e.StackTrace);
+                return false;
             }
         }
 
-        public async Task Send<T>(string to, string subject, string viewName, T model) where T : class
+        public async Task<bool> Send<T>(string to, string subject, string viewName, T model) where T : class
         {
-            await Send(new[] { to }, subject, viewName, model);
+            return await Send(new[] { to }, subject, viewName, model);
         }
     }
 }

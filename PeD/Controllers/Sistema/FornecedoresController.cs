@@ -83,7 +83,7 @@ namespace PeD.Controllers.Sistema
                 {
                     foreach (var userResultError in userResult.Errors)
                     {
-                        Console.WriteLine(userResultError.Description);
+                        _logger.LogError("Erro na criação do fornecedor: {Error}", userResultError.Description);
                     }
 
                     throw new Exception("Erros na criação do usuário do responsável");

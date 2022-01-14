@@ -123,58 +123,47 @@ namespace PeD.Services
             };
         }
 
-        public bool RecuperarSenha(Login user)
+        public async Task<bool> RecuperarSenha(Login user)
         {
             if (string.IsNullOrWhiteSpace(user.Email))
             {
                 return false;
             }
-
-            try
+            else if (await SendRecoverAccountEmail(user.Email))
             {
-                SendRecoverAccountEmail(user.Email).Wait(10000);
-            }
-            catch (Exception)
-            {
-                return false;
+                return true;
             }
 
-            return true;
+            throw new Exception();
         }
 
-        public bool NovaSenha(User user)
+        public async Task<bool> NovaSenha(User user)
         {
             if (string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.NewPassword))
             {
                 return false;
             }
 
-            var User = _userManager.Users
-                .Where(u => u.Email == user.Email)
-                .FirstOrDefault();
-            if (User == null)
-            {
-                return false;
-            }
+            var applicationUser = _userManager.Users.Where(u => u.Email == user.Email).FirstOrDefault();
+
+            if (applicationUser == null) return false;
 
             var token = Encoding.ASCII.GetString(Convert.FromBase64String(user.ResetToken));
-            var result = _userManager.ResetPasswordAsync(User, token, user.NewPassword).Result;
-            if (result.Errors.Count() > 0)
-            {
-                return false;
-            }
+            var result = await _userManager.ResetPasswordAsync(applicationUser, token, user.NewPassword);
+
+            if (result.Errors.Count() > 0) return false;
 
             return true;
         }
 
-        public async Task SendRecoverAccountEmail(string email, bool newAccount = false,
+        public async Task<bool> SendRecoverAccountEmail(string email, bool newAccount = false,
             string subject = "Redefinição de Senha - Gerenciador PDI Taesa")
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null) throw new Exception("Email não encontrado");
+            if (user == null) return false;
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            // Console.WriteLine(token);
-            await SendGridService.Send(email, subject, newAccount ? "Email/RegisterAccount" : "Email/RecoverAccount",
+            return await SendGridService.Send(email, subject,
+                newAccount ? "Email/RegisterAccount" : "Email/RecoverAccount",
                 new RecoverAccount()
                 {
                     Email = email,
@@ -182,13 +171,13 @@ namespace PeD.Services
                 });
         }
 
-        public async Task SendNewFornecedorAccountEmail(string email, Fornecedor fornecedor)
+        public async Task<bool> SendNewFornecedorAccountEmail(string email, Fornecedor fornecedor)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || fornecedor == null) return;
+            if (user == null || fornecedor == null) return false;
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            await SendGridService.Send(email,
+            return await SendGridService.Send(email,
                 "Você foi convidado para participar do Gestor PDI da Taesa como Fornecedor Cadastrado",
                 "Email/FornecedorAccount",
                 new FornecedorAccount()

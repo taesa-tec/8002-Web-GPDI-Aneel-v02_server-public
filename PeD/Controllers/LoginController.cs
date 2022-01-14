@@ -55,20 +55,36 @@ namespace PeD.Controllers
         }
 
         [HttpPost("recuperar-senha")]
-        public object PostA(
+        public async Task<ActionResult> RecuperarSenha(
             [FromBody] Login user,
             [FromServices] AccessManager accessManager)
         {
-            accessManager.RecuperarSenha(user);
-            return Ok();
+            try
+            {
+                await accessManager.RecuperarSenha(user);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return Problem("Não foi possivel enviar email de recuperação",
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPost("nova-senha")]
-        public object PostB(
+        public async Task<ActionResult> NovaSenha(
             [FromBody] User user,
             [FromServices] AccessManager accessManager)
         {
-            return accessManager.NovaSenha(user);
+            try
+            {
+                await accessManager.NovaSenha(user);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return Problem("Não foi possivel enviar email", statusCode: StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }

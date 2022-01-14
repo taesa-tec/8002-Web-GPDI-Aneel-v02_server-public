@@ -11,6 +11,7 @@ using iText.Layout.Properties;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PeD.Core.Exceptions.Demandas;
 using PeD.Core.Models;
@@ -47,6 +48,7 @@ namespace PeD.Services.Demandas
 
         private IService<Captacao> _serviceCaptacao;
         private IViewRenderService _viewRender;
+        private ILogger<DemandaService> _logger;
         protected Dictionary<DemandaEtapa, CanDemandaProgress> DemandaProgressCheck;
         public readonly DemandaLogService LogService;
         private IConfiguration Configuration;
@@ -66,7 +68,7 @@ namespace PeD.Services.Demandas
             IWebHostEnvironment hostingEnvironment,
             SistemaService sistemaService, IViewRenderService viewRender, IService<Captacao> serviceCaptacao,
             IConfiguration configuration, SendGridService sendGridService, ArquivoService arquivoService,
-            PdfService pdfService)
+            PdfService pdfService, ILogger<DemandaService> logger)
             : base(repository)
         {
             _context = context;
@@ -77,6 +79,7 @@ namespace PeD.Services.Demandas
             Configuration = configuration;
             _sendGridService = sendGridService;
             _pdfService = pdfService;
+            _logger = logger;
             LogService = logService;
 
 
@@ -223,15 +226,7 @@ namespace PeD.Services.Demandas
             var user = _context.Users.Find(userId);
             demanda.IrParaEtapa(demandaEtapa);
             _context.SaveChanges();
-            try
-            {
-                NotificarResponsavel(demanda, userId);
-            }
-            catch (Exception)
-            {
-                //ignore
-            }
-
+            NotificarResponsavel(demanda, userId);
             if (demanda.EtapaAtual < DemandaEtapa.Captacao && demanda.Status == DemandaStatus.EmElaboracao)
             {
                 LogService.Incluir(userId, demanda.Id, "Alterou Etapa",
@@ -263,6 +258,7 @@ namespace PeD.Services.Demandas
                     demanda.ProximaEtapa();
                     _context.SaveChanges();
                     NotificarResponsavel(demanda, responsavelId);
+
                     var user = _context.Users.Find(userId);
                     if (demanda.Status == DemandaStatus.Aprovada)
                     {
@@ -797,7 +793,7 @@ namespace PeD.Services.Demandas
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError("Erro ao notificar o usuário responsável. \n {Error}", e.Message);
             }
         }
 
