@@ -35,7 +35,7 @@ namespace PeD
             }
             catch (Exception e)
             {
-                Log.Fatal(e, "Servidor encerrado devido a um erro fatal!");
+                Log.Fatal("Erro fatal na inicialização do servidor: {Error}", e.Message);
             }
             finally
             {
@@ -45,8 +45,10 @@ namespace PeD
 
         private static void UpdateDb(GestorDbContext db)
         {
-            Log.Information("GestorDbContext");
-
+            if (!db.Database.CanConnect())
+            {
+                throw new Exception("Não é possível conectar com o servidor do banco de dados");
+            }
             try
             {
                 var pendingMigrations = db.Database.GetPendingMigrations();
@@ -59,7 +61,7 @@ namespace PeD
             }
             catch (Exception e)
             {
-                Log.Error(e, "Erro na migração: {Error}", e.Message);
+                Log.Error("Erro na migração: {Error}", e.Message);
                 throw;
             }
 
