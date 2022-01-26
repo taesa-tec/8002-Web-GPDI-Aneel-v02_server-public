@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MimeDetective;
 using PeD.Authorizations;
 using PeD.Core.ApiModels;
 using PeD.Core.Models;
@@ -30,14 +31,16 @@ namespace PeD.Controllers
         private string AvatarPath;
         private IWebHostEnvironment env;
         private ILogger<UsersController> _logger;
+        private ContentInspector _contentInspector;
 
         public UsersController(UserService service, IMapper mapper, IConfiguration configuration,
-            IWebHostEnvironment env, ILogger<UsersController> logger)
+            IWebHostEnvironment env, ILogger<UsersController> logger, ContentInspector contentInspector)
         {
             _service = service;
             _mapper = mapper;
             this.env = env;
             _logger = logger;
+            _contentInspector = contentInspector;
             var storagePath = configuration.GetValue<string>("StoragePath");
             AvatarPath = Path.Combine(storagePath, "avatar");
         }
@@ -85,14 +88,15 @@ namespace PeD.Controllers
         [RequestSizeLimit(5242880)] // 5MB
         public async Task<IActionResult> UploadAvatar(IFormFile file, [FromRoute] string userId)
         {
-            var exts = new[] { "png", "jpg", "gif", "jpeg" };
-            if (exts.Any(ext => file.FileName.EndsWith($".{ext}")))
+            try
             {
                 await _service.UpdateAvatar(userId, file);
                 return Ok();
             }
-
-            return BadRequest();
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpDelete("{userId}/Avatar")]

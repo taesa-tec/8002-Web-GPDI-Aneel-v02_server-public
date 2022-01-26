@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MimeDetective;
 using PeD.Core.ApiModels;
+using PeD.Core.Exceptions;
 using PeD.Core.Models;
 using PeD.Data;
 
@@ -19,16 +21,18 @@ namespace PeD.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private AccessManager accessManager;
         private IConfiguration Configuration;
+        private ContentInspector _contentInspector;
 
         public UserService(
             GestorDbContext context,
             UserManager<ApplicationUser> userManager,
-            AccessManager accessManager, IConfiguration configuration)
+            AccessManager accessManager, IConfiguration configuration, ContentInspector contentInspector)
         {
             _context = context;
             _userManager = userManager;
             this.accessManager = accessManager;
             Configuration = configuration;
+            _contentInspector = contentInspector;
         }
 
         protected List<string> GetRoles(ApplicationUser user) => _userManager.GetRolesAsync(user).Result.ToList();
@@ -202,6 +206,15 @@ namespace PeD.Services
                 }
 
                 File.Move(fullname, fullname + ".old");
+            }
+
+            var readStream = file.OpenReadStream();
+            var result = _contentInspector.Inspect(ContentReader.Default.ReadFromStream(readStream));
+            var mimeType = result.ByMimeType();
+            var exts = new[] {"png", "jpg", "gif", "jpeg"};
+            if (!exts.Any(ext => file.FileName.EndsWith($".{ext}")) || mimeType.IsEmpty)
+            {
+                throw new FileNotAllowedException();
             }
 
             try

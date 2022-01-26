@@ -1,8 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MimeDetective;
 using PeD.Core.ApiModels;
 using PeD.Core.Extensions;
 using PeD.Core.Requests.Users;
@@ -17,11 +19,13 @@ namespace PeD.Controllers
     {
         private UserService _service;
         private IMapper mapper;
+        private ContentInspector _contentInspector;
 
-        public MeController(IMapper mapper, UserService service)
+        public MeController(IMapper mapper, UserService service, ContentInspector contentInspector)
         {
             this.mapper = mapper;
             _service = service;
+            _contentInspector = contentInspector;
         }
 
         [HttpGet("")]
@@ -45,8 +49,15 @@ namespace PeD.Controllers
         [RequestSizeLimit(5242880)] // 5MB
         public async Task<IActionResult> UploadAvatar(IFormFile file)
         {
-            await _service.UpdateAvatar(this.UserId(), file);
-            return Ok();
+            try
+            {
+                await _service.UpdateAvatar(this.UserId(), file);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpDelete("Avatar")]
