@@ -18,6 +18,7 @@ namespace PeD.Controllers.Sistema
             this.sistemaService = sistemaService;
         }
 
+        [Authorize(Policy = Policies.IsUserTaesa)]
         [HttpGet]
         public object GetEquipePeD()
         {
