@@ -20,7 +20,15 @@ namespace PeD.Core.Requests.Proposta
         {
             RuleFor(a => a.EmpresaFinanciadoraId).GreaterThan(0);
             RuleFor(a => a.RecursoId).GreaterThan(0);
-            RuleFor(a => a.HoraMeses.Sum(hm => hm.Value)).GreaterThan(0).WithMessage("A soma das horas alocadas deve ser maior que zero");
+            RuleFor(a => a.HoraMeses).Custom((horas, context) =>
+            {
+                if (horas.Any(hora => hora.Value < 0))
+                {
+                    context.AddFailure("Quantidade de horas inválida");
+                }
+            });
+            RuleFor(a => a.HoraMeses.Sum(hm => hm.Value)).GreaterThan(0)
+                .WithMessage("A soma das horas alocadas deve ser maior que zero");
         }
     }
 }

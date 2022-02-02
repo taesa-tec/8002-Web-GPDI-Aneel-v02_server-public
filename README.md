@@ -26,8 +26,11 @@ cd ./caminho-do-repositorio
 
 > Configurações necessárias
 
-1) `ConnectionStrings.BaseGestor` string de conexão com o banco de dados.
-2) `SpaPath` é o caminho onde o client(SPA) do sistema foi compilado.
+1) `ConnectionStrings.BaseGestor` string de conexão com o banco de dados.\
+_Como forma de manter o sistema seguro e evitar a exposição de senha é possível usar windows authentication como forma de autenticação,_\
+_remova o `User Id` e `Password` da string de conexão e adicione a propriedade `Integrated Security=true`. (Lembre-se de dar os privilégios necessários para a máquina que fará o acesso ao banco)_
+2) `SpaPath` é o caminho onde os arquivos do client/frontend está contido. O usuário final ao acessar a aplicação (Ex: localhost:5000) receberá o arquivo index.html contido no diretório informado
+   1) Lembre-se que o endereço localhost:4200 (Padrão do server angular) é somente para desevolvimento e jamais deve ser utilizado em modo de produção.
 3) `StoragePath` é a pasta onde os arquivos gerados pelo sistema deverão ser salvos  (Obs.: Somente caminho absoluto).
 4) `ApiKey` do Sendgrid para o disparo de emails.
 5) `Url` do sistema.
@@ -35,6 +38,7 @@ cd ./caminho-do-repositorio
 7) `AllowedExtensionFiles` Extensões de arquivos pertimidas para upload
 8) `MaxFailedAccessAttempts` Máximo de tentativas de login
 9) `LockoutTimeSpan` Minutos que um usuário fica impedido de fazer login caso erre a senha varias vezes seguidas
+10) `IpRateLimiting` e `IpRateLimitPolicies` Configurações de segurança/performace que controlam o número de requisições permitidas em um período de tempo, útil para combater ataques DDos e/ou limitar endpoints que causem stress no servidor.
 
 ---
 

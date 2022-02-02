@@ -54,6 +54,7 @@ namespace PeD.Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpPost("recuperar-senha")]
         public async Task<ActionResult> RecuperarSenha(
             [FromBody] Login user,
@@ -71,6 +72,7 @@ namespace PeD.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("nova-senha")]
         public async Task<ActionResult> NovaSenha(
             [FromBody] User user,

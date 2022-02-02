@@ -54,7 +54,7 @@ namespace PeD.Controllers
                 await _service.UpdateAvatar(this.UserId(), file);
                 return Ok();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return BadRequest();
             }

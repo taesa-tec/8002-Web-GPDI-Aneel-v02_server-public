@@ -37,7 +37,7 @@ namespace PeD.Services
         public async Task<bool> Send(string to, string subject, string content, string title = null,
             string actionLabel = null, string actionUrl = null)
         {
-            return await Send(new[] { to }, subject, content, title, actionLabel, actionUrl);
+            return await Send(new[] {to}, subject, content, title, actionLabel, actionUrl);
         }
 
         public async Task<bool> Send(string[] tos, string subject, string content, string title = null,
@@ -46,28 +46,32 @@ namespace PeD.Services
             title ??= subject;
             return await Send(tos, subject, "Email/SimpleMail",
                 new SimpleMail()
-                    { Titulo = title, Conteudo = content, ActionLabel = actionLabel, ActionUrl = actionUrl });
+                    {Titulo = title, Conteudo = content, ActionLabel = actionLabel, ActionUrl = actionUrl});
         }
 
         public async Task<bool> Send<T>(string[] tos, string subject, string viewName, T model) where T : class
         {
             try
             {
-                if (Client == null) { throw new NullReferenceException(); }
+                if (Client == null)
+                {
+                    throw new NullReferenceException();
+                }
 
                 var viewContent = await ViewRender.RenderToStringAsync(viewName, model);
                 var message = MailHelper.CreateSingleEmailToMultipleRecipients(From,
                     tos.Select(to => new EmailAddress(to)).ToList(),
                     subject, "", viewContent);
 
-                foreach (var bcc in EmailConfig.Bcc)
-                {
-                    if (!tos.Contains(bcc))
-                        message.AddBcc(bcc);
-                }
+                if (EmailConfig.Bcc != null)
+                    foreach (var bcc in EmailConfig.Bcc)
+                    {
+                        if (!tos.Contains(bcc))
+                            message.AddBcc(bcc);
+                    }
 
-                await Client.SendEmailAsync(message);
-                return true;
+                var response = await Client.SendEmailAsync(message);
+                return response.IsSuccessStatusCode;
             }
             catch (Exception e)
             {
@@ -79,7 +83,7 @@ namespace PeD.Services
 
         public async Task<bool> Send<T>(string to, string subject, string viewName, T model) where T : class
         {
-            return await Send(new[] { to }, subject, viewName, model);
+            return await Send(new[] {to}, subject, viewName, model);
         }
     }
 }

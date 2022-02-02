@@ -1,4 +1,5 @@
 using System;
+using FluentValidation;
 using PeD.Core.Models.Projetos;
 
 namespace PeD.Core.Requests.Projetos
@@ -15,5 +16,13 @@ namespace PeD.Core.Requests.Projetos
         public string NumeroDocumento { get; set; }
         public DateTime DataDocumento { get; set; }
         public string ObservacaoInterna { get; set; }
+    }
+
+    public class RegistroRhRequestValidation : AbstractValidator<RegistroRhRequest>
+    {
+        public RegistroRhRequestValidation()
+        {
+            RuleFor(request => request.Horas).GreaterThanOrEqualTo(0);
+        }
     }
 }
