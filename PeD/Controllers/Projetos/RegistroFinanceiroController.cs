@@ -135,6 +135,9 @@ namespace PeD.Controllers.Projetos
                 return Forbid();
 
             if (!_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id) ||
+                !_context.Set<FileUpload>()
+                    .Any(f => f.Id == request.ComprovanteId &&
+                              f.UserId == this.UserId()) || // Somente arquivo enviados pelo usuário atual
                 !_context.Set<Etapa>().Any(e => e.Id == request.EtapaId && e.ProjetoId == id) ||
                 !_context.Set<RecursoHumano>().Any(e => e.Id == request.RecursoHumanoId && e.ProjetoId == id))
                 return BadRequest();
@@ -179,6 +182,9 @@ namespace PeD.Controllers.Projetos
         {
             if (!await HasAccess(id) ||
                 !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id) ||
+                !_context.Set<FileUpload>()
+                    .Any(f => f.Id == request.ComprovanteId &&
+                              f.UserId == this.UserId()) || // Somente arquivo enviados pelo usuário atual
                 !_context.Set<Empresa>().Any(e => e.Id == request.RecebedoraId && e.ProjetoId == id))
                 return Forbid();
             try
@@ -224,6 +230,9 @@ namespace PeD.Controllers.Projetos
 
             if (string.IsNullOrWhiteSpace(request.ObservacaoInterna) ||
                 !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id) ||
+                !(!request.ComprovanteId.HasValue ||
+                  _context.Set<FileUpload>().Any(f => f.Id == request.ComprovanteId &&
+                                                      f.UserId == this.UserId())) ||
                 !_context.Set<Etapa>().Any(e => e.Id == request.EtapaId && e.ProjetoId == id) ||
                 !_context.Set<RecursoHumano>().Any(e => e.Id == request.RecursoHumanoId && e.ProjetoId == id))
                 return BadRequest();
@@ -248,8 +257,8 @@ namespace PeD.Controllers.Projetos
                 registro.AuthorId = pre.AuthorId;
                 registro.Id = registroId;
 
-                registro.ComprovanteId = _context.Set<RegistroFinanceiro>().Where(r => r.Id == registroId)
-                    .Select(r => r.ComprovanteId).FirstOrDefault();
+                registro.ComprovanteId =
+                    request.ComprovanteId.HasValue ? request.ComprovanteId.Value : pre.ComprovanteId;
                 _context.Update(registro);
                 _context.SaveChanges();
 
@@ -277,8 +286,11 @@ namespace PeD.Controllers.Projetos
         {
             if (!await HasAccess(id))
                 return Forbid();
-            
+
             if (string.IsNullOrWhiteSpace(request.ObservacaoInterna) ||
+                !(!request.ComprovanteId.HasValue ||
+                  _context.Set<FileUpload>().Any(f => f.Id == request.ComprovanteId &&
+                                                      f.UserId == this.UserId())) ||
                 !_context.Set<Empresa>().Any(e => e.Id == request.FinanciadoraId && e.ProjetoId == id) ||
                 !_context.Set<Empresa>().Any(e => e.Id == request.RecebedoraId && e.ProjetoId == id) ||
                 !_context.Set<Etapa>().Any(e => e.Id == request.EtapaId && e.ProjetoId == id) ||
@@ -297,8 +309,8 @@ namespace PeD.Controllers.Projetos
                 registro.ProjetoId = id;
                 registro.Id = registroId;
                 registro.AuthorId = pre.AuthorId;
-                registro.ComprovanteId = _context.Set<RegistroFinanceiro>().Where(r => r.Id == registroId)
-                    .Select(r => r.ComprovanteId).FirstOrDefault();
+                registro.ComprovanteId =
+                    request.ComprovanteId.HasValue ? request.ComprovanteId.Value : pre.ComprovanteId;
                 _context.Update(registro);
                 _context.SaveChanges();
 

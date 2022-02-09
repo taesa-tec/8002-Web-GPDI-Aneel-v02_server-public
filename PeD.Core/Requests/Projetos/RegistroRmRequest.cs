@@ -6,6 +6,7 @@ namespace PeD.Core.Requests.Projetos
     {
         public string NomeItem { get; set; }
         public int EtapaId { get; set; }
+        public int? ComprovanteId { get; set; }
         public int RecursoMaterialId { get; set; }
         public int Quantidade { get; set; }
         public decimal Valor { get; set; }
