@@ -517,6 +517,14 @@ namespace PeD.Controllers.Captacoes
                 return BadRequest();
             }
 
+            // O arquivo comprobatório deverá ser enviado antes do recebimento desta requisição
+            // Então comparamos o id do arquivo salvo na captação com o id recebido na requisição
+            // Caso sejam diferentes significa que as requisições não foram enviados sequencialmente 
+            if (captacao.ArquivoRiscosId != request.ArquivoId)
+            {
+                return Problem("Arquivo não enviado", null, StatusCodes.Status409Conflict);
+            }
+
             captacao.UsuarioAprovacaoId = request.ResponsavelId;
             captacao.Status = Captacao.CaptacaoStatus.Formalizacao;
             Service.Put(captacao);
@@ -536,7 +544,7 @@ namespace PeD.Controllers.Captacoes
             }
 
             var captacao = Service.Filter(q => q
-                .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada &&
+                .Where(c => c.Status == Captacao.CaptacaoStatus.AnaliseRisco &&
                             (c.UsuarioRefinamentoId == this.UserId() || this.IsAdmin()) &&
                             c.Id == id
                 )).FirstOrDefault();
@@ -549,7 +557,7 @@ namespace PeD.Controllers.Captacoes
             var file = await arquivoService.SaveFile(upload);
             captacao.ArquivoRiscosId = file.Id;
             Service.Put(captacao);
-            return Ok();
+            return Ok(Mapper.Map<FileUploadDto>(file));
         }
 
         [Authorize(Policy = Policies.IsUserPeD)]
@@ -619,6 +627,14 @@ namespace PeD.Controllers.Captacoes
             if (captacao == null)
             {
                 return NotFound();
+            }
+
+            // O arquivo comprobatório deverá ser enviado antes do recebimento desta requisição
+            // Então comparamos o id do arquivo salvo na captação com o id recebido na requisição
+            // Caso sejam diferentes significa que as requisições não foram enviados sequencialmente 
+            if (captacao.ArquivoFormalizacaoId != request.ArquivoId)
+            {
+                return Problem("Arquivo não enviado", null, StatusCodes.Status409Conflict);
             }
 
             if (request.Aprovado &&
@@ -695,7 +711,7 @@ namespace PeD.Controllers.Captacoes
             var file = await arquivoService.SaveFile(upload);
             captacao.ArquivoFormalizacaoId = file.Id;
             Service.Put(captacao);
-            return Ok();
+            return Ok(Mapper.Map<FileUploadDto>(file));
         }
 
         [Authorize(Policy = Policies.IsUserPeD)]
