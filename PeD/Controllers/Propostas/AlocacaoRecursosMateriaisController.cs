@@ -39,7 +39,7 @@ namespace PeD.Controllers.Propostas
                 return ValidationProblem("Etapa não encontrada");
             }
 
-            if (_context.Set<RecursoMaterial>()
+            if (!_context.Set<RecursoMaterial>()
                 .Any(r => r.Id == request.RecursoId && r.PropostaId == Proposta.Id))
             {
                 return ValidationProblem("Recurso não encontrado");

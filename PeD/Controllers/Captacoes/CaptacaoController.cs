@@ -14,6 +14,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PeD.Authorizations;
+using PeD.Core.ApiModels;
 using PeD.Core.ApiModels.Captacao;
 using PeD.Core.ApiModels.Propostas;
 using PeD.Core.Models;
@@ -143,7 +144,7 @@ namespace PeD.Controllers.Captacoes
 
             var detalhes = Mapper.Map<CaptacaoDetalhesDto>(captacao);
             detalhes.EspecificacaoTecnicaUrl = _urlHelper.Link("DemandaPdf",
-                new { id = captacao.DemandaId, form = "especificacao-tecnica" });
+                new {id = captacao.DemandaId, form = "especificacao-tecnica"});
 
             return Ok(detalhes);
         }
@@ -157,12 +158,12 @@ namespace PeD.Controllers.Captacoes
             var captacao = Service.Get(request.Id);
             if (captacao.Status == Captacao.CaptacaoStatus.Elaboracao && captacao.EnvioCaptacao != null)
             {
-                return BadRequest(new { error = "Captação já está em elaboração" });
+                return BadRequest(new {error = "Captação já está em elaboração"});
             }
 
             if (!contratoService.Exist(request.ContratoId))
             {
-                return BadRequest(new { error = "Contrato sugerido não existe ou foi removido" });
+                return BadRequest(new {error = "Contrato sugerido não existe ou foi removido"});
             }
 
             captacao.Observacoes = request.Observacoes;
@@ -413,6 +414,14 @@ namespace PeD.Controllers.Captacoes
                 return Problem("Data alvo não pode ser menor que hoje", null, StatusCodes.Status409Conflict);
             }
 
+            // O arquivo comprobatório deverá ser enviado antes do recebimento desta requisição
+            // Então comparamos o id do arquivo salvo na captação com o id recebido na requisição
+            // Caso sejam diferentes significa que as requisições não foram enviados sequencialmente 
+            if (captacao.ArquivoComprobatorioId != request.ArquivoId)
+            {
+                return Problem("Arquivo não enviado", null, StatusCodes.Status409Conflict);
+            }
+
             captacao.DataAlvo = request.DataAlvo;
             captacao.UsuarioRefinamentoId = request.ResponsavelId;
             captacao.PropostaSelecionadaId = request.PropostaId;
@@ -434,9 +443,9 @@ namespace PeD.Controllers.Captacoes
             }
 
             var captacao = Service.Filter(q => q
-                .Where(c => c.Status >= Captacao.CaptacaoStatus.Encerrada &&
-                            //c.UsuarioSuprimentoId == this.UserId() &&
-                            c.Id == id
+                .Where(c =>
+                    c.Status == Captacao.CaptacaoStatus.Encerrada &&
+                    c.Id == id
                 )).FirstOrDefault();
 
             if (captacao == null)
@@ -447,7 +456,7 @@ namespace PeD.Controllers.Captacoes
             var file = await arquivoService.SaveFile(upload);
             captacao.ArquivoComprobatorioId = file.Id;
             Service.Put(captacao);
-            return Ok();
+            return Ok(Mapper.Map<FileUploadDto>(file));
         }
 
         #endregion
@@ -619,7 +628,7 @@ namespace PeD.Controllers.Captacoes
                     !request.EmpresaProponenteId.HasValue ||
                     !request.Compartilhamento.HasValue
                 )
-            )
+               )
             {
                 return BadRequest();
             }
