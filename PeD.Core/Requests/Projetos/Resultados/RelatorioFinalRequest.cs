@@ -66,5 +66,8 @@ namespace PeD.Core.Requests.Projetos.Resultados
         /// </summary>
         [MaxLength(500)]
         public string TransferenciaTecnologica { get; set; }
+
+        public int? RelatorioArquivoId { get; set; }
+        public int? AuditoriaRelatorioArquivoId { get; set; }
     }
 }
