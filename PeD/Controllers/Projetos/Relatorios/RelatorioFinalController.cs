@@ -43,12 +43,10 @@ namespace PeD.Controllers.Projetos.Relatorios
         {
             // Verifica se o usuário tem acesos ao projeto e se os arquivos selecionados foram enviados pelo usuário
             if (!await HasAccess(true) ||
-                request.AuditoriaRelatorioArquivoId.HasValue &&
-                !arquivoService.IsUserFiles(this.UserId(),
-                    request.AuditoriaRelatorioArquivoId.Value) ||
-                request.RelatorioArquivoId.HasValue &&
-                !arquivoService.IsUserFiles(this.UserId(),
-                    request.RelatorioArquivoId.Value)
+                (request.AuditoriaRelatorioArquivoId.HasValue && !arquivoService.IsUserFiles(this.UserId(),
+                    request.AuditoriaRelatorioArquivoId.Value)) ||
+                (request.RelatorioArquivoId.HasValue && !arquivoService.IsUserFiles(this.UserId(),
+                    request.RelatorioArquivoId.Value))
                )
                 return Forbid();
             var prevRelatorio = Service.Filter(q => q.AsNoTracking().Where(r => r.ProjetoId == Projeto.Id))

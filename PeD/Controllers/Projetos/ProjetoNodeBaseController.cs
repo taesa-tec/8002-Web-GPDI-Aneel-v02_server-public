@@ -123,6 +123,11 @@ namespace PeD.Controllers.Projetos
             if (!await HasAccess(true))
                 return Forbid();
 
+            if (!Validate(request, out var validationError))
+            {
+                return BadRequest(validationError);
+            }
+
             var node = Mapper.Map<T>(request);
             node.ProjetoId = Projeto.Id;
             Service.Post(node);
@@ -131,6 +136,18 @@ namespace PeD.Controllers.Projetos
 
         protected virtual void BeforePut(T actual, T @new)
         {
+        }
+
+        protected virtual bool Validate(TRequest request, out object error)
+        {
+            error = null;
+            if (request != null)
+            {
+                return true;
+            }
+
+            error = "Request Nulo";
+            return false;
         }
 
         [HttpPut]
@@ -145,6 +162,10 @@ namespace PeD.Controllers.Projetos
             if (nodeInitial == null)
                 return NotFound();
 
+            if (!Validate(request, out var validationError))
+            {
+                return BadRequest(validationError);
+            }
 
             var node = Mapper.Map<T>(request);
             node.ProjetoId = Projeto.Id;

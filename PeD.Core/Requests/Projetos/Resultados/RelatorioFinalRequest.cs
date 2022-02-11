@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Projetos.Resultados
@@ -69,5 +70,20 @@ namespace PeD.Core.Requests.Projetos.Resultados
 
         public int? RelatorioArquivoId { get; set; }
         public int? AuditoriaRelatorioArquivoId { get; set; }
+    }
+
+    public class RelatorioFinalRequestValidator : AbstractValidator<RelatorioFinalRequest>
+    {
+        public RelatorioFinalRequestValidator()
+        {
+            RuleFor(r => r).NotNull();
+            RuleFor(r => r.AbrangenciaProduto).NotEmpty().When(r => r.IsAplicabilidadeAlcancada);
+            RuleFor(r => r.AmbitoAplicacaoProduto).NotEmpty().When(r => r.IsAplicabilidadeAlcancada);
+            RuleFor(r => r.ResultadosTestes).NotEmpty().When(r => r.IsAplicabilidadeAlcancada);
+            RuleFor(r => r.AplicabilidadeJustificativa).NotEmpty().When(r => !r.IsAplicabilidadeAlcancada);
+            RuleFor(r => r.TecnicaImplementada).NotEmpty();
+            RuleFor(r => r.TecnicaProduto).NotEmpty();
+            RuleFor(r => r.TransferenciaTecnologica).NotEmpty();
+        }
     }
 }
