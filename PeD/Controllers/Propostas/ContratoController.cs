@@ -194,6 +194,8 @@ namespace PeD.Controllers.Propostas
         {
             if (!await HasAccess())
                 return Forbid();
+            if (string.IsNullOrWhiteSpace(request.Mensagem))
+                return BadRequest();
             Proposta.ContratoAprovacao = StatusAprovacao.Alteracao;
             var comentario = new ContratoComentario()
             {

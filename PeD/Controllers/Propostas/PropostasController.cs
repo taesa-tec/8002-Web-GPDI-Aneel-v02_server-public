@@ -332,6 +332,8 @@ namespace PeD.Controllers.Propostas
             var proposta = Service.GetProposta(guid);
             if (!await HasAccess(proposta) || proposta.Captacao.Status != Captacao.CaptacaoStatus.Refinamento)
                 return Forbid();
+            if (string.IsNullOrWhiteSpace(request.Mensagem))
+                return BadRequest();
             proposta.PlanoTrabalhoAprovacao = StatusAprovacao.Alteracao;
             var comentario = new PlanoComentario()
             {
