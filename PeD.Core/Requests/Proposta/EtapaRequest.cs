@@ -15,6 +15,8 @@ namespace PeD.Core.Requests.Proposta
     {
         public EtapaRequestValidator()
         {
+            RuleFor(r => r.DescricaoAtividades).NotEmpty();
+            RuleFor(r => r.ProdutoId).NotNull();
             RuleFor(r => r).Custom((r, c) =>
             {
                 if (r.MesFinal - r.MesInicio < 2)

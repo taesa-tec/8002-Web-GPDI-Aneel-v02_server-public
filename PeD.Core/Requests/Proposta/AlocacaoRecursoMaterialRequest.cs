@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FluentValidation;
 using TaesaCore.Models;
 
 namespace PeD.Core.Requests.Proposta
@@ -12,5 +13,15 @@ namespace PeD.Core.Requests.Proposta
         public int Quantidade { get; set; }
         public string Justificativa { get; set; }
         public Dictionary<short, short> HoraMeses { get; set; }
+    }
+
+    public class AlocacaoRecursoMaterialRequestValidator : AbstractValidator<AlocacaoRecursoMaterialRequest>
+    {
+        public AlocacaoRecursoMaterialRequestValidator()
+        {
+            RuleFor(r => r).NotNull();
+            RuleFor(r => r.Quantidade).GreaterThan(0);
+            RuleFor(r => r.Justificativa).NotEmpty();
+        }
     }
 }
