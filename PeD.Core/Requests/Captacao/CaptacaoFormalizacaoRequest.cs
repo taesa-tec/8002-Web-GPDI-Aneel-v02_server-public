@@ -7,6 +7,7 @@ namespace PeD.Core.Requests.Captacao
     public class CaptacaoFormalizacaoRequest
     {
         public string NumeroProjeto { get; set; }
+        public int ArquivoId { get; set; }
         public string ResponsavelId { get; set; }
         public bool Aprovado { get; set; }
         public int? EmpresaProponenteId { get; set; }

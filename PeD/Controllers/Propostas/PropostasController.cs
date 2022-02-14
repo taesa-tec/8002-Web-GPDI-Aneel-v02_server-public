@@ -111,6 +111,7 @@ namespace PeD.Controllers.Propostas
                     relatorio.Validacao
                 });
             }
+
             return NotFound();
         }
 
@@ -349,7 +350,7 @@ namespace PeD.Controllers.Propostas
         public async Task<ActionResult> AnexoComentario(int id, List<IFormFile> file,
             [FromServices] ArquivoService arquivoService)
         {
-            var arquivos = await arquivoService.SaveFiles(file);
+            var arquivos = await arquivoService.SaveFiles(file, this.UserId());
             var entities = arquivos.ToList().Select(a => new PlanoComentarioFile()
             {
                 ComentarioId = id,

@@ -61,9 +61,26 @@ namespace PeD.Controllers.Projetos.Relatorios
                 producaoCientifica.ArquivoTrabalhoOrigem.FileName);
         }
 
+        protected override bool Validate(ProducaoCientificaRequest request, out object error)
+        {
+            if (!base.Validate(request, out error)) return false;
+
+            if (!request.ArquivoTrabalhoOrigemId.HasValue && // Se não foi enviado a id do arquivo e é um entrada nova
+                request.Id == 0 ||
+                !(request.ArquivoTrabalhoOrigemId
+                      .HasValue && // Ou se o arquivo foi enviado mas não foi o usuário atual que o enviou
+                  Context.Files.Any(f => f.UserId == this.UserId() && f.Id == request.ArquivoTrabalhoOrigemId)))
+            {
+                error = "Arquivo não enviado ou inválido";
+                return false;
+            }
+
+            return true;
+        }
+
         protected override void BeforePut(ProducaoCientifica actual, ProducaoCientifica @new)
         {
-            @new.ArquivoTrabalhoOrigemId = actual.ArquivoTrabalhoOrigemId;
+            @new.ArquivoTrabalhoOrigemId ??= actual.ArquivoTrabalhoOrigemId;
         }
     }
 }

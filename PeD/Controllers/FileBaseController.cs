@@ -54,12 +54,12 @@ namespace PeD.Controllers
         public virtual async Task<List<T>> Upload(Func<T, T> func = null)
         {
             var files = Request.Form.Files.ToList();
-            
+
             if (!files.All(file => AllowedFiles.Any(ext => file.FileName.EndsWith($".{ext}"))))
             {
                 throw new FileNotAllowedException();
             }
-            
+
             foreach (var file in files)
             {
                 var stream = file.OpenReadStream();
@@ -69,7 +69,6 @@ namespace PeD.Controllers
                 {
                     throw new FileNotAllowedException();
                 }
-                
             }
 
 
@@ -102,6 +101,7 @@ namespace PeD.Controllers
                         if (func != null)
                         {
                             _t = func(_t);
+                            _t.UserId = this.UserId();
                         }
 
                         fileUploads.Add(_t);

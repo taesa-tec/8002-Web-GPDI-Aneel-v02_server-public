@@ -81,7 +81,7 @@ namespace PeD.Services
             return folder;
         }
 
-        public async Task<List<FileUpload>> SaveFiles(List<IFormFile> files)
+        public async Task<List<FileUpload>> SaveFiles(List<IFormFile> files, string userId = "")
         {
             var arquivos = new List<FileUpload>();
             foreach (var file in files)
@@ -89,6 +89,7 @@ namespace PeD.Services
                 if (file.Length == 0) continue;
                 var arquivo = new FileUpload()
                 {
+                    UserId = userId,
                     ContentType = file.ContentType,
                     Name = file.Name,
                     FileName = file.FileName,
@@ -140,6 +141,12 @@ namespace PeD.Services
 
             Post(arquivo);
             return arquivo;
+        }
+
+        public bool IsUserFiles(string userId, params int[] fileIds)
+        {
+            return repository.Context.Set<FileUpload>().Count(f => f.UserId == userId && fileIds.Contains(f.Id)) ==
+                   fileIds.Length;
         }
     }
 }

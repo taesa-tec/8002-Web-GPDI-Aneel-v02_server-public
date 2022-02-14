@@ -38,21 +38,33 @@ namespace PeD.Controllers.Projetos.Relatorios
 
         [HttpPost]
         [HttpPut]
-        public async Task<ActionResult> Edit(RelatorioFinalRequest request)
+        public async Task<ActionResult> Edit(RelatorioFinalRequest request,
+            [FromServices] ArquivoService arquivoService)
         {
-            if (!await HasAccess(true))
+            // Verifica se o usuário tem acesos ao projeto e se os arquivos selecionados foram enviados pelo usuário
+            if (!await HasAccess(true) ||
+                (request.AuditoriaRelatorioArquivoId.HasValue && !arquivoService.IsUserFiles(this.UserId(),
+                    request.AuditoriaRelatorioArquivoId.Value)) ||
+                (request.RelatorioArquivoId.HasValue && !arquivoService.IsUserFiles(this.UserId(),
+                    request.RelatorioArquivoId.Value))
+               )
                 return Forbid();
             var prevRelatorio = Service.Filter(q => q.AsNoTracking().Where(r => r.ProjetoId == Projeto.Id))
                 .FirstOrDefault();
             var relatorio = Mapper.Map<RelatorioFinal>(request);
             relatorio.ProjetoId = Projeto.Id;
             if (prevRelatorio is null)
+            {
+                if (!request.AuditoriaRelatorioArquivoId.HasValue || !request.RelatorioArquivoId.HasValue)
+                    return BadRequest();
                 Service.Post(relatorio);
+            }
             else
             {
                 relatorio.Id = prevRelatorio.Id;
-                relatorio.RelatorioArquivoId = prevRelatorio.RelatorioArquivoId;
-                relatorio.AuditoriaRelatorioArquivoId = prevRelatorio.AuditoriaRelatorioArquivoId;
+                relatorio.RelatorioArquivoId = request.RelatorioArquivoId ?? prevRelatorio.RelatorioArquivoId;
+                relatorio.AuditoriaRelatorioArquivoId =
+                    request.AuditoriaRelatorioArquivoId ?? prevRelatorio.AuditoriaRelatorioArquivoId;
                 Service.Put(relatorio);
             }
 

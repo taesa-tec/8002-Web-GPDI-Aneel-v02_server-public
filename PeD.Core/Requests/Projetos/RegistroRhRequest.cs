@@ -7,6 +7,7 @@ namespace PeD.Core.Requests.Projetos
     public class RegistroRhRequest
     {
         public int EtapaId { get; set; }
+        public int? ComprovanteId { get; set; }
         public int RecursoHumanoId { get; set; }
         public int FinanciadoraId { get; set; }
         public int Horas { get; set; }

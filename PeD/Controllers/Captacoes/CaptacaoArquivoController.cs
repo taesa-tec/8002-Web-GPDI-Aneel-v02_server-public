@@ -20,7 +20,7 @@ namespace PeD.Controllers.Captacoes
     [Route("api/Captacoes")]
     [ApiController]
     [Authorize("Bearer")]
-    [Authorize(Policy = Policies.IsUserPeD)]
+    [Authorize(Policy = Policies.IsUserTaesa)]
     public class CaptacaoArquivoController : FileBaseController<CaptacaoArquivo>
     {
         private IMapper _mapper;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FluentValidation;
 using TaesaCore.Models;
 
 namespace PeD.Core.ApiModels.Propostas
@@ -24,5 +25,22 @@ namespace PeD.Core.ApiModels.Propostas
         public string ExperienciaPrevia { get; set; }
         public string Contrapartidas { get; set; }
         public List<MetaDto> Metas { get; set; }
+    }
+    public class PropostaEscopoDtoValidator : AbstractValidator<PropostaEscopoDto>
+    {
+        public PropostaEscopoDtoValidator()
+        {
+            RuleFor(r => r).NotNull();
+            RuleFor(r => r.ResultadoEsperado).NotEmpty();
+            RuleFor(r => r.Objetivo).NotEmpty();
+            RuleFor(r => r.BeneficioTaesa).NotEmpty();
+            RuleFor(r => r.BeneficioInstitucional).NotEmpty();
+            RuleFor(r => r.BeneficioIndustria).NotEmpty();
+            RuleFor(r => r.BeneficioSetorEletrico).NotEmpty();
+            RuleFor(r => r.BeneficioSociedade).NotEmpty();
+            RuleFor(r => r.ExperienciaPrevia).NotEmpty();
+            RuleFor(r => r.Contrapartidas).NotEmpty();
+            RuleFor(r => r.Metas).NotEmpty();
+        }
     }
 }
