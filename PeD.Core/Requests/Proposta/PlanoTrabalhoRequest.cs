@@ -22,17 +22,17 @@ namespace PeD.Core.Requests.Proposta
         public PlanoTrabalhoRequestValidator()
         {
             RuleFor(r => r).NotNull();
-            RuleFor(r => r.Motivacao).NotEmpty();
-            RuleFor(r => r.Originalidade).NotEmpty();
-            RuleFor(r => r.Aplicabilidade).NotEmpty();
-            RuleFor(r => r.Relevancia).NotEmpty();
-            RuleFor(r => r.RazoabilidadeCustos).NotEmpty();
-            RuleFor(r => r.MetodologiaTrabalho).NotEmpty();
-            RuleFor(r => r.BuscaAnterioridade).NotEmpty();
-            RuleFor(r => r.Bibliografia).NotEmpty();
-            RuleFor(r => r.PesquisasCorrelatasPeDAneel).NotEmpty();
-            RuleFor(r => r.PesquisasCorrelatasPeD).NotEmpty();
-            RuleFor(r => r.PesquisasCorrelatasExecutora).NotEmpty();
+            RuleFor(r => r.Motivacao).NotEmpty().MaximumLength(1000);
+            RuleFor(r => r.Originalidade).NotEmpty().MaximumLength(1000);
+            RuleFor(r => r.Aplicabilidade).NotEmpty().MaximumLength(1000);
+            RuleFor(r => r.Relevancia).NotEmpty().MaximumLength(1000);
+            RuleFor(r => r.RazoabilidadeCustos).NotEmpty().MaximumLength(1000);
+            RuleFor(r => r.MetodologiaTrabalho).NotEmpty().MaximumLength(1000);
+            RuleFor(r => r.BuscaAnterioridade).NotEmpty().MaximumLength(1000);
+            RuleFor(r => r.Bibliografia).NotEmpty().MaximumLength(1000);
+            RuleFor(r => r.PesquisasCorrelatasPeDAneel).NotEmpty().MaximumLength(1000);
+            RuleFor(r => r.PesquisasCorrelatasPeD).NotEmpty().MaximumLength(1000);
+            RuleFor(r => r.PesquisasCorrelatasExecutora).NotEmpty().MaximumLength(1000);
         }
     }
 }
