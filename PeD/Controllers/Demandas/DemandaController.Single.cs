@@ -29,10 +29,11 @@ namespace PeD.Controllers.Demandas
         [HttpPost("Criar")]
         public ActionResult<DemandaDto> CriarDemanda([FromBody] string titulo)
         {
-            if (string.IsNullOrWhiteSpace(titulo))
+            if (string.IsNullOrWhiteSpace(titulo) || titulo.Trim().Split(' ').Length > 3)
             {
                 return BadRequest();
             }
+
             var demanda = DemandaService.CriarDemanda(titulo, this.UserId());
             return _mapper.Map<DemandaDto>(demanda);
         }
@@ -189,6 +190,7 @@ namespace PeD.Controllers.Demandas
             {
                 return BadRequest();
             }
+
             DemandaService.ReprovarPermanente(id, this.UserId());
             DemandaService.AddComentario(id, request.Motivo, this.UserId());
 

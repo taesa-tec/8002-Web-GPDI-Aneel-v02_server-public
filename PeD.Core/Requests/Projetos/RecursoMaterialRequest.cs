@@ -19,7 +19,7 @@ namespace PeD.Core.Requests.Projetos
             RuleFor(r => r.Nome).NotEmpty();
             RuleFor(r => r.CategoriaContabilId).NotEmpty();
             RuleFor(r => r.ValorUnitario).NotEmpty();
-            RuleFor(r => r.EspecificacaoTecnica).NotEmpty();
+            RuleFor(r => r.EspecificacaoTecnica).NotEmpty().MaximumLength(1000);
         }
     }
 }
