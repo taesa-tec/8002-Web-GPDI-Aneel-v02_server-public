@@ -24,6 +24,7 @@ namespace PeD.Core.Requests.Projetos
         public RegistroRhRequestValidation()
         {
             RuleFor(request => request.Horas).GreaterThanOrEqualTo(0);
+            RuleFor(request => request.AtividadeRealizada).NotEmpty();
         }
     }
 }

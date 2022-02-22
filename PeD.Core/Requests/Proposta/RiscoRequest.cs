@@ -18,7 +18,7 @@ namespace PeD.Core.Requests.Proposta
             RuleFor(r => r).NotNull();
             RuleFor(r => r.Item).NotEmpty();
             RuleFor(r => r.Classificacao).NotEmpty();
-            RuleFor(r => r.Justificativa).NotEmpty();
+            RuleFor(r => r.Justificativa).NotEmpty().MaximumLength(1000);
             RuleFor(r => r.Probabilidade).NotEmpty();
         }
     }

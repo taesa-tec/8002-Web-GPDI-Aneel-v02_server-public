@@ -1,4 +1,5 @@
 using FluentValidation;
+using PeD.Core.Utils;
 
 namespace PeD.Core.Requests.Sistema.Fornecedores
 {
@@ -15,7 +16,13 @@ namespace PeD.Core.Requests.Sistema.Fornecedores
     {
         public FornecedorCreateRequestValidator()
         {
-            RuleFor(f => f.Cnpj).NotEmpty();
+            RuleFor(f => f.Cnpj).NotEmpty().Custom((s, context) =>
+            {
+                if (!CpfCnpj.IsCnpj(s))
+                {
+                    context.AddFailure("Cnpj Inválido");
+                }
+            });
             RuleFor(f => f.Nome).NotEmpty();
             RuleFor(f => f.Uf).NotEmpty();
             RuleFor(f => f.ResponsavelNome).NotEmpty();
