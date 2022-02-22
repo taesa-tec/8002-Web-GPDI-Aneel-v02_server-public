@@ -1,4 +1,5 @@
-﻿using TaesaCore.Models;
+﻿using FluentValidation;
+using TaesaCore.Models;
 
 namespace PeD.Core.Models.Catalogos
 {
@@ -9,6 +10,14 @@ namespace PeD.Core.Models.Catalogos
         public override string ToString()
         {
             return Nome;
+        }
+    }
+
+    public class PaisValidator : AbstractValidator<Pais>
+    {
+        public PaisValidator()
+        {
+            RuleFor(r => r.Nome).NotEmpty();
         }
     }
 }

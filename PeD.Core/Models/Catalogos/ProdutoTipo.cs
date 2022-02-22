@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FluentValidation;
 
 namespace PeD.Core.Models.Catalogos
 {
@@ -18,5 +19,13 @@ namespace PeD.Core.Models.Catalogos
 
         [Key] public string Id { get; set; }
         public string Nome { get; set; }
+    }
+
+    public class ProdutoTipoValidator : AbstractValidator<ProdutoTipo>
+    {
+        public ProdutoTipoValidator()
+        {
+            RuleFor(r => r.Nome).NotEmpty();
+        }
     }
 }

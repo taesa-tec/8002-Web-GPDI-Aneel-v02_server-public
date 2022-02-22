@@ -1,4 +1,5 @@
-﻿using TaesaCore.Models;
+﻿using FluentValidation;
+using TaesaCore.Models;
 
 namespace PeD.Core.Models.Catalogos
 {
@@ -13,5 +14,14 @@ namespace PeD.Core.Models.Catalogos
         }
 
         public string Valor { get; set; }
+    }
+
+    public class EstadoValidator : AbstractValidator<Estado>
+    {
+        public EstadoValidator()
+        {
+            RuleFor(r => r.Nome).NotEmpty();
+            RuleFor(r => r.Valor).NotEmpty();
+        }
     }
 }

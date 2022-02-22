@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 
 namespace PeD.Core.Models.Catalogos
 {
@@ -11,6 +12,14 @@ namespace PeD.Core.Models.Catalogos
         public override string ToString()
         {
             return Nome;
+        }
+    }
+
+    public class SegmentoValidator : AbstractValidator<Segmento>
+    {
+        public SegmentoValidator()
+        {
+            RuleFor(r => r.Nome).NotEmpty();
         }
     }
 }
