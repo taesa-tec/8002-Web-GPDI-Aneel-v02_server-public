@@ -1,6 +1,8 @@
 # Sistema PDI
 
-Sistema de gerenciamento de projetos de pesquisa e desenvolvimentos
+Sistema de gerenciamento de projetos de Pesquisa, Desenvolvimento e Inovação.
+
+[Acesse o material para detalhes do projeto.](https://github.com/taesa-tec/8002-Web-GPDI-Aneel-v02_server-public/blob/main/banner.pdf)
 
 ## Prerequisitos
 
