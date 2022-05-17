@@ -27,7 +27,7 @@
         <PackageReference Include="GlobalExceptionHandler" Version="4.0.2" />
         <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
         <PackageReference Include="itext7.pdfhtml" Version="3.0.4" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.11" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.18" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.11" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.11" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.11" />
