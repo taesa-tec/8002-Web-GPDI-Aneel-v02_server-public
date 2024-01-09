@@ -9,7 +9,7 @@
         <ProjectReference Include="..\PeD.Data\PeD.Data.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.34.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.11" />
     </ItemGroup>
 
